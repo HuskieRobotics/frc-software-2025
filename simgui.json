@@ -1,0 +1,37 @@
+{
+  "HALProvider": {
+    "Addressable LEDs": {
+      "0": {
+        "columns": 35
+      },
+      "window": {
+        "visible": true
+      }
+    },
+    "DIO": {
+      "window": {
+        "visible": true
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/AdvantageKit/RealOutputs/Alerts": "Alerts",
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Alerts": "Alerts",
+      "/SmartDashboard/Auto Routine": "String Chooser",
+      "/SmartDashboard/SysId Chooser": "String Chooser",
+      "/SmartDashboard/SystemStatus/ClearAllFaults": "Command",
+      "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/Subsystem/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/SwerveModule0/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/SwerveModule1/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/SwerveModule2/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/SwerveModule3/SystemCheck": "Command",
+      "/SmartDashboard/VisionSystemSim-simCamera/Sim Field": "Field2d"
+    }
+  },
+  "NetworkTables Info": {
+    "visible": true
+  }
+}
