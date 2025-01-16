@@ -219,9 +219,7 @@ public class Robot extends LoggedRobot {
       Logger.recordOutput("CANivoreStatus/TxFullCount", canivoreStatus.TxFullCount);
       Logger.recordOutput("CANivoreStatus/ReceiveErrorCount", canivoreStatus.REC);
       Logger.recordOutput("CANivoreStatus/TransmitErrorCount", canivoreStatus.TEC);
-      if (!canivoreStatus.Status.isOK()
-          || canStatus.transmitErrorCount > 0
-          || canStatus.receiveErrorCount > 0) {
+      if (!canivoreStatus.Status.isOK() || canivoreStatus.REC > 0 || canivoreStatus.TEC > 0) {
         canivoreErrorTimer.restart();
       }
       canivoreErrorAlert.set(
