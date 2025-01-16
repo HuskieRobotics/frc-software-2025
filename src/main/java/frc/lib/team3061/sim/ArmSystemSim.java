@@ -68,7 +68,7 @@ public class ArmSystemSim {
 
     this.systemSim =
         new SingleJointedArmSim(
-            DCMotor.getFalcon500Foc(1),
+            DCMotor.getKrakenX60Foc(1),
             sensorToMechanismRatio * rotorToSensorRatio,
             SingleJointedArmSim.estimateMOI(length, mass),
             length,
