@@ -203,6 +203,11 @@ public class Robot extends LoggedRobot {
 
     // Check CAN status
     var canStatus = RobotController.getCANStatus();
+    Logger.recordOutput("CANStatus/OffCount", canStatus.busOffCount);
+    Logger.recordOutput("CANStatus/TxFullCount", canStatus.txFullCount);
+    Logger.recordOutput("CANStatus/ReceiveErrorCount", canStatus.receiveErrorCount);
+    Logger.recordOutput("CANStatus/TransmitErrorCount", canStatus.transmitErrorCount);
+
     if (canStatus.transmitErrorCount > 0 || canStatus.receiveErrorCount > 0) {
       canErrorTimer.restart();
     }
