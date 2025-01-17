@@ -9,13 +9,18 @@ public interface ElevatorIO {
   public static class ElevatorIOInputs {
 
     double voltageSupplied = 0.0;
+    
     double statorCurrentAmps = 0.0;
+
     double supplyCurrentAmps = 0.0;
-    double closedLoopError = 0.0;
+
+    double closedLoopError = 0.0; 
+
     double closedLoopReference = 0.0;
+
     double posInches = 0.0;
 
-    double tempCelcius = 0.0;
+    double tempCelsius = 0.0;
 
   }
 
@@ -29,7 +34,6 @@ public interface ElevatorIO {
    */
 
   public default void setMotorPosition(double position) {}
-
 
   public default void setPositionToZero() {}
 
