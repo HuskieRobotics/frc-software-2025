@@ -1,7 +1,7 @@
-package frc.robot.subsystems.subsystem;
+package frc.robot.subsystems.subsystem.manipulator.subsystem;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.subsystem.SubsystemConstants.*;
+import static frc.robot.subsystems.subsystem.manipulator.subsystem.SubsystemConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.Logger;
  * library aren't good examples for typical robot subsystems. This class can serve as an example or
  * be used for quick prototyping.
  */
-public class Subsystem extends SubsystemBase {
+public class Manipulator extends SubsystemBase {
 
   // these Tunables are convenient when testing as they provide direct control of the subsystem's
   // motor
@@ -31,7 +31,7 @@ public class Subsystem extends SubsystemBase {
       new LoggedTunableNumber("Subsystem/position", 0.0);
 
   private final SubsystemIOInputsAutoLogged inputs = new SubsystemIOInputsAutoLogged();
-  private SubsystemIO io;
+  private ManipulatorIO io;
   private State state = State.A;
   private State lastState = State.UNINITIALIZED;
 
@@ -65,26 +65,26 @@ public class Subsystem extends SubsystemBase {
   private enum State {
     UNINITIALIZED {
       @Override
-      void execute(Subsystem subsystem) {
+      void execute(Manipulator subsystem) {
         /* no-op */
       }
 
       @Override
-      void onEnter(Subsystem subsystem) {
+      void onEnter(Manipulator subsystem) {
         /* no-op */
       }
 
       @Override
-      void onExit(Subsystem subsystem) {
+      void onExit(Manipulator subsystem) {
         /* no-op */
       }
     },
     A {
       @Override
-      void onEnter(Subsystem subsystem) {}
+      void onEnter(Manipulator subsystem) {}
 
       @Override
-      void execute(Subsystem subsystem) {
+      void execute(Manipulator subsystem) {
         if (
         /* some condition is */ true) {
           subsystem.setState(State.B);
@@ -92,11 +92,11 @@ public class Subsystem extends SubsystemBase {
       }
 
       @Override
-      void onExit(Subsystem subsystem) {}
+      void onExit(Manipulator subsystem) {}
     },
     B {
       @Override
-      void execute(Subsystem subsystem) {
+      void execute(Manipulator subsystem) {
         if (
         /* some condition is */ true) {
           subsystem.setState(State.A);
@@ -107,18 +107,18 @@ public class Subsystem extends SubsystemBase {
       }
 
       @Override
-      void onEnter(Subsystem subsystem) {
+      void onEnter(Manipulator subsystem) {
         /* no-op */
       }
 
       @Override
-      void onExit(Subsystem subsystem) {
+      void onExit(Manipulator subsystem) {
         /* no-op */
       }
     },
     C {
       @Override
-      void execute(Subsystem subsystem) {
+      void execute(Manipulator subsystem) {
         if (
         /* some condition is */ true) {
           subsystem.setState(State.A);
@@ -126,21 +126,21 @@ public class Subsystem extends SubsystemBase {
       }
 
       @Override
-      void onEnter(Subsystem subsystem) {
+      void onEnter(Manipulator subsystem) {
         /* no-op */
       }
 
       @Override
-      void onExit(Subsystem subsystem) {
+      void onExit(Manipulator subsystem) {
         /* no-op */
       }
     };
 
-    abstract void execute(Subsystem subsystem);
+    abstract void execute(Manipulator subsystem);
 
-    abstract void onEnter(Subsystem subsystem);
+    abstract void onEnter(Manipulator subsystem);
 
-    abstract void onExit(Subsystem subsystem);
+    abstract void onExit(Manipulator subsystem);
   }
 
   /**
@@ -148,7 +148,7 @@ public class Subsystem extends SubsystemBase {
    *
    * @param io the hardware interface object for this subsystem
    */
-  public Subsystem(SubsystemIO io) {
+  public Manipulator(ManipulatorIO io) {
 
     this.io = io;
 
