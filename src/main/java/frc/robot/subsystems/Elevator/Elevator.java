@@ -14,6 +14,7 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.Elevator.ElevatorConstants.ReefBranch;
 import frc.robot.subsystems.Elevator.ElevatorIO.ElevatorIOInputs;
+import java.lang.Math;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -22,7 +23,7 @@ public class Elevator extends SubsystemBase{
 
     private ElevatorIO elevatorIO;
 
-    private static final String SUBSYSTEM_NAME = "ELEVATOR";
+    static final String SUBSYSTEM_NAME = "ELEVATOR";
 
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged(); // Is this an auto generated class?
 
@@ -65,9 +66,7 @@ public class Elevator extends SubsystemBase{
     
 
     public boolean isAtPosition(ReefBranch reefBranch){
-        
-        return inputs.posInches == reefBranch;
-        
+        return Math.abs(inputs.posInches-reefBranch) < TOLERANCE; 
     }
 
     public void goToPosition(ReefBranch reefBranch){

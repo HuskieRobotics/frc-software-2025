@@ -37,7 +37,7 @@ public interface ElevatorIO {
 
   public default void setPositionToZero() {}
 
-  public default void setMotorVoltage(double volts) {}
+  public default void setElevatorPOsition(double volts) {}
 
 
 }
