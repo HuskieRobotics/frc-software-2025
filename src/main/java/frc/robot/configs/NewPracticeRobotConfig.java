@@ -1,10 +1,19 @@
 package frc.robot.configs;
 
-import static edu.wpi.first.units.Units.*;
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -100,6 +109,65 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
   private static final int LED_COUNT = 85;
+
+  private static final String CAMERA_NAME_0 = "OV2311FR";
+  private static final String CAMERA_NAME_1 = "OV2311BR";
+  private static final String CAMERA_NAME_2 = "OV2311FL";
+  private static final String CAMERA_NAME_3 = "OV2311BL";
+
+  // Front right camera
+  private static final Transform3d ROBOT_TO_CAMERA_0 =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(11.064),
+              Units.inchesToMeters(-10.778),
+              Units.inchesToMeters(8.189)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(0)));
+  // pitch 45 degrees
+
+  // Back right camera
+  private static final Transform3d ROBOT_TO_CAMERA_1 =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(-10.778),
+              Units.inchesToMeters(-11.064),
+              Units.inchesToMeters(8.189)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-90)));
+
+  // Front left camera
+  private static final Transform3d ROBOT_TO_CAMERA_2 =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(10.778),
+              Units.inchesToMeters(11.064),
+              Units.inchesToMeters(8.189)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(90)));
+
+  // Back left camera
+  private static final Transform3d ROBOT_TO_CAMERA_3 =
+      new Transform3d(
+          new Translation3d(
+              Units.inchesToMeters(-11.064),
+              Units.inchesToMeters(10.778),
+              Units.inchesToMeters(8.189)),
+          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
+
+  @Override
+  public Transform3d[] getRobotToCameraTransforms() {
+    return new Transform3d[] {
+      ROBOT_TO_CAMERA_0, ROBOT_TO_CAMERA_1, ROBOT_TO_CAMERA_2, ROBOT_TO_CAMERA_3
+    };
+  }
+
+  @Override
+  public String[] getCameraNames() {
+    return new String[] {CAMERA_NAME_0, CAMERA_NAME_1, CAMERA_NAME_2, CAMERA_NAME_3};
+  }
+
+  @Override
+  public double[] getCameraStdDevFactors() {
+    return new double[] {1.0, 1.0, 1.0, 1.0};
+  }
 
   @Override
   public boolean getPhoenix6Licensed() {
