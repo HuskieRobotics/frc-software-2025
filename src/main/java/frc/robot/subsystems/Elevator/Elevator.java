@@ -43,7 +43,7 @@ public class Elevator extends SubsystemBase{
 
         //SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutine);
 
-        FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
+        FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
 
         /*
          * Add all shuffleboard tabs and widgets
@@ -52,7 +52,8 @@ public class Elevator extends SubsystemBase{
         
     }
 
-    // commands to be shown in qfrc dashboard for the operator (untested)
+    // commands to be shown in QFRC dashboard for the operator (untested)
+    // should these go in RobotContainer / the class we will make for subsystem commands?
     // TODO: see if these commands show up in qfrc dashboard
 
     private void registerElevatorHeightCommands() {
@@ -137,6 +138,12 @@ public class Elevator extends SubsystemBase{
     public boolean isAtPosition(ReefBranch reefBranch){
         return Math.abs(inputs.posInches-reefBranch) < TOLERANCE; 
     }
+
+    // TODO: Implement system check method
+    public Command getElevatorSystemCheckCommand() {
+        return null;
+    }
+
 
     public void goToPosition(ReefBranch reefBranch){
         switch (reefBranch) {
