@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team3015.subsystem.FaultReporter;
@@ -26,10 +25,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
 
     private TalonFXConfiguration elevatorMotorRightConfig;
-    private TalonFXConfiguration elevatorMotorLeftConfig;
+    
 
     private Alert configAlert = 
-        new Alert("Failed to apply configuration for subsystem.", AlertType.ERROR);
+        new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
     private StatusSignal<Double> elevatorStatorCurrentStatusSignal;
     private StatusSignal<Double> elevatorSupplyCurrentStatusSignal;
@@ -90,6 +89,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // Constructor
 
     private void configElevatorMotorLeft(TalonFX elevevatorMotorLeft){
+        TalonFXConfiguration elevatorMotorLeftConfig;
 
         elevatorMotorLeftConfig = new TalonFXConfiguration();
 
@@ -99,7 +99,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
          * Add current limits here?
         */
 
-         elevatorMotorLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        elevatorMotorLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         elevatorMotorLeftConfig.Slot0.kP = kPslot0.get();
         elevatorMotorLeftConfig.Slot0.kI = kIslot0.get();
@@ -130,6 +130,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         }
         
         FaultReporter.getInstance().registerHardware(Elevator.SUBSYSTEM_NAME, "Elevator Motor Left", elevatorMotorLeft);
+    }
         
     
 
@@ -145,6 +146,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     }
 
     // Update Inputs
+    @Override
     public void updateInputs(ElevatorIOInputs inputs) {
         inputs.voltageSupplied = voltageSuppLoggedTunableNumber.get();
         inputs.statorCurrentAmps = statorCurrentAmpsLoggedTunableNumber.get();
@@ -168,3 +170,5 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         
     }
 }
+
+
