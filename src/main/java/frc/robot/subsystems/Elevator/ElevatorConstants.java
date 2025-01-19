@@ -57,6 +57,8 @@ public class ElevatorConstants {
 
   public enum ReefBranch{
 
+    Hardstop,
+
     L1,
     L2,
     L3,

@@ -6,10 +6,12 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3015.subsystem.selfcheck.SelfChecking;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.Elevator.ElevatorConstants.ReefBranch;
@@ -46,7 +48,74 @@ public class Elevator extends SubsystemBase{
         /*
          * Add all shuffleboard tabs and widgets
          */
+        registerElevatorHeightCommands();
+        
+    }
 
+    // commands to be shown in qfrc dashboard for the operator (untested)
+    // TODO: see if these commands show up in qfrc dashboard
+
+    private void registerElevatorHeightCommands() {
+        registerGroundCommand(); 
+        registerL1Command();
+        registerL2Command();
+        registerL3Command();
+        registerL4Command();
+    }
+
+    private void registerGroundCommand() {
+        SmartDashboard.putData(
+            "Ground",
+            Commands.runOnce(
+                    () -> {
+                        goToPosition(ReefBranch.Hardstop);
+                    })
+                .ignoringDisable(true)
+                .withName("Ground"));
+    }
+
+    private void registerL1Command() {
+        SmartDashboard.putData(
+            "L1",
+            Commands.runOnce(
+                    () -> {
+                        goToPosition(ReefBranch.L1);
+                    })
+                .ignoringDisable(true)
+                .withName("L1"));
+    }
+
+    private void registerL2Command() {
+        SmartDashboard.putData(
+            "L2",
+            Commands.runOnce(
+                    () -> {
+                        goToPosition(ReefBranch.L1);
+                    })
+                .ignoringDisable(true)
+                .withName("L2"));
+    }
+
+    private void registerL3Command() {
+        SmartDashboard.putData(
+            "L3",
+            Commands.runOnce(
+                    () -> {
+                        goToPosition(ReefBranch.L1);
+                    })
+                .ignoringDisable(true)
+                .withName("L3"));
+    }
+
+    private void registerL4Command() {
+        SmartDashboard.putData(
+            "L4",
+            Commands.runOnce(
+                    () -> {
+                        goToPosition(ReefBranch.L1);
+                    })
+                .ignoringDisable(true)
+                .withName("L4"));
     }
 
     /*
