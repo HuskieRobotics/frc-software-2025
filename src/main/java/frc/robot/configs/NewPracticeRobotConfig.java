@@ -119,9 +119,9 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(11.064),
+              Units.inchesToMeters(10.609),
               Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(8.189)),
+              Units.inchesToMeters(8.3335)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(0)));
   // pitch 45 degrees
 
@@ -130,8 +130,8 @@ public class NewPracticeRobotConfig extends RobotConfig {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(-11.064),
-              Units.inchesToMeters(8.189)),
+              Units.inchesToMeters(-10.6095),
+              Units.inchesToMeters(8.177)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-90)));
 
   // Front left camera
@@ -139,17 +139,17 @@ public class NewPracticeRobotConfig extends RobotConfig {
       new Transform3d(
           new Translation3d(
               Units.inchesToMeters(10.778),
-              Units.inchesToMeters(11.064),
-              Units.inchesToMeters(8.189)),
+              Units.inchesToMeters(10.6085),
+              Units.inchesToMeters(8.3335)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(90)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-11.064),
+              Units.inchesToMeters(-10.6095),
               Units.inchesToMeters(10.778),
-              Units.inchesToMeters(8.189)),
+              Units.inchesToMeters(8.177)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
 
   @Override
