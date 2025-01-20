@@ -1,17 +1,22 @@
 package frc.robot.subsystems.Elevator;
 
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Units.*;
+import edu.wpi.first.units.measure.Distance;
 
 public class ElevatorConstants {
 
 
 
   public static final double TOLERANCE = 0;
-  public static final double MAX_HEIGHT = 0.0; // FIXME
+  public static final Distance MAX_HEIGHT = 0.0; // FIXME: Figure out type Distance
   public static final double CONVERSION_FACTOR = 0.0;// FIXME
   public static final int GEAR_RATIO = 5; //CHECK THIS VALUE
   public static final double OFFSET = 0.0; // FIXME
+
+  public static final int LEAD_MOTOR_ID = 0; // FIXME
+  public static final int FOLLOWER_MOTOR_ID = 0; // FIXME
 
 
   public static final boolean DEBUGGING = false;
@@ -75,10 +80,8 @@ public class ElevatorConstants {
    * Highest point of each reef branch in inches
    */
 
-   Distance armLength = Inches.of(32.25);
-
-  public static final Distance L1_HEIGHT = new Distance(15.94, edu.wpi.first.wpilibj.units.length.inch); 
-  public static final Distance L2_HEIGHT = 31.89;
+  public static final Distance L1_HEIGHT = 15.94; 
+  public static final Distance L2_HEIGHT = 31.89; //FIXME: Figure out type Distance
   public static final Distance L3_HEIGHT = 47.64;
   public static final Distance L4_HEIGHT = 72.05;
 

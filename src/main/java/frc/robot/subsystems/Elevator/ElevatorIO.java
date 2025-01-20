@@ -42,7 +42,7 @@ public interface ElevatorIO {
    * @param position the position to set the motor to in degrees
    */
 
-  public default void setElevatorPosition(Distance position) {}
+  public default void setPosition(Distance position) {}
 
   public default void zeroPosition() {}
 

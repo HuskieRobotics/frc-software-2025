@@ -128,7 +128,7 @@ public class Elevator extends SubsystemBase{
 
 
             if(inputs.posInches > MAX_HEIGHT){
-                elevatorIO.setMotorPosition(MAX_HEIGHT);
+                elevatorIO.setPosition(MAX_HEIGHT);
             }
         }
     
@@ -146,27 +146,27 @@ public class Elevator extends SubsystemBase{
     public void goToPosition(ReefBranch reefBranch){
         switch (reefBranch) {
             case L1:
-                elevatorIO.setElevatorPosition(L1_HEIGHT);
+                elevatorIO.setPosition(L1_HEIGHT);
                 break;
 
             case L2:
-                elevatorIO.setElevatorPosition(L2_HEIGHT);
+                elevatorIO.setPosition(L2_HEIGHT);
                 break;
 
             case L3:
-                elevatorIO.setMotorPosition(L3_HEIGHT);
+                elevatorIO.setPosition(L3_HEIGHT);
                 break;      
             
             case L4:
-                elevatorIO.setMotorPosition(L4_HEIGHT);
+                elevatorIO.setPosition(L4_HEIGHT);
                 break;
 
-            case Algae1:
-                elevatorIO.setMotorPosition(ALGAE1_HEIGHT);
+            case ALGAE_1:
+                elevatorIO.setPosition(ALGAE1_HEIGHT);
                 break;
 
-            case Algae2:    
-                elevatorIO.setMotorPosition(ALGAE2_HEIGHT);
+            case ALGAE_2:    
+                elevatorIO.setPosition(ALGAE2_HEIGHT);
                 break;
             default:
                 break;

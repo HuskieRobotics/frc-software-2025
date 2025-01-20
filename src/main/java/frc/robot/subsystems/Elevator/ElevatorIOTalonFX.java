@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -22,6 +23,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     private VoltageOut elevatorMotorLeadVoltageRequest;
     private VoltageOut elevatorMotorFollowerVoltageRequest;
+
+    MotionMagicExpoVoltage elevatorMotorLeadExpoVoltageRequest;
 
     private TalonFXConfiguration elevatorMotorLeadConfig;
     private TalonFXConfiguration elevatorMotorFollowerConfig;
@@ -79,7 +82,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     private final LoggedTunableNumber acceleration = new LoggedTunableNumber("Elevator/Acceleration", 0);
     private final LoggedTunableNumber jerk = new LoggedTunableNumber("Elevator/Jerk", 0);
 
-    private final LoggedTunableNumber voltageSuppLoggedTunableNumber = 
+    private final LoggedTunableNumber voltageSuppliedLoggedTunableNumber = 
         new LoggedTunableNumber("Elevator/Voltage Supplied", 0);
     private final LoggedTunableNumber statorCurrentAmpsLoggedTunableNumber = 
         new LoggedTunableNumber("Elevator/Stator Current Amps", 0);
@@ -92,13 +95,33 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     private final LoggedTunableNumber positionInchesLoggedTunableNumber = 
         new LoggedTunableNumber("Elevator/Position Inches", 0);
 
-    // Constructor
+    
+    
+    public ElevatorIOTalonFX() {
 
-    private void configElevatorMotorLeft(TalonFX elevevatorMotorLeft){
+        elevatorMotorLead = new TalonFX(ElevatorConstants.LEAD_MOTOR_ID);
+        elevatorMotorFollower = new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID);
+
+        elevatorLeadStatorCurrentStatusSignal = elevatorMotorLead.getStatorCurrent();
+        elevatorFollowerStatorCurrentStatusSignal = elevatorMotorFollower.getStatorCurrent();
+
+        elevatorLeadSupplyCurrentStatusSignal = elevatorMotorLead.getSupplyCurrent();
+        elevatorFollowerSupplyCurrentStatusSignal = elevatorMotorFollower.getSupplyCurrent();
+
+        elevatorPositionStatusSignal = elevatorMotorLead.getPosition();
+
+        elevatorLeadTempStatusSignal = elevatorMotorLead.getDeviceTemp();
+        elevatorFollowerTempStatusSignal = elevatorMotorFollower.getDeviceTemp();
+
+        elevatorMotorLeadVoltageRequest = new VoltageOut(0);
+        elevatorMotorFollowerVoltageRequest = new VoltageOut(0);
+    }
+
+    private void configElevatorMotorLead(TalonFX elevevatorMotorLead){
 
         elevatorMotorLeadConfig = new TalonFXConfiguration();
 
-        MotionMagicConfigs leftMotorConfig  = elevatorMotorLeadConfig.MotionMagic;
+        MotionMagicConfigs leadMotorConfig  = elevatorMotorLeadConfig.MotionMagic;
 
         /*
          * Add current limits here?
@@ -136,9 +159,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
         elevatorMotorLeadConfig.Slot2.withGravityType(GravityTypeValue.Elevator_Static);
 
-        leftMotorConfig.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
-        leftMotorConfig.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
-        leftMotorConfig.MotionMagicJerk = ElevatorConstants.JERK;
+        leadMotorConfig.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
+        leadMotorConfig.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
+        leadMotorConfig.MotionMagicJerk = ElevatorConstants.JERK;
 
         StatusCode status = StatusCode.StatusCodeNotInitialized;
 
@@ -154,33 +177,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             configAlert.setText(status.toString());
         }
         
-        FaultReporter.getInstance().registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Left", elevatorMotorLead);
-    }
-
-    public ElevatorIOTalonFX() {
-        
-        elevatorMotorLeadVoltageRequest = new VoltageOut(0);
-        elevatorMotorFollowerVoltageRequest = new VoltageOut(0);
-        
-
+        FaultReporter.getInstance().registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Lead", elevatorMotorLead);
     }
 
     // Update Inputs
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.voltageSuppliedLead = voltageSuppLoggedTunableNumber.get();
-        inputs.voltageSuppliedFollower = voltageSuppLoggedTunableNumber.get();  
-
-        inputs.statorCurrentAmpsLead = statorCurrentAmpsLoggedTunableNumber.get();
-        inputs.statorCurrentAmpsFollower = statorCurrentAmpsLoggedTunableNumber.get();
-
-        inputs.supplyCurrentAmpsLead = supplyCurrentAmpsLoggedTunableNumber.get();
-        inputs.supplyCurrentAmpsFollower = supplyCurrentAmpsLoggedTunableNumber.get();
-
-        inputs.closedLoopError = closedLoopErrorLoggedTunableNumber.get();
-        inputs.closedLoopReference = closedLoopReferenceLoggedTunableNumber.get();
-
-        inputs.positionInches = positionInchesLoggedTunableNumber.get();
 
         BaseStatusSignal.refreshAll(
             elevatorPositionStatusSignal,
@@ -194,6 +196,20 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             elevatorLeadTempStatusSignal,
             elevatorFollowerTempStatusSignal
         );
+
+        inputs.voltageSuppliedLead = voltageSuppliedLoggedTunableNumber.get();
+        inputs.voltageSuppliedFollower = voltageSuppliedLoggedTunableNumber.get();  
+
+        inputs.statorCurrentAmpsLead = statorCurrentAmpsLoggedTunableNumber.get();
+        inputs.statorCurrentAmpsFollower = statorCurrentAmpsLoggedTunableNumber.get();
+
+        inputs.supplyCurrentAmpsLead = supplyCurrentAmpsLoggedTunableNumber.get();
+        inputs.supplyCurrentAmpsFollower = supplyCurrentAmpsLoggedTunableNumber.get();
+
+        inputs.closedLoopError = closedLoopErrorLoggedTunableNumber.get();
+        inputs.closedLoopReference = closedLoopReferenceLoggedTunableNumber.get();
+
+        inputs.positionInches = positionInchesLoggedTunableNumber.get();
     }
 
     // Set motor voltage
