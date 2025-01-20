@@ -34,7 +34,11 @@ public class VelocitySystemSim {
     this.systemSim = new LinearSystemSim<>(LinearSystemId.identifyVelocitySystem(kV, kA));
   }
 
-  public void updateSim() {
+  public VelocitySystemSim(TalonFX rollerMotor, int i, int kV, int kA, int gearRatio2) {
+    //TODO Auto-generated constructor stub
+}
+
+public void updateSim() {
     if (Constants.getMode() != Constants.Mode.SIM) {
       return;
     }

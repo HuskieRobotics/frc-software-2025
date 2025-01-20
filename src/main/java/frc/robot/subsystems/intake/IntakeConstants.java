@@ -35,7 +35,5 @@ public class IntakeConstants{
 
   public static final double ROLLERS_CONTINUOUS_STATOR_CURRENT_LIMIT = 0.0;
 
-  public static final boolean ROLLER_MOTOR_INVERTED = false;
-
   public static final double IN_BETWEEN_TIMEOUT_SECONDS = 0.0;
 }
