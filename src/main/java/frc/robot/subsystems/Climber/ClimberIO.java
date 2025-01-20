@@ -9,7 +9,7 @@ public interface ClimberIO {
     double staterCurrentAmps = 0.0;
     double supplyCurrentAmps = 0.0;
     double tempCelcius = 0.0;
-    double position_units_per_rotation =0.0;
+    double position_units_per_rotation = 0.0;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}
