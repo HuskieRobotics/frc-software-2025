@@ -1,7 +1,7 @@
 package frc.robot.subsystems.subsystem.manipulator.subsystem;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.subsystem.manipulator.subsystem.SubsystemConstants.*;
+import static frc.robot.subsystems.subsystem.manipulator.subsystem.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;

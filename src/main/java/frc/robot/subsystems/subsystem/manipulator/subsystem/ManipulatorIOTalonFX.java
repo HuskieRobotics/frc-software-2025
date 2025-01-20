@@ -1,7 +1,7 @@
 package frc.robot.subsystems.subsystem.manipulator.subsystem;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.subsystem.manipulator.subsystem.SubsystemConstants.*;
+import static frc.robot.subsystems.subsystem.manipulator.subsystem.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -40,8 +40,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
-    configFunnelMotor(MOTOR_CAN_ID);
-    configIndexerMotor(MOTOR_CAN_ID);
+    configFunnelMotor(12);
+    configIndexerMotor(14);
+    //the can id's for the funnel and indexer motor is in the ManipulatorConstants.java file
   }
 
   /**
@@ -218,16 +219,16 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
-    currentLimits.SupplyCurrentLimit = PEAK_CURRENT_LIMIT;
-    currentLimits.SupplyCurrentLowerLimit = CONTINUOUS_CURRENT_LIMIT;
-    currentLimits.SupplyCurrentLowerTime = PEAK_CURRENT_DURATION;
+    currentLimits.SupplyCurrentLimit = FUNNEL_MOTOR_PEAK_CURRENT_LIMIT;
+    currentLimits.SupplyCurrentLowerLimit = FUNNEL_MOTOR_CONTINUOUS_CURRENT_LIMIT;
+    currentLimits.SupplyCurrentLowerTime = FUNNEL_MOTOR_PEAK_CURRENT_DURATION;
     currentLimits.SupplyCurrentLimitEnable = true;
-    currentLimits.StatorCurrentLimit = PEAK_CURRENT_LIMIT;
+    currentLimits.StatorCurrentLimit = FUNNEL_MOTOR_PEAK_CURRENT_LIMIT;
     currentLimits.StatorCurrentLimitEnable = true;
     config.CurrentLimits = currentLimits;
 
     config.MotorOutput.Inverted =
-        MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        FUNNEL_MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Slot0.kP = kP.get();
     config.Slot0.kI = kI.get();
@@ -260,16 +261,16 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
     CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
-    currentLimits.SupplyCurrentLimit = PEAK_CURRENT_LIMIT;
-    currentLimits.SupplyCurrentLowerLimit = CONTINUOUS_CURRENT_LIMIT;
-    currentLimits.SupplyCurrentLowerTime = PEAK_CURRENT_DURATION;
+    currentLimits.SupplyCurrentLimit = INDEXER_MOTOR_PEAK_CURRENT_LIMIT;
+    currentLimits.SupplyCurrentLowerLimit = INDEXER_MOTOR_CONTINUOUS_CURRENT_LIMIT;
+    currentLimits.SupplyCurrentLowerTime = INDEXER_MOTOR_PEAK_CURRENT_DURATION;
     currentLimits.SupplyCurrentLimitEnable = true;
-    currentLimits.StatorCurrentLimit = PEAK_CURRENT_LIMIT;
+    currentLimits.StatorCurrentLimit = INDEXER_MOTOR_PEAK_CURRENT_LIMIT;
     currentLimits.StatorCurrentLimitEnable = true;
     config.CurrentLimits = currentLimits;
 
     config.MotorOutput.Inverted =
-        MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+    INDEXER_MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Slot0.kP = kP.get();
     config.Slot0.kI = kI.get();
