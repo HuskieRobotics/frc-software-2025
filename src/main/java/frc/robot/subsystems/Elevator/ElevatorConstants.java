@@ -1,5 +1,8 @@
 package frc.robot.subsystems.Elevator;
 
+
+import edu.wpi.first.units.Units.*;
+
 public class ElevatorConstants {
 
 
@@ -13,7 +16,7 @@ public class ElevatorConstants {
 
   public static final boolean DEBUGGING = false;
   public static final boolean TESTING = false;
-  public static final String ELEVATOR = "Elevator";
+  public static final String SUBSYSTEM_NAME = "Elevator";
 
 
   // FIXME: Update all K values
@@ -57,28 +60,31 @@ public class ElevatorConstants {
 
   public enum ReefBranch{
 
-    Hardstop,
+    HARDSTOP,
 
     L1,
     L2,
     L3,
     L4,
 
-    Algae1,
-    Algae2,
+    ALGAE_1,
+    ALGAE_2,
   }
 
   /*
    * Highest point of each reef branch in inches
    */
 
-  public static final double L1_HEIGHT = 18.11; 
-  public static final double L2_HEIGHT = 31.89;
-  public static final double L3_HEIGHT = 47.64;
-  public static final double L4_HEIGHT = 72.05;
+   Distance armLength = Inches.of(32.25);
 
-  public static final double ALGAE1_HEIGHT = 0.0; // FIXME: Update these values
-  public static final double ALGAE2_HEIGHT = 0.0; // FIXME: Update these values
+  public static final Distance L1_HEIGHT = new Distance(15.94, edu.wpi.first.wpilibj.units.length.inch); 
+  public static final Distance L2_HEIGHT = 31.89;
+  public static final Distance L3_HEIGHT = 47.64;
+  public static final Distance L4_HEIGHT = 72.05;
+
+  public static final Distance ALGAE1_HEIGHT = 0.0; // FIXME: Update these values
+  public static final Distance ALGAE2_HEIGHT = 0.0; // FIXME: Update these values
+
 }
 
 

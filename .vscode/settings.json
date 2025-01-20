@@ -40,7 +40,7 @@
     "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },
   "[java]": {
-    "editor.defaultFormatter": "redhat.java"
+    "editor.defaultFormatter": "richardwillis.vscode-spotless-gradle"
   },
   "cSpell.enabledFileTypes": {
     "*": true,

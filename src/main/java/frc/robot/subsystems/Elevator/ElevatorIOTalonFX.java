@@ -17,23 +17,29 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 public class ElevatorIOTalonFX implements ElevatorIO {
 
 
-    private TalonFX elevatorMotorRight;
-    private TalonFX elevatorMotorLeft;
+    private TalonFX elevatorMotorLead;
+    private TalonFX elevatorMotorFollower;
 
-    private VoltageOut elevatorMotorRightVelocityRequest;
-    private VoltageOut elevatorMotorLeftVelocityRequest;
+    private VoltageOut elevatorMotorLeadVoltageRequest;
+    private VoltageOut elevatorMotorFollowerVoltageRequest;
 
-
-    private TalonFXConfiguration elevatorMotorRightConfig;
+    private TalonFXConfiguration elevatorMotorLeadConfig;
+    private TalonFXConfiguration elevatorMotorFollowerConfig;
     
 
     private Alert configAlert = 
         new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
-    private StatusSignal<Double> elevatorStatorCurrentStatusSignal;
-    private StatusSignal<Double> elevatorSupplyCurrentStatusSignal;
-    private StatusSignal<Double> elevatorPosStatusSignal;
-    private StatusSignal<Double> elevatorTempStatusSignal;
+    private StatusSignal<Double> elevatorLeadStatorCurrentStatusSignal;
+    private StatusSignal<Double> elevatorFollowerStatorCurrentStatusSignal;
+
+    private StatusSignal<Double> elevatorLeadSupplyCurrentStatusSignal; 
+    private StatusSignal<Double> elevatorFollowerSupplyCurrentStatusSignal; 
+
+    private StatusSignal<Double> elevatorPositionStatusSignal;
+    
+    private StatusSignal<Double> elevatorLeadTempStatusSignal;
+    private StatusSignal<Double> elevatorFollowerTempStatusSignal;
 
 
     // Tunable constants
@@ -83,33 +89,52 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         new LoggedTunableNumber("Elevator/Closed Loop Error", 0);
     private final LoggedTunableNumber closedLoopReferenceLoggedTunableNumber = 
         new LoggedTunableNumber("Elevator/Closed Loop Reference", 0);
-    private final LoggedTunableNumber posInchesLoggedTunableNumber = 
+    private final LoggedTunableNumber positionInchesLoggedTunableNumber = 
         new LoggedTunableNumber("Elevator/Position Inches", 0);
 
     // Constructor
 
     private void configElevatorMotorLeft(TalonFX elevevatorMotorLeft){
-        TalonFXConfiguration elevatorMotorLeftConfig;
 
-        elevatorMotorLeftConfig = new TalonFXConfiguration();
+        elevatorMotorLeadConfig = new TalonFXConfiguration();
 
-        MotionMagicConfigs leftMotorConfig  = elevatorMotorLeftConfig.MotionMagic;
+        MotionMagicConfigs leftMotorConfig  = elevatorMotorLeadConfig.MotionMagic;
 
         /*
          * Add current limits here?
         */
 
-        elevatorMotorLeftConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        elevatorMotorLeadConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        elevatorMotorLeftConfig.Slot0.kP = kPslot0.get();
-        elevatorMotorLeftConfig.Slot0.kI = kIslot0.get();
-        elevatorMotorLeftConfig.Slot0.kD = kDslot0.get();
-        elevatorMotorLeftConfig.Slot0.kS = kSslot0.get();
-        elevatorMotorLeftConfig.Slot0.kV = kVslot0.get();
-        elevatorMotorLeftConfig.Slot0.kA = kAslot0.get();
-        elevatorMotorLeftConfig.Slot0.kG = kGslot0.get();
+        elevatorMotorLeadConfig.Slot0.kP = kPslot0.get();
+        elevatorMotorLeadConfig.Slot0.kI = kIslot0.get();
+        elevatorMotorLeadConfig.Slot0.kD = kDslot0.get();
+        elevatorMotorLeadConfig.Slot0.kS = kSslot0.get();
+        elevatorMotorLeadConfig.Slot0.kV = kVslot0.get();
+        elevatorMotorLeadConfig.Slot0.kA = kAslot0.get();
+        elevatorMotorLeadConfig.Slot0.kG = kGslot0.get();
 
-        elevatorMotorLeftConfig.Slot0.withGravityType(GravityTypeValue.Elevator_Static);
+        elevatorMotorLeadConfig.Slot0.withGravityType(GravityTypeValue.Elevator_Static);
+
+        elevatorMotorLeadConfig.Slot1.kP = kPslot1.get();
+        elevatorMotorLeadConfig.Slot1.kI = kIslot1.get();
+        elevatorMotorLeadConfig.Slot1.kD = kDslot1.get();
+        elevatorMotorLeadConfig.Slot1.kS = kSslot1.get();
+        elevatorMotorLeadConfig.Slot1.kV = kVslot1.get();
+        elevatorMotorLeadConfig.Slot1.kA = kAslot1.get();
+        elevatorMotorLeadConfig.Slot1.kG = kGslot1.get();
+
+        elevatorMotorLeadConfig.Slot1.withGravityType(GravityTypeValue.Elevator_Static);
+
+        elevatorMotorLeadConfig.Slot2.kP = kPslot2.get();
+        elevatorMotorLeadConfig.Slot2.kI = kIslot2.get();
+        elevatorMotorLeadConfig.Slot2.kD = kDslot2.get();
+        elevatorMotorLeadConfig.Slot2.kS = kSslot2.get();
+        elevatorMotorLeadConfig.Slot2.kV = kVslot2.get();
+        elevatorMotorLeadConfig.Slot2.kA = kAslot2.get();
+        elevatorMotorLeadConfig.Slot2.kG = kGslot2.get();
+
+        elevatorMotorLeadConfig.Slot2.withGravityType(GravityTypeValue.Elevator_Static);
 
         leftMotorConfig.MotionMagicCruiseVelocity = ElevatorConstants.CRUISE_VELOCITY;
         leftMotorConfig.MotionMagicAcceleration = ElevatorConstants.ACCELERATION;
@@ -118,7 +143,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         StatusCode status = StatusCode.StatusCodeNotInitialized;
 
         for (int i = 0; i < 5; ++i) {
-            status = elevatorMotorLeft.getConfigurator().apply(elevatorMotorLeftConfig);
+            status = elevatorMotorLead.getConfigurator().apply(elevatorMotorLeadConfig);
             if (status.isOK()) {
                 break;
             }
@@ -129,18 +154,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             configAlert.setText(status.toString());
         }
         
-        FaultReporter.getInstance().registerHardware(Elevator.SUBSYSTEM_NAME, "Elevator Motor Left", elevatorMotorLeft);
+        FaultReporter.getInstance().registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Left", elevatorMotorLead);
     }
-        
-    
-
-
-
 
     public ElevatorIOTalonFX() {
         
-        elevatorMotorLeftVelocityRequest = new VoltageOut(0);
-        elevatorMotorRightVelocityRequest = new VoltageOut(0);
+        elevatorMotorLeadVoltageRequest = new VoltageOut(0);
+        elevatorMotorFollowerVoltageRequest = new VoltageOut(0);
         
 
     }
@@ -148,26 +168,47 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     // Update Inputs
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        inputs.voltageSupplied = voltageSuppLoggedTunableNumber.get();
-        inputs.statorCurrentAmps = statorCurrentAmpsLoggedTunableNumber.get();
-        inputs.supplyCurrentAmps = supplyCurrentAmpsLoggedTunableNumber.get();
+        inputs.voltageSuppliedLead = voltageSuppLoggedTunableNumber.get();
+        inputs.voltageSuppliedFollower = voltageSuppLoggedTunableNumber.get();  
+
+        inputs.statorCurrentAmpsLead = statorCurrentAmpsLoggedTunableNumber.get();
+        inputs.statorCurrentAmpsFollower = statorCurrentAmpsLoggedTunableNumber.get();
+
+        inputs.supplyCurrentAmpsLead = supplyCurrentAmpsLoggedTunableNumber.get();
+        inputs.supplyCurrentAmpsFollower = supplyCurrentAmpsLoggedTunableNumber.get();
+
         inputs.closedLoopError = closedLoopErrorLoggedTunableNumber.get();
         inputs.closedLoopReference = closedLoopReferenceLoggedTunableNumber.get();
-        inputs.posInches = posInchesLoggedTunableNumber.get();
+
+        inputs.positionInches = positionInchesLoggedTunableNumber.get();
 
         BaseStatusSignal.refreshAll(
-            elevatorPosStatusSignal,
-            elevatorSupplyCurrentStatusSignal,
-            elevatorPosStatusSignal,
-            elevatorTempStatusSignal
+            elevatorPositionStatusSignal,
+
+            elevatorLeadStatorCurrentStatusSignal,
+            elevatorFollowerStatorCurrentStatusSignal,
+
+            elevatorLeadSupplyCurrentStatusSignal,
+            elevatorFollowerSupplyCurrentStatusSignal,
+
+            elevatorLeadTempStatusSignal,
+            elevatorFollowerTempStatusSignal
         );
     }
 
     // Set motor voltage
     public void setMotorVoltage(double voltage) {
-        elevatorMotorRight.setControl(elevatorMotorRightVelocityRequest.withOutput(voltage));
-        elevatorMotorLeft.setControl(elevatorMotorLeftVelocityRequest.withOutput(-voltage));
+        elevatorMotorFollower.setControl(elevatorMotorFollowerVoltageRequest.withOutput(voltage));
+        elevatorMotorLead.setControl(elevatorMotorLeadVoltageRequest.withOutput(-voltage));
         
+    }
+
+    // Add softlimits to elevator to prevent hitting hardstops
+
+    public void setElevatorSoftLimits(){
+
+
+
     }
 }
 

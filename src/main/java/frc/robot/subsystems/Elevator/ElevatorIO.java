@@ -2,25 +2,34 @@ package frc.robot.subsystems.Elevator;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.Distance;
+
 /** Generic subsystem hardware interface. */
 public interface ElevatorIO {
 
   @AutoLog
   public static class ElevatorIOInputs {
 
-    double voltageSupplied = 0.0;
+    double voltageSuppliedLead = 0.0;
+    double voltageSuppliedFollower = 0.0;
     
-    double statorCurrentAmps = 0.0;
+    double statorCurrentAmpsLead = 0.0;
+    double statorCurrentAmpsFollower = 0.0;
 
-    double supplyCurrentAmps = 0.0;
+
+    double supplyCurrentAmpsLead = 0.0;
+    double supplyCurrentAmpsFollower = 0.0;
 
     double closedLoopError = 0.0; 
 
     double closedLoopReference = 0.0;
 
-    double posInches = 0.0;
+    double positionInches = 0.0;
 
-    double tempCelsius = 0.0;
+    double positionRotations = 0.0;
+
+    double LeadTempCelsius = 0.0;
+    double FollowerTempCelsius = 0.0;
 
   }
 
@@ -33,11 +42,9 @@ public interface ElevatorIO {
    * @param position the position to set the motor to in degrees
    */
 
-  public default void setMotorPosition(double position) {}
+  public default void setElevatorPosition(Distance position) {}
 
-  public default void setPositionToZero() {}
+  public default void zeroPosition() {}
 
-  public default void setElevatorPOsition(double volts) {}
-
-
+  public default void setVoltage(double volts) {}
 }

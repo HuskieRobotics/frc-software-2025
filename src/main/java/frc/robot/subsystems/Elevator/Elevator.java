@@ -25,9 +25,7 @@ public class Elevator extends SubsystemBase{
 
     private ElevatorIO elevatorIO;
 
-    static final String SUBSYSTEM_NAME = "ELEVATOR";
-
-    private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged(); // Is this an auto generated class?
+    private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
 
     /**
@@ -39,7 +37,7 @@ public class Elevator extends SubsystemBase{
     public Elevator(ElevatorIO io){
         this.elevatorIO = io;
 
-        io.setPositionToZero();
+        io.zeroPosition();
 
         //SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutine);
 
@@ -68,8 +66,8 @@ public class Elevator extends SubsystemBase{
         SmartDashboard.putData(
             "Ground",
             Commands.runOnce(
-                    () -> {
-                        goToPosition(ReefBranch.Hardstop);
+                    () -> { 
+                        goToPosition(ReefBranch.HARDSTOP);
                     })
                 .ignoringDisable(true)
                 .withName("Ground"));
@@ -148,11 +146,11 @@ public class Elevator extends SubsystemBase{
     public void goToPosition(ReefBranch reefBranch){
         switch (reefBranch) {
             case L1:
-                elevatorIO.setMotorPosition(L1_HEIGHT);
+                elevatorIO.setElevatorPosition(L1_HEIGHT);
                 break;
 
             case L2:
-                elevatorIO.setMotorPosition(L2_HEIGHT);
+                elevatorIO.setElevatorPosition(L2_HEIGHT);
                 break;
 
             case L3:
@@ -169,6 +167,8 @@ public class Elevator extends SubsystemBase{
 
             case Algae2:    
                 elevatorIO.setMotorPosition(ALGAE2_HEIGHT);
+                break;
+            default:
                 break;
         }
     }
