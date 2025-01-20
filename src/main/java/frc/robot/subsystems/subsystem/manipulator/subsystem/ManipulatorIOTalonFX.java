@@ -40,18 +40,19 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
-    configMotor(MOTOR_CAN_ID);
+    configFunnelMotor(MOTOR_CAN_ID);
+    configIndexerMotor(MOTOR_CAN_ID);
   }
 
-  //NOTE FOR FATEMA: ALL THE RED LINES UNDER MOTOR IS BC I CHANGED THE INSTANCE VARIABLES FROM ONE MOTOR TO 2, SO ALL THE STUFF DEALING WITH THE INSTANCE VARIABLE NEEDS TO BE UPDATED ACCORDINGLY
-
   /**
-   * Update the inputs based on the current state of the TalonFX funnel motor controller.
+   * Update the inputs based on the current state of the TalonFX motor controller.
    *
    * @param inputs the inputs object to update
    */
   @Override
-  public void updateFunnelMotorInputs(SubsystemIOInputs inputs) { 
+  public void updateInputs(SubsystemIOInputs inputs) { 
+
+    //This is part of the update inputs method for the funnel.
     inputs.positionDeg =
         Conversions.falconRotationsToMechanismDegrees(
             BaseStatusSignal.getLatencyCompensatedValue(
@@ -93,17 +94,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
           this.indexerMotor.getConfigurator().apply(config);
         },
         kPeakOutput);
-  }
-
-  /**
-   * Update the inputs based on the current state of the TalonFX indexer motor controller.
-   *
-   * @param inputs the inputs object to update
-   */
-  @Override
-  public void updateIndexerMotorInputs(SubsystemIOInputs inputs) 
-  {
-    inputs.positionDeg =
+        
+        //This is the part of the update inputs method for the indexer motor.
+        inputs.positionDeg =
         Conversions.falconRotationsToMechanismDegrees(
             BaseStatusSignal.getLatencyCompensatedValue(
                     indexerMotor.getRotorPosition(), indexerMotor.getRotorVelocity())
@@ -145,6 +138,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         },
         kPeakOutput);
   }
+
   /**
    * Set the motor voltage to the specified number of volts
    *
@@ -213,7 +207,10 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
             .withFeedForward(arbitraryFeedForward));
   }
 
-  //there was originally one one configMotor method but i added 2 because it should configure the funnel motor and the indexer motor
+  /**
+   * This method configures the Funnel motor with the motor ID.
+   * @param motorID The ID of the motor to configure.
+   */
   private void configFunnelMotor(int motorID) {
 
     this.funnelMotor = new TalonFX(motorID, RobotConfig.getInstance().getCANBusName());
@@ -252,7 +249,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "subsystem motor", funnelMotor);
   }
 
-  private void configIndexerMotor(int motorID){ //used to be configMotor(int motorID)
+  /**
+   * This method configures the Indexer motor with the motor ID.
+   * @param motorID The ID of the motor to configure.
+   */
+  private void configIndexerMotor(int motorID){ 
 
     this.indexerMotor = new TalonFX(motorID, RobotConfig.getInstance().getCANBusName());
 

@@ -18,10 +18,7 @@ public interface ManipulatorIO {
   }
 
   /** Updates the set of loggable inputs. */
-  public default void updateFunnelMotorInputs(SubsystemIOInputs inputs) {}
-// I CREATED 2 UPDATE INPUT METHODS TO UPDATE THE INPUTS FOR BOTH OF THE MOTORS
-  /** Updates the set of loggable inputs. */
-  public default void updateIndexerMotorInputs(SubsystemIOInputs inputs) {}
+  public default void updateInputs(SubsystemIOInputs inputs) {}
 
   /**
    * Set the funnel motor voltage to the specified number of volts.
