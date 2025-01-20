@@ -25,7 +25,11 @@ public class IntakeConstants{
     public static final double INTAKE_PIVOT_MOTORS_KA = 0.0;
     public static final double INTAKE_PIVOT_MOTORS_KG = 0.0;
 
+    public static final double INTAKE_POSITION_PIVOT_DEGREES = 0.0;
+    public static final double CARPET_POSITION_PIVOT_DEGREES = 0.0;
+
     public static final double INTAKE_VELOCITY_ROLLERS_RPS = 0.0;
+    public static final double OUTTAKE_VELOCITY_ROLLERS_RPS = 0.0;
 
     public static final double ROLLER_VELOCITY_TOLERANCE = 0.0;
 

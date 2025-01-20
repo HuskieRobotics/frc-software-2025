@@ -140,7 +140,7 @@ public class IntakeIOTalonFX implements IntakeIO {
     }
 
     @Override
-    public void updateInputs(IntakeIOINputs inputs) {
+    public void updateInputs(IntakeIOInputs inputs) {
         this.rollerSim.updateSim();
         this.pivotSim.updateSim();
 
