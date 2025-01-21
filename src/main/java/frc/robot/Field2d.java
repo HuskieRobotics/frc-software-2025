@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -217,15 +215,23 @@ public class Field2d {
     return alliance;
   }
 
-  public boolean hasFullyLeftAllianceSideOfField() {
-    if (alliance == Alliance.Blue) {
-      return RobotOdometry.getInstance().getEstimatedPose().getX()
-          > FieldConstants.StagingLocations.centerlineX
-              + RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2;
-    } else {
-      return RobotOdometry.getInstance().getEstimatedPose().getX()
-          < FieldConstants.StagingLocations.centerlineX
-              - RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2;
-    }
+  public Pose2d getNearestBranch(Side side) {
+    Pose2d nearestReefCenterFace =
+        RobotOdometry.getInstance()
+            .getEstimatedPose()
+            .nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+
+    nearestReefCenterFace =
+        new Pose2d(
+            nearestReefCenterFace.getX(),
+            nearestReefCenterFace.getY(),
+            nearestReefCenterFace.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+
+    return nearestReefCenterFace;
+  }
+
+  public enum Side {
+    LEFT,
+    RIGHT
   }
 }
