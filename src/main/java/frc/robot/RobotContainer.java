@@ -31,7 +31,9 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
+import frc.robot.Field2d.Side;
 import frc.robot.commands.CharacterizationCommands;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -519,6 +521,18 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
+
+    // drive to left branch of nearest reef face
+    oi.getDriveToNearestLeftBranchButton()
+        .onTrue(
+            new DriveToPose(drivetrain, () -> Field2d.getInstance().getNearestBranch(Side.LEFT))
+                .withName("drive to nearest left branch"));
+
+    // drive to right branch of nearest reef face
+    oi.getDriveToNearestRightBranchButton()
+        .onTrue(
+            new DriveToPose(drivetrain, () -> Field2d.getInstance().getNearestBranch(Side.RIGHT))
+                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
