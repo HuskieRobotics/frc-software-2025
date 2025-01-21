@@ -9,6 +9,8 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -525,13 +527,25 @@ public class RobotContainer {
     // drive to left branch of nearest reef face
     oi.getDriveToNearestLeftBranchButton()
         .onTrue(
-            new DriveToPose(drivetrain, () -> Field2d.getInstance().getNearestBranch(Side.LEFT))
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getDriveToNearestRightBranchButton()
         .onTrue(
-            new DriveToPose(drivetrain, () -> Field2d.getInstance().getNearestBranch(Side.RIGHT))
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
