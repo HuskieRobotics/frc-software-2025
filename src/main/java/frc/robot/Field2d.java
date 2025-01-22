@@ -8,7 +8,9 @@ import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.lib.team3061.RobotConfig;
@@ -217,15 +219,41 @@ public class Field2d {
     return alliance;
   }
 
-  public boolean hasFullyLeftAllianceSideOfField() {
-    if (alliance == Alliance.Blue) {
-      return RobotOdometry.getInstance().getEstimatedPose().getX()
-          > FieldConstants.StagingLocations.centerlineX
-              + RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2;
-    } else {
-      return RobotOdometry.getInstance().getEstimatedPose().getX()
-          < FieldConstants.StagingLocations.centerlineX
-              - RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2;
+  public Pose2d getNearestBranch(Side side) {
+    Pose2d nearestReefCenterFace =
+        RobotOdometry.getInstance()
+            .getEstimatedPose()
+            .nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+
+    double branchOffset = Units.inchesToMeters(6.47);
+    if (side == Side.LEFT) {
+      branchOffset = -branchOffset;
     }
+
+    Pose2d bumpersOnReefAlignedToBranch =
+        new Pose2d(
+            new Translation2d(
+                nearestReefCenterFace
+                    .transformBy(
+                        new Transform2d(
+                            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                            branchOffset,
+                            new Rotation2d()))
+                    .getX(),
+                nearestReefCenterFace
+                    .transformBy(
+                        new Transform2d(
+                            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                            branchOffset,
+                            new Rotation2d()))
+                    .getY()),
+            nearestReefCenterFace.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+
+    return bumpersOnReefAlignedToBranch;
+  }
+
+  public enum Side {
+    LEFT,
+    RIGHT
   }
 }

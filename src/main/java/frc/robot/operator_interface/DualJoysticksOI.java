@@ -29,6 +29,7 @@ public class DualJoysticksOI implements OperatorInterface {
     }
   }
 
+  // Translate Joystick
   @Override
   public double getTranslateX() {
     return -translateJoystick.getY();
@@ -40,13 +41,30 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public double getRotate() {
-    return -rotateJoystick.getX();
+  public Trigger getResetPoseToVisionButton() {
+    return translateJoystickButtons[1];
   }
 
   @Override
   public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[3];
+  }
+
+  // Rotate Joystick
+
+  @Override
+  public double getRotate() {
+    return -rotateJoystick.getX();
+  }
+
+  @Override
+  public Trigger getDriveToNearestLeftBranchButton() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getDriveToNearestRightBranchButton() {
+    return rotateJoystickButtons[2];
   }
 
   @Override
@@ -55,23 +73,20 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getLock180Button() {
-    return new Trigger(() -> false);
-  }
-
-  @Override
   public Trigger getXStanceButton() {
     return rotateJoystickButtons[4];
+  }
+
+  // Constant Triggers
+
+  @Override
+  public Trigger getLock180Button() {
+    return new Trigger(() -> false);
   }
 
   @Override
   public Trigger getVisionIsEnabledSwitch() {
     // vision is always enabled with dual joysticks as there is no switch to disable
     return new Trigger(() -> true);
-  }
-
-  @Override
-  public Trigger getResetPoseToVisionButton() {
-    return translateJoystickButtons[1];
   }
 }
