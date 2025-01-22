@@ -40,4 +40,5 @@ public class IntakeConstants{
   public static final double ROLLERS_CONTINUOUS_STATOR_CURRENT_LIMIT = 0.0;
 
   public static final double IN_BETWEEN_TIMEOUT_SECONDS = 0.0;
+  public static final boolean INTAKE_PIVOT_MOTORS_INVERTED = false;
 }

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -31,8 +32,10 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     private VelocityTorqueCurrentFOC rollerVelocityRequest;
     private VelocityTorqueCurrentFOC pivotPositionRequest;
-    private VoltageOut rollerVoltageRequest;  
     private VoltageOut pivotVoltageRequest;
+    private VoltageOut rollerVoltageRequest;
+
+
 // roller status signals
     private StatusSignal<Voltage> rollerMotorVoltageStatusSignal;
     private StatusSignal<AngularVelocity> rollerMotorVelocityStatusSignal;
@@ -177,9 +180,9 @@ public class IntakeIOTalonFX implements IntakeIO {
         inputs.rollerMotorVoltage = rollerMotorVoltageStatusSignal.getValueAsDouble();
         inputs.pivotMotorVoltage = pivotMotorVoltageStatusSignal.getValueAsDouble();
 
-        if (rollerMotorsKP.hasChanged(0)
-            || rollerMotorKS.hasChanged(0)
-            || rollerMotorKV.hasChanged(0)) {
+        if (rollerMotorsKP.hasChanged(rollerMotorsKP.hashCode())
+            || rollerMotorKS.hasChanged(rollerMotorKS.hashCode())
+            || rollerMotorKV.hasChanged(rollerMotorKV.hashCode())){
                 
                 Slot0Configs slot0Configs = new Slot0Configs();
                 rollerMotor.getConfigurator().refresh(slot0Configs);
@@ -191,9 +194,9 @@ public class IntakeIOTalonFX implements IntakeIO {
             }
 
         if (pivotMotorsKP.hasChanged(0)
-            || pivotMotorsKI.hasChanged(0)
-            || pivotMotorsKD.hasChanged(0)
-            || pivotMotorsKS.hasChanged(0)) {
+            || pivotMotorsKI.hasChanged(pivotMotorsKI.hashCode())
+            || pivotMotorsKD.hasChanged(pivotMotorsKD.hashCode())
+            || pivotMotorsKS.hasChanged(pivotMotorsKS.hashCode())) {
                 
                 Slot0Configs slot0Configs = new Slot0Configs();
                 pivotMotor.getConfigurator().refresh(slot0Configs);
@@ -266,7 +269,7 @@ public class IntakeIOTalonFX implements IntakeIO {
         pivotTorqueCurrentConfigs.PeakReverseTorqueCurrent =
             0.0;
 
-        pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         pivotConfig.Slot0.kP = pivotMotorsKP.get();
         pivotConfig.Slot0.kI = pivotMotorsKI.get();
@@ -275,6 +278,12 @@ public class IntakeIOTalonFX implements IntakeIO {
         pivotConfig.Slot0.kV = pivotMotorsKV.get();
         pivotConfig.Slot0.kA = pivotMotorsKA.get();
         pivotConfig.Slot0.kG = pivotMotorsKG.get();
+
+        pivotConfig.MotorOutput.Inverted = 
+            IntakeConstants.INTAKE_PIVOT_MOTORS_INVERTED
+                ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
+
 
         
         StatusCode status = StatusCode.StatusCodeNotInitialized;
@@ -289,4 +298,6 @@ public class IntakeIOTalonFX implements IntakeIO {
 
         FaultReporter.getInstance().registerHardware("INTAKE", "IntakePivot", pivotMotor);
     }
+
+    
 }
