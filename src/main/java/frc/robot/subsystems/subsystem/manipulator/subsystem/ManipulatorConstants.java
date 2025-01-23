@@ -69,9 +69,6 @@ public static  final double INDEXER_ROLLER_VELOCITY_TOLERANCE = 0.0;
   //not sure what these are for
   public static final int TIMEOUT_MS = 30;
   public static final int SLOT_INDEX = 0;
-
-  //timer that keeps track of how long the robot is in the indexing coral in maninpulator state, to determine if the coral is stuck
-  public static final double MANIPULATOR_IN_INDEXING_CORAL_STATE = 0.0;
-
+  
   //SHOULD I ADD A VARIABLE HERE TO THAT SAYS SOMETHING LIKE STATE MACHINE STATE THAT CONNECTS TO THE ENUM OF THE STATE MACHINE STATES?
 }

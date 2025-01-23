@@ -30,10 +30,11 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber motorPosition =
       new LoggedTunableNumber("Subsystem/position", 0.0);
 
-  private final SubsystemIOInputsAutoLogged inputs = new SubsystemIOInputsAutoLogged();
   private ManipulatorIO io;
-  private State state = State.A;
-  private State lastState = State.UNINITIALIZED;
+  private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged(); //stefan said to ignore this error and keep this here
+  private ManipulatorState defaultState = ManipulatorState.WAITING_FOR_CORAL_IN_FUNNEL;
+  //private State lastState = State.UNINITIALIZED; --> do not think a last state is necessary in this state machine
+  private double ManipulatorInIndexingCoralState = 0.0; //this timer will be used to keep track of how long the robot is in the INDEXING_CORAL_STATE
 
   /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
   private final SysIdRoutine sysIdRoutine =
@@ -62,39 +63,24 @@ public class Manipulator extends SubsystemBase {
    * <p>This approach is modeled after this ChiefDelphi post:
    * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
    */
-  private enum State {
-    UNINITIALIZED {
-      @Override
-      void execute(Manipulator subsystem) {
-        /* no-op */
-      }
-
+  private enum ManipulatorState {
+     WAITING_FOR_CORAL_IN_FUNNEL{
       @Override
       void onEnter(Manipulator subsystem) {
-        /* no-op */
+        io.setFunnelMotorVelocity(3); //velocity is tbd
       }
-
-      @Override
-      void onExit(Manipulator subsystem) {
-        /* no-op */
-      }
-    },
-    A {
-      @Override
-      void onEnter(Manipulator subsystem) {}
 
       @Override
       void execute(Manipulator subsystem) {
-        if (
-        /* some condition is */ true) {
-          subsystem.setState(State.B);
+        if (io.getFunnelIRState == true) {
+          subsystem.setManipulatorState(ManipulatorState.INDEXING_CORAL_IN_MANIPULATOR);  //setManipulatorState() method does not currently exist
         }
       }
 
       @Override
       void onExit(Manipulator subsystem) {}
     },
-    B {
+    INDEXING_CORAL_IN_MANIPULATOR {
       @Override
       void execute(Manipulator subsystem) {
         if (
@@ -116,7 +102,45 @@ public class Manipulator extends SubsystemBase {
         /* no-op */
       }
     },
-    C {
+    CORAL_STUCK{
+      @Override
+      void execute(Manipulator subsystem) {
+        if (
+        /* some condition is */ true) {
+          subsystem.setState(State.A);
+        }
+      }
+
+      @Override
+      void onEnter(Manipulator subsystem) {
+        /* no-op */
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        /* no-op */
+      }
+    },
+    CORAL_IN_MANIPULATOR {
+      @Override
+      void execute(Manipulator subsystem) {
+        if (
+        /* some condition is */ true) {
+          subsystem.setState(State.A);
+        }
+      }
+
+      @Override
+      void onEnter(Manipulator subsystem) {
+        /* no-op */
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        /* no-op */
+      }
+    },
+    SHOOT_CORAL {
       @Override
       void execute(Manipulator subsystem) {
         if (
@@ -255,4 +279,5 @@ public class Manipulator extends SubsystemBase {
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> io.setMotorVoltage(0.0)));
   }
+
 }

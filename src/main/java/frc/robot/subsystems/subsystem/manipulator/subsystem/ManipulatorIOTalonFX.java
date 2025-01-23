@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DigitalInput; //imported this class for the sensors
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -25,6 +26,10 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private TalonFX funnelMotor;
   private TalonFX indexerMotor;
 
+  //ir sensors
+  private DigitalInput funnelIRSensor;
+  private DigitalInput indexerIRSensor;
+  
   private VoltageOut voltageRequest;
   private TorqueCurrentFOC currentRequest;
   private PositionVoltage positionRequest;
@@ -51,7 +56,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
    * @param inputs the inputs object to update
    */
   @Override
-  public void updateInputs(SubsystemIOInputs inputs) { 
+  public void updateInputs(ManipulatorIOInputs inputs) { 
 
     //This is part of the update inputs method for the funnel.
     inputs.positionDeg =
@@ -206,6 +211,34 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         positionRequest
             .withPosition(Conversions.degreesToFalconRotations(position, GEAR_RATIO))
             .withFeedForward(arbitraryFeedForward));
+  }
+
+  /**
+   * Get the state of the IR sensor near the funnel motor.
+   * 
+   * @return true if the ir sensor near the funnel is blocked
+   */
+  @Override
+  public boolean getFunnelIRState() {
+    if(funnelIRSensor.get() == true)
+    {
+      return true;
+    }
+    return false;
+  } 
+
+  /**
+   * Get the state of the IR sensor near the indexer motor.
+   * 
+   * @return true if the ir sensor near the indexer is blocked
+   */
+  @Override
+  public boolean getIndexerIRState() {
+    if(indexerIRSensor.get() == true)
+    {
+      return true;
+    }
+    return false;
   }
 
   /**
