@@ -2,6 +2,9 @@ package frc.robot.subsystems.Elevator;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
+import javax.swing.text.Position;
+
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +30,7 @@ public class Elevator extends SubsystemBase{
 
     private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Elevator/TestingMode", 0);
 
+    private final LoggedTunableNumber elevatorVoltage = new LoggedTunableNumber("Elevator/Voltage", 0);
 
 
 
@@ -135,13 +139,20 @@ public class Elevator extends SubsystemBase{
             elevatorIO.updateInputs(inputs);
             Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
+            if(testingMode.get() == 1){
+                elevatorIO.setVoltage(elevatorVoltage.get());
 
-            if(inputs.posInches > MAX_HEIGHT){
-                elevatorIO.setPosition(MAX_HEIGHT);
             }
-            else if(inputs.posInches < MIN_HEIGHT){
-                elevatorIO.setPosition(MIN_HEIGHT);
-            }
+
+            // Is this needed? I had this before soft limits but I am unsure if I should keep it.
+
+            // if(inputs.posInches > MAX_HEIGHT){
+            //     elevatorIO.setPosition(MAX_HEIGHT);
+            // }
+            // else if(inputs.posInches < MIN_HEIGHT){
+            //     elevatorIO.setPosition(MIN_HEIGHT);
+            // }
+            
         }
     
 
@@ -194,9 +205,5 @@ public class Elevator extends SubsystemBase{
     public double rotationsToHeight(double rotations){
         return rotations * CONVERSION_FACTOR; // FIXME: Fix this value
     }
-    
-
-
-
 
 }
