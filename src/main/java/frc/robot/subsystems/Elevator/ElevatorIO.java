@@ -28,8 +28,8 @@ public interface ElevatorIO {
 
     double positionRotations = 0.0;
 
-    double LeadTempCelsius = 0.0;
-    double FollowerTempCelsius = 0.0;
+    double leadTempCelsius = 0.0;
+    double followerTempCelsius = 0.0;
 
   }
 

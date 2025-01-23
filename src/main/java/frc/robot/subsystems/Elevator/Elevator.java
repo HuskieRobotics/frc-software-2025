@@ -2,8 +2,6 @@ package frc.robot.subsystems.Elevator;
 
 import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 
-import java.util.Map;
-
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,11 +10,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3015.subsystem.selfcheck.SelfChecking;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.Elevator.ElevatorConstants.ReefBranch;
 import frc.robot.subsystems.Elevator.ElevatorIO.ElevatorIOInputs;
-import java.lang.Math;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -26,6 +24,10 @@ public class Elevator extends SubsystemBase{
     private ElevatorIO elevatorIO;
 
     private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
+
+    private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Elevator/TestingMode", 0);
+
+
 
 
     /**
@@ -46,7 +48,14 @@ public class Elevator extends SubsystemBase{
         /*
          * Add all shuffleboard tabs and widgets
          */
-        registerElevatorHeightCommands();
+        registerElevatorHeightCommands();   
+
+        if (testingMode.get() == 1) {
+            ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
+            tab.add(SUBSYSTEM_NAME, this);
+          }
+      
+          FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
         
     }
 
@@ -130,11 +139,14 @@ public class Elevator extends SubsystemBase{
             if(inputs.posInches > MAX_HEIGHT){
                 elevatorIO.setPosition(MAX_HEIGHT);
             }
+            else if(inputs.posInches < MIN_HEIGHT){
+                elevatorIO.setPosition(MIN_HEIGHT);
+            }
         }
     
 
     public boolean isAtPosition(ReefBranch reefBranch){
-        return Math.abs(inputs.posInches-reefBranch) < TOLERANCE; 
+        return Math.abs(inputs.posInches-reefBranch) < TOLERANCE; // FIXME: Get a distance value
     }
 
     // TODO: Implement system check method

@@ -1,16 +1,15 @@
 package frc.robot.subsystems.Elevator;
 
+import static edu.wpi.first.units.Units.*;
 
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Distance;
 
 public class ElevatorConstants {
-
-
-
+  
   public static final double TOLERANCE = 0;
-  public static final Distance MAX_HEIGHT = 0.0; // FIXME: Figure out type Distance
+  public static final Distance MAX_HEIGHT = Inches.of(10.0); // FIXME: Figure out type Distance
+  public static final Distance MIN_HEIGHT = Inches.of(0.0); // FIXME: Figure out type Distance
+
   public static final double CONVERSION_FACTOR = 0.0;// FIXME
   public static final int GEAR_RATIO = 5; //CHECK THIS VALUE
   public static final double OFFSET = 0.0; // FIXME
@@ -18,6 +17,9 @@ public class ElevatorConstants {
   public static final int LEAD_MOTOR_ID = 0; // FIXME
   public static final int FOLLOWER_MOTOR_ID = 0; // FIXME
 
+  public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 0.0; // FIXME: Change to rotations (max height)
+  public static final double REVERSE_SOFT_LIMIT_THRESHOLD = 0.0; // FIXME: Change to rotations (a bit above 0)
+ 
 
   public static final boolean DEBUGGING = false;
   public static final boolean TESTING = false;
@@ -80,13 +82,13 @@ public class ElevatorConstants {
    * Highest point of each reef branch in inches
    */
 
-  public static final Distance L1_HEIGHT = 15.94; 
-  public static final Distance L2_HEIGHT = 31.89; //FIXME: Figure out type Distance
-  public static final Distance L3_HEIGHT = 47.64;
-  public static final Distance L4_HEIGHT = 72.05;
+  public static final Distance L1_HEIGHT = Inches.of(15.94); 
+  public static final Distance L2_HEIGHT = Inches.of(31.39);
+  public static final Distance L3_HEIGHT = Inches.of(47.64);
+  public static final Distance L4_HEIGHT = Inches.of(72.05);
 
-  public static final Distance ALGAE1_HEIGHT = 0.0; // FIXME: Update these values
-  public static final Distance ALGAE2_HEIGHT = 0.0; // FIXME: Update these values
+  public static final Distance ALGAE1_HEIGHT = Inches.of(0.0); // FIXME: Update these values
+  public static final Distance ALGAE2_HEIGHT = Inches.of(0.0); // FIXME: Update these values
 
 }
 
