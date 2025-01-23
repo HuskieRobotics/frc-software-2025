@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -30,7 +31,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private DigitalInput funnelIRSensor;
   private DigitalInput indexerIRSensor;
   
-  private VoltageOut voltageRequest;
+  private TorqueCurrentFOC voltageRequest;
+  private VelocityTorqueCurrentFOC velocityRequest;
   private TorqueCurrentFOC currentRequest;
   private PositionVoltage positionRequest;
 
@@ -48,6 +50,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     configFunnelMotor(12);
     configIndexerMotor(14);
     //the can id's for the funnel and indexer motor is in the ManipulatorConstants.java file
+    this.funnelMotor.setPosition(0);
+    this.voltageRequest = new VoltageOut(0.0);
   }
 
   /**
@@ -220,11 +224,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
    */
   @Override
   public boolean getFunnelIRState() {
-    if(funnelIRSensor.get() == true)
-    {
-      return true;
-    }
-    return false;
+    return funnelIRSensor.get();
   } 
 
   /**
@@ -234,11 +234,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
    */
   @Override
   public boolean getIndexerIRState() {
-    if(indexerIRSensor.get() == true)
-    {
-      return true;
-    }
-    return false;
+    return indexerIRSensor.get();
   }
 
   /**
@@ -272,9 +268,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     Phoenix6Util.applyAndCheckConfiguration(this.funnelMotor, config, configAlert);
 
-    this.funnelMotor.setPosition(0);
-
-    this.voltageRequest = new VoltageOut(0.0);
     this.voltageRequest.EnableFOC = RobotConfig.getInstance().getPhoenix6Licensed();
     this.currentRequest = new TorqueCurrentFOC(0.0);
     this.positionRequest = new PositionVoltage(0.0).withSlot(0);

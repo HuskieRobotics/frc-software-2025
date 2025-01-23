@@ -12,6 +12,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj2.command.WaitCommand; // here is the link of the documentation for this class https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/WaitCommand.html
 
 /**
  * Models a generic subsystem for a rotational mechanism. The other subsystems defined in this
@@ -32,107 +33,107 @@ public class Manipulator extends SubsystemBase {
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged(); //stefan said to ignore this error and keep this here
-  private ManipulatorState defaultState = ManipulatorState.WAITING_FOR_CORAL_IN_FUNNEL;
-  //private State lastState = State.UNINITIALIZED; --> do not think a last state is necessary in this state machine
-  private double ManipulatorInIndexingCoralState = 0.0; //this timer will be used to keep track of how long the robot is in the INDEXING_CORAL_STATE
-
-  /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
-  private final SysIdRoutine sysIdRoutine =
-      new SysIdRoutine(
-          new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
-              null, // Use default timeout (10 s)
-              // Log state with SignalLogger class
-              state -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(output -> setMotorVoltage(output.in(Volts)), null, this));
-
-  /**
-   * Few subsystems require the complexity of a state machine. A simpler command-based approach is
-   * usually better. However, there are times when diagraming and implementing a formal state
-   * machine is a reasonable approach. This code is designed to facilitate mapping from a formal
-   * state machine diagram to code.
-   *
-   * <p>The state machine is defined as an enum with each state having its own execute, onEnter, and
-   * onExit methods. The execute method is called every iteration of the periodic method. The
-   * onEnter and onExit methods are called when the state is entered and exited, respectively.
-   * Transitions between states are defined in the execute methods. It is critical that the setState
-   * method is only invoked within a state's execute method. Otherwise, it is possible for a state
-   * transition to be missed.
-   *
-   * <p>This approach is modeled after this ChiefDelphi post:
-   * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
-   */
-  private enum ManipulatorState {
-     WAITING_FOR_CORAL_IN_FUNNEL{
-      @Override
-      void onEnter(Manipulator subsystem) {
-        io.setFunnelMotorVelocity(3); //velocity is tbd
+  private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
+  private State lastState = State.UNINITIALIZED; 
+  WaitCommand ManipulatorInIndexingCoralState;
+  
+    /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
+    private final SysIdRoutine sysIdRoutine =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null, // Use default ramp rate (1 V/s)
+                null, // Use default step voltage (7 V)
+                null, // Use default timeout (10 s)
+                // Log state with SignalLogger class
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> setMotorVoltage(output.in(Volts)), null, this));
+  
+    /**
+     * Few subsystems require the complexity of a state machine. A simpler command-based approach is
+     * usually better. However, there are times when diagraming and implementing a formal state
+     * machine is a reasonable approach. This code is designed to facilitate mapping from a formal
+     * state machine diagram to code.
+     *
+     * <p>The state machine is defined as an enum with each state having its own execute, onEnter, and
+     * onExit methods. The execute method is called every iteration of the periodic method. The
+     * onEnter and onExit methods are called when the state is entered and exited, respectively.
+     * Transitions between states are defined in the execute methods. It is critical that the setState
+     * method is only invoked within a state's execute method. Otherwise, it is possible for a state
+     * transition to be missed.
+     *
+     * <p>This approach is modeled after this ChiefDelphi post:
+     * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
+     */
+    private enum State {
+       WAITING_FOR_CORAL_IN_FUNNEL{
+        @Override
+        void onEnter(Manipulator subsystem) {
+          subsystem.setFunnelMotorVelocity(3); //velocity is tbd
+        }
+  
+        @Override
+        void execute(Manipulator subsystem) {
+          if (subsystem.inputs.isFunnelIRBlocked) { //ignore the error on this line
+            subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR); 
+          }
+        }
+  
+        @Override
+        void onExit(Manipulator subsystem) {}
+      },
+      INDEXING_CORAL_IN_MANIPULATOR {
+        @Override
+        void onEnter(Manipulator subsystem) {
+          subsystem.setIndexerMotorVelocity(3); //velocity is tbd
+          ManipulatorInIndexingCoralState = new WaitCommand(3); //this command will basically run for __ seconds, and if the manipulator is still in this state, then it'll switch to the CORAL_STUCK state
       }
-
       @Override
       void execute(Manipulator subsystem) {
-        if (io.getFunnelIRState == true) {
-          subsystem.setManipulatorState(ManipulatorState.INDEXING_CORAL_IN_MANIPULATOR);  //setManipulatorState() method does not currently exist
+        if(subsystem.inputs.isIndexerIRBlocked)
+        {
+          subsystem.setState(State.CORAL_IN_MANIPULATOR);
+        }
+        else if (ManipulatorInIndexingCoralState.isFinished())
+        {
+          subsystem.setState(CORAL_STUCK);
         }
       }
-
-      @Override
-      void onExit(Manipulator subsystem) {}
-    },
-    INDEXING_CORAL_IN_MANIPULATOR {
-      @Override
-      void execute(Manipulator subsystem) {
-        if (
-        /* some condition is */ true) {
-          subsystem.setState(State.A);
-        } else if (
-        /* some other condition is */ true) {
-          subsystem.setState(State.C);
-        }
-      }
-
-      @Override
-      void onEnter(Manipulator subsystem) {
-        /* no-op */
-      }
-
       @Override
       void onExit(Manipulator subsystem) {
-        /* no-op */
+        subsystem.setFunnelMotorVelocity(0); //turn off the funnel motor, regardless of if it is going to the CORAL_STUCK state or the CORAL_IN_MANIPULATOR state
       }
     },
     CORAL_STUCK{
       @Override
+      void onEnter(Manipulator subsystem) {
+        //do something with the motors so they get the rollers to rotate the opposite direction to eject the coral out of the funnel
+      }
+      @Override
       void execute(Manipulator subsystem) {
-        if (
-        /* some condition is */ true) {
-          subsystem.setState(State.A);
+        if (isFunnelIRBlocked == false && isIndexerIRBlocked == false ) {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
-
-      @Override
-      void onEnter(Manipulator subsystem) {
-        /* no-op */
-      }
-
       @Override
       void onExit(Manipulator subsystem) {
-        /* no-op */
+        //set both motor speeds to 0
+        subsystem.setFunnelMotorVelocity(0);
+        subsystem.setIndexerMotorVelocity(0);
       }
     },
     CORAL_IN_MANIPULATOR {
       @Override
-      void execute(Manipulator subsystem) {
-        if (
-        /* some condition is */ true) {
-          subsystem.setState(State.A);
-        }
+      void onEnter(Manipulator subsystem) {
+        //set both motor speeds to 0
+        subsystem.setIndexerMotorVelocity(0);
+        subsystem.setFunnelMotorVelocity(0);
       }
 
       @Override
-      void onEnter(Manipulator subsystem) {
-        /* no-op */
+      void execute(Manipulator subsystem) {
+        if (isFunnelIRBlocked == false && isIndexerIRBlocked == true) { //just put this expression here to check again if the coral is fully in the maniplator, please let me know if i should remove the if statement and just switch states directly
+          subsystem.setState(State.SHOOT_CORAL);
+        }
       }
 
       @Override
@@ -142,11 +143,28 @@ public class Manipulator extends SubsystemBase {
     },
     SHOOT_CORAL {
       @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setIndexerMotorVelocity(3);
+      }
+
+      @Override
       void execute(Manipulator subsystem) {
-        if (
-        /* some condition is */ true) {
-          subsystem.setState(State.A);
+        //call command to shoot coral
+        if (isFunnelIRBlocked == false && isIndexerIRBlocked == false) {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL); //if the coral has been shot out and the manipulator is empty
         }
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        //set speed of indexer motor to 0
+        subsystem.setIndexerMotorVelocity(0);
+      }
+    },
+    UNINITIALIZED { //state that the robot should be in when its like turned off ... I think??
+      @Override
+      void execute(Manipulator subsystem) {
+       
       }
 
       @Override
@@ -278,6 +296,16 @@ public class Manipulator extends SubsystemBase {
                 }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> io.setMotorVoltage(0.0)));
+  }
+
+  private void setFunnelMotorVelocity(double velocity)
+  {
+    io.setFunnelMotorVelocity(velocity);
+  }
+
+  private void setIndexerMotorVelocity(double velocity)
+  {
+    io.setIndexerMotorVelocity(velocity);
   }
 
 }

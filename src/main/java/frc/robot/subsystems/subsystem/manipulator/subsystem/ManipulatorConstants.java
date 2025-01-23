@@ -69,6 +69,5 @@ public static  final double INDEXER_ROLLER_VELOCITY_TOLERANCE = 0.0;
   //not sure what these are for
   public static final int TIMEOUT_MS = 30;
   public static final int SLOT_INDEX = 0;
-  
-  //SHOULD I ADD A VARIABLE HERE TO THAT SAYS SOMETHING LIKE STATE MACHINE STATE THAT CONNECTS TO THE ENUM OF THE STATE MACHINE STATES?
+
 }
