@@ -8,13 +8,13 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two joysticks. */
-public class DualJoysticksOI implements OperatorInterface {
+public class SimDualJoysticksOI implements OperatorInterface {
   private final CommandJoystick translateJoystick;
   private final CommandJoystick rotateJoystick;
   private final Trigger[] translateJoystickButtons;
   private final Trigger[] rotateJoystickButtons;
 
-  public DualJoysticksOI(int translatePort, int rotatePort) {
+  public SimDualJoysticksOI(int translatePort, int rotatePort) {
     translateJoystick = new CommandJoystick(translatePort);
     rotateJoystick = new CommandJoystick(rotatePort);
 
@@ -44,61 +44,34 @@ public class DualJoysticksOI implements OperatorInterface {
     return -rotateJoystick.getX();
   }
 
-  // Translation Joystick
   @Override
-  public Trigger getPrepareElevatorToScoreButton() {
-    return translateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getDeployIntakeButton() {
-    return translateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getPrepClimbSequence() {
+  public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[3];
   }
 
   @Override
-  public Trigger getAlignToScoreCoralLeftButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getAlignToScoreCoralRightButton() {
-    return translateJoystickButtons[5];
-  }
-
-  @Override
   public Trigger getResetGyroButton() {
-    return translateJoystickButtons[8];
-  }
-
-  @Override
-  public Trigger getFieldRelativeButton() {
-    return translateJoystickButtons[9];
-  }
-
-  // Rotation Joystick
-  @Override
-  public Trigger getScoreCoralButton() {
-    return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getScoreAlgaeButton() {
-    return rotateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
   }
 
   @Override
-  public Trigger getResetPoseToVisionButton() {
-    return rotateJoystickButtons[5];
+  public Trigger getLock180Button() {
+    return new Trigger(() -> false);
   }
 
+  @Override
+  public Trigger getXStanceButton() {
+    return rotateJoystickButtons[4];
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    // vision is always enabled with dual joysticks as there is no switch to disable
+    return new Trigger(() -> true);
+  }
+
+  @Override
+  public Trigger getResetPoseToVisionButton() {
+    return translateJoystickButtons[1];
+  }
 }

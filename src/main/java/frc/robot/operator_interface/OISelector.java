@@ -85,7 +85,7 @@ public class OISelector {
     } else if (firstPort != null && secondPort != null) {
       noOperatorInterfaceWarning.set(false);
       nonCompetitionOperatorInterfaceWarning.set(true);
-      return new DualJoysticksOI(firstPort, secondPort);
+      return new SimDualJoysticksOI(firstPort, secondPort);
     } else if (xBoxPort != null) {
       noOperatorInterfaceWarning.set(false);
       nonCompetitionOperatorInterfaceWarning.set(true);
