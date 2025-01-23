@@ -2,6 +2,8 @@ package frc.robot.subsystems.removal;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 public class Removal extends SubsystemBase {
     private RemovalIO io;
@@ -15,9 +17,10 @@ public class Removal extends SubsystemBase {
     private void rollRoller() {
         io.setRollerMotorVoltage(RemovalConstants.REMOVAL_VOLTAGE_ROLLERS);
     }
-}
-
-@Override
-public void periodic() {
-    io.updateInputs(inputs);
+    
+    @Override
+    public void periodic() {
+        io.updateInputs(removalInputs);
+        
+    }
 }
