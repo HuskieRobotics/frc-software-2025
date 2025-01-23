@@ -1,7 +1,7 @@
-package frc.robot.subsystems.subsystem;
+package frc.robot.subsystems.subsystem.manipulator.subsystem;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.subsystem.SubsystemConstants.*;
+import static frc.robot.subsystems.subsystem.manipulator.subsystem.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,7 +18,7 @@ import org.littletonrobotics.junction.Logger;
  * library aren't good examples for typical robot subsystems. This class can serve as an example or
  * be used for quick prototyping.
  */
-public class Subsystem extends SubsystemBase {
+public class Manipulator extends SubsystemBase {
 
   // these Tunables are convenient when testing as they provide direct control of the subsystem's
   // motor
@@ -30,10 +30,11 @@ public class Subsystem extends SubsystemBase {
   private final LoggedTunableNumber motorPosition =
       new LoggedTunableNumber("Subsystem/position", 0.0);
 
-  private final SubsystemIOInputsAutoLogged inputs = new SubsystemIOInputsAutoLogged();
-  private SubsystemIO io;
-  private State state = State.A;
-  private State lastState = State.UNINITIALIZED;
+  private ManipulatorIO io;
+  private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged(); //stefan said to ignore this error and keep this here
+  private ManipulatorState defaultState = ManipulatorState.WAITING_FOR_CORAL_IN_FUNNEL;
+  //private State lastState = State.UNINITIALIZED; --> do not think a last state is necessary in this state machine
+  private double ManipulatorInIndexingCoralState = 0.0; //this timer will be used to keep track of how long the robot is in the INDEXING_CORAL_STATE
 
   /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
   private final SysIdRoutine sysIdRoutine =
@@ -62,41 +63,26 @@ public class Subsystem extends SubsystemBase {
    * <p>This approach is modeled after this ChiefDelphi post:
    * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
    */
-  private enum State {
-    UNINITIALIZED {
+  private enum ManipulatorState {
+     WAITING_FOR_CORAL_IN_FUNNEL{
       @Override
-      void execute(Subsystem subsystem) {
-        /* no-op */
+      void onEnter(Manipulator subsystem) {
+        io.setFunnelMotorVelocity(3); //velocity is tbd
       }
 
       @Override
-      void onEnter(Subsystem subsystem) {
-        /* no-op */
-      }
-
-      @Override
-      void onExit(Subsystem subsystem) {
-        /* no-op */
-      }
-    },
-    A {
-      @Override
-      void onEnter(Subsystem subsystem) {}
-
-      @Override
-      void execute(Subsystem subsystem) {
-        if (
-        /* some condition is */ true) {
-          subsystem.setState(State.B);
+      void execute(Manipulator subsystem) {
+        if (io.getFunnelIRState == true) {
+          subsystem.setManipulatorState(ManipulatorState.INDEXING_CORAL_IN_MANIPULATOR);  //setManipulatorState() method does not currently exist
         }
       }
 
       @Override
-      void onExit(Subsystem subsystem) {}
+      void onExit(Manipulator subsystem) {}
     },
-    B {
+    INDEXING_CORAL_IN_MANIPULATOR {
       @Override
-      void execute(Subsystem subsystem) {
+      void execute(Manipulator subsystem) {
         if (
         /* some condition is */ true) {
           subsystem.setState(State.A);
@@ -107,18 +93,18 @@ public class Subsystem extends SubsystemBase {
       }
 
       @Override
-      void onEnter(Subsystem subsystem) {
+      void onEnter(Manipulator subsystem) {
         /* no-op */
       }
 
       @Override
-      void onExit(Subsystem subsystem) {
+      void onExit(Manipulator subsystem) {
         /* no-op */
       }
     },
-    C {
+    CORAL_STUCK{
       @Override
-      void execute(Subsystem subsystem) {
+      void execute(Manipulator subsystem) {
         if (
         /* some condition is */ true) {
           subsystem.setState(State.A);
@@ -126,21 +112,59 @@ public class Subsystem extends SubsystemBase {
       }
 
       @Override
-      void onEnter(Subsystem subsystem) {
+      void onEnter(Manipulator subsystem) {
         /* no-op */
       }
 
       @Override
-      void onExit(Subsystem subsystem) {
+      void onExit(Manipulator subsystem) {
+        /* no-op */
+      }
+    },
+    CORAL_IN_MANIPULATOR {
+      @Override
+      void execute(Manipulator subsystem) {
+        if (
+        /* some condition is */ true) {
+          subsystem.setState(State.A);
+        }
+      }
+
+      @Override
+      void onEnter(Manipulator subsystem) {
+        /* no-op */
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        /* no-op */
+      }
+    },
+    SHOOT_CORAL {
+      @Override
+      void execute(Manipulator subsystem) {
+        if (
+        /* some condition is */ true) {
+          subsystem.setState(State.A);
+        }
+      }
+
+      @Override
+      void onEnter(Manipulator subsystem) {
+        /* no-op */
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
         /* no-op */
       }
     };
 
-    abstract void execute(Subsystem subsystem);
+    abstract void execute(Manipulator subsystem);
 
-    abstract void onEnter(Subsystem subsystem);
+    abstract void onEnter(Manipulator subsystem);
 
-    abstract void onExit(Subsystem subsystem);
+    abstract void onExit(Manipulator subsystem);
   }
 
   /**
@@ -148,7 +172,7 @@ public class Subsystem extends SubsystemBase {
    *
    * @param io the hardware interface object for this subsystem
    */
-  public Subsystem(SubsystemIO io) {
+  public Manipulator(ManipulatorIO io) {
 
     this.io = io;
 
@@ -255,4 +279,5 @@ public class Subsystem extends SubsystemBase {
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> io.setMotorVoltage(0.0)));
   }
+
 }

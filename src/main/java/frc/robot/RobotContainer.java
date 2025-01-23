@@ -40,8 +40,9 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.subsystem.Subsystem;
-import frc.robot.subsystems.subsystem.SubsystemIO;
+import frc.robot.subsystems.subsystem.manipulator.subsystem.Manipulator;
+import frc.robot.subsystems.subsystem.manipulator.subsystem.ManipulatorIO;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,7 +61,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
-  private Subsystem subsystem;
+  private Manipulator subsystem;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -129,7 +130,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
-      subsystem = new Subsystem(new SubsystemIO() {});
+      subsystem = new Manipulator(new ManipulatorIO() {});
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -194,7 +195,7 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     // FIXME: create the hardware-specific subsystem class
-    subsystem = new Subsystem(new SubsystemIO() {});
+    subsystem = new Manipulator(new ManipulatorIO() {});
   }
 
   private void createCTRESimSubsystems() {
