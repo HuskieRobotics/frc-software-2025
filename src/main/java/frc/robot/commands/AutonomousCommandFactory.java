@@ -6,7 +6,7 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 
 public class AutonomousCommandFactory {
 
-  public AutonomousCommandFactory() {}
+  private AutonomousCommandFactory() {}
 
   public static Command getDriveVelocityTuningCommand(Drivetrain drivetrain) {
     return Commands.sequence(

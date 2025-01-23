@@ -6,7 +6,7 @@ import frc.robot.subsystems.subsystem.Subsystem;
 
 public class SubsystemCommandFactory {
 
-  public SubsystemCommandFactory() {}
+  private SubsystemCommandFactory() {}
 
   /**
    * Example method that creates an inline command for an example subsystem
