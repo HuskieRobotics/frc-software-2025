@@ -100,5 +100,4 @@ public class DualJoysticksOI implements OperatorInterface {
   public Trigger getResetPoseToVisionButton() {
     return rotateJoystickButtons[5];
   }
-
 }
