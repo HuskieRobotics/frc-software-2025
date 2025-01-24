@@ -17,4 +17,12 @@ public class SubsystemCommandFactory {
   public Command getExampleSubsystemCommand(Subsystem subsystem) {
     return Commands.runOnce(subsystem::exampleMethod, subsystem);
   }
+
+  public Command getIntakeDeployCommand(Subsystem Intake) {
+    return Commands.runOnce(Intake::deploy, Intake)
+  }
+
+  public Command getIntakeScoreCommand(Subsystem Intake) {
+    return Commands.runOnce(Intake::shootOut, Intake)
+  }
 }
