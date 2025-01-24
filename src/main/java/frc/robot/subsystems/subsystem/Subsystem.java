@@ -225,6 +225,15 @@ public class Subsystem extends SubsystemBase {
     io.setMotorPosition(position, POSITION_FEEDFORWARD);
   }
 
+  /**
+   * Example parameter-less void method for (___::___) commands
+   *
+   * @return
+   */
+  public void exampleMethod() {
+    return;
+  }
+
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
