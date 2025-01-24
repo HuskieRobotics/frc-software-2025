@@ -35,10 +35,10 @@ public class VelocitySystemSim {
   }
 
   public VelocitySystemSim(TalonFX rollerMotor, int i, int kV, int kA, int gearRatio2) {
-    //TODO Auto-generated constructor stub
-}
+    // TODO Auto-generated constructor stub
+  }
 
-public void updateSim() {
+  public void updateSim() {
     if (Constants.getMode() != Constants.Mode.SIM) {
       return;
     }
