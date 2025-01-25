@@ -15,6 +15,9 @@ public class Climber {
     
     public Climber(ClimberIO io) {
         this.io = io;
+        //no state machine 
+        //so then no need for all of the below? (with the climberState etc)
+
         this.climberState = climberState.IDLE;
     }
 
