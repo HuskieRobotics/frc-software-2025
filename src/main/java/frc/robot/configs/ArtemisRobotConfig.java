@@ -65,7 +65,7 @@ public class ArtemisRobotConfig extends RobotConfig {
   private static final double COUPLE_RATIO = 3.125; // FIXME: tune
 
   /* Angle Motor PID Values */
-  private static final double ANGLE_KP = 100.0;
+  private static final double ANGLE_KP = 25.0; // 100, 25
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD =
       0.05; // FIXME: check this as the CTRE swerve generator has a default value of 0.5
@@ -90,7 +90,7 @@ public class ArtemisRobotConfig extends RobotConfig {
   private static final double SLOW_MODE_MULTIPLIER =
       0.75; // FIXME: Values taken from nova, need to be updated
 
-  private static final String CAN_BUS_NAME = "canbus1";
+  private static final String CAN_BUS_NAME = ""; // canbus1
 
   private static final String CAMERA_NAME_0 = "OV2311FR";
   private static final String CAMERA_NAME_1 = "OV2311BR";
