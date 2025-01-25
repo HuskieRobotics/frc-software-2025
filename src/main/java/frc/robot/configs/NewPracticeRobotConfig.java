@@ -45,7 +45,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 11;
   private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.105957 + 0.5);
 
-  private static final int GYRO_ID = 3; // ?
+  private static final int GYRO_ID = 3;
 
   private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
   private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
@@ -81,7 +81,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double DRIVE_KA = 0.63109;
 
   private static final LinearVelocity MAX_VELOCITY =
-      MetersPerSecond.of(5.5); // FIXME: confirm max velocity with real robot
+      MetersPerSecond.of(5.117); // FIXME: confirm max velocity with real robot
   private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
