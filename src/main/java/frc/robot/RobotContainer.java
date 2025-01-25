@@ -27,6 +27,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionIO;
+import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CharacterizationCommands;
 import frc.robot.commands.TeleopSwerve;
@@ -73,6 +74,9 @@ public class RobotContainer {
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
+
+  private final LoggedTunableNumber testNumber =
+      new LoggedTunableNumber("testVersion/TestNumber", 0.0);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
@@ -141,6 +145,7 @@ public class RobotContainer {
       this.tuningAlert.set(true);
     }
 
+    SmartDashboard.putNumber("TestNumber", testNumber.get());
     SmartDashboard.putData(
         "Heights/L4",
         Commands.runOnce(
@@ -580,6 +585,8 @@ public class RobotContainer {
 
   public void periodic() {
     // add robot-wide periodic code here
+    SmartDashboard.putNumber("TestNumber", testNumber.get());
+    SmartDashboard.updateValues();
   }
 
   public void autonomousInit() {
