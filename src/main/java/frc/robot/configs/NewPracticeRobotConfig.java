@@ -63,19 +63,22 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double ANGLE_KD = 0.05;
 
   // FIXME: tune; starting values from Phoenix Tuner X .withKS(0.1).withKV(2.33).withKA(0)
-  private static final double ANGLE_KS = 0.1891233333;
-  private static final double ANGLE_KV =
-      0.4399866667 * 2 * Math.PI; // convert from V/(radians/s) to V/(rotations/s)
-  private static final double ANGLE_KA = 0.001663333333;
+
+  // values from sysid routines
+  private static final double ANGLE_KS = 0.28516;
+  private static final double ANGLE_KV = 2.3345;
+  // 0.4399866667 * 2 * Math.PI; // convert from V/(radians/s) to V/(rotations/s)
+  private static final double ANGLE_KA = 0.049918;
 
   /* Drive Motor PID Values */
   private static final double DRIVE_KP = 8.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
-  private static final double DRIVE_KS = 5.0;
-  private static final double DRIVE_KV = 0.0;
-  private static final double DRIVE_KA = 0.0;
+  // values from sysid routines
+  private static final double DRIVE_KS = 5.7421;
+  private static final double DRIVE_KV = 0.004493;
+  private static final double DRIVE_KA = 0.63109;
 
   private static final LinearVelocity MAX_VELOCITY =
       MetersPerSecond.of(5.5); // FIXME: confirm max velocity with real robot
