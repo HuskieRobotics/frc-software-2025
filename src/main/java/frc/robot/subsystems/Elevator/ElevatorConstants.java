@@ -5,7 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import edu.wpi.first.units.measure.Distance;
 
 public class ElevatorConstants {
-  
+
   public static final double TOLERANCE = 0;
   public static final Distance MAX_HEIGHT = Inches.of(10.0); // FIXME: Figure out type Distance
   public static final Distance MIN_HEIGHT = Inches.of(0.0); // FIXME: Figure out type Distance
@@ -77,6 +77,8 @@ public class ElevatorConstants {
     ALGAE_1,
     ALGAE_2,
   }
+
+  
 
   /*
    * Highest point of each reef branch in inches

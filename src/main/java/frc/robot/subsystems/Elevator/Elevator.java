@@ -5,12 +5,14 @@ import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
 import javax.swing.text.Position;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3015.subsystem.selfcheck.SelfChecking;
 import frc.lib.team3061.leds.LEDs;
@@ -18,8 +20,11 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.Elevator.ElevatorConstants.ReefBranch;
 import frc.robot.subsystems.Elevator.ElevatorIO.ElevatorIOInputs;
+import static edu.wpi.first.units.Units.*;
 
 import org.littletonrobotics.junction.Logger;
+
+import com.ctre.phoenix6.SignalLogger;
 
 public class Elevator extends SubsystemBase{
     
@@ -32,20 +37,22 @@ public class Elevator extends SubsystemBase{
 
     private final LoggedTunableNumber elevatorVoltage = new LoggedTunableNumber("Elevator/Voltage", 0);
 
+    private final LoggedTunableNumber elevatorHeight_Inches = new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
+    private final LoggedTunableNumber rampRate = new LoggedTunableNumber("Elevator/RampRate", 0);
 
-    /**
-   * Create a new climber with its associated hardware interface object.
-   *
-   * @param io the hardware interface object for this subsystem
-   */
+    private final LoggedTunableNumber stepVoltage = new LoggedTunableNumber("Elevator/StepVoltage", 0);
+
 
     public Elevator(ElevatorIO io){
+
         this.elevatorIO = io;
 
         io.zeroPosition();
 
-        //SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutine);
+        SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage1);
+        SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage2);
+        SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage3);
 
         FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
 
@@ -53,15 +60,41 @@ public class Elevator extends SubsystemBase{
          * Add all shuffleboard tabs and widgets
          */
         registerElevatorHeightCommands();   
-
-        if (testingMode.get() == 1) {
-            ShuffleboardTab tab = Shuffleboard.getTab(SUBSYSTEM_NAME);
-            tab.add(SUBSYSTEM_NAME, this);
-          }
       
-          FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
+        FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
         
     }
+
+    private final SysIdRoutine sysIdRoutineStage1 =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              null, // Use default ramp rate (1 V/s)
+              null, // Use default step voltage (7 V)
+              null, // Use default timeout (10 s)
+              // Log state with SignalLogger class
+              state -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(output -> elevatorIO.setMotorVoltage(output.in(Volts)), null, this));
+
+    private final SysIdRoutine sysIdRoutineStage2 =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null, // Use default ramp rate (1 V/s)
+                null, // Use default step voltage (7 V)
+                null, // Use default timeout (10 s)
+                // Log state with SignalLogger class
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> elevatorIO.setMotorVoltage(output.in(Volts)), null, this));
+
+
+    private final SysIdRoutine sysIdRoutineStage3 =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null, // Use default ramp rate (1 V/s)
+                null, // Use default step voltage (7 V)
+                null, // Use default timeout (10 s)
+                // Log state with SignalLogger class
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> elevatorIO.setMotorVoltage(output.in(Volts)), null, this));
 
     // commands to be shown in QFRC dashboard for the operator (untested)
     // should these go in RobotContainer / the class we will make for subsystem commands?
@@ -140,24 +173,50 @@ public class Elevator extends SubsystemBase{
             Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
             if(testingMode.get() == 1){
-                elevatorIO.setVoltage(elevatorVoltage.get());
 
+                if(elevatorVoltage.get() == 0){
+                    elevatorIO.setVoltage(elevatorVoltage.get());
+                }
+                else if(elevatorHeight_Inches.get() == 0){
+                    elevatorIO.setPosition(Inches.of(elevatorHeight_Inches.get()));
+                }
             }
-
-            // Is this needed? I had this before soft limits but I am unsure if I should keep it.
-
-            // if(inputs.posInches > MAX_HEIGHT){
-            //     elevatorIO.setPosition(MAX_HEIGHT);
-            // }
-            // else if(inputs.posInches < MIN_HEIGHT){
-            //     elevatorIO.setPosition(MIN_HEIGHT);
-            // }
-            
         }
-    
+
+    public Distance reefBranchToDistance(ReefBranch reefBranch){
+        switch (reefBranch) {
+            case L1:
+                return L1_HEIGHT;
+                break;
+
+            case L2:
+                return L2_HEIGHT;
+                break;
+
+            case L3:
+                return L3_HEIGHT;
+                break;      
+            
+            case L4:
+                return L4_HEIGHT;
+                break;
+
+            case ALGAE_1:
+                return ALGAE1_HEIGHT;
+                break;
+
+            case ALGAE_2:    
+                return ALGAE2_HEIGHT;
+                break;
+            default:
+                return MIN_HEIGHT;
+                break;
+        }
+
+    }
 
     public boolean isAtPosition(ReefBranch reefBranch){
-        return Math.abs(inputs.posInches-reefBranch) < TOLERANCE; // FIXME: Get a distance value
+        return getPosition().equals(reefBranchToDistance(reefBranch));
     }
 
     // TODO: Implement system check method
@@ -167,43 +226,16 @@ public class Elevator extends SubsystemBase{
 
 
     public void goToPosition(ReefBranch reefBranch){
-        switch (reefBranch) {
-            case L1:
-                elevatorIO.setPosition(L1_HEIGHT);
-                break;
-
-            case L2:
-                elevatorIO.setPosition(L2_HEIGHT);
-                break;
-
-            case L3:
-                elevatorIO.setPosition(L3_HEIGHT);
-                break;      
-            
-            case L4:
-                elevatorIO.setPosition(L4_HEIGHT);
-                break;
-
-            case ALGAE_1:
-                elevatorIO.setPosition(ALGAE1_HEIGHT);
-                break;
-
-            case ALGAE_2:    
-                elevatorIO.setPosition(ALGAE2_HEIGHT);
-                break;
-            default:
-                break;
-        }
+        elevatorIO.setPosition(reefBranchToDistance(reefBranch));
     }
 
-    public double getPosition(){
+    public Distance getPosition(){
 
         return inputs.posInches;
     }
 
 
-    public double rotationsToHeight(double rotations){
+    private double rotationsToHeight(double rotations){
         return rotations * CONVERSION_FACTOR; // FIXME: Fix this value
     }
-
 }

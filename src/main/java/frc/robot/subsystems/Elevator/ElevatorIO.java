@@ -3,6 +3,7 @@ package frc.robot.subsystems.Elevator;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.subsystems.Elevator.ElevatorConstants.ReefBranch;
 
 /** Generic subsystem hardware interface. */
 public interface ElevatorIO {
@@ -42,9 +43,15 @@ public interface ElevatorIO {
    * @param position the position to set the motor to in degrees
    */
 
+  public default void goToPosition(ReefBranch reefBranch) {}
+
+  public default void isAtPosition(ReefBranch reefBranch) {}
+  
   public default void setPosition(Distance position) {}
 
   public default void zeroPosition() {}
 
-  public default void setVoltage(double volts) {}
+  public default void getPosition() {}
+
+  public default void setMotorVoltage(double volts) {}
 }

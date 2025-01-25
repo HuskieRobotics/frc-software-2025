@@ -45,7 +45,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         
     private StatusSignal<Temperature> elevatorLeadTempStatusSignal;
     private StatusSignal<Temperature> elevatorFollowerTempStatusSignal;
-    
+
         // Tunable constants
     private final LoggedTunableNumber kPslot0 = new LoggedTunableNumber("Elevator/kPslot0", ElevatorConstants.KP_SLOT0);
     private final LoggedTunableNumber kIslot0 = new LoggedTunableNumber("Elevator/kIslot0", ElevatorConstants.KI_SLOT0);
@@ -238,10 +238,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         elevatorMotorLead.setControl(elevatorMotorLeadExpoVoltageRequest.withPosition(voltage));
     }
 
-    // Add softlimits to elevator to prevent hitting hardstops
-
-
-    
+    public void zeroPosition() {
+        elevatorMotorLead.setPosition(0.0);
+    }
 }
 
 
