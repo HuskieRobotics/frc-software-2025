@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -145,51 +144,51 @@ public class RobotContainer {
       this.tuningAlert.set(true);
     }
 
-    SmartDashboard.putNumber("TestNumber", testNumber.get());
-    SmartDashboard.putData(
-        "Heights/L4",
-        Commands.runOnce(
-                () -> {
-                  System.out.println("Height L4");
-                })
-            .ignoringDisable(true)
-            .withName("L4"));
+    // SmartDashboard.putNumber("TestNumber", testNumber.get());
+    // SmartDashboard.putData(
+    //     "Heights/L4",
+    //     Commands.runOnce(
+    //             () -> {
+    //               System.out.println("Height L4");
+    //             })
+    //         .ignoringDisable(true)
+    //         .withName("L4"));
 
-    SmartDashboard.putData(
-        "Heights/L3",
-        Commands.runOnce(
-                () -> {
-                  System.out.println("Height L3");
-                })
-            .ignoringDisable(true)
-            .withName("L3"));
+    // SmartDashboard.putData(
+    //     "Heights/L3",
+    //     Commands.runOnce(
+    //             () -> {
+    //               System.out.println("Height L3");
+    //             })
+    //         .ignoringDisable(true)
+    //         .withName("L3"));
 
-    SmartDashboard.putData(
-        "Heights/L2",
-        Commands.runOnce(
-                () -> {
-                  System.out.println("Height L2");
-                })
-            .ignoringDisable(true)
-            .withName("L2"));
+    // SmartDashboard.putData(
+    //     "Heights/L2",
+    //     Commands.runOnce(
+    //             () -> {
+    //               System.out.println("Height L2");
+    //             })
+    //         .ignoringDisable(true)
+    //         .withName("L2"));
 
-    SmartDashboard.putData(
-        "Heights/L1",
-        Commands.runOnce(
-                () -> {
-                  System.out.println("Height L1");
-                })
-            .ignoringDisable(true)
-            .withName("L1"));
+    // SmartDashboard.putData(
+    //     "Heights/L1",
+    //     Commands.runOnce(
+    //             () -> {
+    //               System.out.println("Height L1");
+    //             })
+    //         .ignoringDisable(true)
+    //         .withName("L1"));
 
-    SmartDashboard.putData(
-        "Heights/HARDSTOP",
-        Commands.runOnce(
-                () -> {
-                  System.out.println("Height Hardstop");
-                })
-            .ignoringDisable(true)
-            .withName("HARDSTOP"));
+    // SmartDashboard.putData(
+    //     "Heights/HARDSTOP",
+    //     Commands.runOnce(
+    //             () -> {
+    //               System.out.println("Height Hardstop");
+    //             })
+    //         .ignoringDisable(true)
+    //         .withName("HARDSTOP"));
   }
 
   /**
@@ -585,8 +584,8 @@ public class RobotContainer {
 
   public void periodic() {
     // add robot-wide periodic code here
-    SmartDashboard.putNumber("TestNumber", testNumber.get());
-    SmartDashboard.updateValues();
+    // SmartDashboard.putNumber("TestNumber", testNumber.get());
+    // SmartDashboard.updateValues();
   }
 
   public void autonomousInit() {
