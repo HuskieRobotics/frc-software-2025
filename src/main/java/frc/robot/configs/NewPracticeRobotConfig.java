@@ -379,7 +379,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   @Override
   public MomentOfInertia getMomentOfInertia() {
-    return KilogramSquareMeters.of(6.0);
+    return KilogramSquareMeters.of(3.505566438); // assuming mass of 51.862kg
   }
 
   @Override
