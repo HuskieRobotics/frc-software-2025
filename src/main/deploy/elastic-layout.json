@@ -99,6 +99,19 @@
               "period": 0.06,
               "sort_options": false
             }
+          },
+          {
+            "title": "ClearAllFaults",
+            "x": 256.0,
+            "y": 512.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/SystemStatus/ClearAllFaults",
+              "period": 0.06,
+              "show_type": true
+            }
           }
         ]
       }
