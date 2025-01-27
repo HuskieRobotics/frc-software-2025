@@ -42,8 +42,8 @@ public class Field2d {
 
   private Alliance alliance = DriverStation.Alliance.Blue;
 
-  private Map<Pose2d, Pose2d> leftPoses = new HashMap<Pose2d, Pose2d>();
-  private Map<Pose2d, Pose2d> rightPoses = new HashMap<Pose2d, Pose2d>();
+  private Map<Pose2d, Pose2d> leftReefPoses = new HashMap<Pose2d, Pose2d>();
+  private Map<Pose2d, Pose2d> rightReefPoses = new HashMap<Pose2d, Pose2d>();
   private static final double BUMPER_OFFSET_INCHES =
       30.738 + 0.0; // partially taken from FieldConstants adjustX for reef x offset (seems
   // unreasonably high)
@@ -247,8 +247,8 @@ public class Field2d {
                   Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
                   new Rotation2d()));
 
-      leftPoses.put(reefCenterFace, leftPose);
-      rightPoses.put(reefCenterFace, rightPose);
+      leftReefPoses.put(reefCenterFace, leftPose);
+      rightReefPoses.put(reefCenterFace, rightPose);
     }
   }
 
