@@ -19,9 +19,11 @@ import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.FieldConstants;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -39,6 +41,14 @@ public class Field2d {
   private Region2d[] regions;
 
   private Alliance alliance = DriverStation.Alliance.Blue;
+
+  private Map<Pose2d, Pose2d> leftPoses = new HashMap<Pose2d, Pose2d>();
+  private Map<Pose2d, Pose2d> rightPoses = new HashMap<Pose2d, Pose2d>();
+  private static final double BUMPER_OFFSET_INCHES =
+      30.738 + 0.0; // partially taken from FieldConstants adjustX for reef x offset (seems
+  // unreasonably high)
+  private static final double PIPE_FROM_REEF_CENTER_INCHES =
+      6.469; // taken from FieldConstants adjustY for reef y offset
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -217,6 +227,29 @@ public class Field2d {
    */
   public Alliance getAlliance() {
     return alliance;
+  }
+
+  private void populatePoseMaps() {
+    // get each transformed pose on the reef (center of the hexagonal side)
+    // add left or right offset (y) as well as bumper offset (x)
+    Pose2d[] reefCenterFaces = FieldConstants.Reef.centerFaces;
+    for (Pose2d reefCenterFace : reefCenterFaces) {
+      Pose2d leftPose =
+          reefCenterFace.transformBy(
+              new Transform2d(
+                  Units.inchesToMeters(BUMPER_OFFSET_INCHES),
+                  Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
+                  new Rotation2d()));
+      Pose2d rightPose =
+          reefCenterFace.transformBy(
+              new Transform2d(
+                  -Units.inchesToMeters(BUMPER_OFFSET_INCHES),
+                  Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
+                  new Rotation2d()));
+
+      leftPoses.put(reefCenterFace, leftPose);
+      rightPoses.put(reefCenterFace, rightPose);
+    }
   }
 
   public Pose2d getNearestBranch(Side side) {
