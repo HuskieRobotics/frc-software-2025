@@ -80,8 +80,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double DRIVE_KV = 0.004493;
   private static final double DRIVE_KA = 0.63109;
 
-  private static final LinearVelocity MAX_VELOCITY =
-      MetersPerSecond.of(5.117); // FIXME: confirm max velocity with real robot
+  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(5.117);
   private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.05);
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
@@ -379,7 +378,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   @Override
   public MomentOfInertia getMomentOfInertia() {
-    return KilogramSquareMeters.of(3.505566438); // assuming mass of 51.862kg
+    return KilogramSquareMeters.of(3.40); // assuming mass of 51.862kg
   }
 
   @Override
