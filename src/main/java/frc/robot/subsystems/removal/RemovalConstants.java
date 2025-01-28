@@ -22,6 +22,5 @@ public class RemovalConstants{
 
     public static final int ROLLER_MOTOR_ID = 0;
     
-    public static final int ROLLER_MOTOR2_ID = 0;
     
 }

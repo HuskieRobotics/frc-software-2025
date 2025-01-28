@@ -14,7 +14,7 @@ public class Removal extends SubsystemBase {
         this.io = io;
     }
 
-    private void rollRoller() {
+    private void runRoller() {
         io.setRollerMotorVoltage(RemovalConstants.REMOVAL_VOLTAGE_ROLLERS);
     }
     
