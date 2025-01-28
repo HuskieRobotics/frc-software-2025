@@ -1,11 +1,6 @@
 package frc.robot.configs;
 
-import static edu.wpi.first.units.Units.KilogramSquareMeters;
-import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -373,12 +368,12 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   @Override
   public Mass getMass() {
-    return Kilograms.of(51.862);
+    return Pounds.of(111.0);
   }
 
   @Override
   public MomentOfInertia getMomentOfInertia() {
-    return KilogramSquareMeters.of(3.40); // assuming mass of 51.862kg
+    return KilogramSquareMeters.of(3.40);
   }
 
   @Override
