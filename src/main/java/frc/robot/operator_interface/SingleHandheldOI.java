@@ -86,4 +86,3 @@ public class SingleHandheldOI implements OperatorInterface {
     return controller.start().and(controller.x());
   }
 }
-

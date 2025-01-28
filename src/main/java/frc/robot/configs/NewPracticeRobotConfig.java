@@ -60,7 +60,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   /* Angle Motor PID Values */
   private static final double ANGLE_KP = 100.0;
   private static final double ANGLE_KI = 0.0;
-  private static final double ANGLE_KD = 0.05;
+  private static final double ANGLE_KD = 0.5;
 
   // FIXME: tune; starting values from Phoenix Tuner X .withKS(0.1).withKV(2.33).withKA(0)
 
@@ -71,7 +71,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double ANGLE_KA = 0.049918;
 
   /* Drive Motor PID Values */
-  private static final double DRIVE_KP = 8.0;
+  private static final double DRIVE_KP = 12.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
