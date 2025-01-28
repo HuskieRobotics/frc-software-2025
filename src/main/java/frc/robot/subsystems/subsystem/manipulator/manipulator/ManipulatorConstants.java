@@ -1,4 +1,4 @@
-package frc.robot.subsystems.subsystem.manipulator.subsystem;
+package frc.robot.subsystems.subsystem.manipulator.manipulator;
 
 public class ManipulatorConstants {
 

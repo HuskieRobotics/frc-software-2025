@@ -40,8 +40,8 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.subsystem.manipulator.subsystem.Manipulator;
-import frc.robot.subsystems.subsystem.manipulator.subsystem.ManipulatorIO;
+import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
+import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIO;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.subsystem.manipulator.subsystem;
+package frc.robot.subsystems.subsystem.manipulator.manipulator;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Generic subsystem hardware interface. */

@@ -1,7 +1,7 @@
-package frc.robot.subsystems.subsystem.manipulator.subsystem;
+package frc.robot.subsystems.subsystem.manipulator.manipulator;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.subsystem.manipulator.subsystem.ManipulatorConstants.*;
+import static frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -138,7 +138,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         kI,
         kD);
     LoggedTunableNumber.ifChanged(
-        hashCode(),
+      hashCode(),
         peak -> {
           TalonFXConfiguration config = new TalonFXConfiguration();
           this.indexerMotor.getConfigurator().refresh(config);
