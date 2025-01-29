@@ -71,7 +71,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final String CAMERA_NAME_2 = "OV2311FL";
   private static final String CAMERA_NAME_3 = "OV2311BL";
 
-  // UPDATE ALL OF THESE CAMERA LOCATIONS, THEY WILL BE VERY DIFFERENT
+  // UPDATE ALL OF THESE CAMERA LOCATIONS, THEY WILL BE DIFFERENT
 
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
@@ -147,7 +147,7 @@ public class New2025RobotConfig extends RobotConfig {
 
   @Override
   public SwerveConstants getSwerveConstants() {
-    return null; // MAKE SWERVE CONSTANTS FOR MK4N L2 PLUS
+    return SwerveConstants.MK4N_L2_PLUS_CONSTANTS;
   }
 
   @Override
