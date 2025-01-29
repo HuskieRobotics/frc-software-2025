@@ -44,9 +44,7 @@ public class Field2d {
 
   private Map<Pose2d, Pose2d> leftReefPoses = new HashMap<Pose2d, Pose2d>();
   private Map<Pose2d, Pose2d> rightReefPoses = new HashMap<Pose2d, Pose2d>();
-  private static final double BUMPER_OFFSET_INCHES =
-      30.738 + 0.0; // partially taken from FieldConstants adjustX for reef x offset (seems
-  // unreasonably high)
+
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
       6.469; // taken from FieldConstants adjustY for reef y offset
 
@@ -237,15 +235,18 @@ public class Field2d {
       Pose2d leftPose =
           reefCenterFace.transformBy(
               new Transform2d(
-                  Units.inchesToMeters(BUMPER_OFFSET_INCHES),
-                  Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
+                  RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                  -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
                   new Rotation2d()));
       Pose2d rightPose =
           reefCenterFace.transformBy(
               new Transform2d(
-                  -Units.inchesToMeters(BUMPER_OFFSET_INCHES),
+                  RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
                   Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
                   new Rotation2d()));
+        
+      leftPose.getRotation().rotateBy(Rotation2d.fromDegrees(180));
+      rightPose.getRotation().rotateBy(Rotation2d.fromDegrees(180));
 
       leftReefPoses.put(reefCenterFace, leftPose);
       rightReefPoses.put(reefCenterFace, rightPose);
@@ -258,29 +259,12 @@ public class Field2d {
             .getEstimatedPose()
             .nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
 
-    double branchOffset = Units.inchesToMeters(6.47);
+    Pose2d bumpersOnReefAlignedToBranch;
     if (side == Side.LEFT) {
-      branchOffset = -branchOffset;
+      bumpersOnReefAlignedToBranch = leftReefPoses.get(nearestReefCenterFace);
+    } else {
+      bumpersOnReefAlignedToBranch = rightReefPoses.get(nearestReefCenterFace);
     }
-
-    Pose2d bumpersOnReefAlignedToBranch =
-        new Pose2d(
-            new Translation2d(
-                nearestReefCenterFace
-                    .transformBy(
-                        new Transform2d(
-                            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                            branchOffset,
-                            new Rotation2d()))
-                    .getX(),
-                nearestReefCenterFace
-                    .transformBy(
-                        new Transform2d(
-                            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                            branchOffset,
-                            new Rotation2d()))
-                    .getY()),
-            nearestReefCenterFace.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
 
     return bumpersOnReefAlignedToBranch;
   }
