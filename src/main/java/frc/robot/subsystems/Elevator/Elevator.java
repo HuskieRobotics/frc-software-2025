@@ -6,6 +6,7 @@ import javax.swing.text.Position;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,12 +38,12 @@ public class Elevator extends SubsystemBase{
 
     private final LoggedTunableNumber elevatorVoltage = new LoggedTunableNumber("Elevator/Voltage", 0);
 
-    private final LoggedTunableNumber elevatorHeight_Inches = new LoggedTunableNumber("Elevator/Height(Inches)", 0);
+    private final LoggedTunableNumber elevatorHeightInches = new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
     private final LoggedTunableNumber rampRate = new LoggedTunableNumber("Elevator/RampRate", 0);
 
     private final LoggedTunableNumber stepVoltage = new LoggedTunableNumber("Elevator/StepVoltage", 0);
-
+    
 
     public Elevator(ElevatorIO io){
 
@@ -50,30 +51,31 @@ public class Elevator extends SubsystemBase{
 
         io.zeroPosition();
 
+        // Add sysId routine for each stage of the elevator
+
         SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage1);
+
         SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage2);
+
         SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage3);
 
         FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
-
-        /*
-         * Add all shuffleboard tabs and widgets
-         */
-        registerElevatorHeightCommands();   
+  
       
         FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
         
     }
 
     private final SysIdRoutine sysIdRoutineStage1 =
-      new SysIdRoutine(
-          new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
-              null, // Use default timeout (10 s)
-              // Log state with SignalLogger class
-              state -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(output -> elevatorIO.setMotorVoltage(output.in(Volts)), null, this));
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null, // Use default ramp rate (1 V/s)
+                Volts.of(setStepVoltage(stepVoltage.get())), // Use default step voltage (7 V)
+                null, // Use default timeout (10 s)
+                // Log state with SignalLogger class
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> elevatorIO.setMotorVoltage(output.in(Volts)), null, this));
+
 
     private final SysIdRoutine sysIdRoutineStage2 =
         new SysIdRoutine(
@@ -163,10 +165,6 @@ public class Elevator extends SubsystemBase{
                 .withName("L4"));
     }
 
-    /*
-     * Implement periodic method for Elevator
-     */
-
      @Override
         public void periodic(){
             elevatorIO.updateInputs(inputs);
@@ -175,10 +173,10 @@ public class Elevator extends SubsystemBase{
             if(testingMode.get() == 1){
 
                 if(elevatorVoltage.get() == 0){
-                    elevatorIO.setVoltage(elevatorVoltage.get());
+                    elevatorIO.setMotorVoltage(elevatorVoltage.get());
                 }
-                else if(elevatorHeight_Inches.get() == 0){
-                    elevatorIO.setPosition(Inches.of(elevatorHeight_Inches.get()));
+                else if(elevatorHeightInches.get() == 0){
+                    elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
                 }
             }
         }

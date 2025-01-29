@@ -54,4 +54,6 @@ public interface ElevatorIO {
   public default void getPosition() {}
 
   public default void setMotorVoltage(double volts) {}
+
+  public default void setRampRate(double rampRate) {}
 }

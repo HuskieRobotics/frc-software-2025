@@ -14,8 +14,8 @@ public class ElevatorConstants {
   public static final int GEAR_RATIO = 5; //CHECK THIS VALUE
   public static final double OFFSET = 0.0; // FIXME
 
-  public static final int LEAD_MOTOR_ID = 0; // FIXME
-  public static final int FOLLOWER_MOTOR_ID = 0; // FIXME
+  public static final int LEAD_MOTOR_ID = 10; // FIXME
+  public static final int FOLLOWER_MOTOR_ID = 11; // FIXME
 
   public static final double FORWARD_SOFT_LIMIT_THRESHOLD = 0.0; // FIXME: Change to rotations (max height)
   public static final double REVERSE_SOFT_LIMIT_THRESHOLD = 0.0; // FIXME: Change to rotations (a bit above 0)
@@ -63,8 +63,7 @@ public class ElevatorConstants {
   public static final double JERK = 0;
 
 
-
-
+  
   public enum ReefBranch{
 
     HARDSTOP,
@@ -78,7 +77,6 @@ public class ElevatorConstants {
     ALGAE_2,
   }
 
-  
 
   /*
    * Highest point of each reef branch in inches

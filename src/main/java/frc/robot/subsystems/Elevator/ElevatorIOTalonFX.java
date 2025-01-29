@@ -34,7 +34,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     private Alert configAlert = 
         new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
     
-        
     
     private StatusSignal<Current> elevatorLeadStatorCurrentStatusSignal;
     private StatusSignal<Current> elevatorFollowerStatorCurrentStatusSignal;
@@ -240,6 +239,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     public void zeroPosition() {
         elevatorMotorLead.setPosition(0.0);
+    }
+
+    public void setStepVoltage(double voltage){
+        elevatorMotorLead.setControl(elevatorMotorLeadExpoVoltageRequest.withPosition(voltage));
     }
 }
 
