@@ -227,7 +227,7 @@ public class Field2d {
     return alliance;
   }
 
-  private void populatePoseMaps() {
+  public void populateReefBranchPoseMaps() {
     // get each transformed pose on the reef (center of the hexagonal side)
     // add left or right offset (y) as well as bumper offset (x)
     Pose2d[] reefCenterFaces = FieldConstants.Reef.centerFaces;
