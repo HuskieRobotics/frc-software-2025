@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants;
-import frc.robot.Constants.RobotType;
 
 @java.lang.SuppressWarnings({"java:S3776"})
 
@@ -80,16 +78,13 @@ public class OISelector {
       }
     }
 
-    if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
-      nonCompetitionOperatorInterfaceWarning.set(false);
-      return new SimDualJoysticksOI(0, 1);
-    } else if (firstPort != null && secondPort != null && xBoxPort != null && thirdPort != null) {
+    if (firstPort != null && secondPort != null && xBoxPort != null && thirdPort != null) {
       noOperatorInterfaceWarning.set(false);
-      nonCompetitionOperatorInterfaceWarning.set(true);
+      nonCompetitionOperatorInterfaceWarning.set(false);
       return new FullOperatorConsoleOI(firstPort, secondPort, xBoxPort, thirdPort);
     } else if (firstPort != null && secondPort != null) {
       noOperatorInterfaceWarning.set(false);
-      nonCompetitionOperatorInterfaceWarning.set(false);
+      nonCompetitionOperatorInterfaceWarning.set(true);
       return new DualJoysticksOI(firstPort, secondPort);
     } else if (xBoxPort != null) {
       noOperatorInterfaceWarning.set(false);

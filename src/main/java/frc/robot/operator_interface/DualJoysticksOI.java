@@ -44,60 +44,34 @@ public class DualJoysticksOI implements OperatorInterface {
     return -rotateJoystick.getX();
   }
 
-  // Translation Joystick
   @Override
-  public Trigger getPrepareElevatorToScoreButton() {
-    return translateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getDeployIntakeButton() {
-    return translateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getPrepClimbSequence() {
+  public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[3];
   }
 
   @Override
-  public Trigger getAlignToScoreCoralLeftButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getAlignToScoreCoralRightButton() {
-    return translateJoystickButtons[5];
-  }
-
-  @Override
   public Trigger getResetGyroButton() {
-    return translateJoystickButtons[8];
-  }
-
-  @Override
-  public Trigger getFieldRelativeButton() {
-    return translateJoystickButtons[9];
-  }
-
-  // Rotation Joystick
-  @Override
-  public Trigger getScoreCoralButton() {
-    return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getScoreAlgaeButton() {
-    return rotateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
   }
 
   @Override
+  public Trigger getLock180Button() {
+    return new Trigger(() -> false);
+  }
+
+  @Override
+  public Trigger getXStanceButton() {
+    return rotateJoystickButtons[4];
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledSwitch() {
+    // vision is always enabled with dual joysticks as there is no switch to disable
+    return new Trigger(() -> true);
+  }
+
+  @Override
   public Trigger getResetPoseToVisionButton() {
-    return rotateJoystickButtons[5];
+    return translateJoystickButtons[1];
   }
 }

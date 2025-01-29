@@ -31,8 +31,7 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.AutonomousCommandFactory;
-import frc.robot.commands.SubsystemCommandFactory;
+import frc.robot.commands.CharacterizationCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -376,7 +375,34 @@ public class RobotContainer {
      */
     autoChooser.addOption(
         "Drive Velocity Tuning",
-        AutonomousCommandFactory.getDriveVelocityTuningCommand(drivetrain));
+        Commands.sequence(
+            Commands.runOnce(drivetrain::disableFieldRelative, drivetrain),
+            Commands.repeatingSequence(
+                Commands.deadline(
+                    Commands.waitSeconds(1.0),
+                    Commands.run(() -> drivetrain.drive(2.0, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(1.0),
+                    Commands.run(() -> drivetrain.drive(-0.5, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(1.0),
+                    Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.5),
+                    Commands.run(() -> drivetrain.drive(3.0, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(2.0),
+                    Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(2.0),
+                    Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.5),
+                    Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, false, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(2.0),
+                    Commands.run(
+                        () -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)))));
 
     /************ Swerve Rotation Tuning ************
      *
@@ -385,7 +411,23 @@ public class RobotContainer {
      */
     autoChooser.addOption(
         "Swerve Rotation Tuning",
-        AutonomousCommandFactory.getSwerveRotationTuningCommand(drivetrain));
+        Commands.sequence(
+            Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
+            Commands.repeatingSequence(
+                Commands.deadline(
+                    Commands.waitSeconds(0.5),
+                    Commands.run(() -> drivetrain.drive(0.1, 0.1, 0.0, true, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.5),
+                    Commands.run(() -> drivetrain.drive(-0.1, 0.1, 0.0, true, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.5),
+                    Commands.run(() -> drivetrain.drive(-0.1, -0.1, 0.0, true, false), drivetrain)),
+                Commands.deadline(
+                    Commands.waitSeconds(0.5),
+                    Commands.run(
+                        () -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain)))));
+
     /************ Drive Wheel Radius Characterization ************
      *
      * useful for characterizing the drive wheel Radius
@@ -393,7 +435,8 @@ public class RobotContainer {
      */
     autoChooser.addOption( // start by driving slowing in a circle to align wheels
         "Drive Wheel Radius Characterization",
-        AutonomousCommandFactory.getDriveWheelRadiusCharacterizationCommand(drivetrain));
+        CharacterizationCommands.wheelRadiusCharacterization(drivetrain)
+            .withName("Drive Wheel Radius Characterization"));
   }
 
   private Command createTuningAutoPath(String autoName, boolean measureDistance) {
