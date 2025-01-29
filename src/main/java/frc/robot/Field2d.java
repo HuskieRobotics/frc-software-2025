@@ -237,16 +237,13 @@ public class Field2d {
               new Transform2d(
                   RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
                   -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
-                  new Rotation2d()));
+                  Rotation2d.fromDegrees(180)));
       Pose2d rightPose =
           reefCenterFace.transformBy(
               new Transform2d(
                   RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
                   Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
-                  new Rotation2d()));
-        
-      leftPose.getRotation().rotateBy(Rotation2d.fromDegrees(180));
-      rightPose.getRotation().rotateBy(Rotation2d.fromDegrees(180));
+                  Rotation2d.fromDegrees(180)));
 
       leftReefPoses.put(reefCenterFace, leftPose);
       rightReefPoses.put(reefCenterFace, rightPose);
