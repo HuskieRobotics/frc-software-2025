@@ -40,14 +40,14 @@ public class New2025RobotConfig extends RobotConfig {
 
   private static final Mass MASS = Kilograms.of(54.000); // update
   private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.5); // update
-  private static final Distance TRACKWIDTH = Meters.of(0.584); // update
-  private static final Distance WHEELBASE = Meters.of(0.584); // update
+  private static final Distance TRACKWIDTH = Meters.of(0.57785); 
+  private static final Distance WHEELBASE = Meters.of(0.57785); 
   private static final Distance WHEEL_RADIUS = Meters.of(0.096 / 2.0); // update with sysid routine
   private static final double WHEEL_COEFFICIENT_OF_FRICTION =
       1.15; // unchanged, no reason it shouldn't be different from last year
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.9); // update
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.9); // update
+  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.85725); 
+  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.85725); 
 
   private static final double COUPLE_RATIO = 3.200; // possibly needs to be updated for mk4ns
 
