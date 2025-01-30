@@ -76,6 +76,37 @@ public interface OperatorInterface {
   }
 
   // drivetrain, game-specific
+  public default Trigger getPrepareElevatorToScoreButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDeployIntakeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getPrepClimbSequence() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlignToScoreCoralLeftButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlignToScoreCoralRightButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getScoreCoralButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getScoreAlgaeButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getInitiateClimbButton() {
+    return new Trigger(() -> false);
+  }
 
   // miscellaneous
   public default Trigger getInterruptAll() {
