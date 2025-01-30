@@ -36,7 +36,7 @@ public final class VisionConstants {
   public static final double AMBIGUITY_THRESHOLD = 0.5;
 
   // the reprojection error must be less than this value for the target to be considered valid
-  public static final double REPROJECTION_ERROR_THRESHOLD = 1.0;
+  public static final double REPROJECTION_ERROR_THRESHOLD = 5.0;
 
   // the maximum error in the z component of the robot's pose for the pose to be considered valid
   // (assumes that the robot is always on the carpet)
