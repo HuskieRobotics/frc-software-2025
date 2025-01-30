@@ -9,6 +9,8 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,7 +33,9 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
+import frc.robot.Field2d.Side;
 import frc.robot.commands.CharacterizationCommands;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -91,6 +95,8 @@ public class RobotContainer {
     createRobotConfig();
 
     LEDs.getInstance();
+
+    Field2d.getInstance().populateReefBranchPoseMaps();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -519,6 +525,30 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
+
+    // drive to left branch of nearest reef face
+    oi.getDriveToNearestLeftBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest left branch"));
+
+    // drive to right branch of nearest reef face
+    oi.getDriveToNearestRightBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
