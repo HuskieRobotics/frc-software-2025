@@ -17,14 +17,14 @@ import frc.lib.team3061.drivetrain.swerve.SwerveConstants;
  * these methods, refer to the documentation in the RobotConfig class.
  */
 public class VisionTestPlatformConfig extends RobotConfig {
-  private static final String CAMERA_NAME_0 = "OV2311";
+  private static final String CAMERA_NAME_0 = "photonvisionVTP";
 
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
           // FIXME: update based on CAD
           new Translation3d(
-              Units.inchesToMeters(0.0), Units.inchesToMeters(0.0), Units.inchesToMeters(37.0)),
+              Units.inchesToMeters(0.0), Units.inchesToMeters(0.0), Units.inchesToMeters(26)),
           new Rotation3d());
 
   @Override
