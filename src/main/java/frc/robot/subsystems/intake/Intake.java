@@ -1,87 +1,80 @@
 package frc.robot.subsystems.intake;
 
-
-import javax.swing.text.Position;
-
-import org.littletonrobotics.junction.AutoLog;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.subsystems.intake.IntakeIO.IntakeIOInputs;
-
 
 public class Intake extends SubsystemBase {
-    private static final String SUBSYSTEM_NAME = "INTAKE";
+  private static final String SUBSYSTEM_NAME = "INTAKE";
 
-    private final IntakeIO io;
-    
-    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private final IntakeIO io;
 
-    
-    private final IntakeMotor[] intakeMotors = {
-        IntakeMotor.ROLLER, IntakeMotor.PIVOT
-    };
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
 
-    private boolean isDeployed = false;
-    private boolean isRetracted = false;
-    
-    private boolean automationEnabled;
-    private int intakeandPivotTimeout;
+  private final IntakeMotor[] intakeMotors = {IntakeMotor.ROLLER, IntakeMotor.PIVOT};
 
-    private final LoggedTunableNumber rollerVelocity = new LoggedTunableNumber( "Intake/Roller Velocity", 0.0);
-    private final LoggedTunableNumber pivotPosition = new LoggedTunableNumber( "Intake/Pivot Position", 0.0);
+  private boolean isDeployed = false;
+  private boolean isRetracted = false;
 
-    enum IntakeMotor{
-        ROLLER,
-        PIVOT
+  private boolean automationEnabled;
+  private int intakeandPivotTimeout;
+
+  private final LoggedTunableNumber rollerVelocity =
+      new LoggedTunableNumber("Intake/Roller Velocity", 0.0);
+  private final LoggedTunableNumber pivotPosition =
+      new LoggedTunableNumber("Intake/Pivot Position", 0.0);
+
+  enum IntakeMotor {
+    ROLLER,
+    PIVOT
+  }
+
+  public Intake(IntakeIO io) {
+    this.io = io;
+  }
+
+  @Override
+  public void periodic() {
+    io.updateInputs(inputs);
+
+    if (IntakeConstants.ROLLERS_CONTINUOUS_STATOR_CURRENT_LIMIT
+        >= IntakeConstants.ROLLERS_ALGAE_CURRENT_LIMIT) {}
+  }
+
+  private void deploy() {
+    if (isDeployed == true) {
+      this.intake();
+    } else {
+      this.stopRoller();
     }
+  }
 
-    public Intake(IntakeIO io){
-        this.io = io;
+  private void shootOut() {
+    if (isRetracted == true) {
+      this.outtake();
+    } else {
+      this.stopRoller();
     }
+  }
 
+  public void retract() {
+    io.setPivotRotationPosition(IntakeConstants.INTAKE_POSITION_PIVOT_DEGREES);
+    isDeployed = false;
+  }
 
-    @Override
-    public void periodic(){
-        io.updateInputs(inputs);
-    }
+  public void extend() {
+    io.setPivotRotationPosition(IntakeConstants.CARPET_POSITION_PIVOT_DEGREES);
+    isDeployed = true;
+  }
 
-    private void deploy(){
-        if (isDeployed == true){
-            this.intake();
-        } else{
-            this.stopRoller();
-        }
-    }
+  public void intake() {
+    io.setRollerMotorVelocity(IntakeConstants.INTAKE_VELOCITY_ROLLERS_RPS);
+  }
 
-    private void shootOut(){
-        if (isRetracted == true){
-            this.outtake();
-        } else{
-            this.stopRoller();
-        }
-    }
-    
-    public void retract(){
-        io.setPivotRotationPosition(IntakeConstants.INTAKE_POSITION_PIVOT_DEGREES);
-        isDeployed = false;
-    }
+  public void stopRoller() {
+    io.setRollerMotorVelocity(0);
+  }
 
-    
-    public void extend(){
-        io.setPivotRotationPosition(IntakeConstants.CARPET_POSITION_PIVOT_DEGREES);
-        isDeployed = true;
-    }
-
-    public void intake(){
-        io.setRollerMotorVelocity(IntakeConstants.INTAKE_VELOCITY_ROLLERS_RPS);
-    }
-        
-    public void stopRoller(){
-        io.setRollerMotorVelocity(0);
-    }
-
-    public void outtake(){
-        io.setRollerMotorVelocity(IntakeConstants.OUTTAKE_VELOCITY_ROLLERS_RPS);
-    }
+  public void outtake() {
+    io.setRollerMotorVelocity(IntakeConstants.OUTTAKE_VELOCITY_ROLLERS_RPS);
+  }
 }
