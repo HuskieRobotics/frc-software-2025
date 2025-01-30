@@ -154,6 +154,11 @@ public class DriveToPose extends Command {
     this.targetPose = poseSupplier.get();
 
     Logger.recordOutput("DriveToPose/targetPose", targetPose);
+    
+    // log the difference of the poses and see if the command converges or if it actually reaches
+    // a good target pose (should turn it into a transform)
+
+    
 
     this.timer.restart();
   }
