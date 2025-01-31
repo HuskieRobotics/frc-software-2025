@@ -11,7 +11,7 @@ public interface SubsystemIO {
     double velocityRPM = 0.0;
     double closedLoopError = 0.0;
     double setpoint = 0.0;
-    double power = 0.0;
+    double voltage = 0.0;
     String controlMode = "";
     double statorCurrentAmps = 0.0;
     double tempCelsius = 0.0;

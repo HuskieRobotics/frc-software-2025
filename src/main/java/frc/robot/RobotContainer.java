@@ -42,6 +42,7 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.subsystem.Subsystem;
 import frc.robot.subsystems.subsystem.SubsystemIO;
+import frc.robot.subsystems.subsystem.SubsystemIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -221,6 +222,8 @@ public class RobotContainer {
             });
 
     // FIXME: create the hardware-specific subsystem class
+    SubsystemIO subsystemIO = new SubsystemIOTalonFX() {};
+    Subsystem subsystem = new Subsystem(subsystemIO);
   }
 
   private void createPracticeBoardSubsystems() {

@@ -68,7 +68,7 @@ public class ElevatorSystemSim {
     this.elevatorExtension =
         elevatorBase.append(
             new LoggedMechanismLigament2d(
-                "ElevatorExtension", minHeightMeters, 0.0, 6, new Color8Bit(Color.kYellow)));
+                "ElevatorExtension", minHeightMeters, 90.0, 6, new Color8Bit(Color.kYellow)));
 
     this.subsystemName = subsystemName;
   }

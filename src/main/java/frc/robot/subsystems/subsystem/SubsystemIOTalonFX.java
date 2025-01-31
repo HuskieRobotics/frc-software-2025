@@ -18,6 +18,7 @@ import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.swerve.Conversions;
+import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
 /** TalonFX implementation of the generic SubsystemIO */
@@ -36,6 +37,8 @@ public class SubsystemIOTalonFX implements SubsystemIO {
   private final LoggedTunableNumber kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
   private final LoggedTunableNumber kPeakOutput =
       new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
+
+  private ElevatorSystemSim elevatorSim;
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public SubsystemIOTalonFX() {
@@ -60,7 +63,7 @@ public class SubsystemIOTalonFX implements SubsystemIO {
             motor.getRotorVelocity().getValue().in(RotationsPerSecond), GEAR_RATIO);
     inputs.closedLoopError = motor.getClosedLoopError().getValue();
     inputs.setpoint = motor.getClosedLoopReference().getValue();
-    inputs.power = motor.getDutyCycle().getValue();
+    inputs.voltage = motor.getMotorVoltage().getValue().in(Volts);
     inputs.controlMode = motor.getControlMode().toString();
     inputs.statorCurrentAmps = motor.getStatorCurrent().getValue().in(Amps);
     inputs.tempCelsius = motor.getDeviceTemp().getValue().in(Celsius);
@@ -90,6 +93,8 @@ public class SubsystemIOTalonFX implements SubsystemIO {
           this.motor.getConfigurator().apply(config);
         },
         kPeakOutput);
+
+    this.elevatorSim.updateSim();
   }
 
   /**
@@ -162,5 +167,8 @@ public class SubsystemIOTalonFX implements SubsystemIO {
     this.positionRequest.EnableFOC = RobotConfig.getInstance().getPhoenix6Licensed();
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "subsystem motor", motor);
+
+    this.elevatorSim =
+        new ElevatorSystemSim(this.motor, false, 5.0, 10.0, 0.0762, 0.0, 2.0, 0.1, "Subsystem");
   }
 }

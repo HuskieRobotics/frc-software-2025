@@ -24,7 +24,8 @@ public class Subsystem extends SubsystemBase {
   // motor
   private final LoggedTunableNumber testingMode =
       new LoggedTunableNumber("Subsystem/TestingMode", 0);
-  private final LoggedTunableNumber motorPower = new LoggedTunableNumber("Subsystem/power", 0.0);
+  private final LoggedTunableNumber motorVoltage =
+      new LoggedTunableNumber("Subsystem/voltage", 0.0);
   private final LoggedTunableNumber motorCurrent =
       new LoggedTunableNumber("Subsystem/current", 0.0);
   private final LoggedTunableNumber motorPosition =
@@ -168,8 +169,8 @@ public class Subsystem extends SubsystemBase {
 
     // when testing, set the motor power, current, or position based on the Tunables (if non-zero)
     if (testingMode.get() != 0) {
-      if (motorPower.get() != 0) {
-        this.setMotorVoltage(motorPower.get());
+      if (motorVoltage.get() != 0) {
+        this.setMotorVoltage(motorVoltage.get());
       }
 
       if (motorCurrent.get() != 0) {
