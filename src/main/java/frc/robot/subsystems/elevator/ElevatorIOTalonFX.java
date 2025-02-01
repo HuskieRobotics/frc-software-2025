@@ -1,7 +1,7 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.Elevator.ElevatorConstants.*;
+import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
