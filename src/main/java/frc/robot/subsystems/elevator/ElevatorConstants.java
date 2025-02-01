@@ -2,12 +2,11 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
-import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.Distance;
 
 public class ElevatorConstants {
 
-  public static final InvertedValue IS_INVERTED = InvertedValue.Clockwise_Positive;
+  public static final boolean IS_INVERTED = false;
 
   public static final double TOLERANCE_INCHES = 0;
   public static final Distance MAX_HEIGHT = Inches.of(73.875);
@@ -16,6 +15,8 @@ public class ElevatorConstants {
   public static final double PULLY_CIRCUMFERANCE_INCHES = 5.9055;
   public static final int GEAR_RATIO = 5;
 
+  public static final double ELEVATOR_MASS_KG = 4.5; // FIXEME: Update this value
+
   public static final int LEAD_MOTOR_ID = 10;
   public static final int FOLLOWER_MOTOR_ID = 11;
 
@@ -23,8 +24,9 @@ public class ElevatorConstants {
       MAX_HEIGHT.in(Inches) / PULLY_CIRCUMFERANCE_INCHES;
   public static final double REVERSE_SOFT_LIMIT_THRESHOLD = 0.0;
 
-  public static final boolean DEBUGGING = false;
-  public static final boolean TESTING = false;
+  public static final boolean DEBUGGING = true;
+  public static final boolean TESTING = true;
+
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   // FIXME: Update all K values
@@ -53,8 +55,8 @@ public class ElevatorConstants {
   public static final double KA_SLOT2 = 0;
   public static final double KG_SLOT2 = 0;
 
-  public static final double KV_EXPO = 0;
-  public static final double KA_EXPO = 0;
+  public static final double KV_EXPO = 20;
+  public static final double KA_EXPO = 1; // FIXME: Update this value
 
   public static final double CRUISE_VELOCITY = 0;
 

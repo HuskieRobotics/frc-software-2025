@@ -97,34 +97,37 @@ public class Elevator extends SubsystemBase {
 
   private Distance reefBranchToDistance(ReefBranch reefBranch) {
 
+    Distance height;
+
     switch (reefBranch) {
       case L1:
-        return L1_HEIGHT;
+        height = L1_HEIGHT;
         break;
 
       case L2:
-        return L2_HEIGHT;
+        height = L2_HEIGHT;
         break;
 
       case L3:
-        return L3_HEIGHT;
+        height = L3_HEIGHT;
         break;
 
       case L4:
-        return L4_HEIGHT;
+        height = L4_HEIGHT;
         break;
 
       case ALGAE_1:
-        return ALGAE1_HEIGHT;
+        height = ALGAE1_HEIGHT;
         break;
 
       case ALGAE_2:
-        return ALGAE2_HEIGHT;
+        height = ALGAE2_HEIGHT;
         break;
       default:
-        return MIN_HEIGHT;
+        height = MIN_HEIGHT;
         break;
     }
+    return height;
   }
 
   public boolean isAtPosition(ReefBranch reefBranch) {

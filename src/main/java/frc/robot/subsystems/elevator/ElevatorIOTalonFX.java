@@ -13,7 +13,9 @@ import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
@@ -103,6 +106,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final LoggedTunableNumber cruiseVelocity =
       new LoggedTunableNumber("Elevator/Cruise Velocity", 0);
 
+  private ElevatorSystemSim elevatorSystemSim;
+
   public ElevatorIOTalonFX() {
 
     elevatorMotorLead = new TalonFX(ElevatorConstants.LEAD_MOTOR_ID);
@@ -126,6 +131,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     configElevatorMotorFollower(elevatorMotorFollower);
 
     elevatorMotorFollower.setControl(new Follower(elevatorMotorLead.getDeviceID(), true));
+
+    elevatorSystemSim =
+        new ElevatorSystemSim(
+            elevatorMotorLead,
+            ElevatorConstants.IS_INVERTED,
+            ElevatorConstants.GEAR_RATIO,
+            ElevatorConstants.ELEVATOR_MASS_KG,
+            Units.inchesToMeters(ElevatorConstants.PULLY_CIRCUMFERANCE_INCHES / (Math.PI * 2)),
+            ElevatorConstants.MIN_HEIGHT.in(Meters),
+            ElevatorConstants.MAX_HEIGHT.in(Meters),
+            0.0,
+            ElevatorConstants.SUBSYSTEM_NAME);
   }
 
   private void configElevatorMotorLead(TalonFX motor) {
@@ -136,7 +153,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
-    config.MotorOutput.Inverted = IS_INVERTED;
+    config.MotorOutput.Inverted =
+        IS_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
@@ -296,6 +314,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         kVExpo,
         kAExpo,
         cruiseVelocity);
+
+    elevatorSystemSim.updateSim();
   }
 
   // Set motor voltage
