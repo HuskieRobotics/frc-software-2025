@@ -31,6 +31,16 @@
       "/SmartDashboard/VisionSystemSim-simCamera/Sim Field": "Field2d"
     }
   },
+  "NetworkTables": {
+    "transitory": {
+      "Tuning": {
+        "open": true,
+        "testVersion": {
+          "open": true
+        }
+      }
+    }
+  },
   "NetworkTables Info": {
     "Clients": {
       "open": true

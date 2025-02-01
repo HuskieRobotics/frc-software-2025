@@ -26,6 +26,7 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionIO;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.CharacterizationCommands;
@@ -75,7 +76,21 @@ public class RobotContainer {
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
 
   private final LoggedTunableNumber testNumber =
-      new LoggedTunableNumber("testVersion/TestNumber", 0.0);
+      new LoggedTunableNumber("operatorInterface/TestNumber", 0.0);
+  private final LoggedTunableBoolean testBoolean =
+      new LoggedTunableBoolean("operatorInterface/testBoolean", false);
+
+  private final LoggedTunableBoolean level1 =
+      new LoggedTunableBoolean("operatorInterface/level1", false);
+  private final LoggedTunableBoolean level2 =
+      new LoggedTunableBoolean("operatorInterface/level2", false);
+  private final LoggedTunableBoolean level3 =
+      new LoggedTunableBoolean("operatorInterface/level3", false);
+  private final LoggedTunableBoolean level4 =
+      new LoggedTunableBoolean("operatorInterface/level4", false);
+
+  private final LoggedTunableBoolean algaeToggle =
+      new LoggedTunableBoolean("operatorInterface/algaeToggle", false);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
