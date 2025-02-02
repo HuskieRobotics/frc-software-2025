@@ -132,7 +132,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
               Units.inchesToMeters(-10.6095),
               Units.inchesToMeters(8.052)),
           new Rotation3d(
-              Units.degreesToRadians(0), Units.degreesToRadians(-30), Units.degreesToRadians(0)));
+              Units.degreesToRadians(0), Units.degreesToRadians(-30), Units.degreesToRadians(-90)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
