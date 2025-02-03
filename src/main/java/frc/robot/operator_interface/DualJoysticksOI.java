@@ -29,6 +29,7 @@ public class DualJoysticksOI implements OperatorInterface {
     }
   }
 
+  // Translate Joystick
   @Override
   public double getTranslateX() {
     return -translateJoystick.getY();
@@ -40,8 +41,8 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public double getRotate() {
-    return -rotateJoystick.getX();
+  public Trigger getResetPoseToVisionButton() {
+    return translateJoystickButtons[1];
   }
 
   // Translation Joystick
@@ -58,6 +59,23 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public Trigger getPrepClimbSequence() {
     return translateJoystickButtons[3];
+  }
+
+  // Rotate Joystick
+
+  @Override
+  public double getRotate() {
+    return -rotateJoystick.getX();
+  }
+
+  @Override
+  public Trigger getDriveToNearestLeftBranchButton() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getDriveToNearestRightBranchButton() {
+    return rotateJoystickButtons[2];
   }
 
   @Override
@@ -94,10 +112,5 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getResetPoseToVisionButton() {
-    return rotateJoystickButtons[5];
   }
 }
