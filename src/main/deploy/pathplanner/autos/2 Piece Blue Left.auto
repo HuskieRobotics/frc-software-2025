@@ -1,0 +1,61 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "#1 Score Coral J 2BL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score J L2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "#2 Collect Coral 2BL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Collect Coral"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "#3 Score Coral K 2BL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score K L2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "#4 Collect Coral 2BL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Collect Coral"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}

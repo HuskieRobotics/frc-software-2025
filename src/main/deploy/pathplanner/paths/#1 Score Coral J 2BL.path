@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.016994863013698,
+        "y": 6.076005993150685
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.829965753424658,
+        "y": 5.790517979452054
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.574529109589041,
+        "y": 5.685338184931506
+      },
+      "prevControl": {
+        "x": 6.5511986301369864,
+        "y": 6.000877568493149
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Face JI"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -120.38
+  },
+  "reversed": false,
+  "folder": "2 Piece Blue Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -120.38
+  },
+  "useDefaultConstraints": true
+}
