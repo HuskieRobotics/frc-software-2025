@@ -49,9 +49,9 @@ public class ArtemisRobotConfig extends RobotConfig {
       Kilograms.of(
           51.862); // FIXME: update based on measured mass of robot with battery and bumpers
   private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.0); // FIXME: measure
-  private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75 
-  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75 
-  private static final Distance WHEEL_RADIUS = Meters.of(0.0954405 / 2.0); 
+  private static final Distance TRACKWIDTH = Meters.of(0.57785); // 22.75
+  private static final Distance WHEELBASE = Meters.of(0.57785); // 22.75
+  private static final Distance WHEEL_RADIUS = Meters.of(0.0954405 / 2.0);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.2;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.36, -0.36);
 

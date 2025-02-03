@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
-
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,35 +23,45 @@ public class New2025RobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.374); // FIXME: measure with 2x1s and phoenix tuner
+  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET =
+      Rotations.of(0.374); // FIXME: measure with 2x1s and phoenix tuner
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.042); // FIXME: see above
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET =
+      Rotations.of(0.042); // FIXME: see above
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 22;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.031); // FIXME: see above
+  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET =
+      Rotations.of(-0.031); // FIXME: see above
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 4;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.501); // FIXME: see above
+  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET =
+      Rotations.of(-0.501); // FIXME: see above
 
   private static final int GYRO_ID = 26;
 
   private static final Mass MASS = Kilograms.of(54.000); // FIXME: update based on actual robot mass
-  private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.5); // FIXME: update based on mass
-  private static final Distance TRACKWIDTH = Meters.of(0.57785); 
-  private static final Distance WHEELBASE = Meters.of(0.57785); 
-  private static final Distance WHEEL_RADIUS = Meters.of(0.096 / 2.0); // FIXME: update with sysid routine
-  private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.15; // unchanged, no reason it shouldn't be different from last year
-  private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
+  private static final MomentOfInertia MOI =
+      KilogramSquareMeters.of(6.5); // FIXME: update based on mass
+  private static final Distance TRACKWIDTH = Meters.of(0.57785);
+  private static final Distance WHEELBASE = Meters.of(0.57785);
+  private static final Distance WHEEL_RADIUS =
+      Meters.of(0.096 / 2.0); // FIXME: update with sysid routine
+  private static final double WHEEL_COEFFICIENT_OF_FRICTION =
+      1.15; // unchanged, no reason it shouldn't be different from last year
+  private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
+      new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.85725); // confirm with actual bumpers 
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.85725); // confirm with actual bumpers
+  private static final Distance ROBOT_WIDTH_WITH_BUMPERS =
+      Meters.of(0.85725); // confirm with actual bumpers
+  private static final Distance ROBOT_LENGTH_WITH_BUMPERS =
+      Meters.of(0.85725); // confirm with actual bumpers
 
   private static final double COUPLE_RATIO = 3.200; // possibly needs to be updated for mk4ns
 
@@ -64,7 +73,6 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double ANGLE_KV = 2.3345;
   private static final double ANGLE_KA = 0.049918;
 
-
   private static final double DRIVE_KP = 12.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
@@ -73,8 +81,10 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_KV = 0.004493;
   private static final double DRIVE_KA = 0.63109;
 
-  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(6.0); // FIXME: determine with real robot
-  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.04); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_VELOCITY =
+      MetersPerSecond.of(6.0); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_COAST_VELOCITY =
+      MetersPerSecond.of(0.04); // FIXME: determine with real robot
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
   private static final String CAN_BUS_NAME = "canbus1";
@@ -122,8 +132,8 @@ public class New2025RobotConfig extends RobotConfig {
               Units.inchesToMeters(10.778),
               Units.inchesToMeters(8.189)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
-  
-          // default values for tunables
+
+  // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
   private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
   private static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
@@ -137,7 +147,8 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_THETA_KP = 7.5; // FIXME: update with testing
   private static final double DRIVE_TO_POSE_THETA_KI = 0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
-  private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06); // FIXME: update with testing (different from reef?)
+  private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE =
+      Meters.of(0.06); // FIXME: update with testing (different from reef?)
   private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
   private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(1.25);
   private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION =
@@ -151,6 +162,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
   private static final int LED_COUNT = 35; // FIXME: update for new leds
+
   @Override
   public boolean getPhoenix6Licensed() {
     return true;
@@ -276,12 +288,11 @@ public class New2025RobotConfig extends RobotConfig {
     return WHEELBASE;
   }
 
-
   @Override
   public Distance getWheelRadius() {
     return WHEEL_RADIUS;
   }
-  
+
   @Override
   public Translation2d getFrontRightCornerPosition() {
     return FRONT_RIGHT_CORNER_POSITION;
@@ -303,7 +314,6 @@ public class New2025RobotConfig extends RobotConfig {
       ROBOT_TO_CAMERA_0, ROBOT_TO_CAMERA_1, ROBOT_TO_CAMERA_2, ROBOT_TO_CAMERA_3
     };
   }
-
 
   @Override
   public LinearVelocity getRobotMaxVelocity() {
@@ -424,11 +434,12 @@ public class New2025RobotConfig extends RobotConfig {
   public Angle getDriveToPoseThetaTolerance() {
     return DRIVE_TO_POSE_THETA_TOLERANCE;
   }
+
   @Override
   public int getPneumaticsHubCANID() {
     return 0;
   }
-  
+
   @Override
   public LinearVelocity getMoveToPathFinalVelocity() {
     return SQUARING_SPEED;
@@ -485,4 +496,3 @@ public class New2025RobotConfig extends RobotConfig {
     return COUPLE_RATIO;
   }
 }
-
