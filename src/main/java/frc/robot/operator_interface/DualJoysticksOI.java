@@ -113,5 +113,4 @@ public class DualJoysticksOI implements OperatorInterface {
   public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
   }
-
 }

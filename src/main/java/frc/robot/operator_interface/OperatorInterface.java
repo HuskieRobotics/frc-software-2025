@@ -83,7 +83,7 @@ public interface OperatorInterface {
   public default Trigger getDriveToNearestRightBranchButton() {
     return new Trigger(() -> false);
   }
-  
+
   public default Trigger getPrepareElevatorToScoreButton() {
     return new Trigger(() -> false);
   }
