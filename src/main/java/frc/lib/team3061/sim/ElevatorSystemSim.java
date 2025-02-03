@@ -64,7 +64,7 @@ public class ElevatorSystemSim {
             startingHeightMeters);
 
     this.mech2d = new LoggedMechanism2d(1, 1);
-    this.elevatorBase = mech2d.getRoot("ElevatorBase", 0.5, 0.5);
+    this.elevatorBase = mech2d.getRoot("ElevatorBase", 0.7, 0.1);
     this.elevatorExtension =
         elevatorBase.append(
             new LoggedMechanismLigament2d(

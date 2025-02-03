@@ -20,6 +20,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
@@ -41,8 +42,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private StatusSignal<Current> leadStatorCurrent;
   private StatusSignal<Current> followerStatorCurrent;
 
-  private StatusSignal<VoltageOut> leadVoltageSupplied;
-  private StatusSignal<VoltageOut> followerVoltageSupplied;
+  private StatusSignal<Voltage> leadVoltageSupplied;
+  private StatusSignal<Voltage> followerVoltageSupplied;
 
   private StatusSignal<Current> leadSupplyCurrent;
   private StatusSignal<Current> followerSupplyCurrent;
@@ -115,6 +116,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     leadStatorCurrent = elevatorMotorLead.getStatorCurrent();
     followerStatorCurrent = elevatorMotorFollower.getStatorCurrent();
+
+    leadVoltageSupplied = elevatorMotorLead.getMotorVoltage();
+    followerVoltageSupplied = elevatorMotorFollower.getMotorVoltage();
 
     leadSupplyCurrent = elevatorMotorLead.getSupplyCurrent();
     followerSupplyCurrent = elevatorMotorFollower.getSupplyCurrent();
