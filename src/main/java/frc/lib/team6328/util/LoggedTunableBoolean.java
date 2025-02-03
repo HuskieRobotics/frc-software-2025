@@ -29,6 +29,7 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   private boolean hasDefault = false;
   private boolean defaultValue;
   private LoggedNetworkBoolean dashboardBoolean;
+  private boolean readAndWriteAlways;
   private Map<Integer, Boolean> lastHasChangedValues = new HashMap<>();
 
   /**
@@ -39,6 +40,19 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   public LoggedTunableBoolean(String dashboardKey) {
     this.key = TABLE_KEY + "/" + dashboardKey;
   }
+
+
+  /**
+   * Create a new LoggedTunableBoolean with the default value
+   *
+   * @param dashboardKey Key on dashboard
+   * @param readAndWrite Default value
+   */
+  public LoggedTunableBoolean(String dashboardKey, boolean readAndWrite) {
+    this.key = TABLE_KEY + "/" + dashboardKey;
+    this.readAndWriteAlways = readAndWrite;
+  }
+  
 
   /**
    * Create a new LoggedTunableBoolean with the default value
@@ -103,9 +117,9 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    *
    * @param id Unique identifier for the caller to avoid conflicts when shared between multiple *
    *     objects. Recommended approach is to pass the result of "hashCode()"
-   * @param action Callback to run when any of the tunable numbers have changed. Access tunable
+   * @param action Callback to run when any of the tunable booleans have changed. Access tunable
    *     numbers in order inputted in method
-   * @param tunableNumbers All tunable numbers to check
+   * @param tunableBooleans All tunable booleans to check
    */
   public static void ifChanged(
       int id, Consumer<Object[]> action, LoggedTunableBoolean... tunableBooleans) {
