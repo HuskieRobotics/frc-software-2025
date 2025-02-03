@@ -2,12 +2,17 @@ package frc.robot.configs;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.configs.MountPoseConfigs;
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
+
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
@@ -19,49 +24,57 @@ public class New2025RobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.374); // update
+  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.374); // FIXME: measure with 2x1s and phoenix tuner
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.042); // update
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(0.042); // FIXME: see above
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 22;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.031); // update
+  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.031); // FIXME: see above
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 4;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.501); // update
+  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.501); // FIXME: see above
 
   private static final int GYRO_ID = 26;
 
-  private static final Mass MASS = Kilograms.of(54.000); // update
-  private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.5); // update
+  private static final Mass MASS = Kilograms.of(54.000); // FIXME: update based on actual robot mass
+  private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.5); // FIXME: update based on mass
   private static final Distance TRACKWIDTH = Meters.of(0.57785); 
   private static final Distance WHEELBASE = Meters.of(0.57785); 
-  private static final Distance WHEEL_RADIUS = Meters.of(0.096 / 2.0); // update with sysid routine
-  private static final double WHEEL_COEFFICIENT_OF_FRICTION =
-      1.15; // unchanged, no reason it shouldn't be different from last year
+  private static final Distance WHEEL_RADIUS = Meters.of(0.096 / 2.0); // FIXME: update with sysid routine
+  private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.15; // unchanged, no reason it shouldn't be different from last year
+  private static final Translation2d FRONT_RIGHT_CORNER_POSITION = new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
 
-  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.85725); 
-  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.85725); 
+  private static final Distance ROBOT_WIDTH_WITH_BUMPERS = Meters.of(0.85725); // confirm with actual bumpers 
+  private static final Distance ROBOT_LENGTH_WITH_BUMPERS = Meters.of(0.85725); // confirm with actual bumpers
 
   private static final double COUPLE_RATIO = 3.200; // possibly needs to be updated for mk4ns
 
   /* PID Values, Update all of these based on sysid routine when new robot arrives */
-  private static final double ANGLE_KP = 105.0;
+  private static final double ANGLE_KP = 100.0;
   private static final double ANGLE_KI = 0.0;
-  private static final double ANGLE_KD = 0.045;
+  private static final double ANGLE_KD = 0.5;
+  private static final double ANGLE_KS = 0.28516;
+  private static final double ANGLE_KV = 2.3345;
+  private static final double ANGLE_KA = 0.049918;
 
-  private static final double DRIVE_KP = 9.5;
+
+  private static final double DRIVE_KP = 12.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
 
-  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(6.0); // update
-  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.04); // update
+  private static final double DRIVE_KS = 5.7421;
+  private static final double DRIVE_KV = 0.004493;
+  private static final double DRIVE_KA = 0.63109;
+
+  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(6.0); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.04); // FIXME: determine with real robot
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
   private static final String CAN_BUS_NAME = "canbus1";
@@ -71,7 +84,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final String CAMERA_NAME_2 = "OV2311FL";
   private static final String CAMERA_NAME_3 = "OV2311BL";
 
-  // UPDATE ALL OF THESE CAMERA LOCATIONS, THEY WILL BE DIFFERENT
+  // FIXME: UPDATE ALL OF THESE CAMERA LOCATIONS AFTER CONFIRMING WITH MECHANICAL
 
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
@@ -109,7 +122,35 @@ public class New2025RobotConfig extends RobotConfig {
               Units.inchesToMeters(10.778),
               Units.inchesToMeters(8.189)),
           new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
+  
+          // default values for tunables
+  private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
+  private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
+  private static final double AUTO_DRIVE_D_CONTROLLER = 0.0;
+  private static final double AUTO_TURN_P_CONTROLLER = 5.0;
+  private static final double AUTO_TURN_I_CONTROLLER = 0.0;
+  private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
+  // Drive to Pose constants
+  private static final double DRIVE_TO_POSE_DRIVE_KP = 8.0; // FIXME: update with testing
+  private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
+  private static final double DRIVE_TO_POSE_THETA_KP = 7.5; // FIXME: update with testing
+  private static final double DRIVE_TO_POSE_THETA_KI = 0;
+  private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
+  private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE = Meters.of(0.06); // FIXME: update with testing (different from reef?)
+  private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
+  private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(1.25);
+  private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION =
+      MetersPerSecondPerSecond.of(2.5);
+
+  private static final LinearVelocity SQUARING_SPEED = MetersPerSecond.of(1.0);
+
+  // Drive Facing Angle constants
+  private static final double DRIVE_FACING_ANGLE_KP = 6.0;
+  private static final double DRIVE_FACING_ANGLE_KD = 0.1;
+  private static final double DRIVE_FACING_ANGLE_KI = 0.0;
+
+  private static final int LED_COUNT = 35; // FIXME: update for new leds
   @Override
   public boolean getPhoenix6Licensed() {
     return true;
@@ -131,6 +172,21 @@ public class New2025RobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getSwerveAngleKS() {
+    return ANGLE_KS;
+  }
+
+  @Override
+  public double getSwerveAngleKV() {
+    return ANGLE_KV;
+  }
+
+  @Override
+  public double getSwerveAngleKA() {
+    return ANGLE_KA;
+  }
+
+  @Override
   public double getSwerveDriveKP() {
     return DRIVE_KP;
   }
@@ -143,6 +199,21 @@ public class New2025RobotConfig extends RobotConfig {
   @Override
   public double getSwerveDriveKD() {
     return DRIVE_KD;
+  }
+
+  @Override
+  public double getDriveKS() {
+    return DRIVE_KS;
+  }
+
+  @Override
+  public double getDriveKV() {
+    return DRIVE_KV;
+  }
+
+  @Override
+  public double getDriveKA() {
+    return DRIVE_KA;
   }
 
   @Override
@@ -205,15 +276,34 @@ public class New2025RobotConfig extends RobotConfig {
     return WHEELBASE;
   }
 
-  @Override
-  public Mass getMass() {
-    return MASS;
-  }
 
   @Override
   public Distance getWheelRadius() {
     return WHEEL_RADIUS;
   }
+  
+  @Override
+  public Translation2d getFrontRightCornerPosition() {
+    return FRONT_RIGHT_CORNER_POSITION;
+  }
+
+  @Override
+  public Distance getRobotWidthWithBumpers() {
+    return ROBOT_WIDTH_WITH_BUMPERS;
+  }
+
+  @Override
+  public Distance getRobotLengthWithBumpers() {
+    return ROBOT_LENGTH_WITH_BUMPERS;
+  }
+
+  @Override
+  public Transform3d[] getRobotToCameraTransforms() {
+    return new Transform3d[] {
+      ROBOT_TO_CAMERA_0, ROBOT_TO_CAMERA_1, ROBOT_TO_CAMERA_2, ROBOT_TO_CAMERA_3
+    };
+  }
+
 
   @Override
   public LinearVelocity getRobotMaxVelocity() {
@@ -221,7 +311,178 @@ public class New2025RobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getRobotSlowModeMultiplier() {
+    return SLOW_MODE_MULTIPLIER;
+  }
+
+  @Override
+  public LinearVelocity getRobotMaxCoastVelocity() {
+    return MAX_COAST_VELOCITY;
+  }
+
+  @Override
+  public double getAutoDriveKP() {
+    return AUTO_DRIVE_P_CONTROLLER;
+  }
+
+  @Override
+  public double getAutoDriveKI() {
+    return AUTO_DRIVE_I_CONTROLLER;
+  }
+
+  @Override
+  public double getAutoDriveKD() {
+    return AUTO_DRIVE_D_CONTROLLER;
+  }
+
+  @Override
+  public double getAutoTurnKP() {
+    return AUTO_TURN_P_CONTROLLER;
+  }
+
+  @Override
+  public double getAutoTurnKI() {
+    return AUTO_TURN_I_CONTROLLER;
+  }
+
+  @Override
+  public double getAutoTurnKD() {
+    return AUTO_TURN_D_CONTROLLER;
+  }
+
+  @Override
+  public Mass getMass() {
+    return MASS;
+  }
+
+  @Override
+  public MomentOfInertia getMomentOfInertia() {
+    return MOI;
+  }
+
+  @Override
+  public double getWheelCOF() {
+    return WHEEL_COEFFICIENT_OF_FRICTION;
+  }
+
+  @Override
+  public String getCANBusName() {
+    return CAN_BUS_NAME;
+  }
+
+  @Override
+  public String[] getCameraNames() {
+    return new String[] {CAMERA_NAME_0, CAMERA_NAME_1, CAMERA_NAME_2, CAMERA_NAME_3};
+  }
+
+  @Override
+  public double[] getCameraStdDevFactors() {
+    return new double[] {1.0, 1.0, 1.0, 1.0};
+  }
+
+  @Override
+  public double getDriveToPoseDriveKP() {
+    return DRIVE_TO_POSE_DRIVE_KP;
+  }
+
+  @Override
+  public double getDriveToPoseDriveKD() {
+    return DRIVE_TO_POSE_DRIVE_KD;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKI() {
+    return DRIVE_TO_POSE_THETA_KI;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKP() {
+    return DRIVE_TO_POSE_THETA_KP;
+  }
+
+  @Override
+  public double getDriveToPoseThetaKD() {
+    return DRIVE_TO_POSE_THETA_KD;
+  }
+
+  @Override
+  public LinearVelocity getDriveToPoseDriveMaxVelocity() {
+    return DRIVE_TO_POSE_MAX_VELOCITY;
+  }
+
+  @Override
+  public LinearAcceleration getDriveToPoseDriveMaxAcceleration() {
+    return DRIVE_TO_POSE_MAX_ACCELERATION;
+  }
+
+  @Override
+  public Distance getDriveToPoseDriveTolerance() {
+    return DRIVE_TO_POSE_DRIVE_TOLERANCE;
+  }
+
+  @Override
+  public Angle getDriveToPoseThetaTolerance() {
+    return DRIVE_TO_POSE_THETA_TOLERANCE;
+  }
+  @Override
   public int getPneumaticsHubCANID() {
     return 0;
   }
+  
+  @Override
+  public LinearVelocity getMoveToPathFinalVelocity() {
+    return SQUARING_SPEED;
+  }
+
+  @Override
+  public double getDriveFacingAngleThetaKP() {
+    return DRIVE_FACING_ANGLE_KP;
+  }
+
+  @Override
+  public double getDriveFacingAngleThetaKI() {
+    return DRIVE_FACING_ANGLE_KI;
+  }
+
+  @Override
+  public double getDriveFacingAngleThetaKD() {
+    return DRIVE_FACING_ANGLE_KD;
+  }
+
+  @Override
+  public double getOdometryUpdateFrequency() {
+    return 250.0;
+  }
+
+  @Override
+  public Pigeon2Configuration getPigeonConfigForSwerveDrivetrain() {
+    return new Pigeon2Configuration()
+        .withMountPose(new MountPoseConfigs().withMountPoseRoll(-180.0));
+  }
+
+  @Override
+  public LED_HARDWARE getLEDHardware() {
+    return LED_HARDWARE.RIO;
+  }
+
+  @Override
+  public int getLEDCount() {
+    return LED_COUNT;
+  }
+
+  @Override
+  public SWERVE_CONTROL_MODE getSwerveSteerControlMode() {
+    return SWERVE_CONTROL_MODE.VOLTAGE;
+  }
+
+  @Override
+  public SWERVE_CONTROL_MODE getSwerveDriveControlMode() {
+    return SWERVE_CONTROL_MODE.TORQUE_CURRENT_FOC;
+  }
+
+  @Override
+  public double getAzimuthSteerCouplingRatio() {
+    return COUPLE_RATIO;
+  }
 }
+
