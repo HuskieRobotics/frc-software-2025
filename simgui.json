@@ -17,6 +17,7 @@
   "NTProvider": {
     "types": {
       "/AdvantageKit/RealOutputs/Alerts": "Alerts",
+      "/AdvantageKit/RealOutputs/Elevator/ElevatorSim": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Auto Routine": "String Chooser",
