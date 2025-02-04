@@ -144,7 +144,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public Distance getPosition() {
-
     return Inches.of(inputs.positionInches);
   }
 }

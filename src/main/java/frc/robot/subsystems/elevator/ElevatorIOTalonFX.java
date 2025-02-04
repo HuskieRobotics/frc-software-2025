@@ -53,6 +53,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private StatusSignal<Temperature> elevatorLeadTempStatusSignal;
   private StatusSignal<Temperature> elevatorFollowerTempStatusSignal;
 
+  private double localPosition = 0.0;
+
   // Tunable constants
   private final LoggedTunableNumber kPslot0 =
       new LoggedTunableNumber("Elevator/kPslot0", ElevatorConstants.KP_SLOT0);
@@ -258,6 +260,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.positionInches = inputs.positionRotations * PULLY_CIRCUMFERANCE_INCHES;
 
+    localPosition = inputs.positionInches;
+
     LoggedTunableNumber.ifChanged(
         hashCode(),
         motionMagic -> {
@@ -335,7 +339,29 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPosition(Distance position) {
-    elevatorMotorLead.setControl(
-        leadPositionRequest.withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES));
+    if (localPosition < HEIGHT_SWITCH_SLOT0.in(Inches)) {
+
+      // set the elevator to slot 0
+      elevatorMotorLead.setControl(
+          leadPositionRequest
+              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
+              .withSlot(0));
+
+    } else if (localPosition < HEIGHT_SWITCH_SLOT1.in(Inches)) {
+
+      // set the elevator to slot 1
+      elevatorMotorLead.setControl(
+          leadPositionRequest
+              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
+              .withSlot(1));
+
+    } else {
+
+      // set the elevator to slot 2
+      elevatorMotorLead.setControl(
+          leadPositionRequest
+              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
+              .withSlot(2));
+    }
   }
 }

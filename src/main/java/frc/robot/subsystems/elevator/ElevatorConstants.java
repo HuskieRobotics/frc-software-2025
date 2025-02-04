@@ -9,8 +9,12 @@ public class ElevatorConstants {
   public static final boolean IS_INVERTED = false;
 
   public static final double TOLERANCE_INCHES = 0;
+
   public static final Distance MAX_HEIGHT = Inches.of(73.875);
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
+
+  public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
+  public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
 
   public static final double PULLY_CIRCUMFERANCE_INCHES = 5.9055;
   public static final int GEAR_RATIO = 5;
