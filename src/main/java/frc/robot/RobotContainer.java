@@ -214,7 +214,6 @@ public class RobotContainer {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
     } catch (IOException e) {
       layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
       layoutFileMissingAlert.setText(
           LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
       layoutFileMissingAlert.set(true);
