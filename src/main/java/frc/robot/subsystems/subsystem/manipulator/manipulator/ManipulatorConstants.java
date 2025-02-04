@@ -42,6 +42,7 @@ public static final double INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL = 0.0; //
 //the regular velocity for the indexer is while the coral is getting indexed, this variable is to control the velocity while ejecting the coral out of the manipulator
 //the funnel should only have one velocity when it is intaking coral, but if the coral is jammed and needs to be ejected out thru the funnel it should have a different velocity then
 public static final double FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; //tbd
+public static final double INDEXER_MOTOR_VELOCITY_WHILE_REMOVING_ALGAE = 0.0; //this will be the set value to which the indexer motor velocity should be when removing algae
 
 //unsure if these properties are needed
 public static final double FUNNEL_ROLLER_VELOCITY_TOLERANCE = 0.0;

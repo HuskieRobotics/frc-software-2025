@@ -21,6 +21,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.swerve.Conversions;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import com.ctre.phoenix6.signals.InvertedValue; //imported to invert the funnel motor
 
 /** TalonFX implementation of the generic SubsystemIO */
 public class ManipulatorIOTalonFX implements ManipulatorIO {
@@ -39,14 +40,38 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private Alert configAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
-  private final LoggedTunableNumber kP = new LoggedTunableNumber("Subsystem/kP", POSITION_PID_P);
-  private final LoggedTunableNumber kI = new LoggedTunableNumber("Subsystem/kI", POSITION_PID_I);
-  private final LoggedTunableNumber kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
-  private final LoggedTunableNumber kPeakOutput =
-      new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
+/* You will create StatusSignal<> objects for each logged input. 
+  These status signals will then be insantiated in the constructor with what value they should be tracking, which you do in updateInputs right now. 
+  In updateInputs, you will refresh all of the status signals, 
+  and set each input variable by retrieving each of the values of your statussignals with the statussignal.getValueAs___() methods.
+*/
+  private StatusSignal<LoggedTunableNumber> kP;
+  private StatusSignal<LoggedTunableNumber> kI;
+  private StatusSignal<LoggedTunableNumber> kD;
+  private StatusSignal<LoggedTunableNumber> kPeakOuput;
+
+  //private final LoggedTunableNumber kP = new LoggedTunableNumber("Subsystem/kP", POSITION_PID_P);
+  //private final LoggedTunableNumber kI = new LoggedTunableNumber("Subsystem/kI", POSITION_PID_I);
+  //private final LoggedTunableNumber kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
+  //private final LoggedTunableNumber kPeakOutput = new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
+
+  // Create StatusSignal objects for each loggable input from the ManipulatorIO class in the updateInputs method
+  private StatusSignal<Double> positionDeg;
+  private StatusSignal<Double> velocityRPM;
+  private StatusSignal<Double> closedLoopError;
+  private StatusSignal<Double> setpoint;
+  private StatusSignal<Double> power;
+  private StatusSignal<String> controlMode;
+  private StatusSignal<Double> statorCurrentAmps;
+  private StatusSignal<Double> tempCelsius;
+  private StatusSignal<Double> supplyCurrentAmps;
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
+    kP = new LoggedTunableNumber("Subsystem/kP", POSITION_PID_P);
+    kI = new LoggedTunableNumber("Subsystem/kI", POSITION_PID_I);
+    kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
+    kPeakOuput = new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
     configFunnelMotor(12);
     configIndexerMotor(14);
     //the can id's for the funnel and indexer motor is in the ManipulatorConstants.java file
@@ -79,6 +104,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.statorCurrentAmps = funnelMotor.getStatorCurrent().getValue().in(Amps);
     inputs.tempCelsius = funnelMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.supplyCurrentAmps = funnelMotor.getSupplyCurrent().getValue().in(Amps);
+
+    //I added this part here to assign all the variables in the ManipulatorIO class keeping track of the logged tunable inputs to the acctual value of the logged tunable inputs.
+    funnelMotorStatorCurrentAmps = inputs.statorCurrentAmps;
+    funnelMotorSupplyCurrentAmps = inputs.supplyCurrentAmps;
+    //funnelMotorVelocityRPS --> this value is not currently a logged input 
+    //funnelMotorReferenceVelocityRPS --> this value is not currently a logged input
+    funnelMotorTempCelsius = inputs.tempCelsuis;
+    //funnelMotorVoltage --> not sure if this connects to a logged tunable input
 
     // update configuration if tunables have changed
     LoggedTunableNumber.ifChanged(
@@ -123,6 +156,13 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.tempCelsius = indexerMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.supplyCurrentAmps = indexerMotor.getSupplyCurrent().getValue().in(Amps);
 
+    //Assign all variables for the indexer motor logged inputs in the ManipulatorIO class keeping track of the logged tunable inputs to the acctual value of the logged tunable inputs for the indexer motor
+    indexerMotorStatorCurrentAmps 
+    indexerMotorSupplyCurrentAmps 
+    indexerMotorVelocityRPS
+    indexerMotorReferenceVelocityRPS
+    indexerMotorTempCelsius
+    indexerMotorVoltage
     // update configuration if tunables have changed
     LoggedTunableNumber.ifChanged(
         hashCode(),

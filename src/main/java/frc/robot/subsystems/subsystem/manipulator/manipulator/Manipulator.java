@@ -1,8 +1,6 @@
 package frc.robot.subsystems.subsystem.manipulator.manipulator;
-
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorConstants.*;
-
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -12,7 +10,8 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj2.command.WaitCommand; // here is the link of the documentation for this class https://github.wpilib.org/allwpilib/docs/release/java/edu/wpi/first/wpilibj2/command/WaitCommand.html
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.filter.LinearFilter;
 
 /**
  * Models a generic subsystem for a rotational mechanism. The other subsystems defined in this
@@ -35,7 +34,12 @@ public class Manipulator extends SubsystemBase {
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged(); //stefan said to ignore this error and keep this here
   private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
   private State lastState = State.UNINITIALIZED; 
-  WaitCommand ManipulatorInIndexingCoralState;
+  private LinearFilter currentInAmps = new LinearFilter.singlePoleIIR(0.1, 0.02); //the first value is the time constant, the characteristic timescale of the filter's impulse response, and the second value is the time-period, how often the calculate() method will be called
+  private final double thresholdForCurrentSpike = 5; //this constant will keep track of the threshold for a current spike , which for example I put as 5
+  private boolean shootCoralButtonPressed = false; 
+  private boolean removeAlgaeButtonPressed = false;
+  private boolean algaeRemoved = false; //need to actually figure out the IO stuff with this... how do we actually know if the algae has been removed??
+  private boolean robotTurnedOn = false; //this is a instance variable that just keeps track of if the robot has been turned on, actually need to figure out the io stuff for this though to set it to true
   
     /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
     private final SysIdRoutine sysIdRoutine =
@@ -69,6 +73,7 @@ public class Manipulator extends SubsystemBase {
         @Override
         void onEnter(Manipulator subsystem) {
           subsystem.setFunnelMotorVelocity(3); //velocity is tbd
+          subsystem.setIndexerMotorVelocity(0); //turn indexer motor speed to 0 
         }
   
         @Override
@@ -85,15 +90,17 @@ public class Manipulator extends SubsystemBase {
         @Override
         void onEnter(Manipulator subsystem) {
           subsystem.setIndexerMotorVelocity(3); //velocity is tbd
-          ManipulatorInIndexingCoralState = new WaitCommand(3); //this command will basically run for __ seconds, and if the manipulator is still in this state, then it'll switch to the CORAL_STUCK state
+          Timer coralInIndexingState = new Timer(); //create a timer to track how long is spent in this stage
+          coralInIndexingState.restart(); //start timer
+
       }
       @Override
       void execute(Manipulator subsystem) {
-        if(subsystem.inputs.isIndexerIRBlocked)
+        if(subsystem.inputs.isIndexerIRBlocked && currentInAmps.lastValue() > thresholdForCurrentSpike) //the currentInAmps filters out the current in the noise and getting the lastValue gets the last value of the current, and if that last value is greater than some constant, then current spike has been detected
         {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
         }
-        else if (ManipulatorInIndexingCoralState.isFinished())
+        else if (coralInIndexingState.hasElapsed(3) && subsystem.inputs.isFunnelIRBlocked ) //hasElapsed method check if the timer has elapsed a certain number of seconds, which i can make a constant later
         {
           subsystem.setState(CORAL_STUCK);
         }
@@ -106,7 +113,10 @@ public class Manipulator extends SubsystemBase {
     CORAL_STUCK{
       @Override
       void onEnter(Manipulator subsystem) {
-        //do something with the motors so they get the rollers to rotate the opposite direction to eject the coral out of the funnel
+        //set motor inverted boolean to true
+        //set negative velocity to funnel motor
+        subsystem.setFunnelMotorVelocity(-3);
+        isFunnelMotorInverted = true;
       }
       @Override
       void execute(Manipulator subsystem) {
@@ -116,9 +126,7 @@ public class Manipulator extends SubsystemBase {
       }
       @Override
       void onExit(Manipulator subsystem) {
-        //set both motor speeds to 0
-        subsystem.setFunnelMotorVelocity(0);
-        subsystem.setIndexerMotorVelocity(0);
+        isFunnelMotorInverted = false;
       }
     },
     CORAL_IN_MANIPULATOR {
@@ -131,26 +139,29 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        if (isFunnelIRBlocked == false && isIndexerIRBlocked == true) { //just put this expression here to check again if the coral is fully in the maniplator, please let me know if i should remove the if statement and just switch states directly
+        if (shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
         }
       }
 
       @Override
       void onExit(Manipulator subsystem) {
-        /* no-op */
       }
     },
     SHOOT_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVelocity(3);
+        subsystem.setIndexerMotorVelocity(INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL); //speed of indexer motor velocity while shooting coral should be different compared to intaking, etc
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        //call command to shoot coral
-        if (isFunnelIRBlocked == false && isIndexerIRBlocked == false) {
+        //call command to shoot coral -- will do later
+        if ((isFunnelIRBlocked == false && isIndexerIRBlocked == false) && removeAlgaeButtonPressed) {
+          subsystem.setState(State.REMOVE_ALGAE); 
+        }
+        else if (isFunnelIRBlocked == false && isIndexerIRBlocked == false)
+        {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL); //if the coral has been shot out and the manipulator is empty
         }
       }
@@ -161,20 +172,38 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVelocity(0);
       }
     },
-    UNINITIALIZED { //state that the robot should be in when its like turned off ... I think??
-      @Override
-      void execute(Manipulator subsystem) {
-       
-      }
-
+      REMOVE_ALGAE { 
       @Override
       void onEnter(Manipulator subsystem) {
-        /* no-op */
+        subsystem.setIndexerMotorVelocity(INDEXER_MOTOR_VELOCITY_WHILE_REMOVING_ALGAE);
       }
-
+      @Override
+      void execute(Manipulator subsystem) {  
+        if (!removeAlgaeButtonPressed && algaeRemoved ) //I created an instance variable (algaeRemoved) thqat would keep track if the algae was removed but I need to do the IO stuff to actually check if the algae has been removed
+        {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
+      }
       @Override
       void onExit(Manipulator subsystem) {
-        /* no-op */
+      }
+    },
+    UNINITIALIZED { //state that the robot should be in when its  turned off 
+      @Override
+      void onEnter(Manipulator subsystem) {
+        //set speed of both motors to 0
+        subsystem.setIndexerMotorVelocity(0);
+        subsystem.setFunnelMotorVelocity(0);
+      }
+      @Override
+      void execute(Manipulator subsystem) {
+        if(robotTurnedOn)
+        {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
+      }
+      @Override
+      void onExit(Manipulator subsystem) {
       }
     };
 
@@ -207,6 +236,7 @@ public class Manipulator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Subsystem", inputs);
+    currentInAmps.calculate();
 
     // when testing, set the motor power, current, or position based on the Tunables (if non-zero)
     if (testingMode.get() != 0) {
@@ -308,4 +338,15 @@ public class Manipulator extends SubsystemBase {
     io.setIndexerMotorVelocity(velocity);
   }
 
+// method to shoot coral which returns true if the shoot coral button is pressed
+  private void shootCoral()
+  {
+    shootCoralButtonPressed = true;
+  }
+
+  // method to remove algae which returns true if the remove algae button is pressed
+  private void removeAlgae()
+  {
+    removeAlgaeButtonPressed = true;
+  }
 }

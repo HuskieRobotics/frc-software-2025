@@ -7,7 +7,7 @@ public interface ManipulatorIO {
   @AutoLog
   public static class ManipulatorIOInputs {
 
-    //copied from 2024 code
+    //All of the logged tunable inputs from 2024 intake code
     double positionDeg = 0.0;
     double velocityRPM = 0.0;
     double closedLoopError = 0.0;
@@ -24,7 +24,7 @@ public interface ManipulatorIO {
 
     //not sure what these values are for but just copied them from the 2024 Intak.IO code
     double funnelMotorStatorCurrentAmps = 0;
-    double indexerMotorCurrentAmps = 0;
+    double indexerMotorStatorCurrentAmps = 0;
 
     double funnelMotorSupplyCurrentAmps = 0;
     double indexerMotorSupplyCurrentAmps = 0;
@@ -40,6 +40,11 @@ public interface ManipulatorIO {
 
     double funnelMotorVoltage = 0;
     double indexerMotorVoltage = 0;
+
+    boolean isFunnelMotorInverted = false;
+    boolean isIndexerMotorInverted = false;
+
+    //create variables to track if a certain motor is inverted or not
   }
 
   /** Updates the set of loggable inputs. */
@@ -86,6 +91,17 @@ public interface ManipulatorIO {
    * @param current the current to set the motor to in amps.
    */
   public default void setIndexerMotorCurrent(double current) {}
+
+//not sure if this is how i am supposed to see if there is a current spike
+  /**
+   * Get the current motor indexer current value specified in amps.
+   * @return the current value as a double. 
+   */
+  public default void getIndexerMotorCurrent()
+  {
+    return 
+  }
+
 
   /**
    * Set the funnel motor position to the specified value in degrees.
