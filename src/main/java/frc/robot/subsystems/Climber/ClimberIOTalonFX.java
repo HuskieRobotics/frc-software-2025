@@ -19,7 +19,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private StatusSignal<Double> statorCurrentAmps;
   private StatusSignal<Double> supplyCurrentAmps;
   private StatusSignal<Double> tempCelcius;
-  private StatusSignal<Double> positionUnitsPerRotation;
+  private StatusSignal<Double> positionRotations;
+  private StatusSignal<Double> positionInches;
 
   private final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/KP", ClimberConstants.KP);
   private final LoggedTunableNumber KI = new LoggedTunableNumber("Climber/KI", ClimberConstants.KI);
@@ -34,7 +35,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   public ClimberIOTalonFX() {
     climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
     
-    configClimberMotors();
+    configMotor();
 
     climberVoltageRequest = new VoltageOut(0);
     
@@ -50,14 +51,15 @@ public class ClimberIOTalonFX implements ClimberIO {
         statorCurrentAmps,
         supplyCurrentAmps,
         tempCelcius,
-        positionUnitsPerRotation
+        positionRotations,
+        positionInches
       );
 
       inputs.voltage = voltage.getValueAsDouble();
       inputs.statorCurrentAmps = statorCurrentAmps.getValueAsDouble();
       inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
       inputs.tempCelcius = tempCelcius.getValueAsDouble();
-      inputs.position_units_per_rotation = positionUnitsPerRotation.getValueAsDouble();
+      inputs.positionRotations = positionRotations.getValueAsDouble();
   }
 
   public void setVoltage(double voltage) {
@@ -69,7 +71,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     climberMotor.setPosition(0, 0);
   }
 
-  private void configClimberMotors() {
+  private void configMotor() {
     TalonFXConfiguration climberMotorConfig = new TalonFXConfiguration();
     CurrentLimitsConfigs climberMotorCurrentLimits = new CurrentLimitsConfigs();
     climberMotorCurrentLimits.SupplyCurrentLimit =

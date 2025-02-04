@@ -3,11 +3,6 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class Climber {
     private ClimberIO io;
-    private ClimberState climberState;
-
-    private enum ClimberState {
-        IDLE, EXTENDING, RETRACTING, RETRACTINGSLOW
-    }
 
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
     private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
@@ -15,37 +10,39 @@ public class Climber {
     
     public Climber(ClimberIO io) {
         this.io = io;
-        //no state machine 
-        //so then no need for all of the below? (with the climberState etc)
 
-        this.climberState = climberState.IDLE;
     }
 
+    //getPosition() arguments in io.setVoltage are placeholders
+    
     public void periodic() {
-        if (testingMode.get() == 0) {
-            io.updateInputs(inputs);
+        io.updateInputs(inputs);
+        if (testingMode.get() == 1) {
+            //chekc voltage tunable DO NOT FORGET
+        }
+        else if (testingMode.get() != 0) {
+            io.setVoltage(getPosition());
         }
     }
 
     public void extend() {
-        climberState = ClimberState.EXTENDING;
+        io.setVoltage(getPosition());
     }
 
     public void retract() {
-        climberState = ClimberState.RETRACTING;
+        io.setVoltage(getPosition());
     }
 
     public void reset() {
-        climberState = ClimberState.RETRACTINGSLOW;
+        io.setVoltage(getPosition());
     }
 
     public void zero() {
-        this.climberState = ClimberState.IDLE;
         io.zeroPosition();
     }
 
     public double getPosition() {
-        return 0.0; //placeholder
+        return inputs.positionInches;
     }
 
 }
