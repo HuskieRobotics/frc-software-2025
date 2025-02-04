@@ -6,11 +6,10 @@ import edu.wpi.first.units.measure.Distance;
 
 public class ElevatorConstants {
 
-  public static final boolean IS_INVERTED = false;
+  public static final boolean IS_INVERTED = true;
 
   public static final double TOLERANCE_INCHES = 0;
-
-  public static final Distance MAX_HEIGHT = Inches.of(73.875);
+  public static final Distance MAX_HEIGHT = Inches.of(73);
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
 
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values

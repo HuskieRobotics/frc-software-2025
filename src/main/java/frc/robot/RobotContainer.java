@@ -47,8 +47,6 @@ import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.subsystem.Subsystem;
-import frc.robot.subsystems.subsystem.SubsystemIO;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -218,7 +216,7 @@ public class RobotContainer {
           LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
       layoutFileMissingAlert.set(true);
     }
-    
+
     vision =
         new Vision(
             new VisionIO[] {
