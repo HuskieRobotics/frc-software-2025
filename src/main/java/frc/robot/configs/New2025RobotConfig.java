@@ -100,10 +100,10 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(11.064),
-              Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(8.189)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(0)));
+              Units.inchesToMeters(10.69025),
+              Units.inchesToMeters(6.7455),
+              Units.inchesToMeters(-9.62375)),
+          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20)));
   // pitch 45 degrees
 
   // Back right camera
@@ -119,10 +119,10 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(10.778),
-              Units.inchesToMeters(11.064),
-              Units.inchesToMeters(8.189)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(90)));
+              Units.inchesToMeters(-10.6795),
+              Units.inchesToMeters(6.7715),
+              Units.inchesToMeters(-9.63075)),
+          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(-20)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
