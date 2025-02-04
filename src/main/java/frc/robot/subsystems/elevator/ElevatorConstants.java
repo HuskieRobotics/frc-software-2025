@@ -58,7 +58,7 @@ public class ElevatorConstants {
   public static final double KA_SLOT2 = 0;
   public static final double KG_SLOT2 = 0;
 
-  public static final double KV_EXPO = 20;
+  public static final double KV_EXPO = 0.6;
   public static final double KA_EXPO = 1; // FIXME: Update this value
 
   public static final double CRUISE_VELOCITY = 0;
