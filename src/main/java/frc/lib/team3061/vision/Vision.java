@@ -247,7 +247,7 @@ public class Vision extends SubsystemBase {
           SUBSYSTEM_NAME + "/" + cameraIndex + "/TagPoses", tagPoses.toArray(Pose3d[]::new));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/CameraPoses",
-          robotPoses.toArray(new Pose3d[cameraPoses.size()]));
+          cameraPoses.toArray(new Pose3d[cameraPoses.size()]));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotPoses",
           robotPoses.toArray(new Pose3d[robotPoses.size()]));

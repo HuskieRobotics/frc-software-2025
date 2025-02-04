@@ -7,7 +7,10 @@ package frc.robot;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,9 +28,14 @@ import frc.lib.team3061.drivetrain.DrivetrainIOCTRE;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
+import frc.lib.team3061.vision.VisionIOPhotonVision;
+import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.CharacterizationCommands;
+import frc.robot.Field2d.Side;
+import frc.robot.commands.AutonomousCommandFactory;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -86,6 +94,8 @@ public class RobotContainer {
     createRobotConfig();
 
     LEDs.getInstance();
+
+    Field2d.getInstance().populateReefBranchPoseMaps();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -173,8 +183,18 @@ public class RobotContainer {
 
     String[] cameraNames = config.getCameraNames();
     VisionIO[] visionIOs = new VisionIO[cameraNames.length];
+    AprilTagFieldLayout layout;
+    try {
+      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+    } catch (IOException e) {
+      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
+
+      layoutFileMissingAlert.setText(
+          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+      layoutFileMissingAlert.set(true);
+    }
     for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIO() {};
+      visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
 
@@ -185,12 +205,24 @@ public class RobotContainer {
     DrivetrainIO drivetrainIO = new DrivetrainIOCTRE();
     drivetrain = new Drivetrain(drivetrainIO);
 
-    String[] cameraNames = config.getCameraNames();
-    VisionIO[] visionIOs = new VisionIO[cameraNames.length];
-    for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIO() {};
+    AprilTagFieldLayout layout;
+    try {
+      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+    } catch (IOException e) {
+      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
+
+      layoutFileMissingAlert.setText(
+          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+      layoutFileMissingAlert.set(true);
     }
-    vision = new Vision(visionIOs);
+    vision =
+        new Vision(
+            new VisionIO[] {
+              new VisionIOSim(
+                  layout,
+                  drivetrain::getPose,
+                  RobotConfig.getInstance().getRobotToCameraTransforms()[0])
+            });
 
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
@@ -209,8 +241,18 @@ public class RobotContainer {
 
     String[] cameraNames = config.getCameraNames();
     VisionIO[] visionIOs = new VisionIO[cameraNames.length];
+    AprilTagFieldLayout layout;
+    try {
+      layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+    } catch (IOException e) {
+      layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
+
+      layoutFileMissingAlert.setText(
+          LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+      layoutFileMissingAlert.set(true);
+    }
     for (int i = 0; i < visionIOs.length; i++) {
-      visionIOs[i] = new VisionIO() {};
+      visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
 
@@ -340,34 +382,7 @@ public class RobotContainer {
      */
     autoChooser.addOption(
         "Drive Velocity Tuning",
-        Commands.sequence(
-            Commands.runOnce(drivetrain::disableFieldRelative, drivetrain),
-            Commands.repeatingSequence(
-                Commands.deadline(
-                    Commands.waitSeconds(1.0),
-                    Commands.run(() -> drivetrain.drive(2.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(1.0),
-                    Commands.run(() -> drivetrain.drive(-0.5, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(1.0),
-                    Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(3.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(2.0),
-                    Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(2.0),
-                    Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(2.0),
-                    Commands.run(
-                        () -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)))));
+        AutonomousCommandFactory.getDriveVelocityTuningCommand(drivetrain));
 
     /************ Swerve Rotation Tuning ************
      *
@@ -376,23 +391,7 @@ public class RobotContainer {
      */
     autoChooser.addOption(
         "Swerve Rotation Tuning",
-        Commands.sequence(
-            Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
-            Commands.repeatingSequence(
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(0.1, 0.1, 0.0, true, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(-0.1, 0.1, 0.0, true, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(-0.1, -0.1, 0.0, true, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(
-                        () -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain)))));
-
+        AutonomousCommandFactory.getSwerveRotationTuningCommand(drivetrain));
     /************ Drive Wheel Radius Characterization ************
      *
      * useful for characterizing the drive wheel Radius
@@ -400,8 +399,7 @@ public class RobotContainer {
      */
     autoChooser.addOption( // start by driving slowing in a circle to align wheels
         "Drive Wheel Radius Characterization",
-        CharacterizationCommands.wheelRadiusCharacterization(drivetrain)
-            .withName("Drive Wheel Radius Characterization"));
+        AutonomousCommandFactory.getDriveWheelRadiusCharacterizationCommand(drivetrain));
   }
 
   private Command createTuningAutoPath(String autoName, boolean measureDistance) {
@@ -484,6 +482,30 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
+
+    // drive to left branch of nearest reef face
+    oi.getDriveToNearestLeftBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest left branch"));
+
+    // drive to right branch of nearest reef face
+    oi.getDriveToNearestRightBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
