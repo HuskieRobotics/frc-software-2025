@@ -12,10 +12,10 @@ public final class VisionConstants {
   }
 
   public static final Path APRILTAG_FIELD_LAYOUT_PATH =
-      new File(Filesystem.getDeployDirectory(), "home.json").toPath();
+      new File(Filesystem.getDeployDirectory(), "2025-reefscape.json").toPath();
   // FIXME: update for the new season's file
   public static final Path OFFICIAL_APRILTAG_FIELD_LAYOUT_PATH =
-      new File(Filesystem.getDeployDirectory(), "2024-crescendo.json").toPath();
+      new File(Filesystem.getDeployDirectory(), "2025-reefscape.json").toPath();
   public static final int MAX_NUMBER_TAGS = 30;
 
   public static final String SUBSYSTEM_NAME = "Vision";
@@ -36,7 +36,7 @@ public final class VisionConstants {
   public static final double AMBIGUITY_THRESHOLD = 0.5;
 
   // the reprojection error must be less than this value for the target to be considered valid
-  public static final double REPROJECTION_ERROR_THRESHOLD = 1.0;
+  public static final double REPROJECTION_ERROR_THRESHOLD = 5.0;
 
   // the maximum error in the z component of the robot's pose for the pose to be considered valid
   // (assumes that the robot is always on the carpet)
