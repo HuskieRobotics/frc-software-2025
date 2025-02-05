@@ -35,6 +35,9 @@
     "transitory": {
       "Tuning": {
         "open": true,
+        "operatorInterface": {
+          "open": true
+        },
         "testVersion": {
           "open": true
         }

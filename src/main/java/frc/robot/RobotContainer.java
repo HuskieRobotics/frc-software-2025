@@ -87,7 +87,7 @@ public class RobotContainer {
       new LoggedTunableBoolean("operatorInterface/Level 4 ", false);
 
   private final LoggedTunableBoolean algaeToggle =
-      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, false);
+      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, true);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and

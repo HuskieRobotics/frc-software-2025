@@ -29,7 +29,7 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   private boolean hasDefault = false;
   private boolean defaultValue;
   private LoggedNetworkBoolean dashboardBoolean;
-  private boolean readAndWriteAlways;
+  private boolean readAndWriteAlways = true;
   private Map<Integer, Boolean> lastHasChangedValues = new HashMap<>();
 
   /**
@@ -56,7 +56,7 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    * Create a new LoggedTunableBoolean with the default value
    *
    * @param dashboardKey Key on dashboard
-   * @param readAndWrite Default value
+   * @param readAndWrite if the readAndWrite is true, the value will be read from and written to the
    */
   public LoggedTunableBoolean(String dashboardKey, boolean defaultValue, boolean readAndWrite) {
     this.key = TABLE_KEY + "/" + dashboardKey;
@@ -70,10 +70,13 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    * @param defaultValue The default value
    */
   public void initDefault(boolean defaultValue) {
-    if (!hasDefault) {
+
+    if (hasDefault == false) {
       hasDefault = true;
       this.defaultValue = defaultValue;
+      System.out.println("Created a class!");
       if (TUNING_MODE || this.readAndWriteAlways) {
+        System.out.println("We created a logged boolean value!");
         dashboardBoolean = new LoggedNetworkBoolean(key, defaultValue);
       }
     }
@@ -85,9 +88,20 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    * @return The current value
    */
   public boolean get() {
-    if (!hasDefault) {
-      return false;
+    if (readAndWriteAlways == false) {
+      if (!hasDefault) {
+        return false;
+      }
     }
+
+    /*
+    if (this.readAndWriteAlways) {
+      return dashboardBoolean.get();
+    } else {
+      return defaultValue;
+    }
+    */
+
     return (TUNING_MODE || this.readAndWriteAlways) ? dashboardBoolean.get() : defaultValue;
   }
 
@@ -111,6 +125,15 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   }
 
   /**
+   * Checks whether the boolean value has changed since our last check
+   *
+   * @return if the boolean has the readAndWriteAlways instance value
+   */
+  public boolean isReadAndWriteAlways() {
+    return readAndWriteAlways;
+  }
+
+  /**
    * Runs action if any of the tunableBooleans have changed
    *
    * @param id Unique identifier for the caller to avoid conflicts when shared between multiple *
@@ -121,13 +144,13 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    */
   public static void ifChanged(
       int id, Consumer<Object[]> action, LoggedTunableBoolean... tunableBooleans) {
-
     if (Arrays.stream(tunableBooleans).anyMatch(tunableBoolean -> tunableBoolean.hasChanged(id))) {
       action.accept(
           Arrays.stream(tunableBooleans)
+              .filter(LoggedTunableBoolean::isReadAndWriteAlways)
               .map(LoggedTunableBoolean::get)
               .map(Boolean::booleanValue)
-              .toArray()); // we need to figure this out
+              .toArray());
     }
   }
 
