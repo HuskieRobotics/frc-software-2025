@@ -36,6 +36,31 @@ public class ArmSystemSim {
 
   public ArmSystemSim(
       TalonFX motor,
+      boolean motorInverted,
+      double sensorToMechanismRatio,
+      double rotorToSensorRatio,
+      double length,
+      double mass,
+      double minAngle,
+      double maxAngle,
+      double startingAngle,
+      String subsystemName) {
+    this(
+        motor,
+        null,
+        motorInverted,
+        sensorToMechanismRatio,
+        rotorToSensorRatio,
+        length,
+        mass,
+        minAngle,
+        maxAngle,
+        startingAngle,
+        subsystemName);
+  }
+
+  public ArmSystemSim(
+      TalonFX motor,
       CANcoder encoder,
       boolean motorInverted,
       double sensorToMechanismRatio,
@@ -60,11 +85,13 @@ public class ArmSystemSim {
         motorInverted
             ? ChassisReference.Clockwise_Positive
             : ChassisReference.CounterClockwise_Positive;
-    this.encoderSimState = this.encoder.getSimState();
-    this.encoderSimState.Orientation =
-        motorInverted
-            ? ChassisReference.Clockwise_Positive
-            : ChassisReference.CounterClockwise_Positive;
+    if (this.encoder != null) {
+      this.encoderSimState = this.encoder.getSimState();
+      this.encoderSimState.Orientation =
+          motorInverted
+              ? ChassisReference.Clockwise_Positive
+              : ChassisReference.CounterClockwise_Positive;
+    }
 
     this.systemSim =
         new SingleJointedArmSim(
@@ -96,7 +123,10 @@ public class ArmSystemSim {
 
     // update the sim states supply voltage based on the simulated battery
     this.motorSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
-    this.encoderSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+    if (this.encoder != null) {
+      this.encoderSimState.setSupplyVoltage(RobotController.getBatteryVoltage());
+    }
 
     // update the input voltages of the models based on the outputs of the simulated TalonFXs
     double motorVoltage = this.motorSimState.getMotorVoltage();
@@ -116,8 +146,11 @@ public class ArmSystemSim {
     double motorRPS = encoderRPS * this.rotorToSensorRatio;
     this.motorSimState.setRawRotorPosition(motorRotations);
     this.motorSimState.setRotorVelocity(motorRPS);
-    this.encoderSimState.setRawPosition(sensorRotations);
-    this.encoderSimState.setVelocity(encoderRPS);
+
+    if (this.encoder != null) {
+      this.encoderSimState.setRawPosition(sensorRotations);
+      this.encoderSimState.setVelocity(encoderRPS);
+    }
 
     // Update the Mechanism Arm angle based on the simulated arm angle
     arm.setAngle(Units.radiansToDegrees(mechanismRadians));
