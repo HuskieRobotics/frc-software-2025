@@ -75,7 +75,8 @@ public class AutonomousCommandFactory {
                 Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
   }
 
-  // When programmed, each score coral command will drive to the specified pose on the reef and then score the coral
+  // When programmed, each score coral command will drive to the specified pose on the reef and then
+  // score the coral
 
   private static Command getScoreJL4Command() {
     return Commands.waitSeconds(1);
@@ -88,12 +89,13 @@ public class AutonomousCommandFactory {
   private static Command getScoreEL4Command() {
     return Commands.waitSeconds(1);
   }
-  
+
   private static Command getScoreDL4Command() {
     return Commands.waitSeconds(1);
   }
 
-  // when programmed, this will wait until a coral is fully detected within the robot (use manipulator state machine)
+  // when programmed, this will wait until a coral is fully detected within the robot (use
+  // manipulator state machine)
   private static Command getCollectCoralCommand() {
     return Commands.waitSeconds(1);
   }
