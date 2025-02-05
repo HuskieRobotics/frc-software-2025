@@ -11,9 +11,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "Score E L4"
           }
         },
         {
@@ -23,9 +23,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "Collect Coral"
           }
         },
         {
@@ -35,15 +35,21 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "Score D L4"
           }
         },
         {
           "type": "path",
           "data": {
             "pathName": "#4 Collect Coral 2BR"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Collect Coral"
           }
         }
       ]
