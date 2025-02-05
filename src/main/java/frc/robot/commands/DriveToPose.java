@@ -14,6 +14,7 @@ import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -41,6 +42,7 @@ public class DriveToPose extends Command {
   private final Drivetrain drivetrain;
   private final Supplier<Pose2d> poseSupplier;
   private Pose2d targetPose;
+  private Transform2d targetTolerance;
 
   private boolean running = false;
   private Timer timer;
@@ -91,7 +93,7 @@ public class DriveToPose extends Command {
           "DriveToPose/ThetaToleranceRadians",
           RobotConfig.getInstance().getDriveToPoseThetaTolerance().in(Radians));
   private static final LoggedTunableNumber timeout =
-      new LoggedTunableNumber("DriveToPose/timeout", 5.0);
+      new LoggedTunableNumber("DriveToPose/timeout", 50.0);
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(
@@ -123,9 +125,10 @@ public class DriveToPose extends Command {
    * @param drivetrain the drivetrain subsystem required by this command
    * @param poseSupplier a supplier that returns the pose to drive to
    */
-  public DriveToPose(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier) {
+  public DriveToPose(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier, Transform2d tolerance) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
+    this.targetTolerance = tolerance;
     this.timer = new Timer();
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -234,16 +237,19 @@ public class DriveToPose extends Command {
    */
   @Override
   public boolean isFinished() {
-    Logger.recordOutput("DriveToPose/xErr", xController.atGoal());
-    Logger.recordOutput("DriveToPose/yErr", yController.atGoal());
-    Logger.recordOutput("DriveToPose/tErr", thetaController.atGoal());
+    Transform2d difference = drivetrain.getPose().minus(targetPose);
+    Logger.recordOutput("DriveToPose/difference", difference);
+
+    boolean atGoal =
+        Math.abs(difference.getX()) < targetTolerance.getX()
+            && Math.abs(difference.getY()) < targetTolerance.getY()
+            && Math.abs(difference.getRotation().getRadians())
+                < targetTolerance.getRotation().getRadians();
 
     // check that running is true (i.e., the calculate method has been invoked on the PID
     // controllers) and that each of the controllers is at their goal. This is important since these
     // controllers will return true for atGoal if the calculate method has not yet been invoked.
-    return !drivetrain.isMoveToPoseEnabled()
-        || this.timer.hasElapsed(timeout.get())
-        || (running && xController.atGoal() && yController.atGoal() && thetaController.atGoal());
+    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout.get()) || atGoal;
   }
 
   /**
