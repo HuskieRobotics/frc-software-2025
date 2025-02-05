@@ -59,6 +59,7 @@ public class ClimberIOTalonFX implements ClimberIO {
       inputs.statorCurrentAmps = statorCurrentAmps.getValueAsDouble();
       inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
       inputs.tempCelcius = tempCelcius.getValueAsDouble();
+      //convert below from position in rotation to position in inches
       inputs.positionRotations = positionRotations.getValueAsDouble();
   }
 
@@ -72,20 +73,21 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   private void configMotor() {
-    TalonFXConfiguration climberMotorConfig = new TalonFXConfiguration();
-    CurrentLimitsConfigs climberMotorCurrentLimits = new CurrentLimitsConfigs();
-    climberMotorCurrentLimits.SupplyCurrentLimit =
+    TalonFXConfiguration config = new TalonFXConfiguration();
+    //CurrentLimitsConfigs climberMotorCurrentLimits = new CurrentLimitsConfigs();
+    config.CurrentLimits.SupplyCurrentLimit =
         ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
-    climberMotorCurrentLimits.SupplyCurrentThreshold = ClimberConstants.CLIMBER_PEAK_CURRENT_LIMIT;
-    climberMotorCurrentLimits.SupplyTimeThreshold = ClimberConstants.CLIMBER_PEAK_CURRENT_DURATION;
-    climberMotorCurrentLimits.SupplyCurrentLimitEnable = true;
-    climberMotorConfig.CurrentLimits = climberMotorCurrentLimits;
+        //make sure this is all right
+    config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerTime = ClimberConstants.CLIMBER_PEAK_CURRENT_DURATION;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    //config.CurrentLimits = climberMotorCurrentLimits;
 
-    climberMotorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    climberMotorConfig.Feedback.SensorToMechanismRatio = ClimberConstants.GEAR_RATIO;
+    config.Feedback.SensorToMechanismRatio = ClimberConstants.GEAR_RATIO;
 
-    climberMotorConfig.MotorOutput.Inverted =
+    config.MotorOutput.Inverted =
         ClimberConstants.CLIMBER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;

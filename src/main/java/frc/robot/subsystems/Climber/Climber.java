@@ -13,12 +13,13 @@ public class Climber {
 
     }
 
-    //getPosition() arguments in io.setVoltage are placeholders
+    //getPosition() argument in io.setVoltage() is placeholder
     
     public void periodic() {
         io.updateInputs(inputs);
         if (testingMode.get() == 1) {
-            //chekc voltage tunable DO NOT FORGET
+            //not sure about this at all, ask how to check voltage Tunable
+            climberVoltage.initDefault(getPosition());
         }
         else if (testingMode.get() != 0) {
             io.setVoltage(getPosition());
@@ -26,15 +27,15 @@ public class Climber {
     }
 
     public void extend() {
-        io.setVoltage(getPosition());
+        io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
     }
 
     public void retract() {
-        io.setVoltage(getPosition());
+        io.setVoltage(ClimberConstants.RETRACT_VOLTAGE);
     }
 
     public void reset() {
-        io.setVoltage(getPosition());
+        io.setVoltage(ClimberConstants.RESET_VOLTAGE);
     }
 
     public void zero() {
