@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.574529109589041,
-        "y": 5.685338184931506
+        "x": 5.066771980592387,
+        "y": 5.557305756789991
       },
       "prevControl": {
-        "x": 6.5511986301369864,
-        "y": 6.000877568493149
+        "x": 6.043441501140332,
+        "y": 5.872845140351633
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Face JI"
+      "linkedName": "Near Branch J"
     }
   ],
   "rotationTargets": [],
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": -120.38
   },
   "reversed": false,

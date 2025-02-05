@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 3.425856164383562,
-        "y": 5.805543664383562
+        "x": 3.8690295190868262,
+        "y": 5.561704047262618
       },
       "prevControl": {
-        "x": 2.5394794520547945,
-        "y": 6.511729452054794
+        "x": 2.982652806758059,
+        "y": 6.26788983493385
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Face LK"
+      "linkedName": "Near Branch K"
     }
   ],
   "rotationTargets": [],
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 2.0,
     "rotation": -57.99499999999999
   },
   "reversed": false,

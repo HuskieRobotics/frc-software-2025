@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.425856164383562,
-        "y": 5.805543664383562
+        "x": 3.669874926486313,
+        "y": 5.076484642322497
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.479094178082192,
-        "y": 6.722140410958904
+        "x": 2.723112940184943,
+        "y": 5.993081388897839
       },
       "isLocked": false,
-      "linkedName": "Face LK"
+      "linkedName": "At Branch L"
     },
     {
       "anchor": {

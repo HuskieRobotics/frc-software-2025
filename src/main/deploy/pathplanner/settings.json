@@ -3,6 +3,8 @@
   "robotLength": 0.88,
   "holonomicMode": true,
   "pathFolders": [
+    "2 Piece Blue Left",
+    "2 Piece Blue Right",
     "Tuning"
   ],
   "autoFolders": [
