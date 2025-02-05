@@ -173,7 +173,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
               .withDriveInertia(DRIVE_INERTIA)
               .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
               .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE)
-              .withFeedbackSource(SteerFeedbackType.RemoteCANcoder)
+              .withFeedbackSource(SteerFeedbackType.FusedCANcoder)
               .withCouplingGearRatio(
                   COUPLE_RATIO); // Every 1 rotation of the azimuth results in couple ratio drive
   // turns
@@ -223,7 +223,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
               .withDriveInertia(DRIVE_INERTIA)
               .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
               .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE)
-              .withFeedbackSource(SteerFeedbackType.RemoteCANcoder)
+              .withFeedbackSource(SteerFeedbackType.FusedCANcoder)
               .withCouplingGearRatio(
                   COUPLE_RATIO); // Every 1 rotation of the azimuth results in couple ratio drive
   // turns
