@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.robot.Constants.Mode;
+import frc.robot.commands.AutonomousCommandFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -283,7 +284,7 @@ public class Robot extends LoggedRobot {
 
     autoStart = Timer.getFPGATimestamp();
     autoMessagePrinted = false;
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = AutonomousCommandFactory.getInstance().getAutonomousCommand();
 
     // schedule the autonomous command
     if (autonomousCommand != null) {

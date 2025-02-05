@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -16,10 +13,8 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
@@ -50,7 +45,6 @@ import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
@@ -67,17 +61,11 @@ public class RobotContainer {
   private Vision vision;
   private Elevator elevator;
 
-  // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
-  private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<>("Auto Routine");
-
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
   private final LoggedNetworkNumber endgameAlert2 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #2", 10.0);
 
-  private Alert pathFileMissingAlert =
-      new Alert("Could not find the specified path file.", AlertType.kError);
   private static final String LAYOUT_FILE_MISSING =
       "Could not find the specified AprilTags layout file";
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
@@ -146,7 +134,7 @@ public class RobotContainer {
 
     updateOI();
 
-    configureAutoCommands();
+    AutonomousCommandFactory.getInstance().configureAutoCommands(drivetrain);
 
     // Alert when tuning
     if (Constants.TUNING_MODE) {
@@ -325,92 +313,6 @@ public class RobotContainer {
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
-  /** Use this method to define your commands for autonomous mode. */
-  private void configureAutoCommands() {
-    // Event Markers
-    new EventTrigger("Marker").onTrue(Commands.print("reached event marker"));
-    new EventTrigger("ZoneMarker").onTrue(Commands.print("entered zone"));
-    new EventTrigger("ZoneMarker").onFalse(Commands.print("left zone"));
-
-    // build auto path commands
-
-    // add commands to the auto chooser
-    autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
-
-    /************ Start Point ************
-     *
-     * useful for initializing the pose of the robot to a known location
-     *
-     */
-
-    Command startPoint =
-        Commands.runOnce(
-            () -> {
-              try {
-                drivetrain.resetPose(
-                    PathPlannerPath.fromPathFile("Start Point").getStartingDifferentialPose());
-              } catch (Exception e) {
-                pathFileMissingAlert.setText("Could not find the specified path file: Start Point");
-                pathFileMissingAlert.set(true);
-              }
-            },
-            drivetrain);
-    autoChooser.addOption("Start Point", startPoint);
-
-    /************ Distance Test ************
-     *
-     * used for empirically determining the wheel radius
-     *
-     */
-    autoChooser.addOption("Distance Test Slow", createTuningAutoPath("DistanceTestSlow", true));
-    autoChooser.addOption("Distance Test Med", createTuningAutoPath("DistanceTestMed", true));
-    autoChooser.addOption("Distance Test Fast", createTuningAutoPath("DistanceTestFast", true));
-
-    /************ Auto Tuning ************
-     *
-     * useful for tuning the autonomous PID controllers
-     *
-     */
-    autoChooser.addOption("Rotation Test Slow", createTuningAutoPath("RotationTestSlow", false));
-    autoChooser.addOption("Rotation Test Fast", createTuningAutoPath("RotationTestFast", false));
-
-    autoChooser.addOption("Oval Test Slow", createTuningAutoPath("OvalTestSlow", false));
-    autoChooser.addOption("Oval Test Fast", createTuningAutoPath("OvalTestFast", false));
-
-    /************ Drive Velocity Tuning ************
-     *
-     * useful for tuning the drive velocity PID controller
-     *
-     */
-    autoChooser.addOption(
-        "Drive Velocity Tuning",
-        AutonomousCommandFactory.getDriveVelocityTuningCommand(drivetrain));
-
-    /************ Swerve Rotation Tuning ************
-     *
-     * useful for tuning the swerve module rotation PID controller
-     *
-     */
-    autoChooser.addOption(
-        "Swerve Rotation Tuning",
-        AutonomousCommandFactory.getSwerveRotationTuningCommand(drivetrain));
-    /************ Drive Wheel Radius Characterization ************
-     *
-     * useful for characterizing the drive wheel Radius
-     *
-     */
-    autoChooser.addOption( // start by driving slowing in a circle to align wheels
-        "Drive Wheel Radius Characterization",
-        AutonomousCommandFactory.getDriveWheelRadiusCharacterizationCommand(drivetrain));
-  }
-
-  private Command createTuningAutoPath(String autoName, boolean measureDistance) {
-    return Commands.sequence(
-        Commands.runOnce(drivetrain::captureInitialConditions),
-        new PathPlannerAuto(autoName),
-        Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
-  }
-
   private void configureDrivetrainCommands() {
     /*
      * Set up the default command for the drivetrain. The joysticks' values map to percentage of the
@@ -533,15 +435,6 @@ public class RobotContainer {
             Commands.runOnce(() -> vision.enable(false), vision)
                 .ignoringDisable(true)
                 .withName("disable vision"));
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
   }
 
   /**
