@@ -41,19 +41,6 @@ public class LoggedTunableBoolean implements BooleanSupplier {
     this.key = TABLE_KEY + "/" + dashboardKey;
   }
 
-
-  /**
-   * Create a new LoggedTunableBoolean with the default value
-   *
-   * @param dashboardKey Key on dashboard
-   * @param readAndWrite Default value
-   */
-  public LoggedTunableBoolean(String dashboardKey, boolean readAndWrite) {
-    this.key = TABLE_KEY + "/" + dashboardKey;
-    this.readAndWriteAlways = readAndWrite;
-  }
-  
-
   /**
    * Create a new LoggedTunableBoolean with the default value
    *
@@ -66,6 +53,18 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   }
 
   /**
+   * Create a new LoggedTunableBoolean with the default value
+   *
+   * @param dashboardKey Key on dashboard
+   * @param readAndWrite Default value
+   */
+  public LoggedTunableBoolean(String dashboardKey, boolean defaultValue, boolean readAndWrite) {
+    this.key = TABLE_KEY + "/" + dashboardKey;
+    initDefault(defaultValue);
+    this.readAndWriteAlways = readAndWrite;
+  }
+
+  /**
    * Set the default value of the boolean. The default value can only be set once.
    *
    * @param defaultValue The default value
@@ -74,7 +73,7 @@ public class LoggedTunableBoolean implements BooleanSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (TUNING_MODE) {
+      if (TUNING_MODE || this.readAndWriteAlways) {
         dashboardBoolean = new LoggedNetworkBoolean(key, defaultValue);
       }
     }
@@ -88,9 +87,8 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   public boolean get() {
     if (!hasDefault) {
       return false;
-    } else {
-      return TUNING_MODE ? dashboardBoolean.get() : defaultValue;
     }
+    return (TUNING_MODE || this.readAndWriteAlways) ? dashboardBoolean.get() : defaultValue;
   }
 
   /**
