@@ -226,10 +226,6 @@ public class RobotContainer {
                   RobotConfig.getInstance().getRobotToCameraTransforms()[0])
             });
 
-    layoutFileMissingAlert.setText(
-        LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    layoutFileMissingAlert.set(true);
-
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
