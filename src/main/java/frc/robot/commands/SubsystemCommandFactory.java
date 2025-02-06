@@ -31,17 +31,17 @@ public class SubsystemCommandFactory {
   }
   
   public Command getInitiateClimbButton(Drivetrain drivetrain, Climber climber) {
-    //fix
+    //fix, hella confused
     return Commands.runOnce(climber::placeholder, climber);
   }
 
   public Command zeroClimber(Drivetrain drivetrain, Climber climber) {
-    //fix
+    //fix (no button yet)
     return Commands.runOnce(climber::zero, climber);
   }
 
   public Command raiseClimber(Drivetrain drivetrain, Climber climber) {
-    //fix
+    //fix (no button yet)
     return Commands.runOnce(climber::extend, climber);
   }
 
