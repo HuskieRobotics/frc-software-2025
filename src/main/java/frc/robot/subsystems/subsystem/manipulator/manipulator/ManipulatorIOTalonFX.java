@@ -45,38 +45,73 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   In updateInputs, you will refresh all of the status signals, 
   and set each input variable by retrieving each of the values of your statussignals with the statussignal.getValueAs___() methods.
 */
+/*
   private StatusSignal<LoggedTunableNumber> kP;
   private StatusSignal<LoggedTunableNumber> kI;
   private StatusSignal<LoggedTunableNumber> kD;
   private StatusSignal<LoggedTunableNumber> kPeakOuput;
+*/
+  private final LoggedTunableNumber kP = new LoggedTunableNumber("Subsystem/kP", POSITION_PID_P);
+  private final LoggedTunableNumber kI = new LoggedTunableNumber("Subsystem/kI", POSITION_PID_I);
+  private final LoggedTunableNumber kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
+  private final LoggedTunableNumber kPeakOutput = new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
 
-  //private final LoggedTunableNumber kP = new LoggedTunableNumber("Subsystem/kP", POSITION_PID_P);
-  //private final LoggedTunableNumber kI = new LoggedTunableNumber("Subsystem/kI", POSITION_PID_I);
-  //private final LoggedTunableNumber kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
-  //private final LoggedTunableNumber kPeakOutput = new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
+  private VelocitySystemSim funnelMotorSim;
+  private VelocitySystemSim indexerMotorSim;
 
   // Create StatusSignal objects for each loggable input from the ManipulatorIO class in the updateInputs method
-  private StatusSignal<Double> positionDeg;
+  //change type of each status signal objecty to its corresponding type
+  private StatusSignal<Angle> positionDeg;
   private StatusSignal<Double> velocityRPM;
-  private StatusSignal<Double> closedLoopError;
-  private StatusSignal<Double> setpoint;
-  private StatusSignal<Double> power;
-  private StatusSignal<String> controlMode;
-  private StatusSignal<Double> statorCurrentAmps;
-  private StatusSignal<Double> tempCelsius;
-  private StatusSignal<Double> supplyCurrentAmps;
+
+ // private StatusSignal<Double> closedLoopError;
+  private StatusSignal<Double> setpointStatusSignal; //unsure of what type to keep the status signal object as
+  private StatusSignal<Double> powerStatusSignal;
+  private StatusSignal<String> controlModeStatusSignal; //unsure if needed
+  private StatusSignal<Current> funnelMotorStatorCurrentAmpsStatusSignal;
+  private StatusSignal<Current> indexerMotorStatorCurrentAmpsStatusSignal;
+  private StatusSignal<Temperature> funnelMotorTempCelsiusStatusSignal;
+  private StatusSignal<Temperature> indexerMotorTempCelsiusStatusSignal;
+  private StatusSignal<Current> funnelMotorSupplyCurrentAmpsStatusSignal;
+  private StatusSignal<Current> indexerMotorStatorCurrentAmpsStatusSignal;
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
+    /* delete 
     kP = new LoggedTunableNumber("Subsystem/kP", POSITION_PID_P);
     kI = new LoggedTunableNumber("Subsystem/kI", POSITION_PID_I);
     kD = new LoggedTunableNumber("Subsystem/kD", POSITION_PID_D);
     kPeakOuput = new LoggedTunableNumber("Subsystem/kPeakOutput", POSITION_PID_PEAK_OUTPUT);
+    */
     configFunnelMotor(12);
     configIndexerMotor(14);
     //the can id's for the funnel and indexer motor is in the ManipulatorConstants.java file
     this.funnelMotor.setPosition(0);
     this.voltageRequest = new VoltageOut(0.0);
+
+    //assign motors and ir sensors to new talon fx and digital input objects, and assign can ids
+    funnelMotor = new TalonFX(FUNNEL_MOTOR_CAN_ID);
+    indexerMotor = new TalonFX(INDEXER_MOTOR_CAN_ID);
+
+    funnelIRSensor = new DigitalInput(FUNNEL_IR_SENSOR_CAN_ID);
+    indexerIRSensor = new DigitalInput(INDEXER_IR_SENSOR_CAN_ID);
+
+    //create funnel motor and indexer motor sim objects
+    funnelMotorSim = new VelocitySystemSim(funnelMotor, FUNNEL_MOTOR_INVERTED, FUNNEL_MOTOR_KV, FUNNEL_MOTOR_KA, GEAR_RATIO);
+    indexerMotorSim = new VelocitySystemSim(indexerMotor, INDEXER_MOTOR_INVERTED, INDEXER_MOTOR_KV, INDEXER_MOTOR_KA, GEAR_RATIO);
+
+    //instaniate all status signals here
+    funnelMotorSupplyCurrentAmps = funnelMotor.getStatorCurrent(); //getStatorCurrent is an inbuilt method from talon called on specific motor
+    
+    //get voltage,velocity,current,and position from all motors
+    voltageRequest = new TorqueCurrentFOC(0);
+    velocityRequest = new VelocityTorqueCurrentFOC(0);
+    currentRequest = new TorqueCurrentFOC(0);
+    positionRequest = new PositionVoltage(0);
+
+  //configure funnel and indexer motor
+    configFunnelMotor(funnelMotor);
+    configIndexerMotor(indexerMotor);
   }
 
   /**
@@ -87,7 +122,31 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) { 
 
-    //This is part of the update inputs method for the funnel.
+    //refresh all status signal objects
+    BaseStatusSignal.refreshAll(
+      setpointStatusSignal,
+      powerStatusSignal,
+      controlModeStatusSignal,
+      funnelMotorStatorCurrentAmpsStatusSignal,
+      indexerMotorStatorCurrentAmpsStatusSignal,
+      funnelMotorTempCelsiusStatusSignal,
+      indexerMotorTempCelsiusStatusSignal,
+      funnelMotorSupplyCurrentAmpsStatusSignal,
+      indexerMotorStatorCurrentAmpsStatusSignal);
+
+    //get all the values from the refreshed status signals, store in the inputs object
+    inputs.setpoint = setpointStatusSignal.getValueAsDouble();
+    inputs.power = powerStatusSignal.getValueAsDouble();
+    inputs.controlMode = controlModeStatusSignal.getValueAsString();
+    inputs.funnelMotorStatorCurrentAmps = funnelMotorStatorCurrentAmpsStatusSignal.getValueAsDouble();
+    inputs.indexerMotorStatorCurrentAmps = indexerMotorStatorCurrentAmpsStatusSignal.getValueAsDouble();
+    inputs.funnelMotorTempCelsius = funnelMotorTempCelsiusStatusSignal.getValueAsDouble();
+    inputs.indexerMotorTempCelsius = indexerMotorTempCelsiusStatusSignal.getValueAsDouble();
+    inputs.funnelMotorSupplyCurrentAmps = funnelMotorSupplyCurrentAmpsStatusSignal.getValueAsDouble();
+    inputs.indexerMotorSupplyCurrentAmps = indexerMotorStatorCurrentAmpsStatusSignal.getValueAsDouble();
+
+    //DELETE
+    /*
     inputs.positionDeg =
         Conversions.falconRotationsToMechanismDegrees(
             BaseStatusSignal.getLatencyCompensatedValue(
@@ -104,14 +163,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.statorCurrentAmps = funnelMotor.getStatorCurrent().getValue().in(Amps);
     inputs.tempCelsius = funnelMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.supplyCurrentAmps = funnelMotor.getSupplyCurrent().getValue().in(Amps);
-
-    //I added this part here to assign all the variables in the ManipulatorIO class keeping track of the logged tunable inputs to the acctual value of the logged tunable inputs.
-    funnelMotorStatorCurrentAmps = inputs.statorCurrentAmps;
-    funnelMotorSupplyCurrentAmps = inputs.supplyCurrentAmps;
-    //funnelMotorVelocityRPS --> this value is not currently a logged input 
-    //funnelMotorReferenceVelocityRPS --> this value is not currently a logged input
-    funnelMotorTempCelsius = inputs.tempCelsuis;
-    //funnelMotorVoltage --> not sure if this connects to a logged tunable input
+    */
 
     // update configuration if tunables have changed
     LoggedTunableNumber.ifChanged(
@@ -138,7 +190,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         },
         kPeakOutput);
         
-        //This is the part of the update inputs method for the indexer motor.
+        //DELETE 
+        /*
         inputs.positionDeg =
         Conversions.falconRotationsToMechanismDegrees(
             BaseStatusSignal.getLatencyCompensatedValue(
@@ -155,14 +208,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.statorCurrentAmps = indexerMotor.getStatorCurrent().getValue().in(Amps);
     inputs.tempCelsius = indexerMotor.getDeviceTemp().getValue().in(Celsius);
     inputs.supplyCurrentAmps = indexerMotor.getSupplyCurrent().getValue().in(Amps);
+    */
 
-    //Assign all variables for the indexer motor logged inputs in the ManipulatorIO class keeping track of the logged tunable inputs to the acctual value of the logged tunable inputs for the indexer motor
-    indexerMotorStatorCurrentAmps 
-    indexerMotorSupplyCurrentAmps 
-    indexerMotorVelocityRPS
-    indexerMotorReferenceVelocityRPS
-    indexerMotorTempCelsius
-    indexerMotorVoltage
     // update configuration if tunables have changed
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -187,6 +234,10 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
           this.indexerMotor.getConfigurator().apply(config);
         },
         kPeakOutput);
+
+    //update funnel and indexer motor sim
+    funnelMotorSim.updateSim();
+    indexerMotorSim.updateSim();
   }
 
   /**
@@ -277,13 +328,12 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     return indexerIRSensor.get();
   }
 
-  /**
-   * This method configures the Funnel motor with the motor ID.
-   * @param motorID The ID of the motor to configure.
+  /*
+   * This method configures the Funnel motor.
    */
-  private void configFunnelMotor(int motorID) {
+  private void configFunnelMotor(TalonFX motor) {
 
-    this.funnelMotor = new TalonFX(motorID, RobotConfig.getInstance().getCANBusName());
+   //this.funnelMotor = new TalonFX(motorID, RobotConfig.getInstance().getCANBusName());
 
     TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -297,7 +347,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits = currentLimits;
 
     config.MotorOutput.Inverted =
-        FUNNEL_MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        FUNNEL_MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive; //if else statement based on the value of the funnel_motor_inverted, sets the motor to a specific value based on if the motor is inverted (first choice) or not inverted (second choice)
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     config.Slot0.kP = kP.get();
     config.Slot0.kI = kI.get();
@@ -308,21 +358,22 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     Phoenix6Util.applyAndCheckConfiguration(this.funnelMotor, config, configAlert);
 
+    /*
     this.voltageRequest.EnableFOC = RobotConfig.getInstance().getPhoenix6Licensed();
     this.currentRequest = new TorqueCurrentFOC(0.0);
     this.positionRequest = new PositionVoltage(0.0).withSlot(0);
     this.positionRequest.EnableFOC = RobotConfig.getInstance().getPhoenix6Licensed();
+    */
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "subsystem motor", funnelMotor);
   }
 
-  /**
-   * This method configures the Indexer motor with the motor ID.
-   * @param motorID The ID of the motor to configure.
+  /*
+   * This method configures the Indexer motor.
    */
-  private void configIndexerMotor(int motorID){ 
+  private void configIndexerMotor(TalonFX motor){ 
 
-    this.indexerMotor = new TalonFX(motorID, RobotConfig.getInstance().getCANBusName());
+    //this.indexerMotor = new TalonFX(motorID, RobotConfig.getInstance().getCANBusName());
 
     TalonFXConfiguration config = new TalonFXConfiguration();
 
@@ -349,11 +400,13 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     this.indexerMotor.setPosition(0);
 
+    /*
     this.voltageRequest = new VoltageOut(0.0);
     this.voltageRequest.EnableFOC = RobotConfig.getInstance().getPhoenix6Licensed();
     this.currentRequest = new TorqueCurrentFOC(0.0);
     this.positionRequest = new PositionVoltage(0.0).withSlot(0);
     this.positionRequest.EnableFOC = RobotConfig.getInstance().getPhoenix6Licensed();
+    */
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "subsystem motor", indexerMotor);
   }

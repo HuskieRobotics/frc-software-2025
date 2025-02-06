@@ -50,8 +50,22 @@ public class Manipulator extends SubsystemBase {
   private boolean shootCoralButtonPressed = false; 
   private boolean removeAlgaeButtonPressed = false;
   private boolean algaeRemoved = false; //need to actually figure out the IO stuff with this... how do we actually know if the algae has been removed??
-  private boolean robotTurnedOn = false; //this is a instance variable that just keeps track of if the robot has been turned on, actually need to figure out the io stuff for this though to set it to true
+  //unnecessary --> private boolean robotTurnedOn = false; 
   
+  /**
+   * Create a new subsystem with its associated hardware interface object.
+   *
+   * @param io the hardware interface object for this subsystem
+   */
+  public Manipulator(ManipulatorIO io) {
+
+    this.io = io;
+
+    SysIdRoutineChooser.getInstance().addOption("Manipulator Voltage", sysIdRoutine);
+
+    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
+  }
+
     /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
     //for the SysIdRoutine, i added replaced the line where it calls the setMotorVoltage method, and added 2 lines that do the same thing but set the indexer motor voltage, and the funnel motor voltage, using their respective methods
     private final SysIdRoutine sysIdRoutine =
@@ -62,8 +76,8 @@ public class Manipulator extends SubsystemBase {
                 null, // Use default timeout (10 s)
                 // Log state with SignalLogger class
                 state -> SignalLogger.writeString("SysId_State", state.toString())),
-            new SysIdRoutine.Mechanism(output -> setFunnelMotorVoltage(output.in(Volts)), null, this),
-            new SysIdRoutine.Mechanism(output -> setIndexerMotorVoltage(output.in(Volts)), null, this));
+            new SysIdRoutine.Mechanism(io -> setFunnelMotorVoltage(output.in(Volts)), null, this),
+            new SysIdRoutine.Mechanism(io -> setIndexerMotorVoltage(output.in(Volts)), null, this));
   
     /**
      * Few subsystems require the complexity of a state machine. A simpler command-based approach is
@@ -227,27 +241,13 @@ public class Manipulator extends SubsystemBase {
   }
 
   /**
-   * Create a new subsystem with its associated hardware interface object.
-   *
-   * @param io the hardware interface object for this subsystem
-   */
-  public Manipulator(ManipulatorIO io) {
-
-    this.io = io;
-
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutine);
-
-    FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
-  }
-
-  /**
    * The subsystem's periodic method needs to update and process the inputs from the hardware
    * interface object.
    */
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    Logger.processInputs("Subsystem", inputs);
+    Logger.processInputs("Manipulator", inputs);
     currentInAmps.calculate();
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if non-zero)
@@ -255,12 +255,10 @@ public class Manipulator extends SubsystemBase {
       if (funnelMotorPower.get() != 0) {
         this.setFunnelMotorVoltage(funnelMotorPower.get());
       }
-
-      if (funnelMotorCurrent.get() != 0) {
+      else if (funnelMotorCurrent.get() != 0) {
         this.setFunnelMotorCurrent(funnelMotorCurrent.get());
       }
-
-      if (funnelMotorPosition.get() != 0) {
+      else if (funnelMotorPosition.get() != 0) {
         this.setFunnelMotorPosition(funnelMotorPosition.get());
       }
     } else {
@@ -273,12 +271,10 @@ if (testingMode.get() != 0) {
       if (indexerMotorPower.get() != 0) {
         this.setIndexerMotorVoltage(indexerMotorPower.get());
       }
-
-      if (indexerMotorCurrent.get() != 0) {
+      else if (indexerMotorCurrent.get() != 0) {
         this.setIndexerMotorCurrent(indexerMotorCurrent.get());
       }
-
-      if (indexerMotorPosition.get() != 0) {
+      else if (indexerMotorPosition.get() != 0) {
         this.setIndexerMotorPosition(indexerMotorPosition.get());
       }
     } else {
@@ -399,13 +395,13 @@ if (testingMode.get() != 0) {
     io.setIndexerMotorVelocity(velocity);
   }
 
-// method to shoot coral which returns true if the shoot coral button is pressed
+// method to shoot coral which assigns coral  button presed to true
   private void shootCoral()
   {
     shootCoralButtonPressed = true;
   }
 
-  // method to remove algae which returns true if the remove algae button is pressed
+  // method to remove algae which assins the remove algae button pressed to true
   private void removeAlgae()
   {
     removeAlgaeButtonPressed = true;

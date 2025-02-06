@@ -9,20 +9,19 @@ public interface ManipulatorIO {
 
     //All of the logged tunable inputs from 2024 intake code
     double positionDeg = 0.0;
-    double velocityRPM = 0.0;
     double closedLoopError = 0.0;
+    double closedLoopReference = 0.0;
     double setpoint = 0.0;
     double power = 0.0;
     String controlMode = "";
-    double statorCurrentAmps = 0.0;
-    double tempCelsius = 0.0;
-    double supplyCurrentAmps = 0.0;
+
 
     //booleans to keep track of the state of each IR sensor
     boolean isFunnelIRBlocked = false;
     boolean isIndexerIRBlocked = false;
 
     //not sure what these values are for but just copied them from the 2024 Intak.IO code
+    //add status signals in talon fx class for all of these except for booleans
     double funnelMotorStatorCurrentAmps = 0;
     double indexerMotorStatorCurrentAmps = 0;
 
