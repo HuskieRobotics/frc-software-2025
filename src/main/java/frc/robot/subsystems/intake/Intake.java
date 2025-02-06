@@ -1,5 +1,7 @@
 package frc.robot.subsystems.intake;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
@@ -17,7 +19,9 @@ public class Intake extends SubsystemBase {
 
   private boolean automationEnabled;
   private int intakeandPivotTimeout;
-
+  
+  private final LoggedTunableNumber  testingMode = 
+      new LoggedTunableNumber("Intake/Testing Mode", 0.0);
   private final LoggedTunableNumber rollerVelocity =
       new LoggedTunableNumber("Intake/Roller Velocity", 0.0);
   private final LoggedTunableNumber pivotPosition =
@@ -35,9 +39,20 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    Logger.processInputs(SUBSYSTEM_NAME, inputs);
+
+    if (testingMode.get() == 1) {
+      if (rollerVelocity.get() != 0) {
+        io.setRollerMotorVelocity(rollerVelocity.get());
+      } else if (pivotPosition.get() != 0) {
+        io.setPivotRotationPosition(pivotPosition.get());
+      }
+    }
 
     if (IntakeConstants.ROLLERS_CONTINUOUS_STATOR_CURRENT_LIMIT
         >= IntakeConstants.ROLLERS_ALGAE_CURRENT_LIMIT) {}
+
+      
   }
 
   private void deploy() {

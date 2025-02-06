@@ -19,10 +19,10 @@ public class SubsystemCommandFactory {
   }
 
   public Command getIntakeDeployCommand(Subsystem Intake) {
-    return Commands.runOnce(Intake::deploy, Intake)
+    return Commands.runOnce(Intake::deploy, Intake);
   }
 
   public Command getIntakeScoreCommand(Subsystem Intake) {
-    return Commands.runOnce(Intake::shootOut, Intake)
+    return Commands.runOnce(Intake::shootOut, Intake);
   }
 }

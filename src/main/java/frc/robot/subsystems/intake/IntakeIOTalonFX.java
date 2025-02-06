@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import static frc.robot.subsystems.subsystem.SubsystemConstants.SUBSYSTEM_NAME;
+import static frc.robot.subsystems.intake.IntakeConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
@@ -13,12 +14,15 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
@@ -43,51 +47,50 @@ public class IntakeIOTalonFX implements IntakeIO {
   private StatusSignal<Current> rollerStatorCurrentStatusSignal;
   private StatusSignal<Current> rollerSupplyCurrentStatusSignal;
   private StatusSignal<Temperature> rollerTempCelciusStatusSignal;
-  private StatusSignal<Double> rollerClosedLoopErrorStatusSignal;
-  private StatusSignal<Double> rollerReferenceVelocityStatusSignal;
+//  private StatusSignal<Double> rollerClosedLoopErrorStatusSignal;
+ // private StatusSignal<Double> rollerReferenceVelocityStatusSignal;
 
   // pivot status signals
-  private StatusSignal<AngularVelocity> pivotMotorVelocityStatusSignal;
   private StatusSignal<Voltage> pivotMotorVoltageStatusSignal;
   private StatusSignal<Current> pivotStatorCurrentStatusSignal;
   private StatusSignal<Temperature> pivotTempCelciusStatusSignal;
-  private StatusSignal<Double> pivotClosedLoopErrorStatusSignal;
-  private StatusSignal<Double> pivotReferencePositionStatusSignal;
+ // private StatusSignal<Double> pivotClosedLoopErrorStatusSignal;
+ // private StatusSignal<Double> pivotReferencePositionStatusSignal;
   private StatusSignal<Current> pivotSupplyStatusSignal;
-  private StatusSignal<Double> pivotPositionDegStatusSignal;
+  private StatusSignal<Angle> pivotPositionDegStatusSignal;
 
   private VelocitySystemSim rollerSim;
   private ArmSystemSim pivotSim;
 
   private final LoggedTunableNumber rollerMotorsKP =
-      new LoggedTunableNumber("Intake/rollerMotorsKP", 0.0);
+      new LoggedTunableNumber("Intake/rollerMotorsKP",INTAKE_ROLLER_MOTORS_KP);
 
   private final LoggedTunableNumber rollerMotorKS =
-      new LoggedTunableNumber("Intake/rollerMotorsKS", 0.0);
+      new LoggedTunableNumber("Intake/rollerMotorsKS", INTAKE_ROLLER_MOTORS_KS);
 
   private final LoggedTunableNumber rollerMotorKV =
-      new LoggedTunableNumber("Intake/rollerMotorsKV", 0.0);
+      new LoggedTunableNumber("Intake/rollerMotorsKV", INTAKE_ROLLER_MOTORS_KV);
 
   private final LoggedTunableNumber pivotMotorsKP =
-      new LoggedTunableNumber("Intake/pivotMotorsKP", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKP", INTAKE_PIVOT_MOTORS_KP);
 
   private final LoggedTunableNumber pivotMotorsKI =
-      new LoggedTunableNumber("Intake/pivotMotorsKI", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKI", INTAKE_PIVOT_MOTORS_KI);
 
   private final LoggedTunableNumber pivotMotorsKD =
-      new LoggedTunableNumber("Intake/pivotMotorsKD", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKD", INTAKE_PIVOT_MOTORS_KD);
 
   private final LoggedTunableNumber pivotMotorsKS =
-      new LoggedTunableNumber("Intake/pivotMotorsKS", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKS", INTAKE_PIVOT_MOTORS_KS);
 
   private final LoggedTunableNumber pivotMotorsKV =
-      new LoggedTunableNumber("Intake/pivotMotorsKV", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKV", INTAKE_PIVOT_MOTORS_KV);
 
   private final LoggedTunableNumber pivotMotorsKA =
-      new LoggedTunableNumber("Intake/pivotMotorsKA", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKA", INTAKE_PIVOT_MOTORS_KA);
 
   private final LoggedTunableNumber pivotMotorsKG =
-      new LoggedTunableNumber("Intake/pivotMotorsKG", 0.0);
+      new LoggedTunableNumber("Intake/pivotMotorsKG", INTAKE_PIVOT_MOTORS_KG);
 
   public IntakeIOTalonFX() {
     rollerMotor =
@@ -106,7 +109,6 @@ public class IntakeIOTalonFX implements IntakeIO {
     pivotVoltageRequest = new VoltageOut(0);
 
     rollerMotorVelocityStatusSignal = rollerMotor.getVelocity();
-    pivotMotorVelocityStatusSignal = pivotMotor.getVelocity();
 
     rollerStatorCurrentStatusSignal = rollerMotor.getStatorCurrent();
     pivotStatorCurrentStatusSignal = pivotMotor.getStatorCurrent();
@@ -114,23 +116,22 @@ public class IntakeIOTalonFX implements IntakeIO {
     rollerSupplyCurrentStatusSignal = rollerMotor.getSupplyCurrent();
     pivotSupplyStatusSignal = pivotMotor.getSupplyCurrent();
 
-    rollerReferenceVelocityStatusSignal = rollerMotor.getClosedLoopReference();
-    pivotReferencePositionStatusSignal = pivotMotor.getClosedLoopReference();
+    
 
     rollerTempCelciusStatusSignal = rollerMotor.getDeviceTemp();
     pivotTempCelciusStatusSignal = pivotMotor.getDeviceTemp();
 
     rollerMotorVoltageStatusSignal = rollerMotor.getMotorVoltage();
     pivotMotorVoltageStatusSignal = pivotMotor.getMotorVoltage();
+    pivotPositionDegStatusSignal = pivotMotor.getPosition();
 
-    rollerClosedLoopErrorStatusSignal = rollerMotor.getClosedLoopError();
-    pivotClosedLoopErrorStatusSignal = pivotMotor.getClosedLoopError();
+   
 
-    this.rollerSim = new VelocitySystemSim(rollerMotor, 0, 0, 0, 0);
+    this.rollerSim = new VelocitySystemSim(rollerMotor, INTAKE_ROLLER_MOTORS_INVERTED, INTAKE_ROLLER_MOTORS_KV, 0, ROLLER_GEAR_RATIO);
 
-    this.pivotSim = new ArmSystemSim(pivotMotor, null, false, 0, 0, 0, 0, 0, 0, 0, SUBSYSTEM_NAME);
+    this.pivotSim = new ArmSystemSim(pivotMotor, INTAKE_PIVOT_MOTORS_INVERTED, PIVOT_GEAR_RATIO, PIVOT_BELT_RATIO, PIVOT_SIM_LENGTH, PIVOT_SIM_MASS, PIVOT_SIM_MIN_ANGLE, PIVOT_SIM_MAX_ANGLE, PIVOT_SIM_STARTING_ANGLE, SUBSYSTEM_NAME); //
   }
-
+ 
   @Override
   public void updateInputs(IntakeIOInputs inputs) {
     this.rollerSim.updateSim();
@@ -140,13 +141,12 @@ public class IntakeIOTalonFX implements IntakeIO {
         rollerMotorVelocityStatusSignal,
         rollerStatorCurrentStatusSignal,
         rollerSupplyCurrentStatusSignal,
-        rollerReferenceVelocityStatusSignal,
-        rollerClosedLoopErrorStatusSignal,
-        pivotClosedLoopErrorStatusSignal,
+       // rollerReferenceVelocityStatusSignal,
+       // rollerClosedLoopErrorStatusSignal,
+       // pivotClosedLoopErrorStatusSignal,
         pivotSupplyStatusSignal,
         pivotStatorCurrentStatusSignal,
-        pivotMotorVelocityStatusSignal,
-        pivotReferencePositionStatusSignal,
+      //  pivotReferencePositionStatusSignal,
         rollerTempCelciusStatusSignal,
         pivotTempCelciusStatusSignal,
         rollerMotorVoltageStatusSignal,
@@ -159,42 +159,50 @@ public class IntakeIOTalonFX implements IntakeIO {
     inputs.rollerSupplyCurrentAmps = rollerSupplyCurrentStatusSignal.getValueAsDouble();
     inputs.pivotSupplyCurrentAmps = pivotSupplyStatusSignal.getValueAsDouble();
 
-    inputs.rollerReferenceVelocityRPS = rollerReferenceVelocityStatusSignal.getValueAsDouble();
-    inputs.pivotReferencePositionDeg = pivotReferencePositionStatusSignal.getValueAsDouble();
+    inputs.rollerReferenceVelocityRPS = rollerMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.pivotReferencePositionDeg = pivotMotor.getClosedLoopReference().getValueAsDouble();
 
     inputs.rollerTempCelcius = rollerTempCelciusStatusSignal.getValueAsDouble();
     inputs.pivotTempCelcius = pivotTempCelciusStatusSignal.getValueAsDouble();
 
+    inputs.rollerMotorVelocityRPS = rollerMotorVelocityStatusSignal.getValueAsDouble();
+
     inputs.rollerMotorVoltage = rollerMotorVoltageStatusSignal.getValueAsDouble();
     inputs.pivotMotorVoltage = pivotMotorVoltageStatusSignal.getValueAsDouble();
 
-    if (rollerMotorsKP.hasChanged(rollerMotorsKP.hashCode())
-        || rollerMotorKS.hasChanged(rollerMotorKS.hashCode())
-        || rollerMotorKV.hasChanged(rollerMotorKV.hashCode())) {
+    inputs.rollerClosedLoopError = rollerMotor.getClosedLoopError().getValueAsDouble();
+    inputs.pivotClosedLoopError = pivotMotor.getClosedLoopError().getValueAsDouble();
+    inputs.pivotPositionDeg = pivotPositionDegStatusSignal.getValueAsDouble();
 
-      Slot0Configs slot0Configs = new Slot0Configs();
-      rollerMotor.getConfigurator().refresh(slot0Configs);
-      slot0Configs.kP = rollerMotorsKP.get();
-      slot0Configs.kS = rollerMotorKS.get();
-      slot0Configs.kV = rollerMotorKV.get();
+    LoggedTunableNumber.ifChanged(hashCode(),
+    rollerpidconstants -> {
+      TalonFXConfiguration rollerConfig = new TalonFXConfiguration();
+      this.rollerMotor.getConfigurator().refresh(rollerConfig);
+      rollerConfig.Slot0.kP = rollerpidconstants[0];
+      rollerConfig.Slot0.kS = rollerpidconstants[1];
+      rollerConfig.Slot0.kV = rollerpidconstants[2];
+      this.rollerMotor.getConfigurator().apply(rollerConfig);
+    },
+    rollerMotorsKP, rollerMotorKS, rollerMotorKV);
 
-      rollerMotor.getConfigurator().apply(slot0Configs);
-    }
+   
+   LoggedTunableNumber.ifChanged(hashCode(),
+    pivotpidconstants -> {
+      TalonFXConfiguration pivotConfig = new TalonFXConfiguration();
+      this.pivotMotor.getConfigurator().refresh(pivotConfig);
+      pivotConfig.Slot0.kP = pivotpidconstants[0];
+      pivotConfig.Slot0.kI = pivotpidconstants[1];
+      pivotConfig.Slot0.kD = pivotpidconstants[2];
+      pivotConfig.Slot0.kS = pivotpidconstants[3];
+      pivotConfig.Slot0.kV = pivotpidconstants[4];
+      pivotConfig.Slot0.kA = pivotpidconstants[5];
+      pivotConfig.Slot0.kG = pivotpidconstants[6];
+      this.pivotMotor.getConfigurator().apply(pivotConfig);
+    },
+    pivotMotorsKP, pivotMotorsKI, pivotMotorsKD, pivotMotorsKS, pivotMotorsKV, pivotMotorsKA, pivotMotorsKG);
 
-    if (pivotMotorsKP.hasChanged(0)
-        || pivotMotorsKI.hasChanged(pivotMotorsKI.hashCode())
-        || pivotMotorsKD.hasChanged(pivotMotorsKD.hashCode())
-        || pivotMotorsKS.hasChanged(pivotMotorsKS.hashCode())) {
-
-      Slot0Configs slot0Configs = new Slot0Configs();
-      pivotMotor.getConfigurator().refresh(slot0Configs);
-      slot0Configs.kP = pivotMotorsKP.get();
-      slot0Configs.kI = pivotMotorsKI.get();
-      slot0Configs.kD = pivotMotorsKD.get();
-      slot0Configs.kS = pivotMotorsKS.get();
-
-      pivotMotor.getConfigurator().apply(slot0Configs);
-    }
+    rollerSim.updateSim();
+    pivotSim.updateSim();
   }
 
   @Override
@@ -226,20 +234,14 @@ public class IntakeIOTalonFX implements IntakeIO {
 
     rollerConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
+    rollerConfig.MotorOutput.Inverted = INTAKE_PIVOT_MOTORS_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+
     rollerConfig.Slot0.kP = rollerMotorsKP.get();
     rollerConfig.Slot0.kS = rollerMotorKS.get();
     rollerConfig.Slot0.kV = rollerMotorKV.get();
 
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; i++) {
-      status = rollerMotor.getConfigurator().apply(rollerConfig);
-      if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      configAlert.set(true);
-      configAlert.setText(status.toString());
-    }
-
+    Phoenix6Util.applyAndCheckConfiguration(rollerMotor, rollerConfig, configAlert);
+    
     FaultReporter.getInstance().registerHardware("INTAKE", "IntakeRoller", rollerMotor);
   }
 
@@ -265,15 +267,8 @@ public class IntakeIOTalonFX implements IntakeIO {
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
 
-    StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; i++) {
-      status = pivotMotor.getConfigurator().apply(pivotConfig);
-      if (status.isOK()) break;
-    }
-    if (!status.isOK()) {
-      configAlert.set(true);
-      configAlert.setText(status.toString());
-    }
+            
+    Phoenix6Util.applyAndCheckConfiguration(pivotMotor, pivotConfig, configAlert);
 
     FaultReporter.getInstance().registerHardware("INTAKE", "IntakePivot", pivotMotor);
   }
