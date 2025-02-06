@@ -188,7 +188,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    elevator = new Elevator(new ElevatorIOTalonFX());
+    elevator = new Elevator(new ElevatorIO() {} /*TalonFX*/);
   }
 
   private void createCTRESimSubsystems() {

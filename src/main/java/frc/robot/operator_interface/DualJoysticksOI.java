@@ -42,7 +42,7 @@ public class DualJoysticksOI implements OperatorInterface {
 
   @Override
   public Trigger getResetPoseToVisionButton() {
-    return translateJoystickButtons[1];
+    return rotateJoystickButtons[5];
   }
 
   // Translation Joystick
@@ -76,16 +76,6 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public Trigger getDriveToNearestRightBranchButton() {
     return rotateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getAlignToScoreCoralLeftButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getAlignToScoreCoralRightButton() {
-    return translateJoystickButtons[5];
   }
 
   @Override

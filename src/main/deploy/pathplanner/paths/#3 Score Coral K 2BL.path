@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.674571917808219,
-        "y": 6.271339897260273
+        "x": 2.085860655737705,
+        "y": 5.733247950819671
       },
       "isLocked": false,
       "linkedName": "Collect Coral"
     },
     {
       "anchor": {
-        "x": 3.8690295190868262,
-        "y": 5.561704047262618
+        "x": 3.2726434426229503,
+        "y": 5.33765368852459
       },
       "prevControl": {
-        "x": 2.982652806758059,
-        "y": 6.26788983493385
+        "x": 2.386266730294183,
+        "y": 6.0438394761958225
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.0,
+    "velocity": 1.0,
     "rotation": -57.99499999999999
   },
   "reversed": false,
