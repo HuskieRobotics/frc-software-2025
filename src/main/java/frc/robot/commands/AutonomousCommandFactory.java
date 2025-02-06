@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -199,6 +200,13 @@ public class AutonomousCommandFactory {
             Commands.deadline(
                 Commands.waitSeconds(0.5),
                 Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
+  }
+
+  // will require other subsystems later
+  public Command getTwoCoralLeftAutoCommand(Drivetrain drivetrain) {
+    return Commands.sequence(
+        new FollowPathCommand()
+    );
   }
 
   // When programmed, each score coral command will drive to the specified pose on the reef and then
