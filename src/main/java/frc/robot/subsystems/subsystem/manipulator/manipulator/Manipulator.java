@@ -24,10 +24,21 @@ public class Manipulator extends SubsystemBase {
   // motor
   private final LoggedTunableNumber testingMode =
       new LoggedTunableNumber("Subsystem/TestingMode", 0);
-  private final LoggedTunableNumber motorPower = new LoggedTunableNumber("Subsystem/power", 0.0);
-  private final LoggedTunableNumber motorCurrent =
+
+//logged tunable numbers for funnel motor stuff
+  private final LoggedTunableNumber funnelMotorPower = 
+      new LoggedTunableNumber("Subsystem/power", 0.0);
+  private final LoggedTunableNumber funnelMotorCurrent =
       new LoggedTunableNumber("Subsystem/current", 0.0);
-  private final LoggedTunableNumber motorPosition =
+  private final LoggedTunableNumber funnelMotorPosition =
+      new LoggedTunableNumber("Subsystem/position", 0.0);
+
+//logged tunable numbers for indexer motor stuff
+  private final LoggedTunableNumber indexerMotorPower = 
+      new LoggedTunableNumber("Subsystem/power", 0.0);
+  private final LoggedTunableNumber indexerMotorCurrent =
+      new LoggedTunableNumber("Subsystem/current", 0.0);
+  private final LoggedTunableNumber indexerMotorPosition =
       new LoggedTunableNumber("Subsystem/position", 0.0);
 
   private ManipulatorIO io;
@@ -35,13 +46,14 @@ public class Manipulator extends SubsystemBase {
   private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
   private State lastState = State.UNINITIALIZED; 
   private LinearFilter currentInAmps = new LinearFilter.singlePoleIIR(0.1, 0.02); //the first value is the time constant, the characteristic timescale of the filter's impulse response, and the second value is the time-period, how often the calculate() method will be called
-  private final double thresholdForCurrentSpike = 5; //this constant will keep track of the threshold for a current spike , which for example I put as 5
+  private final double thresholdForCurrentSpike = 5; //this constant will keep track of the threshold for a current spike , which for example I put as 5, can be changed later
   private boolean shootCoralButtonPressed = false; 
   private boolean removeAlgaeButtonPressed = false;
   private boolean algaeRemoved = false; //need to actually figure out the IO stuff with this... how do we actually know if the algae has been removed??
   private boolean robotTurnedOn = false; //this is a instance variable that just keeps track of if the robot has been turned on, actually need to figure out the io stuff for this though to set it to true
   
     /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
+    //for the SysIdRoutine, i added replaced the line where it calls the setMotorVoltage method, and added 2 lines that do the same thing but set the indexer motor voltage, and the funnel motor voltage, using their respective methods
     private final SysIdRoutine sysIdRoutine =
         new SysIdRoutine(
             new SysIdRoutine.Config(
@@ -50,7 +62,8 @@ public class Manipulator extends SubsystemBase {
                 null, // Use default timeout (10 s)
                 // Log state with SignalLogger class
                 state -> SignalLogger.writeString("SysId_State", state.toString())),
-            new SysIdRoutine.Mechanism(output -> setMotorVoltage(output.in(Volts)), null, this));
+            new SysIdRoutine.Mechanism(output -> setFunnelMotorVoltage(output.in(Volts)), null, this),
+            new SysIdRoutine.Mechanism(output -> setIndexerMotorVoltage(output.in(Volts)), null, this));
   
     /**
      * Few subsystems require the complexity of a state machine. A simpler command-based approach is
@@ -113,10 +126,8 @@ public class Manipulator extends SubsystemBase {
     CORAL_STUCK{
       @Override
       void onEnter(Manipulator subsystem) {
-        //set motor inverted boolean to true
-        //set negative velocity to funnel motor
-        subsystem.setFunnelMotorVelocity(-3);
-        isFunnelMotorInverted = true;
+        subsystem.setFunnelMotorVelocity(-3); //set negative velocity to funnel motor to invert it
+        isFunnelMotorInverted = true; //set funnel motor inverted boolean to true
       }
       @Override
       void execute(Manipulator subsystem) {
@@ -126,7 +137,8 @@ public class Manipulator extends SubsystemBase {
       }
       @Override
       void onExit(Manipulator subsystem) {
-        isFunnelMotorInverted = false;
+        isFunnelMotorInverted = false; //set this to false because the robot should move from this state to the WAITING_FOR_CORAL_IN_FUNNEL state, and the funnel motor wouldn't be inverted in that state
+
       }
     },
     CORAL_IN_MANIPULATOR {
@@ -238,18 +250,36 @@ public class Manipulator extends SubsystemBase {
     Logger.processInputs("Subsystem", inputs);
     currentInAmps.calculate();
 
-    // when testing, set the motor power, current, or position based on the Tunables (if non-zero)
+    // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if non-zero)
     if (testingMode.get() != 0) {
-      if (motorPower.get() != 0) {
-        this.setMotorVoltage(motorPower.get());
+      if (funnelMotorPower.get() != 0) {
+        this.setFunnelMotorVoltage(funnelMotorPower.get());
       }
 
-      if (motorCurrent.get() != 0) {
-        this.setMotorCurrent(motorCurrent.get());
+      if (funnelMotorCurrent.get() != 0) {
+        this.setFunnelMotorCurrent(funnelMotorCurrent.get());
       }
 
-      if (motorPosition.get() != 0) {
-        this.setMotorPosition(motorPosition.get());
+      if (funnelMotorPosition.get() != 0) {
+        this.setFunnelMotorPosition(funnelMotorPosition.get());
+      }
+    } else {
+      runStateMachine();
+    }
+  }
+
+  // when testing, set the INDEXER motor power, current, or position based on the Tunables (if non-zero)
+if (testingMode.get() != 0) {
+      if (indexerMotorPower.get() != 0) {
+        this.setIndexerMotorVoltage(indexerMotorPower.get());
+      }
+
+      if (indexerMotorCurrent.get() != 0) {
+        this.setIndexerMotorCurrent(indexerMotorCurrent.get());
+      }
+
+      if (indexerMotorPosition.get() != 0) {
+        this.setIndexerMotorPosition(indexerMotorPosition.get());
       }
     } else {
       runStateMachine();
@@ -275,8 +305,8 @@ public class Manipulator extends SubsystemBase {
    *
    * @param power the percentage of maximum power to set the motor to
    */
-  public void setMotorVoltage(double volts) {
-    io.setMotorVoltage(volts);
+  public void setFunnelMotorVoltage(double volts) {
+    io.setFunnelMotorVoltage(volts);
   }
 
   /**
@@ -284,8 +314,8 @@ public class Manipulator extends SubsystemBase {
    *
    * @param power the current to set the motor to in amps
    */
-  public void setMotorCurrent(double current) {
-    io.setMotorCurrent(current);
+  public void setFunnelMotorCurrent(double current) {
+    io.setFunnelMotorCurrent(current);
   }
 
   /**
@@ -293,14 +323,43 @@ public class Manipulator extends SubsystemBase {
    *
    * @param position the position to set the motor to in degrees
    */
-  public void setMotorPosition(double position) {
-    io.setMotorPosition(position, POSITION_FEEDFORWARD);
+  public void setFunnelMotorPosition(double position) {
+    io.setFunnelMotorPosition(position, POSITION_FEEDFORWARD);
+  }
+  
+  /**
+   * Set the motor power to the specified percentage of maximum power.
+   *
+   * @param power the percentage of maximum power to set the motor to
+   */
+  public void setIndexerMotorVoltage(double volts) {
+    io.setIndexerMotorVoltage(volts);
   }
 
+  /**
+   * Set the motor current to the specified value in amps.
+   *
+   * @param power the current to set the motor to in amps
+   */
+  public void setIndexerMotorCurrent(double current) {
+    io.setIndexerMotorCurrent(current);
+  }
+
+  /**
+   * Set the motor position to the specified value in degrees.
+   *
+   * @param position the position to set the motor to in degrees
+   */
+  public void setIndexerMotorPosition(double position) {
+    io.setIndexerMotorPosition(position, POSITION_FEEDFORWARD);
+  }
+
+//Whichever line of code does something with the motors, i replaced it with 2 lines that do the same exact thing but for the funnel and indexer motor, unsure if this is correct
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
-            Commands.run(() -> io.setMotorVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelMotorVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setIndexerMotorVoltage(3.6)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
                   if (inputs.velocityRPM < 2.0) {
@@ -312,7 +371,8 @@ public class Manipulator extends SubsystemBase {
                             true);
                   }
                 }),
-            Commands.run(() -> io.setMotorVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelMotorVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setIndexerMotorVoltage(-2.4)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
                   if (inputs.velocityRPM > -2.0) {
@@ -325,7 +385,8 @@ public class Manipulator extends SubsystemBase {
                   }
                 }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(Commands.runOnce(() -> io.setMotorVoltage(0.0)));
+        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0))),
+        .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
   private void setFunnelMotorVelocity(double velocity)
@@ -349,4 +410,3 @@ public class Manipulator extends SubsystemBase {
   {
     removeAlgaeButtonPressed = true;
   }
-}

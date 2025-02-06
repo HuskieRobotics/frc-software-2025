@@ -92,15 +92,12 @@ public interface ManipulatorIO {
    */
   public default void setIndexerMotorCurrent(double current) {}
 
-//not sure if this is how i am supposed to see if there is a current spike
+//I had originally created this method to check for a current spike, but I'm using the Linear Filter class for that, so I'll just keep this method here.
   /**
    * Get the current motor indexer current value specified in amps.
    * @return the current value as a double. 
    */
-  public default void getIndexerMotorCurrent()
-  {
-    return 
-  }
+  public default void getIndexerMotorCurrent() {}
 
 
   /**
