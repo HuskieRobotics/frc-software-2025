@@ -57,7 +57,8 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    * Create a new LoggedTunableBoolean with the default value
    *
    * @param dashboardKey Key on dashboard
-   * @param readAndWrite Default value
+   * @param defaultValue the default value 
+   * @param readAndWrite if the value can be read/written to depending on tuning 
    */
   public LoggedTunableBoolean(String dashboardKey, boolean defaultValue, boolean readAndWrite) {
     this.key = TABLE_KEY + "/" + dashboardKey;
@@ -130,7 +131,6 @@ public class LoggedTunableBoolean implements BooleanSupplier {
     if (Arrays.stream(tunableBooleans).anyMatch(tunableBoolean -> tunableBoolean.hasChanged(id))) {
       action.accept(
           Arrays.stream(tunableBooleans)
-              .filter(LoggedTunableBoolean::isReadAndWriteAlways)
               .map(LoggedTunableBoolean::get)
               .map(Boolean::booleanValue) 
               .toArray()
@@ -138,7 +138,14 @@ public class LoggedTunableBoolean implements BooleanSupplier {
     }
   }
 
-  /** Runs action if any of the tunableBooleans have changed */
+  /** Runs action if any of the tunableBooleans have changed 
+   * 
+   * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
+   * 
+   * @param action Callback to run when any of the tunable booleans have changed. Access tunable
+   * 
+   * @param tunableBooleans All tunable booleans to check
+  */
   public static void ifChanged(int id, Runnable action, LoggedTunableBoolean... tunableBooleans) {
     ifChanged(id, values -> action.run(), tunableBooleans);
   }
