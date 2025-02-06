@@ -50,20 +50,19 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   public LoggedTunableBoolean(String dashboardKey, boolean defaultValue) {
     this(dashboardKey);
     initDefault(defaultValue);
-
   }
 
   /**
    * Create a new LoggedTunableBoolean with the default value
    *
    * @param dashboardKey Key on dashboard
-   * @param defaultValue the default value 
-   * @param readAndWrite if the value can be read/written to depending on tuning 
+   * @param defaultValue the default value
+   * @param readAndWrite if the value can be read/written to depending on tuning
    */
   public LoggedTunableBoolean(String dashboardKey, boolean defaultValue, boolean readAndWrite) {
     this.key = TABLE_KEY + "/" + dashboardKey;
-    initDefault(defaultValue);
     this.readAndWriteAlways = readAndWrite;
+    initDefault(defaultValue);
   }
 
   /**
@@ -75,13 +74,12 @@ public class LoggedTunableBoolean implements BooleanSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
+
       if (TUNING_MODE || this.readAndWriteAlways) {
         dashboardBoolean = new LoggedNetworkBoolean(key, defaultValue);
       }
     }
-    
   }
-
 
   /**
    * Get the current value, from dashboard if available and in tuning mode.
@@ -89,12 +87,11 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    * @return The current value
    */
   public boolean get() {
-      if (!hasDefault) {
-        return false;
-      }
-      return (TUNING_MODE || this.readAndWriteAlways) ? dashboardBoolean.get() : defaultValue;
+    if (!hasDefault) {
+      return false;
     }
-
+    return (TUNING_MODE || this.readAndWriteAlways) ? dashboardBoolean.get() : defaultValue;
+  }
 
   /**
    * Checks whether the boolean value has changed since our last check
@@ -115,7 +112,6 @@ public class LoggedTunableBoolean implements BooleanSupplier {
     return false;
   }
 
-
   /**
    * Runs action if any of the tunableBooleans have changed
    *
@@ -132,20 +128,18 @@ public class LoggedTunableBoolean implements BooleanSupplier {
       action.accept(
           Arrays.stream(tunableBooleans)
               .map(LoggedTunableBoolean::get)
-              .map(Boolean::booleanValue) 
-              .toArray()
-              );
+              .map(Boolean::booleanValue)
+              .toArray());
     }
   }
 
-  /** Runs action if any of the tunableBooleans have changed 
-   * 
+  /**
+   * Runs action if any of the tunableBooleans have changed
+   *
    * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
-   * 
    * @param action Callback to run when any of the tunable booleans have changed. Access tunable
-   * 
    * @param tunableBooleans All tunable booleans to check
-  */
+   */
   public static void ifChanged(int id, Runnable action, LoggedTunableBoolean... tunableBooleans) {
     ifChanged(id, values -> action.run(), tunableBooleans);
   }
