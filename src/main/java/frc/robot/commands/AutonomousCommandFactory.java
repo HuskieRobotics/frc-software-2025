@@ -3,6 +3,8 @@ package frc.robot.commands;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
@@ -12,6 +14,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -20,12 +24,19 @@ public class AutonomousCommandFactory {
 
   private static AutonomousCommandFactory autonomousCommandFactory = null;
 
+  private Pose2d leftStartingAutoPose = new Pose2d();
+  private Pose2d rightStartingAutoPose = new Pose2d();
+
+  // set arbitrary tolerance values to 3 inches in each direction and 5 degrees
+  private Transform2d autoStartTolerance = new Transform2d(3, 3, new Rotation2d(Units.degreesToRadians(5)));
+
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
       new LoggedDashboardChooser<>("Auto Routine");
 
   private final Alert pathFileMissingAlert =
       new Alert("Could not find the specified path file.", AlertType.kError);
+
 
   /**
    * Returns the singleton instance of this class.
@@ -227,4 +238,24 @@ public class AutonomousCommandFactory {
         new PathPlannerAuto(autoName),
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
+
+  public boolean AlignedToStartingPose() {
+ 
+    //find the target position
+    // check if pose is on left or right side of the field
+    // get measurement in cad for centerline of field by x
+    Transform2d difference;
+    if (RobotOdometry.getInstance().getEstimatedPose().getX() > 0.0) {
+        difference = RobotOdometry.getInstance().getEstimatedPose().minus(leftStartingAutoPose);
+    } else {
+        difference = RobotOdometry.getInstance().getEstimatedPose().minus(rightStartingAutoPose); 
+    }
+
+    return Math.abs(difference.getX()) < autoStartTolerance.getX()
+            && Math.abs(difference.getY()) < autoStartTolerance.getY()
+            && Math.abs(difference.getRotation().getRadians())
+                < autoStartTolerance.getRotation().getRadians();
+  }
+       
+
 }
