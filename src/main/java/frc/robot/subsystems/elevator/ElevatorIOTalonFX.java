@@ -102,9 +102,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new LoggedTunableNumber("Elevator/kGslot2", ElevatorConstants.KG_SLOT2);
 
   private final LoggedTunableNumber kVExpo =
-      new LoggedTunableNumber("Elevator/kVExposlot0", ElevatorConstants.KV_EXPO);
+      new LoggedTunableNumber("Elevator/kVExpo", ElevatorConstants.KV_EXPO);
   private final LoggedTunableNumber kAExpo =
-      new LoggedTunableNumber("Elevator/kAExposlot0", ElevatorConstants.KA_EXPO);
+      new LoggedTunableNumber("Elevator/kAExpo", ElevatorConstants.KA_EXPO);
 
   private final LoggedTunableNumber cruiseVelocity =
       new LoggedTunableNumber("Elevator/Cruise Velocity", 0);
