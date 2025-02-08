@@ -37,8 +37,8 @@ import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
+import frc.robot.configs.New2025RobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
@@ -167,7 +167,7 @@ public class RobotContainer {
         config = new NewPracticeRobotConfig();
         break;
       case ROBOT_COMPETITION, ROBOT_SIMBOT:
-        config = new ArtemisRobotConfig();
+        config = new New2025RobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
         config = new PracticeBoardConfig();
