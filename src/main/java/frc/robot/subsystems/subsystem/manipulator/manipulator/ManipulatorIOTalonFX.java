@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -48,6 +49,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
+
+  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   /* You will create StatusSignal<> objects for each logged input.
     These status signals will then be insantiated in the constructor with what value they should be tracking, which you do in updateInputs right now.
@@ -167,17 +170,24 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   public void updateInputs(ManipulatorIOInputs inputs) {
 
     // refresh all status signal objects
-    BaseStatusSignal.refreshAll(
-        funnelMotorVelocity,
-        indexerMotorVelocity,
-        funnelMotorStatorCurrent,
-        indexerMotorStatorCurrent,
-        funnelMotorTemp,
-        indexerMotorTemp,
-        funnelMotorSupplyCurrent,
-        indexerMotorSupplyCurrent,
-        funnelMotorVoltage,
-        indexerMotorVoltage);
+    StatusCode status =
+        BaseStatusSignal.refreshAll(
+            funnelMotorVelocity,
+            funnelMotorStatorCurrent,
+            funnelMotorTemp,
+            funnelMotorSupplyCurrent,
+            funnelMotorVoltage);
+    Phoenix6Util.checkError(status, "Failed to refresh funnel motor signals.", refreshAlert);
+
+    // refresh all status signal objects
+    status =
+        BaseStatusSignal.refreshAll(
+            indexerMotorVelocity,
+            indexerMotorStatorCurrent,
+            indexerMotorTemp,
+            indexerMotorSupplyCurrent,
+            indexerMotorVoltage);
+    Phoenix6Util.checkError(status, "Failed to refresh indexer motor signals.", refreshAlert);
 
     inputs.funnelVelocityRPS = funnelMotorVelocity.getValue().in(RotationsPerSecond);
     inputs.indexerVelocityRPS = indexerMotorVelocity.getValue().in(RotationsPerSecond);
@@ -324,10 +334,13 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kP = funnelKp.get();
     config.Slot0.kI = funnelKi.get();
     config.Slot0.kD = funnelKd.get();
+    config.Slot0.kS = funnelKs.get();
+    config.Slot0.kV = funnelKv.get();
+    config.Slot0.kA = funnelKa.get();
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
-    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "subsystem motor", funnelMotor);
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "funnel motor", motor);
   }
 
   /*
@@ -352,9 +365,12 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kP = indexerKp.get();
     config.Slot0.kI = indexerKi.get();
     config.Slot0.kD = indexerKd.get();
+    config.Slot0.kS = indexerKs.get();
+    config.Slot0.kV = indexerKv.get();
+    config.Slot0.kA = indexerKa.get();
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
-    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "subsystem motor", indexerMotor);
+    FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "indexer motor", motor);
   }
 }
