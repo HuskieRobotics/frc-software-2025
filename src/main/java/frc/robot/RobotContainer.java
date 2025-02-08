@@ -135,7 +135,7 @@ public class RobotContainer {
 
     updateOI();
 
-    AutonomousCommandFactory.getInstance().configureAutoCommands(drivetrain);
+    AutonomousCommandFactory.getInstance().configureAutoCommands(drivetrain, vision);
 
     // Alert when tuning
     if (Constants.TUNING_MODE) {
