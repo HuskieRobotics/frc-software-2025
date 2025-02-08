@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
@@ -18,6 +20,9 @@ import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
+
+import java.nio.file.Path;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandFactory {
@@ -71,7 +76,7 @@ public class AutonomousCommandFactory {
      *
      */
 
-    Command twoPieceBlueLeft = new PathPlannerAuto("2 Piece Blue Left");
+    Command twoPieceBlueLeft = getTwoCoralLeftAutoCommand(drivetrain);
     autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
 
     /************ Start Point ************
@@ -210,6 +215,58 @@ public class AutonomousCommandFactory {
             Commands.deadline(
                 Commands.waitSeconds(0.5),
                 Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
+  }
+
+  public Command getTwoCoralLeftAutoCommand(Drivetrain drivetrain) {
+    try {
+        PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
+        PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
+        PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral K 2BL");
+        PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral K 2BL");
+
+        return Commands.sequence(
+            AutoBuilder.followPath(scoreCoralJ2BL),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.RIGHT),
+            AutoBuilder.followPath(collectCoralJ2BL),
+            AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
+            AutoBuilder.followPath(scoreCoralK2BL),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.LEFT),
+            AutoBuilder.followPath(collectCoralK2BL),
+            AutonomousCommandFactory.getInstance().getCollectCoralCommand()
+        );
+
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.waitSeconds(0);
+    } 
+  }
+
+  public Command getTwoCoralRightAutoCommand(Drivetrain drivetrain) {
+    try {
+        PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral E 2BR");
+        PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral E 2BR");
+        PathPlannerPath scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
+        PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
+
+        return Commands.sequence(
+            AutoBuilder.followPath(scoreCoralE2BR),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.LEFT),
+            AutoBuilder.followPath(collectCoralE2BR),
+            AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
+            AutoBuilder.followPath(scoreCoralD2BR),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.RIGHT),
+            AutoBuilder.followPath(collectCoralD2BR),
+            AutonomousCommandFactory.getInstance().getCollectCoralCommand()
+        );
+
+    } catch (Exception e) {
+      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.waitSeconds(0);
+    }
   }
 
   // When programmed, each score coral command will drive to the specified pose on the reef and then
