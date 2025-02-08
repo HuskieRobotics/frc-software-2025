@@ -108,6 +108,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getRetractClimberSlowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getZeroClimberButton() {
+    return new Trigger(() -> false);
+  }
+
   // miscellaneous
   public default Trigger getInterruptAll() {
     return new Trigger(() -> false);

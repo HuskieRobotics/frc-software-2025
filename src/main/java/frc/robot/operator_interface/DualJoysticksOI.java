@@ -100,4 +100,14 @@ public class DualJoysticksOI implements OperatorInterface {
   public Trigger getResetPoseToVisionButton() {
     return rotateJoystickButtons[5];
   }
+
+  @Override
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[10];
+  }
+
+  @Override
+  public Trigger getZeroClimberButton() {
+    return rotateJoystickButtons[11];
+  }
 }

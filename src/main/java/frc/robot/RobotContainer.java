@@ -32,7 +32,7 @@ import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandFactory;
-import frc.robot.commands.SubsystemCommandFactory;
+import frc.robot.commands.ClimberCommandFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -41,6 +41,9 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Climber.ClimberIO;
+import frc.robot.subsystems.Climber.ClimberIOTalonFX;
 import frc.robot.subsystems.subsystem.Subsystem;
 import frc.robot.subsystems.subsystem.SubsystemIO;
 import java.io.IOException;
@@ -62,6 +65,7 @@ public class RobotContainer {
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
   private Subsystem subsystem;
+  private Climber climber;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -131,6 +135,7 @@ public class RobotContainer {
       }
       vision = new Vision(visionIOs);
       subsystem = new Subsystem(new SubsystemIO() {});
+      climber = new Climber(new ClimberIO() {});
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -196,6 +201,7 @@ public class RobotContainer {
 
     // FIXME: create the hardware-specific subsystem class
     subsystem = new Subsystem(new SubsystemIO() {});
+    climber = new Climber(new ClimberIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
@@ -221,13 +227,14 @@ public class RobotContainer {
                   RobotConfig.getInstance().getRobotToCameraTransforms()[0])
             });
 
-    // FIXME: create the hardware-specific subsystem class
+    climber = new Climber(new ClimberIOTalonFX());
   }
 
   private void createPracticeBoardSubsystems() {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    climber = new Climber(new ClimberIO() {});
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -250,6 +257,7 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
+    climber = new Climber(new ClimberIO() {});
   }
 
   /**
@@ -285,6 +293,8 @@ public class RobotContainer {
     configureSubsystemCommands();
 
     configureVisionCommands();
+
+    ClimberCommandFactory.registerCommands(oi, climber);
 
     // Endgame alerts
     new Trigger(

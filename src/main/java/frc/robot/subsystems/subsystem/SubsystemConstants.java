@@ -22,7 +22,7 @@ public class SubsystemConstants {
 
   public static final double STATOR_CURRENT_LIMIT = 0.0;
   public static final double SUPPLY_CURRENT_LIMIT = 0.0;
-  
+
   public static final double CONTINUOUS_CURRENT_LIMIT = 40;
   public static final double PEAK_CURRENT_LIMIT = 50;
   public static final double PEAK_CURRENT_DURATION = 0.5;
