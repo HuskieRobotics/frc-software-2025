@@ -310,11 +310,10 @@ public class AutonomousCommandFactory {
 
   public boolean AlignedToStartingPose() {
  
-    //find the target position
-    // check if pose is on left or right side of the field
-    // get measurement in cad for centerline of field by x
+    // find the target position
+    // check if pose is on left or right side of the field (x is > or < than half the field width)
     Transform2d difference;
-    if (RobotOdometry.getInstance().getEstimatedPose().getX() > 0.0) {
+    if (RobotOdometry.getInstance().getEstimatedPose().getX() > (8.05 / 2.0)) {
         difference = RobotOdometry.getInstance().getEstimatedPose().minus(leftStartingAutoPose);
     } else {
         difference = RobotOdometry.getInstance().getEstimatedPose().minus(rightStartingAutoPose); 
