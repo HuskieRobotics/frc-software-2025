@@ -9,7 +9,7 @@ public class ElevatorConstants {
   public static final boolean IS_INVERTED = true;
 
   public static final double TOLERANCE_INCHES = 0;
-  public static final Distance MAX_HEIGHT = Inches.of(73);
+  public static final Distance MAX_HEIGHT = Inches.of(74);
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
 
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
@@ -80,10 +80,10 @@ public class ElevatorConstants {
    */
 
   public static final Distance L1_HEIGHT = Inches.of(15.94);
-  public static final Distance L2_HEIGHT = Inches.of(31.39);
-  public static final Distance L3_HEIGHT = Inches.of(47.64);
-  public static final Distance L4_HEIGHT = Inches.of(72.05);
+  public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
+  public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
+  public static final Distance L4_HEIGHT = Inches.of(70);
 
-  public static final Distance ALGAE1_HEIGHT = Inches.of(0.0); // FIXME: Update these values
-  public static final Distance ALGAE2_HEIGHT = Inches.of(0.0); // FIXME: Update these values
+  public static final Distance ALGAE1_HEIGHT = Inches.of(13.0);  // height under is 9
+  public static final Distance ALGAE2_HEIGHT = Inches.of(28.0); // height under is 24
 }
