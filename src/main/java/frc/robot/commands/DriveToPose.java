@@ -216,22 +216,19 @@ public class DriveToPose extends Command {
     double highVelocityDistanceThresholdMeters = 2.0; // arbitrary 2 meters away right now
     double straightLineHighVelocityMPS = 3.0; // arbitrary 3 m/s right now
 
-    double straightLineDistanceMeters = Math.sqrt(Math.pow(difference.getX(), 2) + Math.pow(difference.getY(), 2));
     double xVelocity, yVelocity, thetaVelocity;
-    if (straightLineDistanceMeters > highVelocityDistanceThresholdMeters) {
-        xVelocity = straightLineHighVelocityMPS;
-        yVelocity = straightLineHighVelocityMPS;
-        thetaVelocity = 0;
-    } else {
-        xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
-        yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
-        thetaVelocity =
-        thetaController.calculate(
-            currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
-        if (xController.atGoal()) xVelocity = 0.0;
-        if (yController.atGoal()) yVelocity = 0.0;
-        if (thetaController.atGoal()) thetaVelocity = 0.0;
-    }
+    xVelocity = Math.abs(difference.getX()) > highVelocityDistanceThresholdMeters 
+        ? straightLineHighVelocityMPS 
+        : xController.calculate(currentPose.getX(), this.targetPose.getX());
+    yVelocity = Math.abs(difference.getY()) > highVelocityDistanceThresholdMeters 
+        ? straightLineHighVelocityMPS 
+        : yController.calculate(currentPose.getY(), this.targetPose.getY());
+    thetaVelocity = thetaController.calculate(
+        currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+
+    if (xController.atGoal()) xVelocity = 0.0;
+    if (yController.atGoal()) yVelocity = 0.0;
+    if (thetaController.atGoal()) thetaVelocity = 0.0;
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
