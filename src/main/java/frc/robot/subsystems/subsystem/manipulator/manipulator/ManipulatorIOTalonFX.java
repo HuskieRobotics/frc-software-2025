@@ -133,6 +133,12 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
 
+    funnelCurrentRequest = new TorqueCurrentFOC(0.0);
+    indexerCurrentRequest = new TorqueCurrentFOC(0.0);
+
+    funnelVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
+    indexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
+
     funnelMotorVelocity = funnelMotor.getVelocity();
     indexerMotorVelocity = indexerMotor.getVelocity();
 

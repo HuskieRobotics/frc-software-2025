@@ -37,15 +37,15 @@ public class ManipulatorConstants {
   public static final double FUNNEL_MOTOR_KI = 0;
   public static final double FUNNEL_MOTOR_KD = 0;
   public static final double FUNNEL_MOTOR_KS = 0;
-  public static final double FUNNEL_MOTOR_KV = 0;
-  public static final double FUNNEL_MOTOR_KA = 0;
+  public static final double FUNNEL_MOTOR_KV = 0.05;
+  public static final double FUNNEL_MOTOR_KA = 0.01;
 
   public static final double INDEXER_MOTOR_KP = 0;
   public static final double INDEXER_MOTOR_KI = 0;
   public static final double INDEXER_MOTOR_KD = 0;
   public static final double INDEXER_MOTOR_KS = 0;
-  public static final double INDEXER_MOTOR_KV = 0;
-  public static final double INDEXER_MOTOR_KA = 0;
+  public static final double INDEXER_MOTOR_KV = 0.05;
+  public static final double INDEXER_MOTOR_KA = 0.01;
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL = 0.0; // tbd
 

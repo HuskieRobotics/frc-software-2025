@@ -30,7 +30,7 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber funnelMotorVoltage =
       new LoggedTunableNumber("Subsystem/FunnelMotorVoltage", 0);
 
-  private final LoggedTunableNumber funnelMotorVelcoity =
+  private final LoggedTunableNumber funnelMotorVelocity =
       new LoggedTunableNumber("Subsystem/FunnelMotorVelocity", 0);
 
   private final LoggedTunableNumber indexerMotorVoltage =
@@ -323,8 +323,8 @@ public class Manipulator extends SubsystemBase {
     if (testingMode.get() == 1) {
       if (funnelMotorVoltage.get() != 0) {
         setFunnelMotorVoltage(funnelMotorVoltage.get());
-      } else if (funnelMotorVelcoity.get() != 0) {
-        setFunnelMotorVelocity(funnelMotorVelcoity.get());
+      } else if (funnelMotorVelocity.get() != 0) {
+        setFunnelMotorVelocity(funnelMotorVelocity.get());
       } else if (funnelMotorCurrent.get() != 0) {
         setFunnelMotorCurrent(funnelMotorCurrent.get());
       }
@@ -391,6 +391,14 @@ public class Manipulator extends SubsystemBase {
     io.setIndexerMotorCurrent(current);
   }
 
+  public void setFunnelMotorVelocity(double velocity) {
+    io.setFunnelMotorVelocity(velocity);
+  }
+
+  public void setIndexerMotorVelocity(double velocity) {
+    io.setIndexerMotorVelocity(velocity);
+  }
+
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
   // same exact thing but for the funnel and indexer motor, unsure if this is correct
   private Command getSystemCheckCommand() {
@@ -425,14 +433,6 @@ public class Manipulator extends SubsystemBase {
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0)))
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
-  }
-
-  private void setFunnelMotorVelocity(double velocity) {
-    io.setFunnelMotorVelocity(velocity);
-  }
-
-  private void setIndexerMotorVelocity(double velocity) {
-    io.setIndexerMotorVelocity(velocity);
   }
 
   // method to shoot coral which assigns coral  button presed to true
