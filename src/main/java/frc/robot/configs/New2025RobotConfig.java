@@ -54,7 +54,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Distance WHEEL_RADIUS =
       Meters.of(0.096 / 2.0); // FIXME: update with sysid routine
   private static final double WHEEL_COEFFICIENT_OF_FRICTION =
-      1.15; // unchanged, no reason it shouldn't be different from last year
+      1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
 
@@ -63,7 +63,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Distance ROBOT_LENGTH_WITH_BUMPERS =
       Meters.of(0.85725); // confirm with actual bumpers
 
-  private static final double COUPLE_RATIO = 3.200; // possibly needs to be updated for mk4ns
+  private static final double COUPLE_RATIO = 3.125; // possibly needs to be updated for mk4ns
 
   /* PID Values, Update all of these based on sysid routine when new robot arrives */
   private static final double ANGLE_KP = 100.0;
