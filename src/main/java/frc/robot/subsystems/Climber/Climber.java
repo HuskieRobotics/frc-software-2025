@@ -16,16 +16,17 @@ public class Climber extends SubsystemBase {
     this.io = io;
   }
 
-  // getPosition() argument in io.setVoltage() is placeholder
-
+  // getPosition() is placeholder
+  @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
     if (testingMode.get() == 1) {
-      // not sure about this at all, ask how to check voltage Tunable
-      climberVoltage.initDefault(getPosition());
-    } else if (testingMode.get() != 0) {
-      io.setVoltage(getPosition());
+      io.setVoltage(climberVoltage.get());
+    } else if (inputs.positionInches > ClimberConstants.MAX_HEIGHT_INCHES) {
+      stop();
+    } else if (inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES) {
+      stop();
     }
   }
 

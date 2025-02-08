@@ -7,16 +7,19 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private TalonFX climberMotor;
 
   private VoltageOut climberVoltageRequest;
+  private ElevatorSystemSim elevatorSystemSim;
 
   private StatusSignal<Voltage> voltage;
   private StatusSignal<Current> statorCurrentAmps;
@@ -48,6 +51,18 @@ public class ClimberIOTalonFX implements ClimberIO {
     positionRotations = climberMotor.getPosition();
 
     climberVoltageRequest = new VoltageOut(0);
+    // ask lauren for mass and max height
+    elevatorSystemSim =
+        new ElevatorSystemSim(
+            climberMotor,
+            ClimberConstants.CLIMBER_MOTOR_INVERTED,
+            ClimberConstants.GEAR_RATIO,
+            3,
+            Units.inchesToMeters(ClimberConstants.DRUM_DIAMETER / 2.0),
+            0,
+            1,
+            0,
+            "Climber");
   }
 
   @Override
@@ -62,6 +77,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelcius = tempCelcius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
+    elevatorSystemSim.updateSim();
   }
 
   @Override

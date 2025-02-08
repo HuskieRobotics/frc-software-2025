@@ -10,6 +10,9 @@ public class ClimberCommandFactory {
 
   private ClimberCommandFactory() {}
 
+  // 2/8/2025 NOTE:
+  // in AdvantageScope, position is constantly slowly decreasing
+  // should be addressed eventually
   public static void registerCommands(OperatorInterface oi, Climber climber) {
     oi.getPrepClimbSequence()
         .onTrue(Commands.runOnce(climber::extend, climber).withName("extend climber"));
