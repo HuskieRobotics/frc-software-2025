@@ -65,7 +65,7 @@ public class AutonomousCommandFactory {
      *
      */
 
-    Command twoPieceBlueLeft = new PathPlannerAuto("2 Piece Blue Left");
+    Command twoPieceBlueLeft = getTwoCoralLeftAutoCommand(drivetrain);
     autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
 
     /************ Start Point ************
