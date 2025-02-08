@@ -34,32 +34,32 @@ public class ElevatorConstants {
 
   // FIXME: Update all K values
 
-  public static final double KP_SLOT0 = 0;
+  public static final double KP_SLOT0 = 40.0;
   public static final double KI_SLOT0 = 0;
   public static final double KD_SLOT0 = 0;
-  public static final double KS_SLOT0 = 0;
-  public static final double KV_SLOT0 = 0;
-  public static final double KA_SLOT0 = 0;
-  public static final double KG_SLOT0 = 0;
+  public static final double KS_SLOT0 = 0.01;
+  public static final double KV_SLOT0 = 0.67505;
+  public static final double KA_SLOT0 = 0.027564;
+  public static final double KG_SLOT0 = 0.33833;
 
-  public static final double KP_SLOT1 = 0;
+  public static final double KP_SLOT1 = 40.0;
   public static final double KI_SLOT1 = 0;
   public static final double KD_SLOT1 = 0;
-  public static final double KS_SLOT1 = 0;
-  public static final double KV_SLOT1 = 0;
-  public static final double KA_SLOT1 = 0;
-  public static final double KG_SLOT1 = 0;
+  public static final double KS_SLOT1 = 0.01;
+  public static final double KV_SLOT1 = 0.67505;
+  public static final double KA_SLOT1 = 0.027564;
+  public static final double KG_SLOT1 = 0.33833;
 
-  public static final double KP_SLOT2 = 0;
+  public static final double KP_SLOT2 = 40.0;
   public static final double KI_SLOT2 = 0;
   public static final double KD_SLOT2 = 0;
-  public static final double KS_SLOT2 = 0;
-  public static final double KV_SLOT2 = 0;
-  public static final double KA_SLOT2 = 0;
-  public static final double KG_SLOT2 = 0;
+  public static final double KS_SLOT2 = 0.01;
+  public static final double KV_SLOT2 = 0.67505;
+  public static final double KA_SLOT2 = 0.027564;
+  public static final double KG_SLOT2 = 0.33833;
 
   public static final double KV_EXPO = 0.6;
-  public static final double KA_EXPO = 1; // FIXME: Update this value
+  public static final double KA_EXPO = 0.05; // FIXME: Update this value
 
   public static final double CRUISE_VELOCITY = 0;
 

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
@@ -34,6 +36,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private TalonFX elevatorMotorFollower;
 
   private MotionMagicExpoVoltage leadPositionRequest;
+  private DynamicMotionMagicVoltage leadPositionRequestDown;
   private VoltageOut leadVoltageRequest;
 
   private Alert configAlert =
@@ -113,8 +116,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ElevatorIOTalonFX() {
 
-    elevatorMotorLead = new TalonFX(ElevatorConstants.LEAD_MOTOR_ID);
-    elevatorMotorFollower = new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID);
+    elevatorMotorLead =
+        new TalonFX(ElevatorConstants.LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
+    elevatorMotorFollower =
+        new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
 
     leadStatorCurrent = elevatorMotorLead.getStatorCurrent();
     followerStatorCurrent = elevatorMotorFollower.getStatorCurrent();
@@ -131,6 +136,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     elevatorFollowerTempStatusSignal = elevatorMotorFollower.getDeviceTemp();
 
     leadPositionRequest = new MotionMagicExpoVoltage(0);
+    leadPositionRequestDown = new DynamicMotionMagicVoltage(0, 10, 100, 500);
     leadVoltageRequest = new VoltageOut(0);
 
     configElevatorMotorLead(elevatorMotorLead);
@@ -339,29 +345,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPosition(Distance position) {
-    if (localPosition < HEIGHT_SWITCH_SLOT0.in(Inches)) {
+    if (localPosition < position.in(Inches)) {
 
       // set the elevator to slot 0
       elevatorMotorLead.setControl(
           leadPositionRequest
               .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
               .withSlot(0));
-
-    } else if (localPosition < HEIGHT_SWITCH_SLOT1.in(Inches)) {
-
-      // set the elevator to slot 1
-      elevatorMotorLead.setControl(
-          leadPositionRequest
-              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
-              .withSlot(1));
-
     } else {
-
-      // set the elevator to slot 2
       elevatorMotorLead.setControl(
-          leadPositionRequest
+          leadPositionRequestDown
               .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
-              .withSlot(2));
+              .withSlot(0));
     }
   }
 }
