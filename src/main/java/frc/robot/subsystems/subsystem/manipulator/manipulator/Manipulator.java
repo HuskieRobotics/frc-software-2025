@@ -25,25 +25,25 @@ public class Manipulator extends SubsystemBase {
   // these Tunables are convenient when testing as they provide direct control of the subsystem's
   // motor
   private final LoggedTunableNumber testingMode =
-      new LoggedTunableNumber("Subsystem/TestingMode", 0);
+      new LoggedTunableNumber("Manipulator/TestingMode", 0);
 
   private final LoggedTunableNumber funnelMotorVoltage =
-      new LoggedTunableNumber("Subsystem/FunnelMotorVoltage", 0);
+      new LoggedTunableNumber("Manipulator/Funnel/MotorVoltage", 0);
 
   private final LoggedTunableNumber funnelMotorVelocity =
-      new LoggedTunableNumber("Subsystem/FunnelMotorVelocity", 0);
+      new LoggedTunableNumber("Manipulator/Funnel/MotorVelocity", 0);
 
   private final LoggedTunableNumber indexerMotorVoltage =
-      new LoggedTunableNumber("Subsystem/IndexerMotorVoltage", 0);
+      new LoggedTunableNumber("Manipulator/Indexer/MotorVoltage", 0);
 
   private final LoggedTunableNumber indexerMotorVelocity =
-      new LoggedTunableNumber("Subsystem/IndexerMotorVelocity", 0);
+      new LoggedTunableNumber("Manipulator/Indexer/MotorVelocity", 0);
 
   private final LoggedTunableNumber funnelMotorCurrent =
-      new LoggedTunableNumber("Subsystem/FunnelMotorCurrent", 0);
+      new LoggedTunableNumber("Manipulator/Funnel/MotorCurrent", 0);
 
   private final LoggedTunableNumber indexerMotorCurrent =
-      new LoggedTunableNumber("Subsystem/IndexerMotorCurrent", 0);
+      new LoggedTunableNumber("Manipulator/Indexer/MotorCurrent", 0);
 
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
