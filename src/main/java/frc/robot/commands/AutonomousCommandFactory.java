@@ -78,7 +78,7 @@ public class AutonomousCommandFactory {
      *
      */
 
-    Command twoPieceBlueLeft = getTwoCoralLeftAutoCommand(drivetrain);
+    Command twoPieceBlueLeft = getTwoCoralLeftAutoCommand(drivetrain, vision);
     autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
 
     /************ Two Piece Blue Right ************
@@ -86,7 +86,7 @@ public class AutonomousCommandFactory {
      * 2 corals scored E L4; D L4
      *
      */
-    Command twoPieceBlueRight = getTwoCoralRightAutoCommand(drivetrain);
+    Command twoPieceBlueRight = getTwoCoralRightAutoCommand(drivetrain, vision);
     autoChooser.addOption("2 Piece Blue Right", twoPieceBlueRight);
 
     /************ Start Point ************
@@ -227,7 +227,7 @@ public class AutonomousCommandFactory {
                 Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
   }
 
-  public Command getTwoCoralLeftAutoCommand(Drivetrain drivetrain) {
+  public Command getTwoCoralLeftAutoCommand(Drivetrain drivetrain, Vision vision) {
     try {
         PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
         PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
@@ -236,11 +236,11 @@ public class AutonomousCommandFactory {
 
         return Commands.sequence(
             AutoBuilder.followPath(scoreCoralJ2BL),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.RIGHT),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
             AutoBuilder.followPath(collectCoralJ2BL),
             AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
             AutoBuilder.followPath(scoreCoralK2BL),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.LEFT),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
             AutoBuilder.followPath(collectCoralK2BL),
             AutonomousCommandFactory.getInstance().getCollectCoralCommand()
         );
@@ -253,7 +253,7 @@ public class AutonomousCommandFactory {
     } 
   }
 
-  public Command getTwoCoralRightAutoCommand(Drivetrain drivetrain) {
+  public Command getTwoCoralRightAutoCommand(Drivetrain drivetrain, Vision vision) {
     try {
         PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral E 2BR");
         PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral E 2BR");
@@ -262,11 +262,11 @@ public class AutonomousCommandFactory {
 
         return Commands.sequence(
             AutoBuilder.followPath(scoreCoralE2BR),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.LEFT),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
             AutoBuilder.followPath(collectCoralE2BR),
             AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
             AutoBuilder.followPath(scoreCoralD2BR),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, Side.RIGHT),
+            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
             AutoBuilder.followPath(collectCoralD2BR),
             AutonomousCommandFactory.getInstance().getCollectCoralCommand()
         );
