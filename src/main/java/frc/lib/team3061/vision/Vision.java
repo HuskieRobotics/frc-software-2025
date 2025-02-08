@@ -43,6 +43,8 @@ public class Vision extends SubsystemBase {
   private int[] updatePoseCount;
   private Alert[] disconnectedAlerts;
 
+  private List<Integer> camerasToConsider = new ArrayList<>();
+
   private AprilTagFieldLayout layout;
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -99,6 +101,9 @@ public class Vision extends SubsystemBase {
       this.disconnectedAlerts[i] = new Alert("camera" + i + " is disconnected", AlertType.kError);
     }
 
+    // default to considering all cameras
+    this.camerasToConsider = new ArrayList<>(List.of(0, 1, 2, 3));
+
     // retrieve a reference to the pose estimator singleton
     this.odometry = RobotOdometry.getInstance();
 
@@ -146,6 +151,9 @@ public class Vision extends SubsystemBase {
     this.allRobotPosesRejected.clear();
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
+      // check if vision is actively considering this camera
+      if (!camerasToConsider.contains(cameraIndex)) { continue; }
+
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;
 
@@ -298,6 +306,10 @@ public class Vision extends SubsystemBase {
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsEnabled", isEnabled);
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsUpdating", isVisionUpdating);
+  }
+
+  public void specifyCamerasToConsider(List<Integer> cameraIndices) {
+    this.camerasToConsider = cameraIndices;
   }
 
   /**
