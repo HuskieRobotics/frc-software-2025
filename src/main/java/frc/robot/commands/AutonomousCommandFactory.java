@@ -17,11 +17,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.util.RobotOdometry;
+import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 
 import java.nio.file.Path;
+import java.util.List;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -61,13 +63,13 @@ public class AutonomousCommandFactory {
     return autoChooser.get();
   }
 
-  public void configureAutoCommands(Drivetrain drivetrain) {
+  public void configureAutoCommands(Drivetrain drivetrain, Vision vision) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     /************* PathPlanner Named Commands *****************/
-    NamedCommands.registerCommand("Score Left L4", getScoreL4Command(drivetrain, Side.LEFT));
-    NamedCommands.registerCommand("Score Right L4", getScoreL4Command(drivetrain, Side.RIGHT));
+    NamedCommands.registerCommand("Score Left L4", getScoreL4Command(drivetrain, vision, Side.LEFT));
+    NamedCommands.registerCommand("Score Right L4", getScoreL4Command(drivetrain, vision, Side.RIGHT));
     NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand());
 
     /************ Two Piece Blue Left ************
@@ -280,13 +282,15 @@ public class AutonomousCommandFactory {
   // When programmed, each score coral command will drive to the specified pose on the reef and then
   // score the coral
 
-  private Command getScoreL4Command(Drivetrain drivetrain, Side side) {
+  private Command getScoreL4Command(Drivetrain drivetrain, Vision vision, Side side) {
     return Commands.sequence(
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1)), vision),
         new DriveToPose(
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(side),
             new Transform2d(
                 Units.inchesToMeters(2.0), Units.inchesToMeters(1.0), Rotation2d.fromDegrees(2.0))),
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.waitSeconds(1));
   }
 
