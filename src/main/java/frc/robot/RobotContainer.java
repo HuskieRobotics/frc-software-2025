@@ -9,6 +9,8 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,7 +33,9 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
+import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
@@ -40,8 +44,9 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.subsystem.Subsystem;
-import frc.robot.subsystems.subsystem.SubsystemIO;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -60,7 +65,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
-  private Subsystem subsystem;
+  private Elevator elevator;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -91,6 +96,8 @@ public class RobotContainer {
     createRobotConfig();
 
     LEDs.getInstance();
+
+    Field2d.getInstance().populateReefBranchPoseMaps();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -129,7 +136,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
-      subsystem = new Subsystem(new SubsystemIO() {});
+      elevator = new Elevator(new ElevatorIO() {});
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -193,8 +200,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    // FIXME: create the hardware-specific subsystem class
-    subsystem = new Subsystem(new SubsystemIO() {});
+    elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
@@ -206,11 +212,11 @@ public class RobotContainer {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
     } catch (IOException e) {
       layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
       layoutFileMissingAlert.setText(
           LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
       layoutFileMissingAlert.set(true);
     }
+
     vision =
         new Vision(
             new VisionIO[] {
@@ -220,13 +226,19 @@ public class RobotContainer {
                   RobotConfig.getInstance().getRobotToCameraTransforms()[0])
             });
 
-    // FIXME: create the hardware-specific subsystem class
+    layoutFileMissingAlert.setText(
+        LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
+    layoutFileMissingAlert.set(true);
+
+    elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createPracticeBoardSubsystems() {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
+
+    elevator = new Elevator(new ElevatorIO() {});
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -249,6 +261,8 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
+
+    elevator = new Elevator(new ElevatorIO() {});
   }
 
   /**
@@ -312,7 +326,6 @@ public class RobotContainer {
     oi.getInterruptAll()
         .onTrue(
             Commands.parallel(
-                Commands.runOnce(() -> subsystem.setMotorVoltage(0)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
@@ -475,6 +488,30 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
+
+    // drive to left branch of nearest reef face
+    oi.getDriveToNearestLeftBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest left branch"));
+
+    // drive to right branch of nearest reef face
+    oi.getDriveToNearestRightBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
