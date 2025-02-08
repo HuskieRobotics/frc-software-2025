@@ -1,7 +1,11 @@
 package frc.robot.subsystems.subsystem.manipulator.manipulator;
+
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorConstants.*;
+
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -10,8 +14,6 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.math.filter.LinearFilter;
 
 /**
  * Models a generic subsystem for a rotational mechanism. The other subsystems defined in this
@@ -25,38 +27,46 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber testingMode =
       new LoggedTunableNumber("Subsystem/TestingMode", 0);
 
-private final LoggedTunableNumber funnelMotorVoltage =
+  private final LoggedTunableNumber funnelMotorVoltage =
       new LoggedTunableNumber("Subsystem/FunnelMotorVoltage", 0);
 
-private final LoggedTunableNumber funnelMotorVelcoity =
+  private final LoggedTunableNumber funnelMotorVelcoity =
       new LoggedTunableNumber("Subsystem/FunnelMotorVelocity", 0);
 
-private final LoggedTunableNumber indexerMotorVoltage =
+  private final LoggedTunableNumber indexerMotorVoltage =
       new LoggedTunableNumber("Subsystem/IndexerMotorVoltage", 0);
 
-private final LoggedTunableNumber indexerMotorVelocity =
+  private final LoggedTunableNumber indexerMotorVelocity =
       new LoggedTunableNumber("Subsystem/IndexerMotorVelocity", 0);
 
-private final LoggedTunableNumber funnelMotorCurrent =
+  private final LoggedTunableNumber funnelMotorCurrent =
       new LoggedTunableNumber("Subsystem/FunnelMotorCurrent", 0);
 
-private final LoggedTunableNumber indexerMotorCurrent =
+  private final LoggedTunableNumber indexerMotorCurrent =
       new LoggedTunableNumber("Subsystem/IndexerMotorCurrent", 0);
 
+  Timer coralInIndexingState =
+      new Timer(); // create a timer to track how long is spent in this stage
+
   private ManipulatorIO io;
-  private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged(); //stefan said to ignore this error and keep this here
+  private final ManipulatorIOInputsAutoLogged inputs =
+      new ManipulatorIOInputsAutoLogged(); // stefan said to ignore this error and keep this here
   private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
-  private State lastState = State.UNINITIALIZED; 
+  private State lastState = State.UNINITIALIZED;
 
-  private LinearFilter currentInAmps = new LinearFilter.singlePoleIIR(0.1, 0.02); //the first value is the time constant, the characteristic timescale of the filter's impulse response, and the second value is the time-period, how often the calculate() method will be called
+  private LinearFilter currentInAmps =
+      LinearFilter.singlePoleIIR(
+          0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
+  // filter's impulse response, and the second value is the time-period, how often
+  // the calculate() method will be called
 
-  private final double thresholdForCurrentSpike = 5; //this constant will keep track of the threshold for a current spike , which for example I put as 5, can be changed later
-  
-  private boolean shootCoralButtonPressed = false; 
+  private boolean shootCoralButtonPressed = false;
   private boolean removeAlgaeButtonPressed = false;
 
-  private boolean algaeRemoved = false; //need to actually figure out the IO stuff with this... how do we actually know if the algae has been removed??
-  
+  private boolean algaeRemoved =
+      false; // need to actually figure out the IO stuff with this... how do we actually know if the
+  // algae has been removed??
+
   /**
    * Create a new subsystem with its associated hardware interface object.
    *
@@ -73,179 +83,219 @@ private final LoggedTunableNumber indexerMotorCurrent =
     FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
 
-    /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
-    //for the SysIdRoutine, i added replaced the line where it calls the setMotorVoltage method, and added 2 lines that do the same thing but set the indexer motor voltage, and the funnel motor voltage, using their respective methods
-    
-    //sysID for manipulator in current
-    private final SysIdRoutine sysIDManipulator =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null, // Use default ramp rate (1 V/s)
-                null, // Use default step voltage (7 V)
-                null, // Use default timeout (10 s)
-                // Log state with SignalLogger class
-                state -> SignalLogger.writeString("SysId_State", state.toString())),
-            new SysIdRoutine.Mechanism(output -> setFunnelMotorCurrent(output.in(Volts)), null, this));
+  /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
+  // for the SysIdRoutine, i added replaced the line where it calls the setMotorVoltage method, and
+  // added 2 lines that do the same thing but set the indexer motor voltage, and the funnel motor
+  // voltage, using their respective methods
 
+  // sysID for manipulator in current
+  private final SysIdRoutine sysIDManipulator =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              null, // Use default ramp rate (1 V/s)
+              null, // Use default step voltage (7 V)
+              null, // Use default timeout (10 s)
+              // Log state with SignalLogger class
+              sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              output -> setFunnelMotorCurrent(output.in(Volts)), null, this));
 
+  private final SysIdRoutine sysIDIndexer =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              null, // Use default ramp rate (1 V/s)
+              null, // Use default step voltage (7 V)
+              null, // Use default timeout (10 s)
+              // Log state with SignalLogger class
+              sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
+          new SysIdRoutine.Mechanism(
+              output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
 
-    private final SysIdRoutine sysIDIndexer =
-        new SysIdRoutine(
-            new SysIdRoutine.Config(
-                null, // Use default ramp rate (1 V/s)
-                null, // Use default step voltage (7 V)
-                null, // Use default timeout (10 s)
-                // Log state with SignalLogger class
-                state -> SignalLogger.writeString("SysId_State", state.toString())),
-            new SysIdRoutine.Mechanism(output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
-  
-    /**
-     * Few subsystems require the complexity of a state machine. A simpler command-based approach is
-     * usually better. However, there are times when diagraming and implementing a formal state
-     * machine is a reasonable approach. This code is designed to facilitate mapping from a formal
-     * state machine diagram to code.
-     *
-     * <p>The state machine is defined as an enum with each state having its own execute, onEnter, and
-     * onExit methods. The execute method is called every iteration of the periodic method. The
-     * onEnter and onExit methods are called when the state is entered and exited, respectively.
-     * Transitions between states are defined in the execute methods. It is critical that the setState
-     * method is only invoked within a state's execute method. Otherwise, it is possible for a state
-     * transition to be missed.
-     *
-     * <p>This approach is modeled after this ChiefDelphi post:
-     * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
-     */
-    private enum State {
-       WAITING_FOR_CORAL_IN_FUNNEL{
-        @Override
-        void onEnter(Manipulator subsystem) {
-          subsystem.setFunnelMotorVelocity(3); //velocity is tbd
-          subsystem.setIndexerMotorVelocity(0); //turn indexer motor speed to 0 
-        }
-  
-        @Override
-        void execute(Manipulator subsystem) {
-          if (subsystem.inputs.isFunnelIRBlocked) { //ignore the error on this line
-            subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR); 
-          }
-        }
-  
-        @Override
-        void onExit(Manipulator subsystem) {}
-      },
-      INDEXING_CORAL_IN_MANIPULATOR {
-        @Override
-        void onEnter(Manipulator subsystem) {
-          subsystem.setIndexerMotorVelocity(3); //velocity is tbd
-          Timer coralInIndexingState = new Timer(); //create a timer to track how long is spent in this stage
-          coralInIndexingState.restart(); //start timer
-
+  /**
+   * Few subsystems require the complexity of a state machine. A simpler command-based approach is
+   * usually better. However, there are times when diagraming and implementing a formal state
+   * machine is a reasonable approach. This code is designed to facilitate mapping from a formal
+   * state machine diagram to code.
+   *
+   * <p>The state machine is defined as an enum with each state having its own execute, onEnter, and
+   * onExit methods. The execute method is called every iteration of the periodic method. The
+   * onEnter and onExit methods are called when the state is entered and exited, respectively.
+   * Transitions between states are defined in the execute methods. It is critical that the setState
+   * method is only invoked within a state's execute method. Otherwise, it is possible for a state
+   * transition to be missed.
+   *
+   * <p>This approach is modeled after this ChiefDelphi post:
+   * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
+   */
+  private enum State {
+    WAITING_FOR_CORAL_IN_FUNNEL {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setFunnelMotorVelocity(
+            FUNNEL_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL); // velocity is tbd
+        subsystem.setIndexerMotorVelocity(0); // turn indexer motor speed to 0
       }
+
       @Override
       void execute(Manipulator subsystem) {
-        if(subsystem.inputs.isIndexerIRBlocked && currentInAmps.lastValue() > thresholdForCurrentSpike) //the currentInAmps filters out the current in the noise and getting the lastValue gets the last value of the current, and if that last value is greater than some constant, then current spike has been detected
+        if (subsystem.inputs.isFunnelIRBlocked) { // ignore the error on this line
+          subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
+        }
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        /*NO-OP */
+      }
+    },
+    INDEXING_CORAL_IN_MANIPULATOR {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setIndexerMotorVelocity(
+            INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL); // velocity is tbd
+        subsystem.coralInIndexingState.restart(); // start timer
+      }
+
+      @Override
+      void execute(Manipulator subsystem) {
+        if (subsystem.inputs.isIndexerIRBlocked
+            && subsystem.currentInAmps.lastValue()
+                > THESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
+        // noise and getting the lastValue gets the last value
+        // of the current, and if that last value is greater
+        // than some constant, then current spike has been
+        // detected
         {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
-        }
-        else if (coralInIndexingState.hasElapsed(3) && subsystem.inputs.isFunnelIRBlocked ) //hasElapsed method check if the timer has elapsed a certain number of seconds, which i can make a constant later
+        } else if (subsystem.coralInIndexingState.hasElapsed(CORAL_COLLECTION_TIME_OUT)
+            && subsystem
+                .inputs
+                .isFunnelIRBlocked) // hasElapsed method check if the timer has elapsed a certain
+        // number of seconds, which i can make a constant later
         {
           subsystem.setState(CORAL_STUCK);
         }
       }
+
       @Override
       void onExit(Manipulator subsystem) {
-        subsystem.setFunnelMotorVelocity(0); //turn off the funnel motor, regardless of if it is going to the CORAL_STUCK state or the CORAL_IN_MANIPULATOR state
+        subsystem.setFunnelMotorVelocity(
+            0); // turn off the funnel motor, regardless of if it is going to the CORAL_STUCK state
+        // or the CORAL_IN_MANIPULATOR state
       }
     },
-    CORAL_STUCK{
+    CORAL_STUCK {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setFunnelMotorVelocity(-3); //set negative velocity to funnel motor to invert it
+        subsystem.setFunnelMotorVelocity(
+            FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL); // set negative velocity to funnel motor to
+        // invert it
+        subsystem.setIndexerMotorVelocity(
+            INDEXER_MOTOR_VELOCITY_WHILE_EJECTING_CORAL); // set negative velocity to indexer motor
+        // to invert it
       }
+
       @Override
       void execute(Manipulator subsystem) {
-        if (isFunnelIRBlocked == false && isIndexerIRBlocked == false ) {
+        if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
+
       @Override
       void onExit(Manipulator subsystem) {
-        isFunnelMotorInverted = false; //set this to false because the robot should move from this state to the WAITING_FOR_CORAL_IN_FUNNEL state, and the funnel motor wouldn't be inverted in that state
-
+        /*NO-OP */
       }
     },
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        //set both motor speeds to 0
+        // set both motor speeds to 0
         subsystem.setIndexerMotorVelocity(0);
         subsystem.setFunnelMotorVelocity(0);
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        if (shootCoralButtonPressed) {
+        if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
+          subsystem.shootCoralButtonPressed = false;
         }
       }
 
       @Override
       void onExit(Manipulator subsystem) {
+        /*NO-OP */
       }
     },
     SHOOT_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVelocity(INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL); //speed of indexer motor velocity while shooting coral should be different compared to intaking, etc
+        subsystem.setIndexerMotorVelocity(
+            INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL); // speed of indexer motor velocity while
+        // shooting coral should be different
+        // compared to intaking, etc
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        //call command to shoot coral -- will do later
-        if ((isFunnelIRBlocked == false && isIndexerIRBlocked == false) && removeAlgaeButtonPressed) {
-          subsystem.setState(State.REMOVE_ALGAE); 
-        }
-        else if (isFunnelIRBlocked == false && isIndexerIRBlocked == false)
-        {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL); //if the coral has been shot out and the manipulator is empty
+        // call command to shoot coral -- will do later
+        if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
+            && subsystem.removeAlgaeButtonPressed) {
+          subsystem.setState(State.REMOVE_ALGAE);
+          subsystem.removeAlgaeButtonPressed = false;
+        } else if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
+          subsystem.setState(
+              State.WAITING_FOR_CORAL_IN_FUNNEL); // if the coral has been shot out and the
+          // manipulator is empty
         }
       }
 
       @Override
       void onExit(Manipulator subsystem) {
-        //set speed of indexer motor to 0
+        // set speed of indexer motor to 0
         subsystem.setIndexerMotorVelocity(0);
       }
     },
-      REMOVE_ALGAE { 
+    REMOVE_ALGAE {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setIndexerMotorVelocity(INDEXER_MOTOR_VELOCITY_WHILE_REMOVING_ALGAE);
       }
+
       @Override
-      void execute(Manipulator subsystem) {  
-        if (!removeAlgaeButtonPressed && algaeRemoved ) //I created an instance variable (algaeRemoved) thqat would keep track if the algae was removed but I need to do the IO stuff to actually check if the algae has been removed
+      void execute(Manipulator subsystem) {
+        if (subsystem
+            .algaeRemoved) // I created an instance variable (algaeRemoved) thqat would keep track
+        // if the algae was removed but I need to do the IO stuff to actually
+        // check if the algae has been removed
         {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.algaeRemoved = false;
         }
       }
+
       @Override
       void onExit(Manipulator subsystem) {
+        /*NO-OP */
       }
     },
-    UNINITIALIZED { //state that the robot should be in when its  turned off 
+    UNINITIALIZED { // state that the robot should be in when its  turned off
       @Override
       void onEnter(Manipulator subsystem) {
-        //set speed of both motors to 0
+        // set speed of both motors to 0
         subsystem.setIndexerMotorVelocity(0);
         subsystem.setFunnelMotorVelocity(0);
       }
+
       @Override
       void execute(Manipulator subsystem) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
       }
+
       @Override
       void onExit(Manipulator subsystem) {
+        /*NO-OP */
       }
     };
 
@@ -264,38 +314,31 @@ private final LoggedTunableNumber indexerMotorCurrent =
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
-    currentInAmps.calculate();
+    currentInAmps.calculate(inputs.indexerStatorCurrentAmps);
 
-    // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if non-zero)
+    // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if
+    // non-zero)
     // need voltage, current, and velocity
 
-    if (testingMode.get() != 0) {
+    if (testingMode.get() == 1) {
       if (funnelMotorVoltage.get() != 0) {
         setFunnelMotorVoltage(funnelMotorVoltage.get());
       } else if (funnelMotorVelcoity.get() != 0) {
         setFunnelMotorVelocity(funnelMotorVelcoity.get());
-      } else if(funnelMotorCurrent.get() != 0) {
+      } else if (funnelMotorCurrent.get() != 0) {
         setFunnelMotorCurrent(funnelMotorCurrent.get());
+      }
+
+      if (indexerMotorVoltage.get() != 0) {
+        setIndexerMotorVoltage(indexerMotorVoltage.get());
+      } else if (indexerMotorVelocity.get() != 0) {
+        setIndexerMotorVelocity(indexerMotorVelocity.get());
+      } else if (indexerMotorCurrent.get() != 0) {
+        setIndexerMotorCurrent(indexerMotorCurrent.get());
       }
     } else {
       runStateMachine();
     }
-  }
-
-  // when testing, set the INDEXER motor power, current, or position based on the Tunables (if non-zero)
-
-  if (testingMode.get() != 0) {
-    if (indexerMotorVoltage.get() != 0) {
-      setIndexerMotorVoltage(indexerMotorVoltage.get());
-    } else if (indexerMotorVelocity.get() != 0) {
-      setIndexerMotorVelocity(indexerMotorVelocity.get());
-    } else if(indexerMotorCurrent.get() != 0) {
-      setIndexerMotorCurrent(indexerMotorCurrent.get());
-    }
-  } else {
-    runStateMachine();
-
-   
   }
 
   private void setState(State state) {
@@ -329,7 +372,7 @@ private final LoggedTunableNumber indexerMotorCurrent =
   public void setFunnelMotorCurrent(double current) {
     io.setFunnelMotorCurrent(current);
   }
-  
+
   /**
    * Set the motor power to the specified percentage of maximum power.
    *
@@ -348,7 +391,8 @@ private final LoggedTunableNumber indexerMotorCurrent =
     io.setIndexerMotorCurrent(current);
   }
 
-//Whichever line of code does something with the motors, i replaced it with 2 lines that do the same exact thing but for the funnel and indexer motor, unsure if this is correct
+  // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
+  // same exact thing but for the funnel and indexer motor, unsure if this is correct
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
@@ -356,7 +400,7 @@ private final LoggedTunableNumber indexerMotorCurrent =
             Commands.run(() -> io.setIndexerMotorVoltage(3.6)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
-                  if (inputs.velocityRPM < 2.0) {
+                  if (inputs.funnelVelocityRPS < 2.0) {
                     FaultReporter.getInstance()
                         .addFault(
                             SUBSYSTEM_NAME,
@@ -369,7 +413,7 @@ private final LoggedTunableNumber indexerMotorCurrent =
             Commands.run(() -> io.setIndexerMotorVoltage(-2.4)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
-                  if (inputs.velocityRPM > -2.0) {
+                  if (inputs.indexerVelocityRPS > -2.0) {
                     FaultReporter.getInstance()
                         .addFault(
                             SUBSYSTEM_NAME,
@@ -379,28 +423,25 @@ private final LoggedTunableNumber indexerMotorCurrent =
                   }
                 }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0))),
+        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0)))
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
-  private void setFunnelMotorVelocity(double velocity)
-  {
+  private void setFunnelMotorVelocity(double velocity) {
     io.setFunnelMotorVelocity(velocity);
   }
 
-  private void setIndexerMotorVelocity(double velocity)
-  {
+  private void setIndexerMotorVelocity(double velocity) {
     io.setIndexerMotorVelocity(velocity);
   }
 
-// method to shoot coral which assigns coral  button presed to true
-  public void shootCoral()
-  {
+  // method to shoot coral which assigns coral  button presed to true
+  public void shootCoral() {
     shootCoralButtonPressed = true;
   }
 
   // method to remove algae which assins the remove algae button pressed to true
-  public void removeAlgae()
-  {
+  public void removeAlgae() {
     removeAlgaeButtonPressed = true;
   }
+}

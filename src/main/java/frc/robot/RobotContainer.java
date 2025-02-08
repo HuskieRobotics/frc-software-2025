@@ -42,7 +42,7 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
 import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIO;
-
+import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
-  private Manipulator subsystem;
+  private Manipulator manipulator;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -130,7 +130,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
-      subsystem = new Manipulator(new ManipulatorIO() {});
+      manipulator = new Manipulator(new ManipulatorIO() {});
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -194,8 +194,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    // FIXME: create the hardware-specific subsystem class
-    subsystem = new Manipulator(new ManipulatorIO() {});
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
@@ -221,13 +220,14 @@ public class RobotContainer {
                   RobotConfig.getInstance().getRobotToCameraTransforms()[0])
             });
 
-    // FIXME: create the hardware-specific subsystem class
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
   }
 
   private void createPracticeBoardSubsystems() {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    manipulator = new Manipulator(new ManipulatorIO() {});
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -250,6 +250,8 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
+
+    manipulator = new Manipulator(new ManipulatorIO() {});
   }
 
   /**
@@ -313,7 +315,6 @@ public class RobotContainer {
     oi.getInterruptAll()
         .onTrue(
             Commands.parallel(
-                Commands.runOnce(() -> subsystem.setMotorVoltage(0)),
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
