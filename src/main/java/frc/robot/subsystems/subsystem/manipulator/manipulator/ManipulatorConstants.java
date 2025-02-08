@@ -8,67 +8,62 @@ public class ManipulatorConstants {
     throw new IllegalStateException(CONSTRUCTOR_EXCEPTION);
   }
 
-  public static final String SUBSYSTEM_NAME = "Manipulator";
-  public static final boolean TESTING = false; //this boolean might be useful while testing 
+  public static final String SUBSYSTEM_NAME = "Manipulator"; 
+
+  //invert motors
+public static final boolean FUNNEL_MOTOR_INVERTED = false;
+public static final boolean INDEXER_MOTOR_INVERTED = false;
 
   // to confirm the can id's for the motors and sensors, go to the robot software feature sheet 2025
-  public static final int FUNNEL_MOTOR_CAN_ID = 12; 
-  public static final int INDEXER_MOTOR_CAN_ID = 14; 
+  public static final int FUNNEL_MOTOR_ID = 12; 
+
+  public static final int INDEXER_MOTOR_ID = 14; 
   
-  public static final int FUNNEL_IR_SENSOR_CAN_ID = 0; //not currently in the fearure sheet
-  public static final int INDEXER_IR_SENSOR_CAN_ID = 0; //not currently in the fearure sheet
+  public static final int FUNNEL_IR_SENSOR_CAN_ID = 0; 
+
+  public static final int FUNNEL_IR_BACKUP_SENSOR_ID = 0;
+
+  public static final int INDEXER_IR_SENSOR_CAN_ID = 0; 
+
+  public static final int INDEXER_IR_BACKUP_SENSOR_ID = 0;
 
   //not sure what this is???
-  public static final double GEAR_RATIO = 100.0;
+  public static final double GEAR_RATIO_FUNNEL = 100.0; // FIXME: Update gear ratios
+
+  public static final double GEAR_RATIO_MANIPULATOR = 10; // FIXME: Update gear ratios
   
   //tunable PID constants for both motors -- ALL ARE TBD
   public static final double FUNNEL_MOTOR_KP = 0;
   public static final double FUNNEL_MOTOR_KI = 0;
   public static final double FUNNEL_MOTOR_KD = 0;
   public static final double FUNNEL_MOTOR_KS = 0;
+
+
   public static final double INDEXER_MOTOR_KP = 0;
   public static final double INDEXER_MOTOR_KI = 0;
   public static final double INDEXER_MOTOR_KD = 0;
   public static final double INDEXER_MOTOR_KS = 0;
 
-//testable properties -- all are TBD
-public static final double FUNNEL_MOTOR_VOLTAGE = 0.0;
-public static final double INDEXER_MOTOR_VOLTAGE = 0.0;
-
-public static final double FUNNEL_MOTOR_VELOCITY = 0.0;
-public static final double INDEXER_MOTOR_VELOCITY = 0.0;
 
 public static final double INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL = 0.0; //tbd
+
+public static final double INFEXER_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; //tbd
+
 //the regular velocity for the indexer is while the coral is getting indexed, this variable is to control the velocity while ejecting the coral out of the manipulator
 //the funnel should only have one velocity when it is intaking coral, but if the coral is jammed and needs to be ejected out thru the funnel it should have a different velocity then
+
 public static final double FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; //tbd
 public static final double INDEXER_MOTOR_VELOCITY_WHILE_REMOVING_ALGAE = 0.0; //this will be the set value to which the indexer motor velocity should be when removing algae
 
-//unsure if these properties are needed
-public static final double FUNNEL_ROLLER_VELOCITY_TOLERANCE = 0.0;
-public static  final double INDEXER_ROLLER_VELOCITY_TOLERANCE = 0.0;
+public static final double FUNNEL_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
-  public static final double POSITION_PID_P = 0.0;
-  public static final double POSITION_PID_I = 0;
-  public static final double POSITION_PID_D = 0;
-  public static final double POSITION_PID_PEAK_OUTPUT = 1.0;
-  public static final double POSITION_FEEDFORWARD = 0;
+//current limits -- all are set to default values
+public static final double FUNNEL_MOTOR_CONTINUOUS_CURRENT_LIMIT = 40;
+public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 50;
+public static final double FUNNEL_MOTOR_PEAK_CURRENT_DURATION = 0.5;
 
-  //current limits -- all are set to default values
-  public static final double FUNNEL_MOTOR_CONTINUOUS_CURRENT_LIMIT = 40;
-  public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 50;
-  public static final double FUNNEL_MOTOR_PEAK_CURRENT_DURATION = 0.5;
-
-  public static final double INDEXER_MOTOR_CONTINUOUS_CURRENT_LIMIT = 40;
-  public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 50;
-  public static final double INDEXER_MOTOR_PEAK_CURRENT_DURATION = 0.5;
-
-  //invert motors
-  public static final boolean FUNNEL_MOTOR_INVERTED = false;
-  public static final boolean INDEXER_MOTOR_INVERTED = false;
-
-  //not sure what these are for
-  public static final int TIMEOUT_MS = 30;
-  public static final int SLOT_INDEX = 0;
+public static final double INDEXER_MOTOR_CONTINUOUS_CURRENT_LIMIT = 40;
+public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 50;
+public static final double INDEXER_MOTOR_PEAK_CURRENT_DURATION = 0.5;
 
 }

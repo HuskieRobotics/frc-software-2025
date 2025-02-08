@@ -22,28 +22,29 @@ public interface ManipulatorIO {
 
     //not sure what these values are for but just copied them from the 2024 Intak.IO code
     //add status signals in talon fx class for all of these except for booleans
-    double funnelMotorStatorCurrentAmps = 0;
-    double indexerMotorStatorCurrentAmps = 0;
+    double statorCurrentAmpsFunnel = 0;
+    double statorCurrentAmpsIndexer = 0;
 
-    double funnelMotorSupplyCurrentAmps = 0;
-    double indexerMotorSupplyCurrentAmps = 0;
+    double supplyCurrentAmpsFunnel = 0;
+    double supplyCurrentAmpsIndexer = 0;
 
-    double funnelMotorVelocityRPS = 0;
-    double indexerMotorVelocityRPS = 0;
+    double velocityRPSFunnel = 0;
+    double velocityRPSIndexer = 0;
 
-    double funnelMotorReferenceVelocityRPS = 0;
-    double indexerMotorReferenceVelocityRPS = 0;
+    double referenceVelocityRPSFunnel = 0;
+    double referenceVelocityRPSIndexer = 0;
 
-    double funnelMotorTempCelsius = 0;
-    double indexerMotorTempCelsius = 0;
+    double funnelClosedLoopError = 0.0;
+    double indexerClosedLoopError = 0.0;
+
+    double funnelClosedLoopReference = 0.0;
+    double indexerClosedLoopReference = 0.0;
+
+    double tempCelsiusFunnel = 0;
+    double tempCelsiusIndexer = 0;
 
     double funnelMotorVoltage = 0;
     double indexerMotorVoltage = 0;
-
-    boolean isFunnelMotorInverted = false;
-    boolean isIndexerMotorInverted = false;
-
-    //create variables to track if a certain motor is inverted or not
   }
 
   /** Updates the set of loggable inputs. */
@@ -107,26 +108,6 @@ public interface ManipulatorIO {
    */
   public default void setFunnelMotorPosition(double position, double arbitraryFeedForward) {}
 
-   /**
-   * Set the indexer motor position to the specified value in degrees.
-   *
-   * @param position the position to set the motor to in degrees
-   * @param arbitraryFeedForward the arbitrary feed forward as a percentage of maximum power
-   */
-  public default void setIndexerMotorPosition(double position, double arbitraryFeedForward) {}
-
-  /**
-   * Get the state of the IR sensor near the funnel motor.
-   * 
-   * @return true if the ir sensor near the funnel is blocked
-   */
-  public default boolean getFunnelIRState() {return false;} //i just put false as the default value, it will be overriden in the ManipulatorIOTalonFX.java class
-
-  /**
-   * Get the state of the IR sensor near the indexer motor.
-   * 
-   * @return true if the ir sensor near the indexer is blocked
-   */
-  public default boolean getIndexerIRState() {return false;}
 }
+
 
