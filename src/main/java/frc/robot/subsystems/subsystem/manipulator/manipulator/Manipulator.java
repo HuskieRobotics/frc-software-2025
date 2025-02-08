@@ -25,32 +25,37 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber testingMode =
       new LoggedTunableNumber("Subsystem/TestingMode", 0);
 
-//logged tunable numbers for funnel motor stuff
-  private final LoggedTunableNumber funnelMotorPower = 
-      new LoggedTunableNumber("Subsystem/power", 0.0);
-  private final LoggedTunableNumber funnelMotorCurrent =
-      new LoggedTunableNumber("Subsystem/current", 0.0);
-  private final LoggedTunableNumber funnelMotorPosition =
-      new LoggedTunableNumber("Subsystem/position", 0.0);
+private final LoggedTunableNumber funnelMotorVoltage =
+      new LoggedTunableNumber("Subsystem/FunnelMotorVoltage", 0);
 
-//logged tunable numbers for indexer motor stuff
-  private final LoggedTunableNumber indexerMotorPower = 
-      new LoggedTunableNumber("Subsystem/power", 0.0);
-  private final LoggedTunableNumber indexerMotorCurrent =
-      new LoggedTunableNumber("Subsystem/current", 0.0);
-  private final LoggedTunableNumber indexerMotorPosition =
-      new LoggedTunableNumber("Subsystem/position", 0.0);
+private final LoggedTunableNumber funnelMotorVelcoity =
+      new LoggedTunableNumber("Subsystem/FunnelMotorVelocity", 0);
+
+private final LoggedTunableNumber indexerMotorVoltage =
+      new LoggedTunableNumber("Subsystem/IndexerMotorVoltage", 0);
+
+private final LoggedTunableNumber indexerMotorVelocity =
+      new LoggedTunableNumber("Subsystem/IndexerMotorVelocity", 0);
+
+private final LoggedTunableNumber funnelMotorCurrent =
+      new LoggedTunableNumber("Subsystem/FunnelMotorCurrent", 0);
+
+private final LoggedTunableNumber indexerMotorCurrent =
+      new LoggedTunableNumber("Subsystem/IndexerMotorCurrent", 0);
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged(); //stefan said to ignore this error and keep this here
   private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
   private State lastState = State.UNINITIALIZED; 
+
   private LinearFilter currentInAmps = new LinearFilter.singlePoleIIR(0.1, 0.02); //the first value is the time constant, the characteristic timescale of the filter's impulse response, and the second value is the time-period, how often the calculate() method will be called
+
   private final double thresholdForCurrentSpike = 5; //this constant will keep track of the threshold for a current spike , which for example I put as 5, can be changed later
+  
   private boolean shootCoralButtonPressed = false; 
   private boolean removeAlgaeButtonPressed = false;
+
   private boolean algaeRemoved = false; //need to actually figure out the IO stuff with this... how do we actually know if the algae has been removed??
-  //unnecessary --> private boolean robotTurnedOn = false; 
   
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -61,14 +66,18 @@ public class Manipulator extends SubsystemBase {
 
     this.io = io;
 
-    SysIdRoutineChooser.getInstance().addOption("Manipulator Voltage", sysIdRoutine);
+    SysIdRoutineChooser.getInstance().addOption("Manipulator Current", sysIDManipulator);
+
+    SysIdRoutineChooser.getInstance().addOption("Indexer Current", sysIDIndexer);
 
     FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
 
     /* SysId routine for characterizing the subsystem. This is used to find FF/PID gains for the motor. */
     //for the SysIdRoutine, i added replaced the line where it calls the setMotorVoltage method, and added 2 lines that do the same thing but set the indexer motor voltage, and the funnel motor voltage, using their respective methods
-    private final SysIdRoutine sysIdRoutine =
+    
+    //sysID for manipulator in current
+    private final SysIdRoutine sysIDManipulator =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 null, // Use default ramp rate (1 V/s)
@@ -76,8 +85,19 @@ public class Manipulator extends SubsystemBase {
                 null, // Use default timeout (10 s)
                 // Log state with SignalLogger class
                 state -> SignalLogger.writeString("SysId_State", state.toString())),
-            new SysIdRoutine.Mechanism(io -> setFunnelMotorVoltage(output.in(Volts)), null, this),
-            new SysIdRoutine.Mechanism(io -> setIndexerMotorVoltage(output.in(Volts)), null, this));
+            new SysIdRoutine.Mechanism(output -> setFunnelMotorCurrent(output.in(Volts)), null, this));
+
+
+
+    private final SysIdRoutine sysIDIndexer =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null, // Use default ramp rate (1 V/s)
+                null, // Use default step voltage (7 V)
+                null, // Use default timeout (10 s)
+                // Log state with SignalLogger class
+                state -> SignalLogger.writeString("SysId_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
   
     /**
      * Few subsystems require the complexity of a state machine. A simpler command-based approach is
@@ -141,7 +161,6 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVelocity(-3); //set negative velocity to funnel motor to invert it
-        isFunnelMotorInverted = true; //set funnel motor inverted boolean to true
       }
       @Override
       void execute(Manipulator subsystem) {
@@ -223,10 +242,7 @@ public class Manipulator extends SubsystemBase {
       }
       @Override
       void execute(Manipulator subsystem) {
-        if(robotTurnedOn)
-        {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
-        }
       }
       @Override
       void onExit(Manipulator subsystem) {
@@ -251,15 +267,15 @@ public class Manipulator extends SubsystemBase {
     currentInAmps.calculate();
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if non-zero)
+    // need voltage, current, and velocity
+
     if (testingMode.get() != 0) {
-      if (funnelMotorPower.get() != 0) {
-        this.setFunnelMotorVoltage(funnelMotorPower.get());
-      }
-      else if (funnelMotorCurrent.get() != 0) {
-        this.setFunnelMotorCurrent(funnelMotorCurrent.get());
-      }
-      else if (funnelMotorPosition.get() != 0) {
-        this.setFunnelMotorPosition(funnelMotorPosition.get());
+      if (funnelMotorVoltage.get() != 0) {
+        setFunnelMotorVoltage(funnelMotorVoltage.get());
+      } else if (funnelMotorVelcoity.get() != 0) {
+        setFunnelMotorVelocity(funnelMotorVelcoity.get());
+      } else if(funnelMotorCurrent.get() != 0) {
+        setFunnelMotorCurrent(funnelMotorCurrent.get());
       }
     } else {
       runStateMachine();
@@ -267,19 +283,19 @@ public class Manipulator extends SubsystemBase {
   }
 
   // when testing, set the INDEXER motor power, current, or position based on the Tunables (if non-zero)
-if (testingMode.get() != 0) {
-      if (indexerMotorPower.get() != 0) {
-        this.setIndexerMotorVoltage(indexerMotorPower.get());
-      }
-      else if (indexerMotorCurrent.get() != 0) {
-        this.setIndexerMotorCurrent(indexerMotorCurrent.get());
-      }
-      else if (indexerMotorPosition.get() != 0) {
-        this.setIndexerMotorPosition(indexerMotorPosition.get());
-      }
-    } else {
-      runStateMachine();
+
+  if (testingMode.get() != 0) {
+    if (indexerMotorVoltage.get() != 0) {
+      setIndexerMotorVoltage(indexerMotorVoltage.get());
+    } else if (indexerMotorVelocity.get() != 0) {
+      setIndexerMotorVelocity(indexerMotorVelocity.get());
+    } else if(indexerMotorCurrent.get() != 0) {
+      setIndexerMotorCurrent(indexerMotorCurrent.get());
     }
+  } else {
+    runStateMachine();
+
+   
   }
 
   private void setState(State state) {
@@ -313,15 +329,6 @@ if (testingMode.get() != 0) {
   public void setFunnelMotorCurrent(double current) {
     io.setFunnelMotorCurrent(current);
   }
-
-  /**
-   * Set the motor position to the specified value in degrees.
-   *
-   * @param position the position to set the motor to in degrees
-   */
-  public void setFunnelMotorPosition(double position) {
-    io.setFunnelMotorPosition(position, POSITION_FEEDFORWARD);
-  }
   
   /**
    * Set the motor power to the specified percentage of maximum power.
@@ -339,15 +346,6 @@ if (testingMode.get() != 0) {
    */
   public void setIndexerMotorCurrent(double current) {
     io.setIndexerMotorCurrent(current);
-  }
-
-  /**
-   * Set the motor position to the specified value in degrees.
-   *
-   * @param position the position to set the motor to in degrees
-   */
-  public void setIndexerMotorPosition(double position) {
-    io.setIndexerMotorPosition(position, POSITION_FEEDFORWARD);
   }
 
 //Whichever line of code does something with the motors, i replaced it with 2 lines that do the same exact thing but for the funnel and indexer motor, unsure if this is correct
@@ -396,13 +394,13 @@ if (testingMode.get() != 0) {
   }
 
 // method to shoot coral which assigns coral  button presed to true
-  private void shootCoral()
+  public void shootCoral()
   {
     shootCoralButtonPressed = true;
   }
 
   // method to remove algae which assins the remove algae button pressed to true
-  private void removeAlgae()
+  public void removeAlgae()
   {
     removeAlgaeButtonPressed = true;
   }

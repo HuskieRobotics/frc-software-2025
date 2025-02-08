@@ -48,6 +48,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private TorqueCurrentFOC funnelCurrentRequest;
   private TorqueCurrentFOC indexerCurrentRequest;
 
+  private VelocityTorqueCurrentFOC funnelVelocityRequest;
+  private VelocityTorqueCurrentFOC indexerVelocityRequest;
+
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
 
@@ -176,9 +179,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
           config.Slot0.kD = pid[2];
           this.funnelMotor.getConfigurator().apply(config);
         },
-        kP,
-        kI,
-        kD);
+        funnelKp,
+        funnelKi,
+        funnelKd);
     LoggedTunableNumber.ifChanged(
         hashCode(),
         peak -> {
@@ -200,9 +203,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
           config.Slot0.kD = pid[2];
           this.indexerMotor.getConfigurator().apply(config);
         },
-        kP,
-        kI,
-        kD);
+        indexerKp,
+        indexerKi,
+        indexerKd);
     LoggedTunableNumber.ifChanged(
       hashCode(),
         peak -> {
@@ -268,7 +271,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
     currentLimits.SupplyCurrentLimit = FUNNEL_MOTOR_PEAK_CURRENT_LIMIT;
     currentLimits.SupplyCurrentLowerLimit = FUNNEL_MOTOR_CONTINUOUS_CURRENT_LIMIT;
     currentLimits.SupplyCurrentLowerTime = FUNNEL_MOTOR_PEAK_CURRENT_DURATION;
@@ -280,9 +282,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.MotorOutput.Inverted =
         FUNNEL_MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive; //if else statement based on the value of the funnel_motor_inverted, sets the motor to a specific value based on if the motor is inverted (first choice) or not inverted (second choice)
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Slot0.kP = kP.get();
-    config.Slot0.kI = kI.get();
-    config.Slot0.kD = kD.get();
+    config.Slot0.kP = funnelKp.get();
+    config.Slot0.kI = funnelKi.get();
+    config.Slot0.kD = funnelKd.get();
 
     config.Voltage.PeakForwardVoltage = kPeakOutput.get();
     config.Voltage.PeakReverseVoltage = kPeakOutput.get();
@@ -308,7 +310,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    CurrentLimitsConfigs currentLimits = new CurrentLimitsConfigs();
     currentLimits.SupplyCurrentLimit = INDEXER_MOTOR_PEAK_CURRENT_LIMIT;
     currentLimits.SupplyCurrentLowerLimit = INDEXER_MOTOR_CONTINUOUS_CURRENT_LIMIT;
     currentLimits.SupplyCurrentLowerTime = INDEXER_MOTOR_PEAK_CURRENT_DURATION;
@@ -320,16 +321,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.MotorOutput.Inverted =
     INDEXER_MOTOR_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Slot0.kP = kP.get();
-    config.Slot0.kI = kI.get();
-    config.Slot0.kD = kD.get();
+    config.Slot0.kP = indexerKp.get();
+    config.Slot0.kI = indexerKi.get();
+    config.Slot0.kD = indexerKd.get();
 
     config.Voltage.PeakForwardVoltage = kPeakOutput.get();
     config.Voltage.PeakReverseVoltage = kPeakOutput.get();
 
     Phoenix6Util.applyAndCheckConfiguration(this.indexerMotor, config, configAlert);
-
-    this.indexerMotor.setPosition(0);
 
     /*
     this.voltageRequest = new VoltageOut(0.0);

@@ -20,8 +20,6 @@ public interface ManipulatorIO {
     boolean isFunnelIRBlocked = false;
     boolean isIndexerIRBlocked = false;
 
-    //not sure what these values are for but just copied them from the 2024 Intak.IO code
-    //add status signals in talon fx class for all of these except for booleans
     double statorCurrentAmpsFunnel = 0;
     double statorCurrentAmpsIndexer = 0;
 
