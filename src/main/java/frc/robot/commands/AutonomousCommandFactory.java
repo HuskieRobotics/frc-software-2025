@@ -79,6 +79,14 @@ public class AutonomousCommandFactory {
     Command twoPieceBlueLeft = getTwoCoralLeftAutoCommand(drivetrain);
     autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
 
+    /************ Two Piece Blue Right ************
+     *
+     * 2 corals scored E L4; D L4
+     *
+     */
+    Command twoPieceBlueRight = getTwoCoralRightAutoCommand(drivetrain);
+    autoChooser.addOption("2 Piece Blue Right", twoPieceBlueRight);
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
