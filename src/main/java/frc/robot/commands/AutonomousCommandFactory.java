@@ -2,10 +2,8 @@ package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -18,13 +16,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.Vision;
-import frc.lib.team3061.util.RobotOdometry;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
-
-import java.nio.file.Path;
 import java.util.List;
-
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandFactory {
@@ -35,7 +30,8 @@ public class AutonomousCommandFactory {
   private Pose2d rightStartingAutoPose = new Pose2d();
 
   // set arbitrary tolerance values to 3 inches in each direction and 5 degrees
-  private Transform2d autoStartTolerance = new Transform2d(3, 3, new Rotation2d(Units.degreesToRadians(5)));
+  private Transform2d autoStartTolerance =
+      new Transform2d(3, 3, new Rotation2d(Units.degreesToRadians(5)));
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -43,7 +39,6 @@ public class AutonomousCommandFactory {
 
   private final Alert pathFileMissingAlert =
       new Alert("Could not find the specified path file.", AlertType.kError);
-
 
   /**
    * Returns the singleton instance of this class.
@@ -68,8 +63,10 @@ public class AutonomousCommandFactory {
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     /************* PathPlanner Named Commands *****************/
-    NamedCommands.registerCommand("Score Left L4", getScoreL4Command(drivetrain, vision, Side.LEFT));
-    NamedCommands.registerCommand("Score Right L4", getScoreL4Command(drivetrain, vision, Side.RIGHT));
+    NamedCommands.registerCommand(
+        "Score Left L4", getScoreL4Command(drivetrain, vision, Side.LEFT));
+    NamedCommands.registerCommand(
+        "Score Right L4", getScoreL4Command(drivetrain, vision, Side.RIGHT));
     NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand());
 
     /************ Two Piece Blue Left ************
@@ -229,47 +226,45 @@ public class AutonomousCommandFactory {
 
   public Command getTwoCoralLeftAutoCommand(Drivetrain drivetrain, Vision vision) {
     try {
-        PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
-        PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
-        PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral K 2BL");
-        PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral K 2BL");
+      PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
+      PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
+      PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral K 2BL");
+      PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral K 2BL");
 
-        return Commands.sequence(
-            AutoBuilder.followPath(scoreCoralJ2BL),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
-            AutoBuilder.followPath(collectCoralJ2BL),
-            AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
-            AutoBuilder.followPath(scoreCoralK2BL),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
-            AutoBuilder.followPath(collectCoralK2BL),
-            AutonomousCommandFactory.getInstance().getCollectCoralCommand()
-        );
+      return Commands.sequence(
+          AutoBuilder.followPath(scoreCoralJ2BL),
+          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
+          AutoBuilder.followPath(collectCoralJ2BL),
+          AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
+          AutoBuilder.followPath(scoreCoralK2BL),
+          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
+          AutoBuilder.followPath(collectCoralK2BL),
+          AutonomousCommandFactory.getInstance().getCollectCoralCommand());
 
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
       pathFileMissingAlert.set(true);
 
       return Commands.waitSeconds(0);
-    } 
+    }
   }
 
   public Command getTwoCoralRightAutoCommand(Drivetrain drivetrain, Vision vision) {
     try {
-        PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral E 2BR");
-        PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral E 2BR");
-        PathPlannerPath scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
-        PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
+      PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral E 2BR");
+      PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral E 2BR");
+      PathPlannerPath scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
+      PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
 
-        return Commands.sequence(
-            AutoBuilder.followPath(scoreCoralE2BR),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
-            AutoBuilder.followPath(collectCoralE2BR),
-            AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
-            AutoBuilder.followPath(scoreCoralD2BR),
-            AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
-            AutoBuilder.followPath(collectCoralD2BR),
-            AutonomousCommandFactory.getInstance().getCollectCoralCommand()
-        );
+      return Commands.sequence(
+          AutoBuilder.followPath(scoreCoralE2BR),
+          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
+          AutoBuilder.followPath(collectCoralE2BR),
+          AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
+          AutoBuilder.followPath(scoreCoralD2BR),
+          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
+          AutoBuilder.followPath(collectCoralD2BR),
+          AutonomousCommandFactory.getInstance().getCollectCoralCommand());
 
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -308,22 +303,26 @@ public class AutonomousCommandFactory {
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
 
-  public boolean AlignedToStartingPose() {
- 
+  public boolean alignedToStartingPose() {
+
     // find the target position
     // check if pose is on left or right side of the field (x is > or < than half the field width)
     Transform2d difference;
     if (RobotOdometry.getInstance().getEstimatedPose().getX() > (8.05 / 2.0)) {
-        difference = RobotOdometry.getInstance().getEstimatedPose().minus(leftStartingAutoPose);
+      difference = RobotOdometry.getInstance().getEstimatedPose().minus(leftStartingAutoPose);
     } else {
-        difference = RobotOdometry.getInstance().getEstimatedPose().minus(rightStartingAutoPose); 
+      difference = RobotOdometry.getInstance().getEstimatedPose().minus(rightStartingAutoPose);
     }
 
-    return Math.abs(difference.getX()) < autoStartTolerance.getX()
+    boolean isAligned =
+        Math.abs(difference.getX()) < autoStartTolerance.getX()
             && Math.abs(difference.getY()) < autoStartTolerance.getY()
             && Math.abs(difference.getRotation().getRadians())
                 < autoStartTolerance.getRotation().getRadians();
-  }
-       
 
+    // this method will be invoked in something like our disabledPeriodic method
+    Logger.recordOutput("PathFinding/alignedForAuto", isAligned);
+
+    return isAligned;
+  }
 }

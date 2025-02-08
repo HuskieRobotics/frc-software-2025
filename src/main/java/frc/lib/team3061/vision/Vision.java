@@ -152,7 +152,9 @@ public class Vision extends SubsystemBase {
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
       // check if vision is actively considering this camera
-      if (!camerasToConsider.contains(cameraIndex)) { continue; }
+      if (!camerasToConsider.contains(cameraIndex)) {
+        continue;
+      }
 
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;

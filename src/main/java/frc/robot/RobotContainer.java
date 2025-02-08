@@ -390,35 +390,33 @@ public class RobotContainer {
 
     // drive to left branch of nearest reef face
     oi.getDriveToNearestLeftBranchButton()
-      .onTrue(
-      Commands.sequence(
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1))),
-        new DriveToPose(
-          drivetrain,
-          () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-          new Transform2d(
-            Units.inchesToMeters(7.0),
-            Units.inchesToMeters(1.0),
-            Rotation2d.fromDegrees(2.0))),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))
-      ).withName("drive to nearest left branch")
-      );
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1))),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                        new Transform2d(
+                            Units.inchesToMeters(7.0),
+                            Units.inchesToMeters(1.0),
+                            Rotation2d.fromDegrees(2.0))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+                .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getDriveToNearestRightBranchButton()
-      .onTrue(
-        Commands.sequence(
-          Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1))),
-          new DriveToPose(
-            drivetrain,
-            () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            new Transform2d(
-              Units.inchesToMeters(7.0),
-              Units.inchesToMeters(1.0),
-              Rotation2d.fromDegrees(2.0))),
-          Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))
-        ).withName("drive to nearest right branch")
-      );
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1))),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                        new Transform2d(
+                            Units.inchesToMeters(7.0),
+                            Units.inchesToMeters(1.0),
+                            Rotation2d.fromDegrees(2.0))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());

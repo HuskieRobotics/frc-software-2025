@@ -217,14 +217,17 @@ public class DriveToPose extends Command {
     double straightLineHighVelocityMPS = 3.0; // arbitrary 3 m/s right now
 
     double xVelocity, yVelocity, thetaVelocity;
-    xVelocity = Math.abs(difference.getX()) > highVelocityDistanceThresholdMeters 
-        ? straightLineHighVelocityMPS 
-        : xController.calculate(currentPose.getX(), this.targetPose.getX());
-    yVelocity = Math.abs(difference.getY()) > highVelocityDistanceThresholdMeters 
-        ? straightLineHighVelocityMPS 
-        : yController.calculate(currentPose.getY(), this.targetPose.getY());
-    thetaVelocity = thetaController.calculate(
-        currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+    xVelocity =
+        Math.abs(difference.getX()) > highVelocityDistanceThresholdMeters
+            ? straightLineHighVelocityMPS
+            : xController.calculate(currentPose.getX(), this.targetPose.getX());
+    yVelocity =
+        Math.abs(difference.getY()) > highVelocityDistanceThresholdMeters
+            ? straightLineHighVelocityMPS
+            : yController.calculate(currentPose.getY(), this.targetPose.getY());
+    thetaVelocity =
+        thetaController.calculate(
+            currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
 
     if (xController.atGoal()) xVelocity = 0.0;
     if (yController.atGoal()) yVelocity = 0.0;
