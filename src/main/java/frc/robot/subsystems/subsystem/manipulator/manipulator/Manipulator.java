@@ -76,7 +76,7 @@ public class Manipulator extends SubsystemBase {
 
     this.io = io;
 
-    SysIdRoutineChooser.getInstance().addOption("Manipulator Current", sysIDManipulator);
+    SysIdRoutineChooser.getInstance().addOption("Funnel Current", sysIDFunnel); //changed name from "Manipulator Current" and sysIDManipulator to "Funnel Current" and sysIDFunnel
 
     SysIdRoutineChooser.getInstance().addOption("Indexer Current", sysIDIndexer);
 
@@ -89,7 +89,7 @@ public class Manipulator extends SubsystemBase {
   // voltage, using their respective methods
 
   // sysID for manipulator in current
-  private final SysIdRoutine sysIDManipulator =
+  private final SysIdRoutine sysIDFunnel = //changed name from SysIDManipulator to SysIDFunnel
       new SysIdRoutine(
           new SysIdRoutine.Config(
               null, // Use default ramp rate (1 V/s)
@@ -138,7 +138,7 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        if (subsystem.inputs.isFunnelIRBlocked) { // ignore the error on this line
+        if (subsystem.inputs.isFunnelIRBlocked) { 
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         }
       }
@@ -290,7 +290,7 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL); //default state to WAITING_FOR_CORAL_IN_FUNNEL state
       }
 
       @Override
@@ -329,6 +329,7 @@ public class Manipulator extends SubsystemBase {
         setFunnelMotorCurrent(funnelMotorCurrent.get());
       }
 
+      //set the indexer motor power, current, or position based on the Tunables (if non-zero)
       if (indexerMotorVoltage.get() != 0) {
         setIndexerMotorVoltage(indexerMotorVoltage.get());
       } else if (indexerMotorVelocity.get() != 0) {
@@ -355,38 +356,18 @@ public class Manipulator extends SubsystemBase {
     state.execute(this);
   }
 
-  /**
-   * Set the motor power to the specified percentage of maximum power.
-   *
-   * @param power the percentage of maximum power to set the motor to
-   */
   public void setFunnelMotorVoltage(double volts) {
     io.setFunnelMotorVoltage(volts);
   }
 
-  /**
-   * Set the motor current to the specified value in amps.
-   *
-   * @param power the current to set the motor to in amps
-   */
   public void setFunnelMotorCurrent(double current) {
     io.setFunnelMotorCurrent(current);
   }
 
-  /**
-   * Set the motor power to the specified percentage of maximum power.
-   *
-   * @param power the percentage of maximum power to set the motor to
-   */
   public void setIndexerMotorVoltage(double volts) {
     io.setIndexerMotorVoltage(volts);
   }
 
-  /**
-   * Set the motor current to the specified value in amps.
-   *
-   * @param power the current to set the motor to in amps
-   */
   public void setIndexerMotorCurrent(double current) {
     io.setIndexerMotorCurrent(current);
   }
@@ -435,12 +416,12 @@ public class Manipulator extends SubsystemBase {
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
-  // method to shoot coral which assigns coral  button presed to true
+  // method to shoot coral which assigns coral  button pressed to true
   public void shootCoral() {
     shootCoralButtonPressed = true;
   }
 
-  // method to remove algae which assins the remove algae button pressed to true
+  // method to remove algae which assigns the remove algae button pressed to true
   public void removeAlgae() {
     removeAlgaeButtonPressed = true;
   }

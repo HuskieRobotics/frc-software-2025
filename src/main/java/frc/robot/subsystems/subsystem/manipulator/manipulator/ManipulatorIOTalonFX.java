@@ -169,7 +169,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
 
-    // refresh all status signal objects
+    // refresh all status signal objects for funnel motor
     StatusCode status =
         BaseStatusSignal.refreshAll(
             funnelMotorVelocity,
@@ -179,7 +179,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
             funnelMotorVoltage);
     Phoenix6Util.checkError(status, "Failed to refresh funnel motor signals.", refreshAlert);
 
-    // refresh all status signal objects
+    // refresh all status signal objects for indexer motor
     status =
         BaseStatusSignal.refreshAll(
             indexerMotorVelocity,

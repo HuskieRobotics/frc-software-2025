@@ -17,11 +17,11 @@ public class ManipulatorConstants {
   // to confirm the can id's for the motors and sensors, go to the robot software feature sheet 2025
   public static final int FUNNEL_MOTOR_ID = 12;
 
-  public static final int INDEXER_MOTOR_ID = 14;
-
   public static final int FUNNEL_IR_SENSOR_ID = 2;
 
   public static final int FUNNEL_IR_BACKUP_SENSOR_ID = 3;
+
+  public static final int INDEXER_MOTOR_ID = 14;
 
   public static final int INDEXER_IR_SENSOR_ID = 0;
 
@@ -66,6 +66,7 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
+//used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 0.0;
 
   // current limits -- all are set to default values
@@ -74,4 +75,6 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double THESHOLD_FOR_CURRENT_SPIKE = 0.0;
+
+  //organize funnel and indexer motor stuff differently
 }
