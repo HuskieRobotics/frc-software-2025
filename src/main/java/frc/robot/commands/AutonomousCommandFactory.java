@@ -36,7 +36,10 @@ public class AutonomousCommandFactory {
 
   // set arbitrary tolerance values to 3 inches in each direction and 5 degrees
   private Transform2d autoStartTolerance =
-      new Transform2d(Units.inchesToMeters(3), Units.inchesToMeters(3), new Rotation2d(Units.degreesToRadians(5)));
+      new Transform2d(
+          Units.inchesToMeters(3),
+          Units.inchesToMeters(3),
+          new Rotation2d(Units.degreesToRadians(5)));
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -314,15 +317,16 @@ public class AutonomousCommandFactory {
     Transform2d difference;
 
     if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-        difference = RobotOdometry.getInstance().getEstimatedPose().getX() > (FieldConstants.fieldWidth / 2.0) 
-            ? RobotOdometry.getInstance().getEstimatedPose().minus(blueLeftStartingAutoPose) 
-            : RobotOdometry.getInstance().getEstimatedPose().minus(blueRightStartingAutoPose);
+      difference =
+          RobotOdometry.getInstance().getEstimatedPose().getX() > (FieldConstants.fieldWidth / 2.0)
+              ? RobotOdometry.getInstance().getEstimatedPose().minus(blueLeftStartingAutoPose)
+              : RobotOdometry.getInstance().getEstimatedPose().minus(blueRightStartingAutoPose);
     } else {
-        difference = RobotOdometry.getInstance().getEstimatedPose().getX() > (FieldConstants.fieldWidth / 2.0) 
-            ? RobotOdometry.getInstance().getEstimatedPose().minus(redRightStartingAutoPose) 
-            : RobotOdometry.getInstance().getEstimatedPose().minus(redLeftStartingAutoPose);
+      difference =
+          RobotOdometry.getInstance().getEstimatedPose().getX() > (FieldConstants.fieldWidth / 2.0)
+              ? RobotOdometry.getInstance().getEstimatedPose().minus(redRightStartingAutoPose)
+              : RobotOdometry.getInstance().getEstimatedPose().minus(redLeftStartingAutoPose);
     }
-
 
     boolean isAligned =
         Math.abs(difference.getX()) < autoStartTolerance.getX()
