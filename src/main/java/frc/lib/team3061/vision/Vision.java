@@ -68,7 +68,7 @@ public class Vision extends SubsystemBase {
   private List<Pose3d> allRobotPosesRejected = new ArrayList<>();
 
   private final LoggedTunableNumber latencyAdjustmentSeconds =
-      new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
+      new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", -3.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
       new LoggedTunableNumber("Vision/AmbiguityScaleFactor", AMBIGUITY_SCALE_FACTOR);
   private final LoggedTunableNumber reprojectionErrorScaleFactor =
@@ -160,12 +160,16 @@ public class Vision extends SubsystemBase {
         // only process the vision data if the timestamp is newer than the last one and not in the
         // future, which can happen when the robot code is restarted and PhotonVision is still
         // running on other devices.
+        double observationTimestamp = observation.timestamp();
+        double timestamp = Timer.getTimestamp();
+        double convertedTime = Utils.fpgaToCurrentTime(observation.timestamp());
+
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()
-            && observation.timestamp() < Timer.getFPGATimestamp()) {
+            && observation.timestamp() < Timer.getTimestamp()) {
           // get tag poses and update last detection times
           for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
             if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
-              lastTagDetectionTimes.put(tagID, Timer.getFPGATimestamp());
+              lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
               Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
               tagPose.ifPresent(tagPoses::add);
             }
@@ -198,7 +202,7 @@ public class Vision extends SubsystemBase {
 
           if (acceptPose) {
             robotPosesAccepted.add(estimatedRobotPose3d);
-            lastPoseEstimationAcceptedTimes.put(estimatedRobotPose3d, Timer.getFPGATimestamp());
+            lastPoseEstimationAcceptedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
 
             Matrix<N3, N1> stdDev = getStandardDeviations(cameraIndex, observation);
             odometry.addVisionMeasurement(
@@ -210,8 +214,7 @@ public class Vision extends SubsystemBase {
             // if the most-recent "best pose" is too old, capture a new one regardless of its
             // standard deviation values; otherwise, only capture a new one if its standard
             // deviation is lower than the current best pose
-            if (mostRecentBestPoseTimestamp
-                    < Timer.getFPGATimestamp() - BEST_POSE_TIME_THRESHOLD_SECS
+            if (mostRecentBestPoseTimestamp < Timer.getTimestamp() - BEST_POSE_TIME_THRESHOLD_SECS
                 || mostRecentBestPoseStdDev > stdDev.get(0, 0)) {
               mostRecentBestPose = estimatedRobotPose3d;
               mostRecentBestPoseTimestamp = observation.timestamp();
@@ -229,7 +232,7 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraIndex + "/StdDevT", stdDev.get(2, 0));
           } else {
             robotPosesRejected.add(estimatedRobotPose3d);
-            lastPoseEstimationRejectedTimes.put(estimatedRobotPose3d, Timer.getFPGATimestamp());
+            lastPoseEstimationRejectedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
           }
           this.cyclesWithNoResults[cameraIndex] = 0;
           isVisionUpdating = true;
@@ -239,7 +242,7 @@ public class Vision extends SubsystemBase {
       // Log data for this camera
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/LatencySecs",
-          Timer.getFPGATimestamp() - this.lastTimestamps[cameraIndex]);
+          Timer.getTimestamp() - this.lastTimestamps[cameraIndex]);
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/CyclesWithNoResults",
           this.cyclesWithNoResults[cameraIndex]);
@@ -265,7 +268,7 @@ public class Vision extends SubsystemBase {
 
     // Log summary data
     for (Map.Entry<Pose3d, Double> entry : lastPoseEstimationAcceptedTimes.entrySet()) {
-      if (Timer.getFPGATimestamp() - entry.getValue() < POSE_LOG_TIME_SECS) {
+      if (Timer.getTimestamp() - entry.getValue() < POSE_LOG_TIME_SECS) {
         allRobotPosesAccepted.add(entry.getKey());
       }
     }
@@ -274,7 +277,7 @@ public class Vision extends SubsystemBase {
         allRobotPosesAccepted.toArray(new Pose3d[allRobotPosesAccepted.size()]));
 
     for (Map.Entry<Pose3d, Double> entry : lastPoseEstimationRejectedTimes.entrySet()) {
-      if (Timer.getFPGATimestamp() - entry.getValue() < POSE_LOG_TIME_SECS) {
+      if (Timer.getTimestamp() - entry.getValue() < POSE_LOG_TIME_SECS) {
         allRobotPosesRejected.add(entry.getKey());
       }
     }
@@ -290,7 +293,7 @@ public class Vision extends SubsystemBase {
     // Log tag poses
     List<Pose3d> allTagPoses = new ArrayList<>();
     for (Map.Entry<Integer, Double> detectionEntry : lastTagDetectionTimes.entrySet()) {
-      if (Timer.getFPGATimestamp() - detectionEntry.getValue() < TAG_LOG_TIME_SECS) {
+      if (Timer.getTimestamp() - detectionEntry.getValue() < TAG_LOG_TIME_SECS) {
         layout.getTagPose(detectionEntry.getKey()).ifPresent(allTagPoses::add);
       }
     }
@@ -316,7 +319,7 @@ public class Vision extends SubsystemBase {
    * @return the estimated robot pose based on the most recent vision data
    */
   public Pose3d getBestRobotPose() {
-    if (mostRecentBestPoseTimestamp > Timer.getFPGATimestamp() - BEST_POSE_TIME_THRESHOLD_SECS) {
+    if (mostRecentBestPoseTimestamp > Timer.getTimestamp() - BEST_POSE_TIME_THRESHOLD_SECS) {
       return mostRecentBestPose;
     } else {
       return null;
