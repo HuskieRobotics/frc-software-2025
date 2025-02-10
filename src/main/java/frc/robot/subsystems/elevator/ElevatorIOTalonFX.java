@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
@@ -41,6 +42,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
+  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   private StatusSignal<Current> leadStatorCurrent;
   private StatusSignal<Current> followerStatorCurrent;
@@ -235,16 +237,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
-    BaseStatusSignal.refreshAll(
-        elevatorPositionStatusSignal,
-        leadStatorCurrent,
-        followerStatorCurrent,
-        leadSupplyCurrent,
-        followerSupplyCurrent,
-        leadVoltageSupplied,
-        followerVoltageSupplied,
-        elevatorLeadTempStatusSignal,
-        elevatorFollowerTempStatusSignal);
+    StatusCode status =
+        BaseStatusSignal.refreshAll(
+            elevatorPositionStatusSignal,
+            leadStatorCurrent,
+            followerStatorCurrent,
+            leadSupplyCurrent,
+            followerSupplyCurrent,
+            leadVoltageSupplied,
+            followerVoltageSupplied,
+            elevatorLeadTempStatusSignal,
+            elevatorFollowerTempStatusSignal);
+    Phoenix6Util.checkError(status, "Failed to refresh elevator motor signals.", refreshAlert);
 
     inputs.voltageSuppliedLead = leadVoltageSupplied.getValueAsDouble();
     inputs.voltageSuppliedFollower = followerVoltageSupplied.getValueAsDouble();
