@@ -150,8 +150,8 @@ public class RobotOdometry {
 
     // log the difference between the vision pose estimate and the pose estimate corresponding to
     // the same timestamp
-    if (TUNING_MODE && this.customEstimator != null) {
-      var sample = this.customEstimator.samplePoseAt(adjustedTimestamp);
+    if (TUNING_MODE) {
+      var sample = this.estimator.sampleAt(adjustedTimestamp);
       if (!sample.isEmpty()) {
         Pose2d pastPose = sample.get();
         Transform2d diff = pastPose.minus(visionRobotPoseMeters);
