@@ -10,12 +10,14 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import java.util.List;
@@ -26,12 +28,15 @@ public class AutonomousCommandFactory {
 
   private static AutonomousCommandFactory autonomousCommandFactory = null;
 
-  private Pose2d leftStartingAutoPose = new Pose2d();
-  private Pose2d rightStartingAutoPose = new Pose2d();
+  // arbitrary, find the actual starting poses
+  private Pose2d blueLeftStartingAutoPose = new Pose2d();
+  private Pose2d blueRightStartingAutoPose = new Pose2d();
+  private Pose2d redLeftStartingAutoPose = new Pose2d();
+  private Pose2d redRightStartingAutoPose = new Pose2d();
 
   // set arbitrary tolerance values to 3 inches in each direction and 5 degrees
   private Transform2d autoStartTolerance =
-      new Transform2d(3, 3, new Rotation2d(Units.degreesToRadians(5)));
+      new Transform2d(Units.inchesToMeters(3), Units.inchesToMeters(3), new Rotation2d(Units.degreesToRadians(5)));
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -306,13 +311,18 @@ public class AutonomousCommandFactory {
   public boolean alignedToStartingPose() {
 
     // find the target position
-    // check if pose is on left or right side of the field (x is > or < than half the field width)
     Transform2d difference;
-    if (RobotOdometry.getInstance().getEstimatedPose().getX() > (8.05 / 2.0)) {
-      difference = RobotOdometry.getInstance().getEstimatedPose().minus(leftStartingAutoPose);
+
+    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
+        difference = RobotOdometry.getInstance().getEstimatedPose().getX() > (FieldConstants.fieldWidth / 2.0) 
+            ? RobotOdometry.getInstance().getEstimatedPose().minus(blueLeftStartingAutoPose) 
+            : RobotOdometry.getInstance().getEstimatedPose().minus(blueRightStartingAutoPose);
     } else {
-      difference = RobotOdometry.getInstance().getEstimatedPose().minus(rightStartingAutoPose);
+        difference = RobotOdometry.getInstance().getEstimatedPose().getX() > (FieldConstants.fieldWidth / 2.0) 
+            ? RobotOdometry.getInstance().getEstimatedPose().minus(redRightStartingAutoPose) 
+            : RobotOdometry.getInstance().getEstimatedPose().minus(redLeftStartingAutoPose);
     }
+
 
     boolean isAligned =
         Math.abs(difference.getX()) < autoStartTolerance.getX()
