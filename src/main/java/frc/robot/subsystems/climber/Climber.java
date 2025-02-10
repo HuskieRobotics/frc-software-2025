@@ -25,8 +25,6 @@ public class Climber extends SubsystemBase {
       io.setVoltage(climberVoltage.get());
     } else if (inputs.positionInches > ClimberConstants.MAX_HEIGHT_INCHES) {
       stop();
-    } else if (inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES) {
-      stop();
     }
   }
 

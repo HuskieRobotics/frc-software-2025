@@ -95,8 +95,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   @Override
   public void zeroPosition() {
-    // turn into a constant
-    climberMotor.setPosition(0, 0);
+    climberMotor.setPosition(0);
   }
 
   private void configMotor() {
