@@ -18,6 +18,7 @@
     "types": {
       "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/AdvantageKit/RealOutputs/Climber/ElevatorSim": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Elevator/ElevatorSim": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Auto Routine": "String Chooser",

@@ -80,7 +80,8 @@ public class OISelector {
       }
     }
 
-    if (Constants.getRobot() == RobotType.ROBOT_SIMBOT) {
+    if (Constants.getRobot() == RobotType.ROBOT_SIMBOT
+        || Constants.getRobot() == RobotType.ROBOT_VISION_TEST_PLATFORM) {
       nonCompetitionOperatorInterfaceWarning.set(false);
       return new SimDualJoysticksOI(0, 1);
     } else if (firstPort != null && secondPort != null && xBoxPort != null && thirdPort != null) {

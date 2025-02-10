@@ -76,6 +76,14 @@ public interface OperatorInterface {
   }
 
   // drivetrain, game-specific
+  public default Trigger getDriveToNearestLeftBranchButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getDriveToNearestRightBranchButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getPrepareElevatorToScoreButton() {
     return new Trigger(() -> false);
   }
