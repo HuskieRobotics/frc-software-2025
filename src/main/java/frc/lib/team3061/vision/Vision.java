@@ -96,13 +96,13 @@ public class Vision extends SubsystemBase {
     this.updatePoseCount = new int[visionIOs.length];
     this.inputs = new VisionIOInputsAutoLogged[visionIOs.length];
     this.disconnectedAlerts = new Alert[visionIOs.length];
+    this.camerasToConsider = new ArrayList<>();
+
     for (int i = 0; i < visionIOs.length; i++) {
       this.inputs[i] = new VisionIOInputsAutoLogged();
       this.disconnectedAlerts[i] = new Alert("camera" + i + " is disconnected", AlertType.kError);
+      this.camerasToConsider.add(i);
     }
-
-    // default to considering all cameras
-    this.camerasToConsider = new ArrayList<>(List.of(0, 1, 2, 3));
 
     // retrieve a reference to the pose estimator singleton
     this.odometry = RobotOdometry.getInstance();
@@ -151,10 +151,6 @@ public class Vision extends SubsystemBase {
     this.allRobotPosesRejected.clear();
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
-      // check if vision is actively considering this camera
-      if (!camerasToConsider.contains(cameraIndex)) {
-        continue;
-      }
 
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;
@@ -200,6 +196,7 @@ public class Vision extends SubsystemBase {
           // single-tag, ensure the ambiguity is less than the threshold.
           boolean acceptPose =
               isEnabled
+                  && this.camerasToConsider.contains(cameraIndex)
                   && (observation.type() == PoseObservationType.MULTI_TAG
                       || observation.averageAmbiguity() < AMBIGUITY_THRESHOLD)
                   && (observation.type() == PoseObservationType.SINGLE_TAG
