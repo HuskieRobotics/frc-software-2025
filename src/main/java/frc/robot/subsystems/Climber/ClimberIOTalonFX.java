@@ -1,6 +1,7 @@
 package frc.robot.subsystems.Climber;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -12,6 +13,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
+import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
@@ -38,6 +42,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final LoggedTunableNumber KAEXP =
       new LoggedTunableNumber("Climber/KAEXP", ClimberConstants.KAEXP);
   private final LoggedTunableNumber KG = new LoggedTunableNumber("Climber/KG", ClimberConstants.KG);
+
+  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   public ClimberIOTalonFX() {
     climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
@@ -68,8 +74,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     // Update loggable values here (using status signals)
-    BaseStatusSignal.refreshAll(
-        voltage, statorCurrentAmps, supplyCurrentAmps, tempCelcius, positionRotations);
+    StatusCode status =
+        BaseStatusSignal.refreshAll(
+            voltage, statorCurrentAmps, supplyCurrentAmps, tempCelcius, positionRotations);
+    Phoenix6Util.checkError(status, "Failed to refresh climber motor signals.", refreshAlert);
 
     inputs.voltage = voltage.getValueAsDouble();
     inputs.statorCurrentAmps = statorCurrentAmps.getValueAsDouble();
