@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Climber;
+package frc.robot.subsystems.climber;
 
 public class ClimberConstants {
   public static final int CLIMBER_MOTOR_CAN_ID = 16;

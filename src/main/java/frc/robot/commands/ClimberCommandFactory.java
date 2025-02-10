@@ -3,7 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.subsystem.Subsystem;
 
 public class ClimberCommandFactory {
