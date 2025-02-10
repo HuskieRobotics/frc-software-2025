@@ -32,7 +32,7 @@ public class RobotOdometry {
    * When tuning vision, it is useful to log vision pose estimates and display them in
    * AdvantageScope but not add them to the pose estimators.
    */
-  private static final boolean INCLUDE_VISION_POSE_ESTIMATES = false;
+  private static final boolean INCLUDE_VISION_POSE_ESTIMATES = true;
 
   /**
    * When tuning vision, it is useful to log vision pose estimates and display them in
@@ -40,8 +40,8 @@ public class RobotOdometry {
    * pose estimates are added to the custom pose estimator.
    */
   private static final boolean INCLUDE_VISION_POSE_ESTIMATES_IN_CUSTOM_ESTIMATOR =
-      false; // typically false
-
+      true; 
+      
   private RobotOdometry() {
     estimator =
         new SwerveDrivePoseEstimator(

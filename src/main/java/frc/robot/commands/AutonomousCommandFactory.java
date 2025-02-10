@@ -279,7 +279,7 @@ public class AutonomousCommandFactory {
 
   private Command getScoreL4Command(Drivetrain drivetrain, Vision vision, Side side) {
     return Commands.sequence(
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1)), vision),
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
         new DriveToPose(
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(side),
