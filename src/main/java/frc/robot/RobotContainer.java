@@ -392,7 +392,7 @@ public class RobotContainer {
     oi.getDriveToNearestLeftBranchButton()
         .onTrue(
             Commands.sequence(
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                     new DriveToPose(
                         drivetrain,
                         () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
@@ -407,12 +407,13 @@ public class RobotContainer {
     oi.getDriveToNearestRightBranchButton()
         .onTrue(
             Commands.sequence(
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1))),
+                    /* only consider front cameras for precision */
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                     new DriveToPose(
                         drivetrain,
                         () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                         new Transform2d(
-                            Units.inchesToMeters(7.0),
+                            Units.inchesToMeters(7.0), /* tolerances */
                             Units.inchesToMeters(1.0),
                             Rotation2d.fromDegrees(2.0))),
                     Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
