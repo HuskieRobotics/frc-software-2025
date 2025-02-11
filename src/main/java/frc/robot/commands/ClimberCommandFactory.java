@@ -16,8 +16,6 @@ public class ClimberCommandFactory {
     // consistent, extend button (hold)
     oi.getPrepClimbSequence()
         .onTrue(Commands.runOnce(climber::extend, climber).withName("extend climber"));
-    oi.getPrepClimbSequence()
-        .onFalse(Commands.runOnce(climber::stop, climber).withName("stop climber"));
 
     // inconsistent, retract button (single press) works after button spam / sometimes perfect
     // note: works consistently w/ a double/triple click, unsure why

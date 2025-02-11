@@ -13,12 +13,12 @@ public class ClimberConstants {
   // change extend + reset voltage constants later
   public static final double EXTEND_VOLTAGE = 3.0;
   public static final double RETRACT_VOLTAGE = -6.0;
-  public static final double RETRACT_VOLTAGE_SLOW = -1.0;
+  public static final double RETRACT_VOLTAGE_SLOW = -3.0;
   public static final double RESET_VOLTAGE = 20.0;
 
   public static final double DRUM_DIAMETER = 1.0;
-  public static final double MAX_HEIGHT_INCHES = 30.0;
-  public static final double MIN_HEIGHT_INCHES = 0.0;
+  public static final double MAX_HEIGHT_INCHES = 15.0;
+  public static final double MIN_HEIGHT_INCHES = 1.0;
 
   public static final double KP = 0.0;
   public static final double KI = 0.0;

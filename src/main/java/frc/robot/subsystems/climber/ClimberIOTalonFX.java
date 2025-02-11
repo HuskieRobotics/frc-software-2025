@@ -16,11 +16,15 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private TalonFX climberMotor;
+
+  private Alert configAlert =
+      new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
   private VoltageOut climberVoltageRequest;
   private ElevatorSystemSim elevatorSystemSim;
@@ -46,7 +50,9 @@ public class ClimberIOTalonFX implements ClimberIO {
   private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   public ClimberIOTalonFX() {
-    climberMotor = new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID);
+    climberMotor =
+        new TalonFX(
+            ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
 
     configMotor();
 
@@ -114,5 +120,7 @@ public class ClimberIOTalonFX implements ClimberIO {
         ClimberConstants.CLIMBER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
             : InvertedValue.CounterClockwise_Positive;
+
+    Phoenix6Util.applyAndCheckConfiguration(climberMotor, config, configAlert);
   }
 }
