@@ -107,21 +107,38 @@ public class Elevator extends SubsystemBase {
         height = L2_HEIGHT;
         break;
 
+      case L2_1_CORAL_AWAY:
+        height = L2_HEIGHT_1_CORAL_AWAY;
+        break;
+
       case L3:
         height = L3_HEIGHT;
         break;
 
+      case L3_1_CORAL_AWAY:
+        height = L3_HEIGHT_1_CORAL_AWAY;
+        break;
+        
       case L4:
         height = L4_HEIGHT;
         break;
 
-      case ALGAE_1:
-        height = ALGAE1_HEIGHT;
+      case ALGAE_1_LOW:
+        height = ALGAE1_HEIGHT_LOW;
         break;
 
-      case ALGAE_2:
-        height = ALGAE2_HEIGHT;
+      case ALGAE_1_HIGH:
+        height = ALGAE1_HEIGHT_HIGH;
         break;
+
+      case ALGAE_2_LOW:
+        height = ALGAE2_HEIGHT_LOW;
+        break;
+
+      case ALGAE_2_HIGH:
+        height = ALGAE2_HEIGHT_HIGH;
+        break;
+
       default:
         height = MIN_HEIGHT;
         break;

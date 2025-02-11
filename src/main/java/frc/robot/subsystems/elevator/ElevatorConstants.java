@@ -23,10 +23,6 @@ public class ElevatorConstants {
   public static final int LEAD_MOTOR_ID = 10;
   public static final int FOLLOWER_MOTOR_ID = 11;
 
-  public static final double FORWARD_SOFT_LIMIT_THRESHOLD =
-      MAX_HEIGHT.in(Inches) / PULLY_CIRCUMFERANCE_INCHES;
-  public static final double REVERSE_SOFT_LIMIT_THRESHOLD = 0.0;
-
   public static final boolean DEBUGGING = true;
   public static final boolean TESTING = true;
 
@@ -68,11 +64,15 @@ public class ElevatorConstants {
 
     L1,
     L2,
+    L2_1_CORAL_AWAY,
     L3,
+    L3_1_CORAL_AWAY,
     L4,
 
-    ALGAE_1,
-    ALGAE_2,
+    ALGAE_1_LOW,
+    ALGAE_1_HIGH,
+    ALGAE_2_LOW,
+    ALGAE_2_HIGH
   }
 
   /*
@@ -80,10 +80,16 @@ public class ElevatorConstants {
    */
 
   public static final Distance L1_HEIGHT = Inches.of(15.94);
-  public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
-  public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
+  public static final Distance L2_HEIGHT = Inches.of(30);
+  public static final Distance L2_HEIGHT_1_CORAL_AWAY = Inches.of(35);
+  public static final Distance L3_HEIGHT = Inches.of(45);
+  public static final Distance L3_HEIGHT_1_CORAL_AWAY = Inches.of(51);
   public static final Distance L4_HEIGHT = Inches.of(70);
 
-  public static final Distance ALGAE1_HEIGHT = Inches.of(13.0); // height under is 9
-  public static final Distance ALGAE2_HEIGHT = Inches.of(28.0); // height under is 24
+  
+  public static final Distance ALGAE1_HEIGHT_LOW = Inches.of(9.0);
+  public static final Distance ALGAE1_HEIGHT_HIGH = Inches.of(13.0); 
+
+  public static final Distance ALGAE2_HEIGHT_LOW = Inches.of(24.0);
+  public static final Distance ALGAE2_HEIGHT_HIGH = Inches.of(28.0);
 }

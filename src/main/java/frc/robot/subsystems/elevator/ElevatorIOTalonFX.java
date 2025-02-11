@@ -172,15 +172,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    SoftwareLimitSwitchConfigs softLimitConfigs =
-        new SoftwareLimitSwitchConfigs()
-            .withForwardSoftLimitEnable(true)
-            .withForwardSoftLimitThreshold(ElevatorConstants.FORWARD_SOFT_LIMIT_THRESHOLD)
-            .withReverseSoftLimitEnable(true)
-            .withReverseSoftLimitThreshold(ElevatorConstants.REVERSE_SOFT_LIMIT_THRESHOLD);
-
-    config.SoftwareLimitSwitch = softLimitConfigs;
-
     config.Slot0.kP = kPslot0.get();
     config.Slot0.kI = kIslot0.get();
     config.Slot0.kD = kDslot0.get();
