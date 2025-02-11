@@ -30,9 +30,9 @@ import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
-import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
@@ -91,19 +91,19 @@ public class RobotContainer {
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
 
   private final LoggedTunableBoolean testBoolean =
-      new LoggedTunableBoolean("operatorInterface/testBoolean", false);
+      new LoggedTunableBoolean("operatorInterface/testBoolean", false, true);
 
   private final LoggedTunableBoolean level1 =
-      new LoggedTunableBoolean("operatorInterface/Level 1", false);
+      new LoggedTunableBoolean("operatorInterface/Level 1", false, true);
   private final LoggedTunableBoolean level2 =
-      new LoggedTunableBoolean("operatorInterface/Level 2", false);
+      new LoggedTunableBoolean("operatorInterface/Level 2", false, true);
   private final LoggedTunableBoolean level3 =
-      new LoggedTunableBoolean("operatorInterface/Level 3 ", false);
+      new LoggedTunableBoolean("operatorInterface/Level 3 ", false, true);
   private final LoggedTunableBoolean level4 =
-      new LoggedTunableBoolean("operatorInterface/Level 4 ", false);
+      new LoggedTunableBoolean("operatorInterface/Level 4 ", false, true);
 
   private final LoggedTunableBoolean algaeToggle =
-      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false);
+      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, true);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
@@ -174,52 +174,6 @@ public class RobotContainer {
     if (Constants.TUNING_MODE) {
       this.tuningAlert.set(true);
     }
-
-    // SmartDashboard.putNumber("TestNumber", testNumber.get());
-    // SmartDashboard.putData(
-    //     "Heights/L4",
-    //     Commands.runOnce(
-    //             () -> {
-    //               System.out.println("Height L4");
-    //             })
-    //         .ignoringDisable(true)
-    //         .withName("L4"));
-
-    // SmartDashboard.putData(
-    //     "Heights/L3",
-    //     Commands.runOnce(
-    //             () -> {
-    //               System.out.println("Height L3");
-    //             })
-    //         .ignoringDisable(true)
-    //         .withName("L3"));
-
-    // SmartDashboard.putData(
-    //     "Heights/L2",
-    //     Commands.runOnce(
-    //             () -> {
-    //               System.out.println("Height L2");
-    //             })
-    //         .ignoringDisable(true)
-    //         .withName("L2"));
-
-    // SmartDashboard.putData(
-    //     "Heights/L1",
-    //     Commands.runOnce(
-    //             () -> {
-    //               System.out.println("Height L1");
-    //             })
-    //         .ignoringDisable(true)
-    //         .withName("L1"));
-
-    // SmartDashboard.putData(
-    //     "Heights/HARDSTOP",
-    //     Commands.runOnce(
-    //             () -> {
-    //               System.out.println("Height Hardstop");
-    //             })
-    //         .ignoringDisable(true)
-    //         .withName("HARDSTOP"));
   }
 
   /**
