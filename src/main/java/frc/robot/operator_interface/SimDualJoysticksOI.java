@@ -81,7 +81,7 @@ public class SimDualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getZeroClimberButton() {
+  public Trigger getScoreCoralButton() {
     return rotateJoystickButtons[4];
   }
 }

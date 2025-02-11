@@ -11,7 +11,7 @@ public class ManipulatorConstants {
   public static final String SUBSYSTEM_NAME = "Manipulator";
 
   // invert motors
-  public static final boolean FUNNEL_MOTOR_INVERTED = false;
+  public static final boolean FUNNEL_MOTOR_INVERTED = true;
   public static final boolean INDEXER_MOTOR_INVERTED = false;
 
   // to confirm the can id's for the motors and sensors, go to the robot software feature sheet 2025
@@ -47,6 +47,14 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_KV = 0.05;
   public static final double INDEXER_MOTOR_KA = 0.01;
 
+  // FIXME: tune these values
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 2.0;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL = 2.0;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -6.0;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 4.0;
+  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 2.0;
+  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -6.0;
+
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL = 0.0; // tbd
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; // tbd
@@ -66,14 +74,13 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
-//used for timer
-  public static final double CORAL_COLLECTION_TIME_OUT = 0.0;
+  // used for timer
+  public static final double CORAL_COLLECTION_TIME_OUT = 10.0;
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
-  public static final double THESHOLD_FOR_CURRENT_SPIKE = 0.0;
-
+  public static final double THRESHOLD_FOR_CURRENT_SPIKE = 20.0;
 }

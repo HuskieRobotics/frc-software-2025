@@ -36,6 +36,7 @@ import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.ClimberCommandFactory;
+import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.DefaultRobotConfig;
@@ -45,15 +46,15 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
-import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
-import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIO;
-import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIOTalonFX;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
+import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIO;
+import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -314,6 +315,7 @@ public class RobotContainer {
     configureVisionCommands();
 
     ClimberCommandFactory.registerCommands(oi, climber);
+    CrossSubsystemsCommandsFactory.registerCommands(oi, elevator, manipulator);
 
     // Endgame alerts
     new Trigger(

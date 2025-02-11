@@ -61,6 +61,7 @@ public class Manipulator extends SubsystemBase {
   // the calculate() method will be called
 
   private boolean shootCoralButtonPressed = false;
+  private boolean scoreCoralThroughFunnelButtonPressed = false;
   private boolean removeAlgaeButtonPressed = false;
 
   private boolean algaeRemoved =
@@ -76,7 +77,11 @@ public class Manipulator extends SubsystemBase {
 
     this.io = io;
 
-    SysIdRoutineChooser.getInstance().addOption("Funnel Current", sysIDFunnel); //changed name from "Manipulator Current" and sysIDManipulator to "Funnel Current" and sysIDFunnel
+    SysIdRoutineChooser.getInstance()
+        .addOption(
+            "Funnel Current",
+            sysIDFunnel); // changed name from "Manipulator Current" and sysIDManipulator to "Funnel
+    // Current" and sysIDFunnel
 
     SysIdRoutineChooser.getInstance().addOption("Indexer Current", sysIDIndexer);
 
@@ -89,7 +94,7 @@ public class Manipulator extends SubsystemBase {
   // voltage, using their respective methods
 
   // sysID for manipulator in current
-  private final SysIdRoutine sysIDFunnel = //changed name from SysIDManipulator to SysIDFunnel
+  private final SysIdRoutine sysIDFunnel = // changed name from SysIDManipulator to SysIDFunnel
       new SysIdRoutine(
           new SysIdRoutine.Config(
               null, // Use default ramp rate (1 V/s)
@@ -131,14 +136,13 @@ public class Manipulator extends SubsystemBase {
     WAITING_FOR_CORAL_IN_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setFunnelMotorVelocity(
-            FUNNEL_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL); // velocity is tbd
-        subsystem.setIndexerMotorVelocity(0); // turn indexer motor speed to 0
+        subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+        subsystem.setIndexerMotorVoltage(0); // turn indexer motor speed to 0
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        if (subsystem.inputs.isFunnelIRBlocked) { 
+        if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         }
       }
@@ -151,25 +155,26 @@ public class Manipulator extends SubsystemBase {
     INDEXING_CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVelocity(
-            INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL); // velocity is tbd
+        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
         subsystem.coralInIndexingState.restart(); // start timer
-        subsystem.currentInAmps.reset(); //reset the linear filter thats used to detect a current spike
+        subsystem.currentInAmps
+            .reset(); // reset the linear filter thats used to detect a current spike
       }
 
       @Override
       void execute(Manipulator subsystem) {
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
-                > THESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
+                > THRESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
         // noise and getting the lastValue gets the last value
         // of the current, and if that last value is greater
         // than some constant, then current spike has been
         // detected
         {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
-        } 
-        else if (subsystem.coralInIndexingState.hasElapsed(CORAL_COLLECTION_TIME_OUT)) // hasElapsed method check if the timer has elapsed a certain number of seconds 
+        } else if (subsystem.coralInIndexingState.hasElapsed(
+            CORAL_COLLECTION_TIME_OUT)) // hasElapsed method check if the timer has elapsed a
+        // certain number of seconds
         {
           subsystem.setState(CORAL_STUCK);
         }
@@ -177,7 +182,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void onExit(Manipulator subsystem) {
-        subsystem.setFunnelMotorVelocity(
+        subsystem.setIndexerMotorVoltage(0.0);
+        subsystem.setFunnelMotorVoltage(
             0); // turn off the funnel motor, regardless of if it is going to the CORAL_STUCK state
         // or the CORAL_IN_MANIPULATOR state
       }
@@ -185,11 +191,11 @@ public class Manipulator extends SubsystemBase {
     CORAL_STUCK {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setFunnelMotorVelocity(
-            FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL); // set negative velocity to funnel motor to
+        subsystem.setFunnelMotorVoltage(
+            FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL); // set negative velocity to funnel motor to
         // invert it
-        subsystem.setIndexerMotorVelocity(
-            INDEXER_MOTOR_VELOCITY_WHILE_EJECTING_CORAL); // set negative velocity to indexer motor
+        subsystem.setIndexerMotorVoltage(
+            INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL); // set negative velocity to indexer motor
         // to invert it
       }
 
@@ -202,15 +208,14 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void onExit(Manipulator subsystem) {
-        /*NO-OP */
+        subsystem.setFunnelMotorVoltage(0.0);
+        subsystem.setIndexerMotorVoltage(0.0);
       }
     },
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        // set both motor speeds to 0
-        subsystem.setIndexerMotorVelocity(0);
-        subsystem.setFunnelMotorVelocity(0);
+        /* NO-OP */
       }
 
       @Override
@@ -218,6 +223,9 @@ public class Manipulator extends SubsystemBase {
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
           subsystem.shootCoralButtonPressed = false;
+        } else if (subsystem.scoreCoralThroughFunnelButtonPressed) {
+          subsystem.setState(State.SCORE_CORAL_THROUGH_FUNNEL);
+          subsystem.scoreCoralThroughFunnelButtonPressed = false;
         }
       }
 
@@ -229,15 +237,14 @@ public class Manipulator extends SubsystemBase {
     SHOOT_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVelocity(
-            INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL); // speed of indexer motor velocity while
+        subsystem.setIndexerMotorVoltage(
+            INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL); // speed of indexer motor velocity while
         // shooting coral should be different
         // compared to intaking, etc
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        // call command to shoot coral -- will do later
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
             && subsystem.removeAlgaeButtonPressed) {
           subsystem.setState(State.REMOVE_ALGAE);
@@ -252,13 +259,38 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onExit(Manipulator subsystem) {
         // set speed of indexer motor to 0
-        subsystem.setIndexerMotorVelocity(0);
+        subsystem.setIndexerMotorVoltage(0);
+        subsystem.setFunnelMotorVoltage(0.0);
+      }
+    },
+    SCORE_CORAL_THROUGH_FUNNEL {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+      }
+
+      @Override
+      void execute(Manipulator subsystem) {
+        if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
+            && subsystem.removeAlgaeButtonPressed) {
+          subsystem.setState(State.REMOVE_ALGAE);
+          subsystem.removeAlgaeButtonPressed = false;
+        } else if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        subsystem.setIndexerMotorVoltage(0);
+        subsystem.setFunnelMotorVoltage(0.0);
       }
     },
     REMOVE_ALGAE {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVelocity(INDEXER_MOTOR_VELOCITY_WHILE_REMOVING_ALGAE);
+        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
       }
 
       @Override
@@ -275,20 +307,22 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void onExit(Manipulator subsystem) {
-        /*NO-OP */
+        subsystem.setIndexerMotorVoltage(0);
       }
     },
     UNINITIALIZED { // state that the robot should be in when its  turned off
       @Override
       void onEnter(Manipulator subsystem) {
         // set speed of both motors to 0
-        subsystem.setIndexerMotorVelocity(0);
-        subsystem.setFunnelMotorVelocity(0);
+        subsystem.setIndexerMotorVoltage(0);
+        subsystem.setFunnelMotorVoltage(0);
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL); //default state to WAITING_FOR_CORAL_IN_FUNNEL state
+        subsystem.setState(
+            State
+                .WAITING_FOR_CORAL_IN_FUNNEL); // default state to WAITING_FOR_CORAL_IN_FUNNEL state
       }
 
       @Override
@@ -312,6 +346,7 @@ public class Manipulator extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/State", this.state);
     currentInAmps.calculate(inputs.indexerStatorCurrentAmps);
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if
@@ -327,7 +362,7 @@ public class Manipulator extends SubsystemBase {
         setFunnelMotorCurrent(funnelMotorCurrent.get());
       }
 
-      //set the indexer motor power, current, or position based on the Tunables (if non-zero)
+      // set the indexer motor power, current, or position based on the Tunables (if non-zero)
       if (indexerMotorVoltage.get() != 0) {
         setIndexerMotorVoltage(indexerMotorVoltage.get());
       } else if (indexerMotorVelocity.get() != 0) {
@@ -419,8 +454,20 @@ public class Manipulator extends SubsystemBase {
     shootCoralButtonPressed = true;
   }
 
+  public void scoreCoralThroughFunnel() {
+    scoreCoralThroughFunnelButtonPressed = true;
+  }
+
   // method to remove algae which assigns the remove algae button pressed to true
   public void removeAlgae() {
     removeAlgaeButtonPressed = true;
+  }
+
+  public void algaeIsRemoved() {
+    algaeRemoved = true;
+  }
+
+  public boolean hasCoral() {
+    return inputs.isIndexerIRBlocked;
   }
 }
