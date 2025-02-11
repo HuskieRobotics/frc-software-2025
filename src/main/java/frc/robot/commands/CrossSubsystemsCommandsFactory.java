@@ -29,10 +29,14 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.sequence(
                                 getScoreCoralCommand(manipulator),
                                 Commands.runOnce(
-                                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L2),
+                                    () ->
+                                        elevator.goToPosition(
+                                            ElevatorConstants.ReefBranch.HARDSTOP),
                                     elevator),
                                 Commands.waitUntil(
-                                    () -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L2)),
+                                    () ->
+                                        elevator.isAtPosition(
+                                            ElevatorConstants.ReefBranch.HARDSTOP)),
                                 Commands.runOnce(
                                     () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4),
                                     elevator), // FIXME: change to algae removal position
