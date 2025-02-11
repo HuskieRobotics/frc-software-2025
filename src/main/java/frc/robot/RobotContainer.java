@@ -35,6 +35,7 @@ import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
+import frc.robot.commands.ClimberCommandFactory;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.DefaultRobotConfig;
@@ -44,6 +45,9 @@ import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -65,6 +69,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Climber climber;
   private Elevator elevator;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
@@ -136,6 +141,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
+      climber = new Climber(new ClimberIO() {});
       elevator = new Elevator(new ElevatorIO() {});
     }
 
@@ -200,6 +206,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
+    climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
@@ -226,10 +233,7 @@ public class RobotContainer {
                   RobotConfig.getInstance().getRobotToCameraTransforms()[0])
             });
 
-    layoutFileMissingAlert.setText(
-        LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
-    layoutFileMissingAlert.set(true);
-
+    climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
@@ -237,7 +241,7 @@ public class RobotContainer {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
-
+    climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
 
@@ -261,7 +265,7 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
-
+    climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
 
@@ -298,6 +302,8 @@ public class RobotContainer {
     configureSubsystemCommands();
 
     configureVisionCommands();
+
+    ClimberCommandFactory.registerCommands(oi, climber);
 
     // Endgame alerts
     new Trigger(

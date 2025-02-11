@@ -50,18 +50,8 @@ public class SimDualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getResetGyroButton() {
-    return rotateJoystickButtons[3];
-  }
-
-  @Override
   public Trigger getLock180Button() {
     return new Trigger(() -> false);
-  }
-
-  @Override
-  public Trigger getXStanceButton() {
-    return rotateJoystickButtons[4];
   }
 
   @Override
@@ -73,5 +63,25 @@ public class SimDualJoysticksOI implements OperatorInterface {
   @Override
   public Trigger getResetPoseToVisionButton() {
     return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getPrepClimbSequence() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getInitiateClimbButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getZeroClimberButton() {
+    return rotateJoystickButtons[4];
   }
 }
