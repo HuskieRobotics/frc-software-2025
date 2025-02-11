@@ -9,6 +9,8 @@ import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,10 +33,13 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.commands.CharacterizationCommands;
+import frc.robot.Field2d.Side;
+import frc.robot.commands.AutonomousCommandFactory;
+import frc.robot.commands.ClimberCommandFactory;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
+import frc.robot.configs.New2025RobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
@@ -43,6 +48,12 @@ import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
 import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIO;
 import frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorIOTalonFX;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -62,6 +73,8 @@ public class RobotContainer {
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
   private Manipulator manipulator;
+  private Climber climber;
+  private Elevator elevator;
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
@@ -92,6 +105,8 @@ public class RobotContainer {
     createRobotConfig();
 
     LEDs.getInstance();
+
+    Field2d.getInstance().populateReefBranchPoseMaps();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -131,6 +146,8 @@ public class RobotContainer {
       }
       vision = new Vision(visionIOs);
       manipulator = new Manipulator(new ManipulatorIO() {});
+      climber = new Climber(new ClimberIO() {});
+      elevator = new Elevator(new ElevatorIO() {});
     }
 
     // disable all telemetry in the LiveWindow to reduce the processing during each iteration
@@ -161,7 +178,7 @@ public class RobotContainer {
         config = new NewPracticeRobotConfig();
         break;
       case ROBOT_COMPETITION, ROBOT_SIMBOT:
-        config = new ArtemisRobotConfig();
+        config = new New2025RobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
         config = new PracticeBoardConfig();
@@ -195,6 +212,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
+    climber = new Climber(new ClimberIOTalonFX());
+    elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
@@ -206,11 +225,11 @@ public class RobotContainer {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
     } catch (IOException e) {
       layout = new AprilTagFieldLayout(new ArrayList<>(), 16.4592, 8.2296);
-
       layoutFileMissingAlert.setText(
           LAYOUT_FILE_MISSING + ": " + VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
       layoutFileMissingAlert.set(true);
     }
+
     vision =
         new Vision(
             new VisionIO[] {
@@ -221,6 +240,8 @@ public class RobotContainer {
             });
 
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
+    climber = new Climber(new ClimberIOTalonFX());
+    elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createPracticeBoardSubsystems() {
@@ -228,6 +249,8 @@ public class RobotContainer {
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
     manipulator = new Manipulator(new ManipulatorIO() {});
+    climber = new Climber(new ClimberIO() {});
+    elevator = new Elevator(new ElevatorIO() {});
   }
 
   private void createVisionTestPlatformSubsystems() {
@@ -252,6 +275,8 @@ public class RobotContainer {
     vision = new Vision(visionIOs);
 
     manipulator = new Manipulator(new ManipulatorIO() {});
+    climber = new Climber(new ClimberIO() {});
+    elevator = new Elevator(new ElevatorIO() {});
   }
 
   /**
@@ -287,6 +312,8 @@ public class RobotContainer {
     configureSubsystemCommands();
 
     configureVisionCommands();
+
+    ClimberCommandFactory.registerCommands(oi, climber);
 
     // Endgame alerts
     new Trigger(
@@ -377,34 +404,7 @@ public class RobotContainer {
      */
     autoChooser.addOption(
         "Drive Velocity Tuning",
-        Commands.sequence(
-            Commands.runOnce(drivetrain::disableFieldRelative, drivetrain),
-            Commands.repeatingSequence(
-                Commands.deadline(
-                    Commands.waitSeconds(1.0),
-                    Commands.run(() -> drivetrain.drive(2.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(1.0),
-                    Commands.run(() -> drivetrain.drive(-0.5, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(1.0),
-                    Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(3.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(2.0),
-                    Commands.run(() -> drivetrain.drive(1.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(2.0),
-                    Commands.run(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, false, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(2.0),
-                    Commands.run(
-                        () -> drivetrain.drive(-1.0, 0.0, 0.0, false, false), drivetrain)))));
+        AutonomousCommandFactory.getDriveVelocityTuningCommand(drivetrain));
 
     /************ Swerve Rotation Tuning ************
      *
@@ -413,23 +413,7 @@ public class RobotContainer {
      */
     autoChooser.addOption(
         "Swerve Rotation Tuning",
-        Commands.sequence(
-            Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
-            Commands.repeatingSequence(
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(0.1, 0.1, 0.0, true, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(-0.1, 0.1, 0.0, true, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(() -> drivetrain.drive(-0.1, -0.1, 0.0, true, false), drivetrain)),
-                Commands.deadline(
-                    Commands.waitSeconds(0.5),
-                    Commands.run(
-                        () -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain)))));
-
+        AutonomousCommandFactory.getSwerveRotationTuningCommand(drivetrain));
     /************ Drive Wheel Radius Characterization ************
      *
      * useful for characterizing the drive wheel Radius
@@ -437,8 +421,7 @@ public class RobotContainer {
      */
     autoChooser.addOption( // start by driving slowing in a circle to align wheels
         "Drive Wheel Radius Characterization",
-        CharacterizationCommands.wheelRadiusCharacterization(drivetrain)
-            .withName("Drive Wheel Radius Characterization"));
+        AutonomousCommandFactory.getDriveWheelRadiusCharacterizationCommand(drivetrain));
   }
 
   private Command createTuningAutoPath(String autoName, boolean measureDistance) {
@@ -521,6 +504,30 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
+
+    // drive to left branch of nearest reef face
+    oi.getDriveToNearestLeftBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest left branch"));
+
+    // drive to right branch of nearest reef face
+    oi.getDriveToNearestRightBranchButton()
+        .onTrue(
+            new DriveToPose(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    new Transform2d(
+                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)))
+                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
