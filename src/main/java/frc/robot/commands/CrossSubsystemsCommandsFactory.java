@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
 
 public class CrossSubsystemsCommandsFactory {
@@ -27,17 +28,25 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.runOnce(manipulator::removeAlgae),
                             Commands.sequence(
                                 getScoreCoralCommand(manipulator),
-                                Commands.print("move elevator to bottom"),
-                                Commands.print("wait for elevator to reach setpoint"),
-                                Commands.print("move elevator above coral"),
-                                Commands.print("wait for elevator to reach setpoint"),
+                                Commands.runOnce(
+                                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L2),
+                                    elevator),
+                                Commands.waitUntil(
+                                    () -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L2)),
+                                Commands.runOnce(
+                                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4),
+                                    elevator), // FIXME: change to algae removal position
+                                Commands.waitUntil(
+                                    () -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
                                 Commands.waitSeconds(2.0),
                                 Commands.runOnce(manipulator::algaeIsRemoved))),
                         getScoreCoralCommand(manipulator),
                         () -> {
                           return removeAlgae.get() == 1;
                         }),
-                    Commands.print("move elevator to bottom"))
+                    Commands.runOnce(
+                        () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP),
+                        elevator))
                 .withName("score coral"));
   }
 
