@@ -32,14 +32,15 @@ public class RobotOdometry {
    * When tuning vision, it is useful to log vision pose estimates and display them in
    * AdvantageScope but not add them to the pose estimators.
    */
-  private static final boolean INCLUDE_VISION_POSE_ESTIMATES = true;
+  private static final boolean INCLUDE_VISION_POSE_ESTIMATES = true; // typically false
 
   /**
    * When tuning vision, it is useful to log vision pose estimates and display them in
    * AdvantageScope but not add them to the custom pose estimator. This flag controls whether vision
    * pose estimates are added to the custom pose estimator.
    */
-  private static final boolean INCLUDE_VISION_POSE_ESTIMATES_IN_CUSTOM_ESTIMATOR = true;
+  private static final boolean INCLUDE_VISION_POSE_ESTIMATES_IN_CUSTOM_ESTIMATOR =
+      true; // typically false
 
   private RobotOdometry() {
     estimator =
