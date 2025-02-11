@@ -207,7 +207,7 @@ public class Vision extends SubsystemBase {
             Matrix<N3, N1> stdDev = getStandardDeviations(cameraIndex, observation);
             odometry.addVisionMeasurement(
                 estimatedRobotPose2d,
-                Utils.fpgaToCurrentTime(observation.timestamp()),
+                observation.timestamp(),
                 latencyAdjustmentSeconds.get(),
                 stdDev);
 
