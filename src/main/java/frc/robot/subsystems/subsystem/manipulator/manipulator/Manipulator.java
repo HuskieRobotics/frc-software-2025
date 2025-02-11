@@ -154,6 +154,7 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVelocity(
             INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL); // velocity is tbd
         subsystem.coralInIndexingState.restart(); // start timer
+        subsystem.currentInAmps.reset(); //reset the linear filter thats used to detect a current spike
       }
 
       @Override
@@ -167,11 +168,8 @@ public class Manipulator extends SubsystemBase {
         // detected
         {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
-        } else if (subsystem.coralInIndexingState.hasElapsed(CORAL_COLLECTION_TIME_OUT)
-            && subsystem
-                .inputs
-                .isFunnelIRBlocked) // hasElapsed method check if the timer has elapsed a certain
-        // number of seconds, which i can make a constant later
+        } 
+        else if (subsystem.coralInIndexingState.hasElapsed(CORAL_COLLECTION_TIME_OUT)) // hasElapsed method check if the timer has elapsed a certain number of seconds 
         {
           subsystem.setState(CORAL_STUCK);
         }
