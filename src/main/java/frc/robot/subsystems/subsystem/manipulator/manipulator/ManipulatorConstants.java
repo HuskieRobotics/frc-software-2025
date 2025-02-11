@@ -76,5 +76,4 @@ public class ManipulatorConstants {
 
   public static final double THESHOLD_FOR_CURRENT_SPIKE = 0.0;
 
-  //organize funnel and indexer motor stuff differently
 }
