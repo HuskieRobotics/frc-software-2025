@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
 import org.littletonrobotics.junction.Logger;
@@ -27,6 +28,25 @@ public class Elevator extends SubsystemBase {
 
   private final LoggedTunableNumber elevatorHeightInches =
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
+
+
+
+
+  private final LoggedTunableBoolean l1Command = new LoggedTunableBoolean("Elevator/L1Command", false);
+  private final LoggedTunableBoolean l2Command = new LoggedTunableBoolean("Elevator/L2Command", false);
+  private final LoggedTunableBoolean l3Command = new LoggedTunableBoolean("Elevator/L3Command", false);
+  private final LoggedTunableBoolean l4Command = new LoggedTunableBoolean("Elevator/L4Command", false);
+
+  private final LoggedTunableBoolean algae1LowCommand =
+      new LoggedTunableBoolean("Elevator/Algae1LowCommand", false);
+  private final LoggedTunableBoolean algae1HighCommand =
+      new LoggedTunableBoolean("Elevator/Algae1HighCommand", false);
+  private final LoggedTunableBoolean algae2LowCommand =
+      new LoggedTunableBoolean("Elevator/Algae2LowCommand", false);
+  private final LoggedTunableBoolean algae2HighCommand =
+      new LoggedTunableBoolean("Elevator/Algae2HighCommand", false);
+
+
 
   public Elevator(ElevatorIO io) {
 
@@ -118,7 +138,7 @@ public class Elevator extends SubsystemBase {
       case L3_1_CORAL_AWAY:
         height = L3_HEIGHT_1_CORAL_AWAY;
         break;
-        
+
       case L4:
         height = L4_HEIGHT;
         break;
@@ -158,6 +178,26 @@ public class Elevator extends SubsystemBase {
 
   public void goToPosition(ReefBranch reefBranch) {
     elevatorIO.setPosition(reefBranchToDistance(reefBranch));
+  }
+
+  public void goToPositionWithCommand() {
+    if (l1Command.get()) {
+      goToPosition(ReefBranch.L1);
+    } else if (l2Command.get()) {
+      goToPosition(ReefBranch.L2);
+    } else if (l3Command.get()) {
+      goToPosition(ReefBranch.L3);
+    } else if (l4Command.get()) {
+      goToPosition(ReefBranch.L4);
+    } else if (algae1LowCommand.get()) {
+      goToPosition(ReefBranch.ALGAE_1_LOW);
+    } else if (algae1HighCommand.get()) {
+      goToPosition(ReefBranch.ALGAE_1_HIGH);
+    } else if (algae2LowCommand.get()) {
+      goToPosition(ReefBranch.ALGAE_2_LOW);
+    } else if (algae2HighCommand.get()) {
+      goToPosition(ReefBranch.ALGAE_2_HIGH);
+    }
   }
 
   public Distance getPosition() {
