@@ -33,7 +33,7 @@ public class ClimberCommandFactory {
     oi.getRetractClimberSlowButton()
         .onTrue(Commands.runOnce(climber::retractSlow, climber).withName("retract climber slow"));
     oi.getRetractClimberSlowButton()
-        .onFalse(Commands.runOnce(climber::stop, climber).withName("stop climber"));
+        .onFalse(Commands.sequence(Commands.runOnce(climber::stop, climber), Commands.runOnce(climber::zero, climber)).withName("stop and zero climber"));
 
     // consistent, zero button (single press)
     oi.getZeroClimberButton()
