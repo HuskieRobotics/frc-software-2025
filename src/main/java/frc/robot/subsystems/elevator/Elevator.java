@@ -29,24 +29,23 @@ public class Elevator extends SubsystemBase {
   private final LoggedTunableNumber elevatorHeightInches =
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
-
-
-
-  private final LoggedTunableBoolean l1Command = new LoggedTunableBoolean("Elevator/L1Command", false);
-  private final LoggedTunableBoolean l2Command = new LoggedTunableBoolean("Elevator/L2Command", false);
-  private final LoggedTunableBoolean l3Command = new LoggedTunableBoolean("Elevator/L3Command", false);
-  private final LoggedTunableBoolean l4Command = new LoggedTunableBoolean("Elevator/L4Command", false);
+  private final LoggedTunableBoolean l1Command =
+      new LoggedTunableBoolean("Elevator/L1Command", false, true);
+  private final LoggedTunableBoolean l2Command =
+      new LoggedTunableBoolean("Elevator/L2Command", false, true);
+  private final LoggedTunableBoolean l3Command =
+      new LoggedTunableBoolean("Elevator/L3Command", false, true);
+  private final LoggedTunableBoolean l4Command =
+      new LoggedTunableBoolean("Elevator/L4Command", false, true);
 
   private final LoggedTunableBoolean algae1LowCommand =
-      new LoggedTunableBoolean("Elevator/Algae1LowCommand", false);
+      new LoggedTunableBoolean("Elevator/Algae1LowCommand", false, true);
   private final LoggedTunableBoolean algae1HighCommand =
-      new LoggedTunableBoolean("Elevator/Algae1HighCommand", false);
+      new LoggedTunableBoolean("Elevator/Algae1HighCommand", false, true);
   private final LoggedTunableBoolean algae2LowCommand =
-      new LoggedTunableBoolean("Elevator/Algae2LowCommand", false);
+      new LoggedTunableBoolean("Elevator/Algae2LowCommand", false, true);
   private final LoggedTunableBoolean algae2HighCommand =
-      new LoggedTunableBoolean("Elevator/Algae2HighCommand", false);
-
-
+      new LoggedTunableBoolean("Elevator/Algae2HighCommand", false, true);
 
   public Elevator(ElevatorIO io) {
 
