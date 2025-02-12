@@ -20,6 +20,8 @@ import frc.lib.team3061.drivetrain.swerve.SwerveConstants;
 
 /** Most of this is copied from Artemis; update with actual values */
 public class New2025RobotConfig extends RobotConfig {
+  // FIXME: UPDATE ALL OFFSETS WITH REAL ROBOT TOMORROW
+  
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
@@ -75,7 +77,6 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_KP = 12.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
-
   private static final double DRIVE_KS = 5.7421;
   private static final double DRIVE_KV = 0.004493;
   private static final double DRIVE_KA = 0.63109;
