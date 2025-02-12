@@ -21,7 +21,7 @@ public class ClimberCommandFactory {
         .onTrue(
             Commands.either(
                 Commands.runOnce(climber::extend, climber),
-                Commands.runOnce(climber::extendCageCatcher, climber),
+                Commands.none(),
                 climber::cageCatcherReleased).withName("extend climber"));
 
     // inconsistent, retract button (single press) works after button spam / sometimes perfect
