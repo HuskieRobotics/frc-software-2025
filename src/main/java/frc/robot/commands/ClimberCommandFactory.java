@@ -13,8 +13,11 @@ public class ClimberCommandFactory {
   // should be addressed eventually
   public static void registerCommands(OperatorInterface oi, Climber climber) {
 
-    // consistent, extend button (hold)
-    oi.getPrepClimbSequence()
+    oi.getExtendCageCatcherButton()
+        .onTrue(
+            Commands.runOnce(climber::extendCageCatcher, climber).withName("extend cage catcher"));
+
+    oi.getExtendClimberButton()
         .onTrue(Commands.runOnce(climber::extend, climber).withName("extend climber"));
 
     // inconsistent, retract button (single press) works after button spam / sometimes perfect
