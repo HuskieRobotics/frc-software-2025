@@ -586,6 +586,49 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level2.set(false);
+            level3.set(false);
+            level4.set(false);
+          }
+        },
+        level1);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level3.set(false);
+            level4.set(false);
+          }
+        },
+        level2);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level2.set(false);
+            level4.set(false);
+          }
+        },
+        level3);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level2.set(false);
+            level3.set(false);
+          }
+        },
+        level4);
     // add robot-wide periodic code here
   }
 

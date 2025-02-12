@@ -94,6 +94,17 @@ public class LoggedTunableBoolean implements BooleanSupplier {
   }
 
   /**
+   * Set the value, to dashboard if available and in tuning mode.
+   *
+   * @param value The value to set
+   */
+  public void set(boolean value) {
+    if (dashboardBoolean != null) {
+      dashboardBoolean.set(value);
+    }
+  }
+
+  /**
    * Checks whether the boolean value has changed since our last check
    *
    * @param id Unique identifier for the caller to avoid conflicts when shared between multiple
@@ -122,14 +133,11 @@ public class LoggedTunableBoolean implements BooleanSupplier {
    * @param tunableBooleans All tunable booleans to check
    */
   public static void ifChanged(
-      int id, Consumer<Object[]> action, LoggedTunableBoolean... tunableBooleans) {
+      int id, Consumer<Boolean[]> action, LoggedTunableBoolean... tunableBooleans) {
 
     if (Arrays.stream(tunableBooleans).anyMatch(tunableBoolean -> tunableBoolean.hasChanged(id))) {
       action.accept(
-          Arrays.stream(tunableBooleans)
-              .map(LoggedTunableBoolean::get)
-              .map(Boolean::booleanValue)
-              .toArray());
+          Arrays.stream(tunableBooleans).map(LoggedTunableBoolean::get).toArray(Boolean[]::new));
     }
   }
 

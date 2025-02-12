@@ -65,7 +65,7 @@ public class ArtemisRobotConfig extends RobotConfig {
   private static final double COUPLE_RATIO = 3.125; // FIXME: tune
 
   /* Angle Motor PID Values */
-  private static final double ANGLE_KP = 100;
+  private static final double ANGLE_KP = 100.0;
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD =
       0.05; // FIXME: check this as the CTRE swerve generator has a default value of 0.5
