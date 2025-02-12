@@ -381,7 +381,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
 
   @Override
   public double getWheelCOF() {
-    return 1.2;
+    return 1.5;
   }
 
   @Override

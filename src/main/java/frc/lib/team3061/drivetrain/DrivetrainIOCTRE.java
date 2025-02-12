@@ -27,6 +27,7 @@ import edu.wpi.first.units.measure.Force;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.DrivetrainConstants.SysIDCharacterizationMode;
@@ -173,7 +174,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
               .withDriveInertia(DRIVE_INERTIA)
               .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
               .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE)
-              .withFeedbackSource(SteerFeedbackType.RemoteCANcoder)
+              .withFeedbackSource(SteerFeedbackType.FusedCANcoder)
               .withCouplingGearRatio(
                   COUPLE_RATIO); // Every 1 rotation of the azimuth results in couple ratio drive
   // turns
@@ -223,7 +224,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
               .withDriveInertia(DRIVE_INERTIA)
               .withSteerFrictionVoltage(STEER_FRICTION_VOLTAGE)
               .withDriveFrictionVoltage(DRIVE_FRICTION_VOLTAGE)
-              .withFeedbackSource(SteerFeedbackType.RemoteCANcoder)
+              .withFeedbackSource(SteerFeedbackType.FusedCANcoder)
               .withCouplingGearRatio(
                   COUPLE_RATIO); // Every 1 rotation of the azimuth results in couple ratio drive
   // turns
@@ -311,6 +312,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
   List<Queue<Double>> steerPositionQueues = new ArrayList<>();
   Queue<Double> gyroYawQueue;
   Queue<Double> timestampQueue;
+  Queue<Double> ctreTimestampQueue;
 
   // brake mode
   private static final Executor brakeModeExecutor = Executors.newFixedThreadPool(1);
@@ -357,6 +359,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
     }
     this.gyroYawQueue = new ArrayBlockingQueue<>(20);
     this.timestampQueue = new ArrayBlockingQueue<>(20);
+    this.ctreTimestampQueue = new ArrayBlockingQueue<>(20);
 
     this.registerTelemetry(this::updateTelemetry);
 
@@ -403,7 +406,11 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
 
     this.gyroYawQueue.offer(state.RawHeading.getDegrees());
 
-    this.timestampQueue.offer(state.Timestamp);
+    // convert from the timebase used by getCurrentTimeSeconds to the FPGA timebase to enable
+    // replays
+    this.timestampQueue.offer(
+        Timer.getFPGATimestamp() - (Utils.getCurrentTimeSeconds() - state.Timestamp));
+    this.ctreTimestampQueue.offer(state.Timestamp);
 
     this.odometryLock.unlock();
   }
@@ -436,6 +443,10 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
     inputs.drivetrain.odometryTimestamps =
         this.timestampQueue.stream().mapToDouble(Double::valueOf).toArray();
     this.timestampQueue.clear();
+
+    inputs.drivetrain.odometryCTRETimestamps =
+        this.ctreTimestampQueue.stream().mapToDouble(Double::valueOf).toArray();
+    this.ctreTimestampQueue.clear();
 
     inputs.drivetrain.odometryYawPositions =
         this.gyroYawQueue.stream().map(Rotation2d::fromDegrees).toArray(Rotation2d[]::new);

@@ -93,7 +93,7 @@ public class DriveToPose extends Command {
           "DriveToPose/ThetaToleranceRadians",
           RobotConfig.getInstance().getDriveToPoseThetaTolerance().in(Radians));
   private static final LoggedTunableNumber timeout =
-      new LoggedTunableNumber("DriveToPose/timeout", 50.0);
+      new LoggedTunableNumber("DriveToPose/timeout", 5.0);
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(

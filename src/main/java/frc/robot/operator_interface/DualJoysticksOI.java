@@ -74,16 +74,6 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getAlignToScoreCoralLeftButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getAlignToScoreCoralRightButton() {
-    return translateJoystickButtons[5];
-  }
-
-  @Override
   public Trigger getResetGyroButton() {
     return translateJoystickButtons[8];
   }
