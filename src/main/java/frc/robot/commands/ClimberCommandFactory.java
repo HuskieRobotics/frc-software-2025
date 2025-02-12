@@ -16,13 +16,14 @@ public class ClimberCommandFactory {
     oi.getExtendCageCatcherButton()
         .onTrue(
             Commands.runOnce(climber::extendCageCatcher, climber).withName("extend cage catcher"));
-    
+
     oi.getExtendClimberButton()
         .onTrue(
             Commands.either(
-                Commands.runOnce(climber::extend, climber),
-                Commands.none(),
-                climber::cageCatcherReleased).withName("extend climber"));
+                    Commands.runOnce(climber::extend, climber),
+                    Commands.none(),
+                    climber::cageCatcherReleased)
+                .withName("extend climber"));
 
     // inconsistent, retract button (single press) works after button spam / sometimes perfect
     // note: works consistently w/ a double/triple click, unsure why
@@ -33,7 +34,11 @@ public class ClimberCommandFactory {
     oi.getRetractClimberSlowButton()
         .onTrue(Commands.runOnce(climber::retractSlow, climber).withName("retract climber slow"));
     oi.getRetractClimberSlowButton()
-        .onFalse(Commands.sequence(Commands.runOnce(climber::stop, climber), Commands.runOnce(climber::zero, climber)).withName("stop and zero climber"));
+        .onFalse(
+            Commands.sequence(
+                    Commands.runOnce(climber::stop, climber),
+                    Commands.runOnce(climber::zero, climber))
+                .withName("stop and zero climber"));
 
     // consistent, zero button (single press)
     oi.getZeroClimberButton()
