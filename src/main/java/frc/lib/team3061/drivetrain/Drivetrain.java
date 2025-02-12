@@ -441,14 +441,14 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
     // should we give it the actual current velocity or the desired velocity?
     // always calculate whenever we are driving so that we maintain a history of recent values
     // find the other method that the autobuilder uses to drive
-    this.xFilter.calculate(this.inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond);
-    this.yFilter.calculate(this.inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond);
-    this.thetaFilter.calculate(this.inputs.drivetrain.measuredChassisSpeeds.omegaRadiansPerSecond);
+    this.xFilter.calculate(xVelocity);
+    this.yFilter.calculate(yVelocity);
+    this.thetaFilter.calculate(rotationalVelocity);
 
     if (accelerationLimiting) {
-      xVelocity = this.xFilter.calculate(xVelocity);
-      yVelocity = this.yFilter.calculate(yVelocity);
-      rotationalVelocity = this.thetaFilter.calculate(rotationalVelocity);
+      xVelocity = this.xFilter.lastValue();
+      yVelocity = this.yFilter.lastValue();
+      rotationalVelocity = this.thetaFilter.lastValue();
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
@@ -873,36 +873,18 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
     this.isRotationOverrideEnabled = false;
   }
 
-  /**
-   * Return each of the limiter objects for use in DriveToPose
-   *
-   * @return SlewRateLimiter x, y, or theta
-   */
-  public SlewRateLimiter getXFilter() {
-    return this.xFilter;
-  }
-
-  public SlewRateLimiter getYFilter() {
-    return this.yFilter;
-  }
-
-  public SlewRateLimiter getThetaFilter() {
-    return this.thetaFilter;
-  }
-
   /*
    * enable and disable acceleration limiting
    */
   public void enableAccelerationLimiting() {
     this.accelerationLimiting = true;
+    this.xFilter.reset(this.inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond);
+    this.yFilter.reset(this.inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond);
+    this.thetaFilter.reset(this.inputs.drivetrain.measuredChassisSpeeds.omegaRadiansPerSecond);
   }
 
   public void disableAccelerationLimiting() {
     this.accelerationLimiting = false;
-  }
-
-  public boolean getAcclerationLimitingEnabled() {
-    return this.accelerationLimiting;
   }
 
   public Optional<Rotation2d> getRotationTargetOverride() {
