@@ -241,13 +241,13 @@ public class AutonomousCommandFactory {
 
       return Commands.sequence(
           AutoBuilder.followPath(scoreCoralJ2BL),
-          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
+          getScoreL4Command(drivetrain, vision, Side.RIGHT),
           AutoBuilder.followPath(collectCoralJ2BL),
-          AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
+          getCollectCoralCommand(),
           AutoBuilder.followPath(scoreCoralK2BL),
-          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
+          getScoreL4Command(drivetrain, vision, Side.LEFT),
           AutoBuilder.followPath(collectCoralK2BL),
-          AutonomousCommandFactory.getInstance().getCollectCoralCommand());
+          getCollectCoralCommand());
 
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
@@ -266,13 +266,13 @@ public class AutonomousCommandFactory {
 
       return Commands.sequence(
           AutoBuilder.followPath(scoreCoralE2BR),
-          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.LEFT),
+          getScoreL4Command(drivetrain, vision, Side.LEFT),
           AutoBuilder.followPath(collectCoralE2BR),
-          AutonomousCommandFactory.getInstance().getCollectCoralCommand(),
+          getCollectCoralCommand(),
           AutoBuilder.followPath(scoreCoralD2BR),
-          AutonomousCommandFactory.getInstance().getScoreL4Command(drivetrain, vision, Side.RIGHT),
+          getScoreL4Command(drivetrain, vision, Side.RIGHT),
           AutoBuilder.followPath(collectCoralD2BR),
-          AutonomousCommandFactory.getInstance().getCollectCoralCommand());
+          getCollectCoralCommand());
 
     } catch (Exception e) {
       pathFileMissingAlert.setText("Could not find the specified path file.");
