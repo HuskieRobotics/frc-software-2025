@@ -16,9 +16,13 @@ public class ClimberCommandFactory {
     oi.getExtendCageCatcherButton()
         .onTrue(
             Commands.runOnce(climber::extendCageCatcher, climber).withName("extend cage catcher"));
-
+    
     oi.getExtendClimberButton()
-        .onTrue(Commands.runOnce(climber::extend, climber).withName("extend climber"));
+        .onTrue(
+            Commands.either(
+                Commands.runOnce(climber::extend, climber),
+                Commands.runOnce(climber::extendCageCatcher, climber),
+                climber::cageCatcherReleased).withName("extend climber"));
 
     // inconsistent, retract button (single press) works after button spam / sometimes perfect
     // note: works consistently w/ a double/triple click, unsure why
