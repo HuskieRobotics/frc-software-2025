@@ -59,7 +59,10 @@ public class ElevatorConstants {
   public static final double KG_SLOT2 = 0.33833;
 
   public static final double KV_EXPO = 0.6;
-  public static final double KA_EXPO = 0.05; // FIXME: Update this value
+
+  // was 0.05 with no funnel or climber on robot, caused wheels to leave ground
+  // arbitrary increase for now
+  public static final double KA_EXPO = 0.2;
 
   public static final double CRUISE_VELOCITY = 0;
 
