@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 
@@ -113,8 +114,10 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   public ElevatorIOTalonFX() {
 
-    elevatorMotorLead = new TalonFX(ElevatorConstants.LEAD_MOTOR_ID);
-    elevatorMotorFollower = new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID);
+    elevatorMotorLead =
+        new TalonFX(ElevatorConstants.LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
+    elevatorMotorFollower =
+        new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
 
     leadStatorCurrent = elevatorMotorLead.getStatorCurrent();
     followerStatorCurrent = elevatorMotorFollower.getStatorCurrent();

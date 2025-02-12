@@ -40,11 +40,6 @@ public class DualJoysticksOI implements OperatorInterface {
     return -translateJoystick.getX();
   }
 
-  @Override
-  public Trigger getResetPoseToVisionButton() {
-    return rotateJoystickButtons[5];
-  }
-
   // Translation Joystick
   @Override
   public Trigger getPrepareElevatorToScoreButton() {
@@ -102,5 +97,20 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getResetPoseToVisionButton() {
+    return rotateJoystickButtons[5];
+  }
+
+  @Override
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[10];
+  }
+
+  @Override
+  public Trigger getZeroClimberButton() {
+    return rotateJoystickButtons[11];
   }
 }

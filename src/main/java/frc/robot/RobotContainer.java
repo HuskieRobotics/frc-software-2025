@@ -27,18 +27,23 @@ import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
+import frc.robot.commands.ClimberCommandFactory;
 import frc.robot.commands.DriveToPose;
 import frc.robot.commands.TeleopSwerve;
-import frc.robot.configs.ArtemisRobotConfig;
 import frc.robot.configs.DefaultRobotConfig;
+import frc.robot.configs.New2025RobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.ClimberIO;
+import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
@@ -59,6 +64,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Climber climber;
   private Elevator elevator;
 
   private final LoggedNetworkNumber endgameAlert1 =
@@ -71,6 +77,21 @@ public class RobotContainer {
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
+
+  private final LoggedTunableBoolean testBoolean =
+      new LoggedTunableBoolean("operatorInterface/testBoolean", false, true);
+
+  private final LoggedTunableBoolean level1 =
+      new LoggedTunableBoolean("operatorInterface/Level 1", false, true);
+  private final LoggedTunableBoolean level2 =
+      new LoggedTunableBoolean("operatorInterface/Level 2", false, true);
+  private final LoggedTunableBoolean level3 =
+      new LoggedTunableBoolean("operatorInterface/Level 3 ", false, true);
+  private final LoggedTunableBoolean level4 =
+      new LoggedTunableBoolean("operatorInterface/Level 4 ", false, true);
+
+  private final LoggedTunableBoolean algaeToggle =
+      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, true);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
@@ -124,6 +145,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
+      climber = new Climber(new ClimberIO() {});
       elevator = new Elevator(new ElevatorIO() {});
     }
 
@@ -155,7 +177,7 @@ public class RobotContainer {
         config = new NewPracticeRobotConfig();
         break;
       case ROBOT_COMPETITION, ROBOT_SIMBOT:
-        config = new ArtemisRobotConfig();
+        config = new New2025RobotConfig();
         break;
       case ROBOT_PRACTICE_BOARD:
         config = new PracticeBoardConfig();
@@ -188,7 +210,8 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    elevator = new Elevator(new ElevatorIO() {} /*TalonFX*/);
+    climber = new Climber(new ClimberIOTalonFX());
+    elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
@@ -214,6 +237,7 @@ public class RobotContainer {
                   RobotConfig.getInstance().getRobotToCameraTransforms()[0])
             });
 
+    climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
@@ -221,7 +245,7 @@ public class RobotContainer {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
-
+    climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
 
@@ -245,7 +269,7 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
-
+    climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
 
@@ -274,6 +298,8 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
+  private void registerHeightCommands() {}
+
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
 
@@ -282,6 +308,8 @@ public class RobotContainer {
     configureSubsystemCommands();
 
     configureVisionCommands();
+
+    ClimberCommandFactory.registerCommands(oi, climber);
 
     // Endgame alerts
     new Trigger(
@@ -451,6 +479,49 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level2.set(false);
+            level3.set(false);
+            level4.set(false);
+          }
+        },
+        level1);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level3.set(false);
+            level4.set(false);
+          }
+        },
+        level2);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level2.set(false);
+            level4.set(false);
+          }
+        },
+        level3);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level2.set(false);
+            level3.set(false);
+          }
+        },
+        level4);
     // add robot-wide periodic code here
   }
 
