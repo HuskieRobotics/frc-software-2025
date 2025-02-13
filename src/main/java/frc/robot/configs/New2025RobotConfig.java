@@ -94,44 +94,45 @@ public class New2025RobotConfig extends RobotConfig {
   private static final String CAMERA_NAME_2 = "OV2311FL";
   private static final String CAMERA_NAME_3 = "OV2311BL";
 
-  // FIXME: UPDATE ALL OF THESE CAMERA LOCATIONS AFTER CONFIRMING WITH MECHANICAL
+  // Back cameras have positive pitches because they are on the opposite side of the robot,
+  // so although they are pitched upward, robot relative that is downward
 
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(10.69025),
-              Units.inchesToMeters(6.7455),
-              Units.inchesToMeters(-9.62375)),
-          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20)));
+              Units.inchesToMeters(10.725),
+              Units.inchesToMeters(-6.659),
+              Units.inchesToMeters(9.601)),
+          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20.577)));
   // pitch 45 degrees
 
   // Back right camera
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.778),
-              Units.inchesToMeters(-11.064),
-              Units.inchesToMeters(8.189)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(-90)));
+              Units.inchesToMeters(-10.741),
+              Units.inchesToMeters(-10.497),
+              Units.inchesToMeters(8.040)),
+          new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(-162)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.6795),
-              Units.inchesToMeters(6.7715),
-              Units.inchesToMeters(-9.63075)),
-          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(-20)));
+              Units.inchesToMeters(10.724),
+              Units.inchesToMeters(6.657),
+              Units.inchesToMeters(9.605)),
+          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20.577)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-11.064),
-              Units.inchesToMeters(10.778),
-              Units.inchesToMeters(8.189)),
-          new Rotation3d(0, Units.degreesToRadians(-30), Units.degreesToRadians(180)));
+              Units.inchesToMeters(-10.741),
+              Units.inchesToMeters(10.497),
+              Units.inchesToMeters(8.040)),
+          new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(162)));
 
   // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
