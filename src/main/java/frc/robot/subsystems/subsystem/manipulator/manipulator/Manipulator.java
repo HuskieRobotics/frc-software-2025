@@ -286,9 +286,9 @@ public class Manipulator extends SubsystemBase {
           subsystem.removeAlgaeButtonPressed = false;
         } else if (!subsystem.inputs.isFunnelIRBlocked
             && !subsystem.inputs.isIndexerIRBlocked
-            && subsystem.scoringFunnelTimer.hasElapsed(5)) {
+            && subsystem.scoringFunnelTimer.hasElapsed(ManipulatorConstants.FUNNEL_SCORING_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
-        } else if (subsystem.scoringFunnelTimer.hasElapsed(2)) {
+        } else if (subsystem.scoringFunnelTimer.hasElapsed(ManipulatorConstants.FUNNEL_RAMP_UP_TIMEOUT)) {
           subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
         }
       }

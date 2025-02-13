@@ -79,6 +79,11 @@ public class ManipulatorConstants {
   // used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;
 
+  // timeout for letting funnel ramp up and whole funnel scoring timeout
+  // *TEMPORARY: we might make a "reverse state machine" for scoring the funnel
+  public static final double FUNNEL_RAMP_UP_TIMEOUT = 1.0;
+  public static final double FUNNEL_SCORING_TIMEOUT = 4.0;
+
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
