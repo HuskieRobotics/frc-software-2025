@@ -137,7 +137,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-        subsystem.setIndexerMotorVoltage(0); // turn indexer motor speed to 0
+        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
       }
 
       @Override
@@ -184,7 +184,8 @@ public class Manipulator extends SubsystemBase {
       void onExit(Manipulator subsystem) {
         subsystem.setIndexerMotorVoltage(0.0);
         subsystem.setFunnelMotorVoltage(
-            0); // turn off the funnel motor, regardless of if it is going to the CORAL_STUCK state
+            0.0); // turn off the funnel motor, regardless of if it is going to the CORAL_STUCK
+        // state
         // or the CORAL_IN_MANIPULATOR state
       }
     },
@@ -266,8 +267,8 @@ public class Manipulator extends SubsystemBase {
     SCORE_CORAL_THROUGH_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+        subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
       }
 
       @Override
