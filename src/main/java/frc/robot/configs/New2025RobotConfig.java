@@ -21,7 +21,7 @@ import frc.lib.team3061.drivetrain.swerve.SwerveConstants;
 /** Most of this is copied from Artemis; update with actual values */
 public class New2025RobotConfig extends RobotConfig {
   // FIXME: UPDATE ALL OFFSETS WITH REAL ROBOT TOMORROW
-  
+
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
@@ -123,7 +123,7 @@ public class New2025RobotConfig extends RobotConfig {
               Units.inchesToMeters(10.724),
               Units.inchesToMeters(6.657),
               Units.inchesToMeters(9.605)),
-          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20.577)));
+          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(-20.577)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
