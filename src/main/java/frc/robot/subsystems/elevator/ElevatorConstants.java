@@ -9,7 +9,7 @@ public class ElevatorConstants {
   public static final boolean IS_INVERTED = true;
 
   public static final double TOLERANCE_INCHES = 0;
-  public static final Distance MAX_HEIGHT = Inches.of(73);
+  public static final Distance MAX_HEIGHT = Inches.of(74);
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
 
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
@@ -34,32 +34,35 @@ public class ElevatorConstants {
 
   // FIXME: Update all K values
 
-  public static final double KP_SLOT0 = 0;
+  public static final double KP_SLOT0 = 40.0;
   public static final double KI_SLOT0 = 0;
   public static final double KD_SLOT0 = 0;
-  public static final double KS_SLOT0 = 0;
-  public static final double KV_SLOT0 = 0;
-  public static final double KA_SLOT0 = 0;
-  public static final double KG_SLOT0 = 0;
+  public static final double KS_SLOT0 = 0.01;
+  public static final double KV_SLOT0 = 0.67505;
+  public static final double KA_SLOT0 = 0.027564;
+  public static final double KG_SLOT0 = 0.33833;
 
-  public static final double KP_SLOT1 = 0;
+  public static final double KP_SLOT1 = 40.0;
   public static final double KI_SLOT1 = 0;
   public static final double KD_SLOT1 = 0;
-  public static final double KS_SLOT1 = 0;
-  public static final double KV_SLOT1 = 0;
-  public static final double KA_SLOT1 = 0;
-  public static final double KG_SLOT1 = 0;
+  public static final double KS_SLOT1 = 0.01;
+  public static final double KV_SLOT1 = 0.67505;
+  public static final double KA_SLOT1 = 0.027564;
+  public static final double KG_SLOT1 = 0.33833;
 
-  public static final double KP_SLOT2 = 0;
+  public static final double KP_SLOT2 = 40.0;
   public static final double KI_SLOT2 = 0;
   public static final double KD_SLOT2 = 0;
-  public static final double KS_SLOT2 = 0;
-  public static final double KV_SLOT2 = 0;
-  public static final double KA_SLOT2 = 0;
-  public static final double KG_SLOT2 = 0;
+  public static final double KS_SLOT2 = 0.01;
+  public static final double KV_SLOT2 = 0.67505;
+  public static final double KA_SLOT2 = 0.027564;
+  public static final double KG_SLOT2 = 0.33833;
 
-  public static final double KV_EXPO = 20;
-  public static final double KA_EXPO = 1; // FIXME: Update this value
+  public static final double KV_EXPO = 0.6;
+
+  // was 0.05 with no funnel or climber on robot, caused wheels to leave ground
+  // arbitrary increase for now
+  public static final double KA_EXPO = 0.2;
 
   public static final double CRUISE_VELOCITY = 0;
 
@@ -80,10 +83,10 @@ public class ElevatorConstants {
    */
 
   public static final Distance L1_HEIGHT = Inches.of(15.94);
-  public static final Distance L2_HEIGHT = Inches.of(31.39);
-  public static final Distance L3_HEIGHT = Inches.of(47.64);
-  public static final Distance L4_HEIGHT = Inches.of(72.05);
+  public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
+  public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
+  public static final Distance L4_HEIGHT = Inches.of(70);
 
-  public static final Distance ALGAE1_HEIGHT = Inches.of(0.0); // FIXME: Update these values
-  public static final Distance ALGAE2_HEIGHT = Inches.of(0.0); // FIXME: Update these values
+  public static final Distance ALGAE1_HEIGHT = Inches.of(13.0); // height under is 9
+  public static final Distance ALGAE2_HEIGHT = Inches.of(28.0); // height under is 24
 }

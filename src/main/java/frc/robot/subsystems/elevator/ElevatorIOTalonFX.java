@@ -4,10 +4,12 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -35,10 +37,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private TalonFX elevatorMotorFollower;
 
   private MotionMagicExpoVoltage leadPositionRequest;
+  private DynamicMotionMagicVoltage leadPositionRequestDown;
   private VoltageOut leadVoltageRequest;
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
+  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   private StatusSignal<Current> leadStatorCurrent;
   private StatusSignal<Current> followerStatorCurrent;
@@ -103,9 +107,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       new LoggedTunableNumber("Elevator/kGslot2", ElevatorConstants.KG_SLOT2);
 
   private final LoggedTunableNumber kVExpo =
-      new LoggedTunableNumber("Elevator/kVExposlot0", ElevatorConstants.KV_EXPO);
+      new LoggedTunableNumber("Elevator/kVExpo", ElevatorConstants.KV_EXPO);
   private final LoggedTunableNumber kAExpo =
-      new LoggedTunableNumber("Elevator/kAExposlot0", ElevatorConstants.KA_EXPO);
+      new LoggedTunableNumber("Elevator/kAExpo", ElevatorConstants.KA_EXPO);
 
   private final LoggedTunableNumber cruiseVelocity =
       new LoggedTunableNumber("Elevator/Cruise Velocity", 0);
@@ -134,6 +138,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     elevatorFollowerTempStatusSignal = elevatorMotorFollower.getDeviceTemp();
 
     leadPositionRequest = new MotionMagicExpoVoltage(0);
+    leadPositionRequestDown = new DynamicMotionMagicVoltage(0, 10, 100, 500);
     leadVoltageRequest = new VoltageOut(0);
 
     configElevatorMotorLead(elevatorMotorLead);
@@ -232,6 +237,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
+    StatusCode status =
     BaseStatusSignal.refreshAll(
         elevatorPositionStatusSignal,
         leadStatorCurrent,
@@ -242,6 +248,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         followerVoltageSupplied,
         elevatorLeadTempStatusSignal,
         elevatorFollowerTempStatusSignal);
+    Phoenix6Util.checkError(status, "Failed to refresh elevator motor signals.", refreshAlert);
 
     inputs.voltageSuppliedLead = leadVoltageSupplied.getValueAsDouble();
     inputs.voltageSuppliedFollower = followerVoltageSupplied.getValueAsDouble();
@@ -342,29 +349,18 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPosition(Distance position) {
-    if (localPosition < HEIGHT_SWITCH_SLOT0.in(Inches)) {
+    if (localPosition < position.in(Inches)) {
 
       // set the elevator to slot 0
       elevatorMotorLead.setControl(
           leadPositionRequest
               .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
               .withSlot(0));
-
-    } else if (localPosition < HEIGHT_SWITCH_SLOT1.in(Inches)) {
-
-      // set the elevator to slot 1
-      elevatorMotorLead.setControl(
-          leadPositionRequest
-              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
-              .withSlot(1));
-
     } else {
-
-      // set the elevator to slot 2
       elevatorMotorLead.setControl(
-          leadPositionRequest
+          leadPositionRequestDown
               .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
-              .withSlot(2));
+              .withSlot(0));
     }
   }
 }

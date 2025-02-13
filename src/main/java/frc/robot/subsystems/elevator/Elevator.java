@@ -36,11 +36,11 @@ public class Elevator extends SubsystemBase {
 
     // Add sysId routine for each stage of the elevator
 
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage1);
+    SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 1", sysIdRoutineStage1);
 
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage2);
+    SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 2", sysIdRoutineStage2);
 
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage3);
+    SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 3", sysIdRoutineStage3);
 
     // FaultReporter.getInstance()
     //     .registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
@@ -49,8 +49,8 @@ public class Elevator extends SubsystemBase {
   private final SysIdRoutine sysIdRoutineStage1 =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
+              Volts.of(2.0).per(Second), // Use default ramp rate (1 V/s)
+              Volts.of(2.0), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
@@ -60,8 +60,8 @@ public class Elevator extends SubsystemBase {
   private final SysIdRoutine sysIdRoutineStage2 =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
+              Volts.of(2).per(Second), // Use default ramp rate (1 V/s)
+              Volts.of(2), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
@@ -71,8 +71,8 @@ public class Elevator extends SubsystemBase {
   private final SysIdRoutine sysIdRoutineStage3 =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
+              Volts.of(2).per(Second), // Use default ramp rate (1 V/s)
+              Volts.of(2), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
