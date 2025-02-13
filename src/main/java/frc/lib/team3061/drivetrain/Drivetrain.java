@@ -878,9 +878,19 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
    */
   public void enableAccelerationLimiting() {
     this.accelerationLimiting = true;
-    this.xFilter.reset(this.inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond);
-    this.yFilter.reset(this.inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond);
-    this.thetaFilter.reset(this.inputs.drivetrain.measuredChassisSpeeds.omegaRadiansPerSecond);
+
+    // convert from robot-relative coordinates to field-relative coordinates
+    ChassisSpeeds robotRelativeSpeeds = this.getRobotRelativeSpeeds();
+
+    // CCW rotation into field frame
+    var rotated =
+        new Translation2d(
+                robotRelativeSpeeds.vxMetersPerSecond, robotRelativeSpeeds.vyMetersPerSecond)
+            .rotateBy(RobotOdometry.getInstance().getEstimatedPose().getRotation());
+
+    this.xFilter.reset(rotated.getX());
+    this.yFilter.reset(rotated.getY());
+    this.thetaFilter.reset(robotRelativeSpeeds.omegaRadiansPerSecond);
   }
 
   public void disableAccelerationLimiting() {
