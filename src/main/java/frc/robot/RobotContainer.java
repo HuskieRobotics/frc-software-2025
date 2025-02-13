@@ -32,6 +32,7 @@ import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
+import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
@@ -94,6 +95,21 @@ public class RobotContainer {
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
+
+  private final LoggedTunableBoolean testBoolean =
+      new LoggedTunableBoolean("operatorInterface/testBoolean", false, true);
+
+  private final LoggedTunableBoolean level1 =
+      new LoggedTunableBoolean("operatorInterface/Level 1", false, true);
+  private final LoggedTunableBoolean level2 =
+      new LoggedTunableBoolean("operatorInterface/Level 2", false, true);
+  private final LoggedTunableBoolean level3 =
+      new LoggedTunableBoolean("operatorInterface/Level 3 ", false, true);
+  private final LoggedTunableBoolean level4 =
+      new LoggedTunableBoolean("operatorInterface/Level 4 ", false, true);
+
+  private final LoggedTunableBoolean algaeToggle =
+      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, true);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
@@ -219,9 +235,10 @@ public class RobotContainer {
   }
 
   private void createCTRESimSubsystems() {
-    DrivetrainIO drivetrainIO = new DrivetrainIOCTRE();
-    drivetrain = new Drivetrain(drivetrainIO);
+    drivetrain = new Drivetrain(new DrivetrainIOCTRE());
 
+    String[] cameraNames = config.getCameraNames();
+    VisionIO[] visionIOs = new VisionIO[cameraNames.length];
     AprilTagFieldLayout layout;
     try {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
@@ -232,14 +249,15 @@ public class RobotContainer {
       layoutFileMissingAlert.set(true);
     }
 
-    vision =
-        new Vision(
-            new VisionIO[] {
-              new VisionIOSim(
-                  layout,
-                  drivetrain::getPose,
-                  RobotConfig.getInstance().getRobotToCameraTransforms()[0])
-            });
+    for (int i = 0; i < visionIOs.length; i++) {
+      visionIOs[i] =
+          new VisionIOSim(
+              cameraNames[i],
+              layout,
+              drivetrain::getPose,
+              RobotConfig.getInstance().getRobotToCameraTransforms()[0]);
+    }
+    vision = new Vision(visionIOs);
 
     manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
@@ -305,6 +323,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().clearComposedCommands();
     configureButtonBindings();
   }
+
+  private void registerHeightCommands() {}
 
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
@@ -582,6 +602,49 @@ public class RobotContainer {
   }
 
   public void periodic() {
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level2.set(false);
+            level3.set(false);
+            level4.set(false);
+          }
+        },
+        level1);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level3.set(false);
+            level4.set(false);
+          }
+        },
+        level2);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level2.set(false);
+            level4.set(false);
+          }
+        },
+        level3);
+
+    LoggedTunableBoolean.ifChanged(
+        hashCode(),
+        reefLevels -> {
+          if (reefLevels[0]) {
+            level1.set(false);
+            level2.set(false);
+            level3.set(false);
+          }
+        },
+        level4);
     // add robot-wide periodic code here
   }
 
