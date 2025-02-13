@@ -114,7 +114,7 @@ public class New2025RobotConfig extends RobotConfig {
               Units.inchesToMeters(-10.741),
               Units.inchesToMeters(-10.497),
               Units.inchesToMeters(8.040)),
-          new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(-162)));
+          new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-162)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
@@ -132,7 +132,7 @@ public class New2025RobotConfig extends RobotConfig {
               Units.inchesToMeters(-10.741),
               Units.inchesToMeters(10.497),
               Units.inchesToMeters(8.040)),
-          new Rotation3d(0, Units.degreesToRadians(20), Units.degreesToRadians(162)));
+          new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(162)));
 
   // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
