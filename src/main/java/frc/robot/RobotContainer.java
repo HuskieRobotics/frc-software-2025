@@ -32,7 +32,6 @@ import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
-import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
@@ -89,21 +88,6 @@ public class RobotContainer {
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
-
-  private final LoggedTunableBoolean testBoolean =
-      new LoggedTunableBoolean("operatorInterface/testBoolean", false, true);
-
-  private final LoggedTunableBoolean level1 =
-      new LoggedTunableBoolean("operatorInterface/Level 1", false, true);
-  private final LoggedTunableBoolean level2 =
-      new LoggedTunableBoolean("operatorInterface/Level 2", false, true);
-  private final LoggedTunableBoolean level3 =
-      new LoggedTunableBoolean("operatorInterface/Level 3 ", false, true);
-  private final LoggedTunableBoolean level4 =
-      new LoggedTunableBoolean("operatorInterface/Level 4 ", false, true);
-
-  private final LoggedTunableBoolean algaeToggle =
-      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, true);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
@@ -322,6 +306,16 @@ public class RobotContainer {
     configureVisionCommands();
 
     ClimberCommandFactory.registerCommands(oi, climber);
+
+    // example which will be replaced when manipulator is merged into main
+    // oi.getEnablePrimaryIRSensors()
+    //     .onTrue(
+    //         Commands.runOnce(manipulator::enablePrimaryIRSensors)
+    //             .withName("enable primary IR sensors"));
+    // oi.getEnablePrimaryIRSensors()
+    //     .onFalse(
+    //         Commands.runOnce(manipulator::disablePrimaryIRSensors)
+    //             .withName("disable primary IR sensors"));
 
     // Endgame alerts
     new Trigger(
@@ -586,49 +580,6 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level2.set(false);
-            level3.set(false);
-            level4.set(false);
-          }
-        },
-        level1);
-
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level1.set(false);
-            level3.set(false);
-            level4.set(false);
-          }
-        },
-        level2);
-
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level1.set(false);
-            level2.set(false);
-            level4.set(false);
-          }
-        },
-        level3);
-
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level1.set(false);
-            level2.set(false);
-            level3.set(false);
-          }
-        },
-        level4);
     // add robot-wide periodic code here
   }
 

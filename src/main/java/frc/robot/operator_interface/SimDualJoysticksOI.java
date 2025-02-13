@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two joysticks. */
-public class SimDualJoysticksOI implements OperatorInterface {
+public class SimDualJoysticksOI extends OperatorDashboard {
   private final CommandJoystick translateJoystick;
   private final CommandJoystick rotateJoystick;
   private final Trigger[] translateJoystickButtons;
