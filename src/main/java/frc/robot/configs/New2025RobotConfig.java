@@ -25,26 +25,22 @@ public class New2025RobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
-  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET =
-      Rotations.of(0.374); // FIXME: measure with 2x1s and phoenix tuner
+  private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.181152);
 
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET =
-      Rotations.of(0.042); // FIXME: see above
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.299805);
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
   private static final int BACK_LEFT_MODULE_STEER_ENCODER = 22;
-  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET =
-      Rotations.of(-0.031); // FIXME: see above
+  private static final Angle BACK_LEFT_MODULE_STEER_OFFSET = Rotations.of(0.124756);
 
   private static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 2;
   private static final int BACK_RIGHT_MODULE_STEER_MOTOR = 4;
   private static final int BACK_RIGHT_MODULE_STEER_ENCODER = 23;
-  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET =
-      Rotations.of(-0.501); // FIXME: see above
+  private static final Angle BACK_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.393066);
 
   private static final int GYRO_ID = 26;
 
