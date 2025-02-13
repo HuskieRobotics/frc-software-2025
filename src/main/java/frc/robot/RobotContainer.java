@@ -211,9 +211,10 @@ public class RobotContainer {
   }
 
   private void createCTRESimSubsystems() {
-    DrivetrainIO drivetrainIO = new DrivetrainIOCTRE();
-    drivetrain = new Drivetrain(drivetrainIO);
+    drivetrain = new Drivetrain(new DrivetrainIOCTRE());
 
+    String[] cameraNames = config.getCameraNames();
+    VisionIO[] visionIOs = new VisionIO[cameraNames.length];
     AprilTagFieldLayout layout;
     try {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
@@ -224,14 +225,15 @@ public class RobotContainer {
       layoutFileMissingAlert.set(true);
     }
 
-    vision =
-        new Vision(
-            new VisionIO[] {
-              new VisionIOSim(
-                  layout,
-                  drivetrain::getPose,
-                  RobotConfig.getInstance().getRobotToCameraTransforms()[0])
-            });
+    for (int i = 0; i < visionIOs.length; i++) {
+      visionIOs[i] =
+          new VisionIOSim(
+              cameraNames[i],
+              layout,
+              drivetrain::getPose,
+              RobotConfig.getInstance().getRobotToCameraTransforms()[0]);
+    }
+    vision = new Vision(visionIOs);
 
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
