@@ -144,6 +144,14 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getRemoveHighAlgaeTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRemoveLowAlgaeTrigger() {
+    return new Trigger(() -> false);
+  }
+
   // miscellaneous
   public default Trigger getInterruptAll() {
     return new Trigger(() -> false);
