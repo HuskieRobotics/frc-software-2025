@@ -317,6 +317,80 @@ public class RobotContainer {
     //         Commands.runOnce(manipulator::disablePrimaryIRSensors)
     //             .withName("disable primary IR sensors"));
 
+    /* OI Bindings for Vision triggers, will need to repolish based on what the actual methods for the vision subsystem are
+    oi.getDisableVisionTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  vision.enable(false);
+                })
+                .withName("disable vision"));
+
+    oi.getDisableVisionTrigger()
+        .onFalse(
+            Commands.runOnce(
+                () -> {
+                  vision.enable(true);
+                })
+                .withName("enable vision"));
+    */
+
+    /* Code that should be modified for modifying the height of the elevator:
+    oi.getLevel1Trigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  elevator.setPosition(1); //  will need to modify based on the actual method for the elevator subsystem
+                })
+                .withName("Level 1"));
+
+    oi.getLevel2Trigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  elevator.setPosition(2); //  will need to modify based on the actual method for the elevator subsystem
+                })
+                .withName("Level 2"));
+
+    oi.getLevel3Trigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  elevator.setPosition(3); //  will need to modify based on the actual method for the elevator subsystem
+                })
+                .withName("Level 3"));
+
+    oi.getLevel4Trigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  elevator.setPosition(4); //  will need to modify based on the actual method for the elevator subsystem
+                })
+                .withName("Level 4"));
+    */
+
+    // Code that should be modified for modifying the height of the algae remover:
+    /*  oi.getRemoveHighAlgaeTrigger()
+      .onChangeTrue(
+        Commands.runOnce(
+          () -> {
+            manipulator :: setHeight;
+          }
+        )
+        .withName("Remove High Algae")
+      );
+
+    oi.getRemoveLowAlgaeTrigger()
+      .onChangeTrue(
+        Commands.runOnce(
+          () -> {
+            manipulator :: setHeight;
+          }
+        )
+        .withName("Remove Low Algae")
+      );
+    */
+
     // Endgame alerts
     new Trigger(
             () ->

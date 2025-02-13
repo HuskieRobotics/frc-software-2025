@@ -7,7 +7,7 @@ import frc.lib.team6328.util.LoggedTunableBoolean;
 public class OperatorDashboard implements OperatorInterface {
 
   public final LoggedTunableBoolean enablePrimaryIRSensors =
-      new LoggedTunableBoolean("operatorDashboard/EnablePrimaryIRSensors", true, true);
+      new LoggedTunableBoolean("operatorDashboard/Enable Primary IR Sensors", true, true);
 
   public final LoggedTunableBoolean level1 =
       new LoggedTunableBoolean("operatorDashboard/Level 1", false, true);
@@ -17,6 +17,11 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/Level 3 ", false, true);
   public final LoggedTunableBoolean level4 =
       new LoggedTunableBoolean("operatorDashboard/Level 4 ", true, true);
+
+  public final LoggedTunableBoolean highAlgaeRemoval =
+      new LoggedTunableBoolean("operatorDashboard/High Algae Removal", false, true);
+  public final LoggedTunableBoolean lowAlgaeRemoval =
+      new LoggedTunableBoolean("operatorDashboard/Low Algae Removal", false, true);
 
   public OperatorDashboard() {
 
@@ -57,6 +62,20 @@ public class OperatorDashboard implements OperatorInterface {
                   level2.set(false);
                   level3.set(false);
                 }));
+
+    getRemoveHighAlgaeTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  lowAlgaeRemoval.set(false);
+                }));
+
+    getRemoveLowAlgaeTrigger()
+        .onTrue(
+            Commands.runOnce(
+                () -> {
+                  highAlgaeRemoval.set(false);
+                }));
   }
 
   @Override
@@ -82,5 +101,15 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getLevel4Trigger() {
     return new Trigger(() -> level4.get());
+  }
+
+  @Override
+  public Trigger getRemoveHighAlgaeTrigger() {
+    return new Trigger(() -> highAlgaeRemoval.get());
+  }
+
+  @Override
+  public Trigger getRemoveLowAlgaeTrigger() {
+    return new Trigger(() -> lowAlgaeRemoval.get());
   }
 }
