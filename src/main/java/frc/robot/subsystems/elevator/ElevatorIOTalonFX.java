@@ -238,16 +238,16 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
 
     StatusCode status =
-    BaseStatusSignal.refreshAll(
-        elevatorPositionStatusSignal,
-        leadStatorCurrent,
-        followerStatorCurrent,
-        leadSupplyCurrent,
-        followerSupplyCurrent,
-        leadVoltageSupplied,
-        followerVoltageSupplied,
-        elevatorLeadTempStatusSignal,
-        elevatorFollowerTempStatusSignal);
+        BaseStatusSignal.refreshAll(
+            elevatorPositionStatusSignal,
+            leadStatorCurrent,
+            followerStatorCurrent,
+            leadSupplyCurrent,
+            followerSupplyCurrent,
+            leadVoltageSupplied,
+            followerVoltageSupplied,
+            elevatorLeadTempStatusSignal,
+            elevatorFollowerTempStatusSignal);
     Phoenix6Util.checkError(status, "Failed to refresh elevator motor signals.", refreshAlert);
 
     inputs.voltageSuppliedLead = leadVoltageSupplied.getValueAsDouble();

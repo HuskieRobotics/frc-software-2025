@@ -64,16 +64,6 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getDriveToNearestLeftBranchButton() {
-    return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getDriveToNearestRightBranchButton() {
-    return rotateJoystickButtons[2];
-  }
-
-  @Override
   public Trigger getAlignToScoreCoralLeftButton() {
     return translateJoystickButtons[4];
   }

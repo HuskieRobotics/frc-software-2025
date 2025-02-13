@@ -5,6 +5,7 @@ import static frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -47,6 +48,8 @@ public class Manipulator extends SubsystemBase {
 
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
+
+  Timer scoringFunnelTimer = new Timer();
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs =
@@ -144,6 +147,8 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
+        } else if (DriverStation.isDisabled() && subsystem.inputs.isIndexerIRBlocked) {
+          subsystem.setState(State.CORAL_IN_MANIPULATOR);
         }
       }
 
@@ -216,7 +221,8 @@ public class Manipulator extends SubsystemBase {
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        /* NO-OP */
+        subsystem.shootCoralButtonPressed = false;
+        subsystem.scoreCoralThroughFunnelButtonPressed = false;
       }
 
       @Override
@@ -268,7 +274,8 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+        subsystem.setIndexerMotorVoltage(0);
+        subsystem.scoringFunnelTimer.restart();
       }
 
       @Override
@@ -277,8 +284,12 @@ public class Manipulator extends SubsystemBase {
             && subsystem.removeAlgaeButtonPressed) {
           subsystem.setState(State.REMOVE_ALGAE);
           subsystem.removeAlgaeButtonPressed = false;
-        } else if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
+        } else if (!subsystem.inputs.isFunnelIRBlocked
+            && !subsystem.inputs.isIndexerIRBlocked
+            && subsystem.scoringFunnelTimer.hasElapsed(5)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        } else if (subsystem.scoringFunnelTimer.hasElapsed(2)) {
+          subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
         }
       }
 
@@ -348,6 +359,10 @@ public class Manipulator extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Manipulator", inputs);
     Logger.recordOutput(SUBSYSTEM_NAME + "/State", this.state);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/scoreThroughManipulatorPressed", shootCoralButtonPressed);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/scoreThroughFunnelPressed", scoreCoralThroughFunnelButtonPressed);
     currentInAmps.calculate(inputs.indexerStatorCurrentAmps);
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if
