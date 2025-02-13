@@ -347,6 +347,8 @@ public class RobotContainer {
 
     // interrupt all commands by running a command that requires every subsystem. This is used to
     // recover to a known state if the robot becomes "stuck" in a command.
+    // FIXME: program this to have all subsystems that need to be reset
+    // FIXME: move to cross subsystem commands
     oi.getInterruptAll()
         .onTrue(
             Commands.parallel(
@@ -514,7 +516,7 @@ public class RobotContainer {
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
 
     // drive to left branch of nearest reef face
-    oi.getDriveToNearestLeftBranchButton()
+    oi.getAlignToScoreCoralLeftButton()
         .onTrue(
             new DriveToPose(
                     drivetrain,
@@ -526,7 +528,7 @@ public class RobotContainer {
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
-    oi.getDriveToNearestRightBranchButton()
+    oi.getAlignToScoreCoralRightButton()
         .onTrue(
             new DriveToPose(
                     drivetrain,
