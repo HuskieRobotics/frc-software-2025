@@ -8,6 +8,7 @@ public class Climber extends SubsystemBase {
   private ClimberIO io;
 
   private boolean extendingCageCatcher = false;
+  private boolean retractingSlow = false;
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
@@ -31,7 +32,9 @@ public class Climber extends SubsystemBase {
       this.extendingCageCatcher = false;
     } else if (inputs.voltage > 0 && inputs.positionInches > ClimberConstants.MAX_HEIGHT_INCHES) {
       stop();
-    } else if (inputs.voltage < 0 && inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES) {
+    } else if (inputs.voltage < 0
+        && inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES
+        && !retractingSlow) {
       stop();
     }
   }
@@ -51,6 +54,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void retractSlow() {
+    retractingSlow = true;
     io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
   }
 
@@ -59,6 +63,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void stop() {
+    retractingSlow = false;
     io.setVoltage(0);
   }
 
