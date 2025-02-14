@@ -12,6 +12,8 @@ public class ElevatorConstants {
   public static final Distance MAX_HEIGHT = Inches.of(74);
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
 
+  public static final Distance BELOW_HARDSTOP = Inches.of(-1.0);
+
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
   public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
 
@@ -65,6 +67,8 @@ public class ElevatorConstants {
   public static final double KA_EXPO = 0.2;
 
   public static final double CRUISE_VELOCITY = 0;
+
+  public static final double ZERO_VELOCITY_TOLERANCE = 1.0;
 
   public enum ReefBranch {
     HARDSTOP,

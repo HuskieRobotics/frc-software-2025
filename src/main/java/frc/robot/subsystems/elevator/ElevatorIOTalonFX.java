@@ -19,6 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Temperature;
@@ -57,6 +58,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private StatusSignal<Temperature> elevatorLeadTempStatusSignal;
   private StatusSignal<Temperature> elevatorFollowerTempStatusSignal;
+
+  private StatusSignal<AngularVelocity> elevatorVelocityStatusSignal;
 
   private double localPosition = 0.0;
 
@@ -136,6 +139,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     elevatorLeadTempStatusSignal = elevatorMotorLead.getDeviceTemp();
     elevatorFollowerTempStatusSignal = elevatorMotorFollower.getDeviceTemp();
+
+    elevatorVelocityStatusSignal = elevatorMotorLead.getVelocity();
 
     leadPositionRequest = new MotionMagicExpoVoltage(0);
     leadPositionRequestDown = new DynamicMotionMagicVoltage(0, 10, 100, 500);
@@ -247,7 +252,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             leadVoltageSupplied,
             followerVoltageSupplied,
             elevatorLeadTempStatusSignal,
-            elevatorFollowerTempStatusSignal);
+            elevatorFollowerTempStatusSignal,
+            elevatorVelocityStatusSignal);
     Phoenix6Util.checkError(status, "Failed to refresh elevator motor signals.", refreshAlert);
 
     inputs.voltageSuppliedLead = leadVoltageSupplied.getValueAsDouble();
@@ -261,6 +267,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.leadTempCelsius = elevatorLeadTempStatusSignal.getValueAsDouble();
     inputs.followerTempCelsius = elevatorFollowerTempStatusSignal.getValueAsDouble();
+
+    inputs.velocityRPS = elevatorVelocityStatusSignal.getValueAsDouble();
 
     inputs.closedLoopError = elevatorMotorLead.getClosedLoopError().getValueAsDouble();
 

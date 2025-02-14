@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -16,6 +17,13 @@ import org.littletonrobotics.junction.Logger;
 public class Elevator extends SubsystemBase {
 
   private ElevatorIO elevatorIO;
+  private ReefBranch targetPosition = ReefBranch.HARDSTOP;
+
+  private LinearFilter velocity =
+      LinearFilter.singlePoleIIR(
+          0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
+  // filter's impulse response, and the second value is the time-period, how often
+  // the calculate() method will be called
 
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
@@ -84,12 +92,22 @@ public class Elevator extends SubsystemBase {
     elevatorIO.updateInputs(inputs);
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
+    Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
+
+    velocity.calculate(inputs.velocityRPS);
+
     if (testingMode.get() == 1) {
 
       if (elevatorVoltage.get() != 0) {
         elevatorIO.setMotorVoltage(elevatorVoltage.get());
       } else if (elevatorHeightInches.get() != 0) {
         elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
+      }
+    } else {
+      if (targetPosition == ReefBranch.HARDSTOP
+          && Math.abs(velocity.lastValue()) < ZERO_VELOCITY_TOLERANCE) {
+        elevatorIO.setMotorVoltage(0);
+        elevatorIO.zeroPosition();
       }
     }
   }
@@ -122,6 +140,10 @@ public class Elevator extends SubsystemBase {
       case ALGAE_2:
         height = ALGAE2_HEIGHT;
         break;
+
+      case HARDSTOP:
+        height = BELOW_HARDSTOP;
+
       default:
         height = MIN_HEIGHT;
         break;
@@ -140,6 +162,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void goToPosition(ReefBranch reefBranch) {
+    targetPosition = reefBranch;
     elevatorIO.setPosition(reefBranchToDistance(reefBranch));
   }
 
