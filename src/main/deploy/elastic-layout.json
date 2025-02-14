@@ -3,86 +3,6 @@
   "grid_size": 16,
   "tabs": [
     {
-      "name": "Operator",
-      "grid_layout": {
-        "layouts": [],
-        "containers": [
-          {
-            "title": "Algae Toggle",
-            "x": 848.0,
-            "y": 144.0,
-            "width": 416.0,
-            "height": 384.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorInterface/Algae Toggle",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Level 1",
-            "x": 80.0,
-            "y": 528.0,
-            "width": 496.0,
-            "height": 144.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorInterface/Level 1",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Level 2",
-            "x": 80.0,
-            "y": 368.0,
-            "width": 496.0,
-            "height": 144.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorInterface/Level 2",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Level 3 ",
-            "x": 80.0,
-            "y": 208.0,
-            "width": 496.0,
-            "height": 144.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorInterface/Level 3 ",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Level 4 ",
-            "x": 80.0,
-            "y": 48.0,
-            "width": 496.0,
-            "height": 144.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorInterface/Level 4 ",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "Overrides",
-      "grid_layout": {
-        "layouts": [],
-        "containers": []
-      }
-    },
-    {
       "name": "Teleoperated",
       "grid_layout": {
         "layouts": [],
@@ -166,24 +86,99 @@
               "true_icon": "None",
               "false_icon": "None"
             }
-          },
+          }
+        ]
+      }
+    },
+    {
+      "name": "Autonomous",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    },
+    {
+      "name": "Operator",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
           {
-            "title": "SysId Chooser",
-            "x": 0.0,
-            "y": 512.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
+            "title": "Algae Toggle",
+            "x": 848.0,
+            "y": 144.0,
+            "width": 416.0,
+            "height": 384.0,
+            "type": "Toggle Button",
             "properties": {
-              "topic": "/SmartDashboard/SysId Chooser",
+              "topic": "/Tuning/operatorInterface/Algae Toggle",
               "period": 0.06,
-              "sort_options": false
+              "data_type": "boolean"
             }
           },
           {
+            "title": "Level 1",
+            "x": 80.0,
+            "y": 528.0,
+            "width": 496.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorInterface/Level 1",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Level 2",
+            "x": 80.0,
+            "y": 368.0,
+            "width": 496.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorInterface/Level 2",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Level 3 ",
+            "x": 80.0,
+            "y": 208.0,
+            "width": 496.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorInterface/Level 3 ",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Level 4 ",
+            "x": 80.0,
+            "y": 48.0,
+            "width": 496.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorInterface/Level 4 ",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Overrides",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
             "title": "ClearAllFaults",
-            "x": 256.0,
-            "y": 512.0,
+            "x": 80.0,
+            "y": 48.0,
             "width": 256.0,
             "height": 128.0,
             "type": "Command",
@@ -191,6 +186,19 @@
               "topic": "/SmartDashboard/SystemStatus/ClearAllFaults",
               "period": 0.06,
               "show_type": true
+            }
+          },
+          {
+            "title": "SysId Chooser",
+            "x": 80.0,
+            "y": 192.0,
+            "width": 240.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/SysId Chooser",
+              "period": 0.06,
+              "sort_options": false
             }
           }
         ]
