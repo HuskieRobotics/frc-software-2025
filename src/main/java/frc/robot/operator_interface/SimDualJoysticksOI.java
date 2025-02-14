@@ -55,12 +55,6 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getVisionIsEnabledSwitch() {
-    // vision is always enabled with dual joysticks as there is no switch to disable
-    return new Trigger(() -> true);
-  }
-
-  @Override
   public Trigger getResetPoseToVisionButton() {
     return translateJoystickButtons[1];
   }

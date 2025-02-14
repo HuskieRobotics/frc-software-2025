@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.RemoteFeedbackDevice;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -52,8 +51,6 @@ import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -320,80 +317,6 @@ public class RobotContainer {
     //         Commands.runOnce(manipulator::disablePrimaryIRSensors)
     //             .withName("disable primary IR sensors"));
 
-    /* OI Bindings for Vision triggers, will need to repolish based on what the actual methods for the vision subsystem are
-    oi.getDisableVisionTrigger()
-        .onTrue(
-            Commands.runOnce(
-                () -> {
-                  vision.enable(false);
-                })
-                .withName("disable vision"));
-
-    oi.getDisableVisionTrigger()
-        .onFalse(
-            Commands.runOnce(
-                () -> {
-                  vision.enable(true);
-                })
-                .withName("enable vision"));
-    */
-
-    //Code that should be modified for modifying the height of the elevator:
-    // oi.getLevel1Trigger()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> {
-    //               elevator.goToPosition(ReefBranch.L1); //  will need to modify based on the actual method for the elevator subsystem
-    //             })
-    //             .withName("Level 1"));
-
-    // oi.getLevel2Trigger()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> {
-    //               elevator.goToPosition(ReefBranch.L2); //  will need to modify based on the actual method for the elevator subsystem
-    //             })
-    //             .withName("Level 2"));
-
-    // oi.getLevel3Trigger()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> {
-    //               elevator.goToPosition(ReefBranch.L3); //  will need to modify based on the actual method for the elevator subsystem
-    //             })
-    //             .withName("Level 3"));
-
-    // oi.getLevel4Trigger()
-    //     .onTrue(
-    //         Commands.runOnce(
-    //             () -> {
-    //               elevator.goToPosition(ReefBranch.L4); //  will need to modify based on the actual method for the elevator subsystem
-    //             })
-    //             .withName("Level 4"));
-    
-
-    // Code that should be modified for modifying the height of the algae remover:
-
-    oi.getRemoveHighAlgaeTrigger()
-      .onChangeTrue(
-        Commands.runOnce(
-          () -> {
-            manipulator :: removeAlgae;
-          }
-        )
-        .withName("Remove High Algae")
-      );
-
-    oi.getRemoveLowAlgaeTrigger()
-      .onChangeTrue(
-        Commands.runOnce(
-          () -> {
-            manipulator :: removeAlgae;
-          }
-        )
-        .withName("Remove Low Algae")
-      );
-    
     // Endgame alerts
     new Trigger(
             () ->
@@ -622,12 +545,12 @@ public class RobotContainer {
 
   private void configureVisionCommands() {
     // enable/disable vision
-    oi.getVisionIsEnabledSwitch()
+    oi.getVisionIsEnabledTrigger()
         .onTrue(
             Commands.runOnce(() -> vision.enable(true))
                 .ignoringDisable(true)
                 .withName("enable vision"));
-    oi.getVisionIsEnabledSwitch()
+    oi.getVisionIsEnabledTrigger()
         .onFalse(
             Commands.runOnce(() -> vision.enable(false), vision)
                 .ignoringDisable(true)

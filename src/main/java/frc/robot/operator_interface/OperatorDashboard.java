@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team6328.util.LoggedTunableBoolean;
 
 public class OperatorDashboard implements OperatorInterface {
+  public final LoggedTunableBoolean enableVision =
+      new LoggedTunableBoolean("operatorDashboard/Enable Vision", true, true);
 
   public final LoggedTunableBoolean enablePrimaryIRSensors =
       new LoggedTunableBoolean("operatorDashboard/Enable Primary IR Sensors", true, true);
@@ -30,52 +32,63 @@ public class OperatorDashboard implements OperatorInterface {
     getLevel1Trigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  level2.set(false);
-                  level3.set(false);
-                  level4.set(false);
-                }));
+                    () -> {
+                      level2.set(false);
+                      level3.set(false);
+                      level4.set(false);
+                    })
+                .ignoringDisable(true));
 
     getLevel2Trigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  level1.set(false);
-                  level3.set(false);
-                  level4.set(false);
-                }));
+                    () -> {
+                      level1.set(false);
+                      level3.set(false);
+                      level4.set(false);
+                    })
+                .ignoringDisable(true));
 
     getLevel3Trigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  level1.set(false);
-                  level2.set(false);
-                  level4.set(false);
-                }));
+                    () -> {
+                      level1.set(false);
+                      level2.set(false);
+                      level4.set(false);
+                    })
+                .ignoringDisable(true));
 
     getLevel4Trigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  level1.set(false);
-                  level2.set(false);
-                  level3.set(false);
-                }));
+                    () -> {
+                      level1.set(false);
+                      level2.set(false);
+                      level3.set(false);
+                    })
+                .ignoringDisable(true));
 
     getRemoveHighAlgaeTrigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  lowAlgaeRemoval.set(false);
-                }));
+                    () -> {
+                      lowAlgaeRemoval.set(false);
+                    })
+                .ignoringDisable(true));
 
     getRemoveLowAlgaeTrigger()
         .onTrue(
             Commands.runOnce(
-                () -> {
-                  highAlgaeRemoval.set(false);
-                }));
+                    () -> {
+                      highAlgaeRemoval.set(false);
+                    })
+                .ignoringDisable(true));
+  }
+
+  @Override
+  public Trigger getVisionIsEnabledTrigger() {
+    return new Trigger(() -> enableVision.get());
   }
 
   @Override
