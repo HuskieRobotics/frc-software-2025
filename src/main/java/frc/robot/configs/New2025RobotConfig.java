@@ -97,8 +97,8 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(10.725),
-              Units.inchesToMeters(-6.659),
+              Units.inchesToMeters(6.659),
+              Units.inchesToMeters(-10.725),
               Units.inchesToMeters(9.601)),
           new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20.577)));
   // pitch 45 degrees
@@ -107,8 +107,8 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.741),
               Units.inchesToMeters(-10.497),
+              Units.inchesToMeters(-10.741),
               Units.inchesToMeters(8.040)),
           new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-162)));
 
@@ -116,8 +116,8 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(10.724),
               Units.inchesToMeters(6.657),
+              Units.inchesToMeters(10.724),
               Units.inchesToMeters(9.605)),
           new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(-20.577)));
 
@@ -125,8 +125,8 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
           new Translation3d(
-              Units.inchesToMeters(-10.741),
-              Units.inchesToMeters(10.497),
+              Units.inchesToMeters(-10.497),
+              Units.inchesToMeters(10.741),
               Units.inchesToMeters(8.040)),
           new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(162)));
 
