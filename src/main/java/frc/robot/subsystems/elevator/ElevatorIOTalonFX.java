@@ -7,7 +7,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
@@ -176,15 +175,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         IS_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-
-    SoftwareLimitSwitchConfigs softLimitConfigs =
-        new SoftwareLimitSwitchConfigs()
-            .withForwardSoftLimitEnable(true)
-            .withForwardSoftLimitThreshold(ElevatorConstants.FORWARD_SOFT_LIMIT_THRESHOLD)
-            .withReverseSoftLimitEnable(true)
-            .withReverseSoftLimitThreshold(ElevatorConstants.REVERSE_SOFT_LIMIT_THRESHOLD);
-
-    config.SoftwareLimitSwitch = softLimitConfigs;
 
     config.Slot0.kP = kPslot0.get();
     config.Slot0.kI = kIslot0.get();

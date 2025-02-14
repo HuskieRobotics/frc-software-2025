@@ -52,8 +52,7 @@ public class Manipulator extends SubsystemBase {
   Timer scoringFunnelTimer = new Timer();
 
   private ManipulatorIO io;
-  private final ManipulatorIOInputsAutoLogged inputs =
-      new ManipulatorIOInputsAutoLogged();
+  private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
   private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
   private State lastState = State.UNINITIALIZED;
 

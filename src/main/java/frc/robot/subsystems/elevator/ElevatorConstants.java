@@ -25,10 +25,6 @@ public class ElevatorConstants {
   public static final int LEAD_MOTOR_ID = 10;
   public static final int FOLLOWER_MOTOR_ID = 11;
 
-  public static final double FORWARD_SOFT_LIMIT_THRESHOLD =
-      MAX_HEIGHT.in(Inches) / PULLY_CIRCUMFERANCE_INCHES;
-  public static final double REVERSE_SOFT_LIMIT_THRESHOLD = 0.0;
-
   public static final boolean DEBUGGING = true;
   public static final boolean TESTING = true;
 
