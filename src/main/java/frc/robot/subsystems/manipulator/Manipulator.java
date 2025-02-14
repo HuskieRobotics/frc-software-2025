@@ -1,7 +1,7 @@
-package frc.robot.subsystems.subsystem.manipulator.manipulator;
+package frc.robot.subsystems.manipulator;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.subsystem.manipulator.manipulator.ManipulatorConstants.*;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
@@ -50,6 +50,7 @@ public class Manipulator extends SubsystemBase {
       new Timer(); // create a timer to track how long is spent in this stage
 
   Timer scoringFunnelTimer = new Timer();
+  Timer ejectingCoralTimer = new Timer();
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
@@ -202,11 +203,15 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVoltage(
             INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL); // set negative velocity to indexer motor
         // to invert it
+        subsystem.ejectingCoralTimer.restart();
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
+        if (!subsystem.inputs.isFunnelIRBlocked
+            && !subsystem.inputs.isIndexerIRBlocked
+            && subsystem.ejectingCoralTimer.hasElapsed(
+                ManipulatorConstants.EJECT_CORAL_DURATION_SECONDS)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }

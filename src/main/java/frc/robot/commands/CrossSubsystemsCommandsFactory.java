@@ -6,7 +6,7 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.subsystem.manipulator.manipulator.Manipulator;
+import frc.robot.subsystems.manipulator.Manipulator;
 
 public class CrossSubsystemsCommandsFactory {
 

@@ -1,4 +1,4 @@
-package frc.robot.subsystems.subsystem.manipulator.manipulator;
+package frc.robot.subsystems.manipulator;
 
 public class ManipulatorConstants {
 
@@ -83,6 +83,8 @@ public class ManipulatorConstants {
   // *TEMPORARY: we might make a "reverse state machine" for scoring the funnel
   public static final double FUNNEL_RAMP_UP_TIMEOUT = 1.0;
   public static final double FUNNEL_SCORING_TIMEOUT = 4.0;
+
+  public static final double EJECT_CORAL_DURATION_SECONDS = 5.0;
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
