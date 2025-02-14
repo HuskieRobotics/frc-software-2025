@@ -374,12 +374,11 @@ public class RobotContainer {
 
     // Code that should be modified for modifying the height of the algae remover:
 
-    /* 
     oi.getRemoveHighAlgaeTrigger()
       .onChangeTrue(
         Commands.runOnce(
           () -> {
-            manipulator :: setHeight;
+            manipulator :: removeAlgae;
           }
         )
         .withName("Remove High Algae")
@@ -389,14 +388,12 @@ public class RobotContainer {
       .onChangeTrue(
         Commands.runOnce(
           () -> {
-            manipulator :: setHeight;
+            manipulator :: removeAlgae;
           }
         )
         .withName("Remove Low Algae")
       );
-      */
     
-
     // Endgame alerts
     new Trigger(
             () ->
