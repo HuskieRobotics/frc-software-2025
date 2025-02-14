@@ -53,7 +53,7 @@ public class Manipulator extends SubsystemBase {
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs =
-      new ManipulatorIOInputsAutoLogged(); // stefan said to ignore this error and keep this here
+      new ManipulatorIOInputsAutoLogged();
   private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
   private State lastState = State.UNINITIALIZED;
 
