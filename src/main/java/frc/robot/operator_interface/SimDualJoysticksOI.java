@@ -75,7 +75,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getZeroClimberButton() {
+  public Trigger getScoreCoralButton() {
     return rotateJoystickButtons[4];
   }
 }

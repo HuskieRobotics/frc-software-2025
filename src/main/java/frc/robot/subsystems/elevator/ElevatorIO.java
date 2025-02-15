@@ -18,6 +18,8 @@ public interface ElevatorIO {
     double supplyCurrentAmpsLead = 0.0;
     double supplyCurrentAmpsFollower = 0.0;
 
+    double velocityRPS = 0.0;
+
     double closedLoopError = 0.0;
 
     double closedLoopReference = 0.0;
