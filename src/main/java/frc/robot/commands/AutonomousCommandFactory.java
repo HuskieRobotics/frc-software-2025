@@ -236,8 +236,8 @@ public class AutonomousCommandFactory {
     try {
       PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
       PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
-      PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral K 2BL");
-      PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral K 2BL");
+      PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
+      PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
 
       return Commands.sequence(
           AutoBuilder.followPath(scoreCoralJ2BL),
@@ -250,7 +250,8 @@ public class AutonomousCommandFactory {
           getCollectCoralCommand());
 
     } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
       pathFileMissingAlert.set(true);
 
       return Commands.waitSeconds(0);
@@ -259,8 +260,8 @@ public class AutonomousCommandFactory {
 
   public Command getTwoCoralRightAutoCommand(Drivetrain drivetrain, Vision vision) {
     try {
-      PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral E 2BR");
-      PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral E 2BR");
+      PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral F 2BR");
+      PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral F 2BR");
       PathPlannerPath scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
       PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
 
@@ -275,7 +276,8 @@ public class AutonomousCommandFactory {
           getCollectCoralCommand());
 
     } catch (Exception e) {
-      pathFileMissingAlert.setText("Could not find the specified path file.");
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getTwoCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
       return Commands.waitSeconds(0);
