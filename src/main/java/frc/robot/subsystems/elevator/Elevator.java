@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
 import org.littletonrobotics.junction.Logger;
 
@@ -184,5 +185,25 @@ public class Elevator extends SubsystemBase {
 
   public Distance getPosition() {
     return Inches.of(inputs.positionInches);
+  }
+
+  private ReefBranch getSelectedPosition() {
+    if (OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()) {
+      return ReefBranch.L4;
+    } else if (OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+      return ReefBranch.L3;
+    } else if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()) {
+      return ReefBranch.L2;
+    } else {
+      return ReefBranch.L1;
+    }
+  }
+
+  public void goToSelectedPosition() {
+    goToPosition(getSelectedPosition());
+  }
+
+  public boolean isAtSelectedPosition() {
+    return isAtPosition(getSelectedPosition());
   }
 }
