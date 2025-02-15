@@ -48,14 +48,15 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_KA = 0.01;
 
   // FIXME: tune these values
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 1.0;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 2.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL = 2.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -6.0;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 4.0;
-  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 2.5;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -10;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 8.0;
+
+  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
-  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -4.0;
+  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -9.5;
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL = 0.0; // tbd
 

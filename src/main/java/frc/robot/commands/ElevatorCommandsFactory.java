@@ -14,7 +14,7 @@ public class ElevatorCommandsFactory {
     // consistent, extend button (hold)
     oi.getPrepareElevatorToScoreButton()
         .onTrue(
-            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L2), elevator)
+            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)
                 .withName("raise elevator to score"));
   }
 }

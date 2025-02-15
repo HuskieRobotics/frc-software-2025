@@ -31,17 +31,21 @@ public class CrossSubsystemsCommandsFactory {
                                 Commands.runOnce(
                                     () ->
                                         elevator.goToPosition(
-                                            ElevatorConstants.ReefBranch.HARDSTOP),
+                                            ElevatorConstants.ReefBranch.BELOW_ALGAE_2),
                                     elevator),
                                 Commands.waitUntil(
                                     () ->
                                         elevator.isAtPosition(
-                                            ElevatorConstants.ReefBranch.HARDSTOP)),
+                                            ElevatorConstants.ReefBranch.BELOW_ALGAE_2)),
                                 Commands.runOnce(
-                                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4),
+                                    () ->
+                                        elevator.goToPosition(
+                                            ElevatorConstants.ReefBranch.ABOVE_ALGAE_2),
                                     elevator), // FIXME: change to algae removal position
                                 Commands.waitUntil(
-                                    () -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
+                                    () ->
+                                        elevator.isAtPosition(
+                                            ElevatorConstants.ReefBranch.ABOVE_ALGAE_2)),
                                 Commands.waitSeconds(2.0),
                                 Commands.runOnce(manipulator::algaeIsRemoved))),
                         getScoreCoralCommand(manipulator),

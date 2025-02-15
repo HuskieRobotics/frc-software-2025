@@ -19,7 +19,7 @@ public class Elevator extends SubsystemBase {
   private ElevatorIO elevatorIO;
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
 
-  private LinearFilter velocity =
+  private LinearFilter current =
       LinearFilter.singlePoleIIR(
           0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
   // filter's impulse response, and the second value is the time-period, how often
@@ -94,7 +94,7 @@ public class Elevator extends SubsystemBase {
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
 
-    velocity.calculate(inputs.velocityRPS);
+    current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
     if (testingMode.get() == 1) {
 
@@ -104,8 +104,7 @@ public class Elevator extends SubsystemBase {
         elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
       }
     } else {
-      if (targetPosition == ReefBranch.HARDSTOP
-          && Math.abs(velocity.lastValue()) < ZERO_VELOCITY_TOLERANCE) {
+      if (targetPosition == ReefBranch.HARDSTOP && Math.abs(current.lastValue()) > STALL_CURRENT) {
         elevatorIO.setMotorVoltage(0);
         elevatorIO.zeroPosition();
       }
@@ -141,8 +140,25 @@ public class Elevator extends SubsystemBase {
         height = ALGAE2_HEIGHT;
         break;
 
+      case ABOVE_ALGAE_1:
+        height = ABOVE_ALGAE_1_HEIGHT;
+        break;
+
+      case BELOW_ALGAE_1:
+        height = BELOW_ALGAE_1_HEIGHT;
+        break;
+
+      case ABOVE_ALGAE_2:
+        height = ABOVE_ALGAE_2_HEIGHT;
+        break;
+
+      case BELOW_ALGAE_2:
+        height = BELOW_ALGAE_2_HEIGHT;
+        break;
+
       case HARDSTOP:
         height = BELOW_HARDSTOP;
+        break;
 
       default:
         height = MIN_HEIGHT;

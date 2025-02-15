@@ -46,14 +46,32 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber indexerMotorCurrent =
       new LoggedTunableNumber("Manipulator/Indexer/MotorCurrent", 0);
 
-public final LoggedTunableNumber indexerCollectionVoltage = new LoggedTunableNumber("Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-public final LoggedTunableNumber indexerShootingVoltage = new LoggedTunableNumber("Manipulator/Indexer/ShootingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL);
-public final LoggedTunableNumber indexerEjectingVoltage = new LoggedTunableNumber("Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
-public final LoggedTunableNumber indexerShootingOutFunnelVoltage = new LoggedTunableNumber("Manipulator/Indexer/ShootingOutFunnelVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
-public final LoggedTunableNumber indexerRemovingAlgaeVoltage = new LoggedTunableNumber("Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
-public final LoggedTunableNumber funnelCollectionVoltage = new LoggedTunableNumber("Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-public final LoggedTunableNumber funnelEjectingVoltage = new LoggedTunableNumber("Manipulator/Funnel/EjectingVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
-public final LoggedTunableNumber funnelShootingOutFunnelVoltage = new LoggedTunableNumber("Manipulator/Funnel/ShootingOutFunnelVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+  public final LoggedTunableNumber indexerCollectionVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+  public final LoggedTunableNumber indexerShootingVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/ShootingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL);
+  public final LoggedTunableNumber indexerEjectingVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+  public final LoggedTunableNumber indexerShootingOutFunnelVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/ShootingOutFunnelVoltage",
+          INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+  public final LoggedTunableNumber indexerRemovingAlgaeVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
+  public final LoggedTunableNumber funnelCollectionVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+  public final LoggedTunableNumber funnelEjectingVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Funnel/EjectingVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+  public final LoggedTunableNumber funnelShootingOutFunnelVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Funnel/ShootingOutFunnelVoltage",
+          FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
 
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
@@ -154,6 +172,9 @@ public final LoggedTunableNumber funnelShootingOutFunnelVoltage = new LoggedTuna
 
       @Override
       void execute(Manipulator subsystem) {
+        subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
+        subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
+
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (DriverStation.isDisabled() && subsystem.inputs.isIndexerIRBlocked) {

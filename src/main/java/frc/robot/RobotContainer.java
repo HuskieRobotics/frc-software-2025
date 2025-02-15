@@ -339,7 +339,7 @@ public class RobotContainer {
     ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(oi, elevator, manipulator);
 
-    // Endgame alerts
+    // Endgame alerts[]
     new Trigger(
             () ->
                 DriverStation.isTeleopEnabled()

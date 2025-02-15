@@ -8,7 +8,7 @@ public class ElevatorConstants {
 
   public static final boolean IS_INVERTED = true;
 
-  public static final double TOLERANCE_INCHES = 0;
+  public static final double TOLERANCE_INCHES = 0.25;
   public static final Distance MAX_HEIGHT = Inches.of(74);
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
 
@@ -64,7 +64,7 @@ public class ElevatorConstants {
 
   public static final double CRUISE_VELOCITY = 0;
 
-  public static final double ZERO_VELOCITY_TOLERANCE = 1.0;
+  public static final double STALL_CURRENT = 50.0;
 
   public enum ReefBranch {
     HARDSTOP,
@@ -76,6 +76,12 @@ public class ElevatorConstants {
 
     ALGAE_1,
     ALGAE_2,
+
+    BELOW_ALGAE_1,
+    ABOVE_ALGAE_1,
+
+    BELOW_ALGAE_2,
+    ABOVE_ALGAE_2
   }
 
   /*
@@ -87,6 +93,14 @@ public class ElevatorConstants {
   public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
   public static final Distance L4_HEIGHT = Inches.of(70);
 
-  public static final Distance ALGAE1_HEIGHT = Inches.of(13.0); // height under is 9
-  public static final Distance ALGAE2_HEIGHT = Inches.of(28.0); // height under is 24
+  public static final Distance ALGAE1_HEIGHT =
+      Inches.of(13.0); // height under is 9 // height of impact is 13
+  public static final Distance ALGAE2_HEIGHT =
+      Inches.of(28.0); // height under is 24 // height of impact is 28
+
+  public static final Distance ABOVE_ALGAE_2_HEIGHT = Inches.of(34.0);
+  public static final Distance BELOW_ALGAE_2_HEIGHT = Inches.of(20.0);
+
+  public static final Distance BELOW_ALGAE_1_HEIGHT = Inches.of(7.0);
+  public static final Distance ABOVE_ALGAE_1_HEIGHT = Inches.of(16.0);
 }
