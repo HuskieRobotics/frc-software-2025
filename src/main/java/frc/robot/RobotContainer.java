@@ -220,7 +220,7 @@ public class RobotContainer {
               cameraNames[i],
               layout,
               drivetrain::getPose,
-              RobotConfig.getInstance().getRobotToCameraTransforms()[0]);
+              RobotConfig.getInstance().getRobotToCameraTransforms()[i]);
     }
     vision = new Vision(visionIOs);
 
