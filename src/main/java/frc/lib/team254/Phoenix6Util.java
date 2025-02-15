@@ -104,6 +104,7 @@ public class Phoenix6Util {
    */
   public static boolean applyAndCheckConfiguration(
       TalonFX talon, TalonFXConfiguration config, Alert alert, int numTries) {
+    System.out.println("Applying config to talon [" + talon.getDescription() + "]");
     for (int i = 0; i < numTries; i++) {
       if (checkErrorAndRetry(() -> talon.getConfigurator().apply(config), alert)) {
         // API says we applied config, lets make sure it's right

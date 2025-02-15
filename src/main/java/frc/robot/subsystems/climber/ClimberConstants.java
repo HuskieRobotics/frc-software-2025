@@ -17,6 +17,7 @@ public class ClimberConstants {
   public static final double RESET_VOLTAGE = 20.0;
 
   public static final double DRUM_DIAMETER = 1.0;
+  public static final double CAGE_CATCHER_EXTEND_POS_INCHES = 5.0; // FIXME: arbitrary for now
   public static final double MAX_HEIGHT_INCHES = 15.0;
   public static final double MIN_HEIGHT_INCHES = 1.0;
 

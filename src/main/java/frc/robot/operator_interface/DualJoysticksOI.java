@@ -47,39 +47,22 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDeployIntakeButton() {
+  public Trigger getAlignToScoreCoralLeftButton() {
     return translateJoystickButtons[2];
   }
 
   @Override
-  public Trigger getPrepClimbSequence() {
+  public Trigger getExtendClimberButton() {
     return translateJoystickButtons[3];
   }
 
-  // Rotate Joystick
-
   @Override
-  public double getRotate() {
-    return -rotateJoystick.getX();
-  }
-
-  @Override
-  public Trigger getDriveToNearestLeftBranchButton() {
-    return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getDriveToNearestRightBranchButton() {
-    return rotateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getAlignToScoreCoralLeftButton() {
+  public Trigger getExtendCageCatcherButton() {
     return translateJoystickButtons[4];
   }
 
   @Override
-  public Trigger getAlignToScoreCoralRightButton() {
+  public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
   }
 
@@ -93,6 +76,12 @@ public class DualJoysticksOI extends OperatorDashboard {
     return translateJoystickButtons[9];
   }
 
+  // Rotate Joystick
+  @Override
+  public double getRotate() {
+    return -rotateJoystick.getX();
+  }
+
   // Rotation Joystick
   @Override
   public Trigger getScoreCoralButton() {
@@ -100,7 +89,7 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getScoreAlgaeButton() {
+  public Trigger getAlignToScoreCoralRightButton() {
     return rotateJoystickButtons[2];
   }
 

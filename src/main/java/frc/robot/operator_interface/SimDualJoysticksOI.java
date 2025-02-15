@@ -60,8 +60,13 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getPrepClimbSequence() {
-    return rotateJoystickButtons[1];
+  public Trigger getExtendClimberButton() {
+    return translateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getExtendCageCatcherButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
