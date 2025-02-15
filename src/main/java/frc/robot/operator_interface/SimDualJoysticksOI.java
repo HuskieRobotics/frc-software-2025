@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two joysticks. */
-public class SimDualJoysticksOI implements OperatorInterface {
+public class SimDualJoysticksOI extends OperatorDashboard {
   private final CommandJoystick translateJoystick;
   private final CommandJoystick rotateJoystick;
   private final Trigger[] translateJoystickButtons;
@@ -50,28 +50,32 @@ public class SimDualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getResetGyroButton() {
-    return rotateJoystickButtons[3];
-  }
-
-  @Override
   public Trigger getLock180Button() {
     return new Trigger(() -> false);
   }
 
   @Override
-  public Trigger getXStanceButton() {
-    return rotateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getVisionIsEnabledSwitch() {
-    // vision is always enabled with dual joysticks as there is no switch to disable
-    return new Trigger(() -> true);
-  }
-
-  @Override
   public Trigger getResetPoseToVisionButton() {
     return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getPrepClimbSequence() {
+    return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getInitiateClimbButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getZeroClimberButton() {
+    return rotateJoystickButtons[4];
   }
 }

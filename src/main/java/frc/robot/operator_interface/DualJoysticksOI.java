@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two joysticks. */
-public class DualJoysticksOI implements OperatorInterface {
+public class DualJoysticksOI extends OperatorDashboard {
   private final CommandJoystick translateJoystick;
   private final CommandJoystick rotateJoystick;
   private final Trigger[] translateJoystickButtons;
@@ -38,11 +38,6 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public double getTranslateY() {
     return -translateJoystick.getX();
-  }
-
-  @Override
-  public Trigger getResetPoseToVisionButton() {
-    return rotateJoystickButtons[5];
   }
 
   // Translation Joystick
@@ -102,5 +97,20 @@ public class DualJoysticksOI implements OperatorInterface {
   @Override
   public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
+  }
+
+  @Override
+  public Trigger getResetPoseToVisionButton() {
+    return rotateJoystickButtons[5];
+  }
+
+  @Override
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[10];
+  }
+
+  @Override
+  public Trigger getZeroClimberButton() {
+    return rotateJoystickButtons[11];
   }
 }
