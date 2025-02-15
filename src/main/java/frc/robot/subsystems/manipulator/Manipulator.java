@@ -46,6 +46,15 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber indexerMotorCurrent =
       new LoggedTunableNumber("Manipulator/Indexer/MotorCurrent", 0);
 
+public final LoggedTunableNumber indexerCollectionVoltage = new LoggedTunableNumber("Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+public final LoggedTunableNumber indexerShootingVoltage = new LoggedTunableNumber("Manipulator/Indexer/ShootingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL);
+public final LoggedTunableNumber indexerEjectingVoltage = new LoggedTunableNumber("Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+public final LoggedTunableNumber indexerShootingOutFunnelVoltage = new LoggedTunableNumber("Manipulator/Indexer/ShootingOutFunnelVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+public final LoggedTunableNumber indexerRemovingAlgaeVoltage = new LoggedTunableNumber("Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
+public final LoggedTunableNumber funnelCollectionVoltage = new LoggedTunableNumber("Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+public final LoggedTunableNumber funnelEjectingVoltage = new LoggedTunableNumber("Manipulator/Funnel/EjectingVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+public final LoggedTunableNumber funnelShootingOutFunnelVoltage = new LoggedTunableNumber("Manipulator/Funnel/ShootingOutFunnelVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
 
@@ -139,8 +148,8 @@ public class Manipulator extends SubsystemBase {
     WAITING_FOR_CORAL_IN_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+        subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
+        subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
       }
 
       @Override
@@ -162,7 +171,7 @@ public class Manipulator extends SubsystemBase {
     INDEXING_CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+        subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         subsystem.coralInIndexingState.restart(); // start timer
         subsystem.currentInAmps
             .reset(); // reset the linear filter thats used to detect a current spike
@@ -200,10 +209,10 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(
-            FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL); // set negative velocity to funnel motor to
+            subsystem.funnelEjectingVoltage.get()); // set negative velocity to funnel motor to
         // invert it
         subsystem.setIndexerMotorVoltage(
-            INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL); // set negative velocity to indexer motor
+            subsystem.indexerEjectingVoltage.get()); // set negative velocity to indexer motor
         // to invert it
         subsystem.ejectingCoralTimer.restart();
       }
@@ -251,7 +260,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setIndexerMotorVoltage(
-            INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL); // speed of indexer motor velocity while
+            subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
         // shooting coral should be different
         // compared to intaking, etc
       }
@@ -279,7 +288,7 @@ public class Manipulator extends SubsystemBase {
     SCORE_CORAL_THROUGH_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+        subsystem.setFunnelMotorVoltage(subsystem.funnelShootingOutFunnelVoltage.get());
         subsystem.setIndexerMotorVoltage(0);
         subsystem.scoringFunnelTimer.restart();
       }
@@ -297,7 +306,7 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         } else if (subsystem.scoringFunnelTimer.hasElapsed(
             ManipulatorConstants.FUNNEL_RAMP_UP_TIMEOUT)) {
-          subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
+          subsystem.setIndexerMotorVoltage(subsystem.indexerShootingOutFunnelVoltage.get());
         }
       }
 
@@ -310,7 +319,7 @@ public class Manipulator extends SubsystemBase {
     REMOVE_ALGAE {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
+        subsystem.setIndexerMotorVoltage(subsystem.indexerRemovingAlgaeVoltage.get());
       }
 
       @Override
