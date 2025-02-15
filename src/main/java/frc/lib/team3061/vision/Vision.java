@@ -117,7 +117,7 @@ public class Vision extends SubsystemBase {
     }
 
     // AprilTag layout alert
-    if (APRILTAG_FIELD_LAYOUT_PATH != OFFICIAL_APRILTAG_FIELD_LAYOUT_PATH) {
+    if (!APRILTAG_FIELD_LAYOUT_PATH.equals(OFFICIAL_APRILTAG_FIELD_LAYOUT_PATH)) {
       unofficialAprilTagLayoutAlert.set(true);
       unofficialAprilTagLayoutAlert.setText(
           "Unofficial AprilTag layout in use ("

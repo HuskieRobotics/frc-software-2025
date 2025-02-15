@@ -64,13 +64,13 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToNearestLeftBranchButton() {
-    return rotateJoystickButtons[1];
+  public Trigger getAlignToScoreCoralLeftButton() {
+    return translateJoystickButtons[4];
   }
 
   @Override
-  public Trigger getDriveToNearestRightBranchButton() {
-    return rotateJoystickButtons[2];
+  public Trigger getAlignToScoreCoralRightButton() {
+    return translateJoystickButtons[5];
   }
 
   @Override

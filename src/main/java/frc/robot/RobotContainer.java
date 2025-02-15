@@ -31,7 +31,9 @@ import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.ClimberCommandFactory;
+import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DriveToPose;
+import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.New2025RobotConfig;
@@ -46,6 +48,9 @@ import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.manipulator.Manipulator;
+import frc.robot.subsystems.manipulator.ManipulatorIO;
+import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +69,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Manipulator manipulator;
   private Climber climber;
   private Elevator elevator;
 
@@ -130,6 +136,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
+      manipulator = new Manipulator(new ManipulatorIO() {});
       climber = new Climber(new ClimberIO() {});
       elevator = new Elevator(new ElevatorIO() {});
     }
@@ -195,6 +202,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
@@ -224,6 +232,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
@@ -232,6 +241,7 @@ public class RobotContainer {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
@@ -256,6 +266,8 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
+
+    manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
@@ -297,18 +309,10 @@ public class RobotContainer {
     configureVisionCommands();
 
     ClimberCommandFactory.registerCommands(oi, climber);
+    ElevatorCommandsFactory.registerCommands(oi, elevator);
+    CrossSubsystemsCommandsFactory.registerCommands(oi, elevator, manipulator);
 
-    // example which will be replaced when manipulator is merged into main
-    // oi.getEnablePrimaryIRSensors()
-    //     .onTrue(
-    //         Commands.runOnce(manipulator::enablePrimaryIRSensors)
-    //             .withName("enable primary IR sensors"));
-    // oi.getEnablePrimaryIRSensors()
-    //     .onFalse(
-    //         Commands.runOnce(manipulator::disablePrimaryIRSensors)
-    //             .withName("disable primary IR sensors"));
-
-    // Endgame alerts
+    // Endgame alerts[]
     new Trigger(
             () ->
                 DriverStation.isTeleopEnabled()

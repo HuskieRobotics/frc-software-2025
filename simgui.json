@@ -25,6 +25,7 @@
       "/SmartDashboard/SysId Chooser": "String Chooser",
       "/SmartDashboard/SystemStatus/ClearAllFaults": "Command",
       "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/Manipulator/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/Subsystem/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/SwerveModule0/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/SwerveModule1/SystemCheck": "Command",
