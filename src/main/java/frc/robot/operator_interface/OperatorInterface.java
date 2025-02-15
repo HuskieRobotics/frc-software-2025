@@ -55,7 +55,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getVisionIsEnabledSwitch() {
+  public default Trigger getVisionIsEnabledTrigger() {
     return new Trigger(() -> false);
   }
 
@@ -118,6 +118,34 @@ public interface OperatorInterface {
   }
 
   public default Trigger getZeroClimberButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getEnablePrimaryIRSensors() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getLevel1Trigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getLevel2Trigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getLevel3Trigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getLevel4Trigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRemoveHighAlgaeTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRemoveLowAlgaeTrigger() {
     return new Trigger(() -> false);
   }
 
