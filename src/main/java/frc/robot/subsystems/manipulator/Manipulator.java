@@ -149,6 +149,8 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (DriverStation.isDisabled() && subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
+        } else if (subsystem.inputs.isIndexerIRBlocked) {
+          subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         }
       }
 
