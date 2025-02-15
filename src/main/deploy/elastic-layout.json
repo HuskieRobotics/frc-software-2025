@@ -103,66 +103,79 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Algae Toggle",
-            "x": 848.0,
-            "y": 144.0,
-            "width": 416.0,
-            "height": 384.0,
+            "title": "High Algae Removal",
+            "x": 672.0,
+            "y": 208.0,
+            "width": 432.0,
+            "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorInterface/Algae Toggle",
+              "topic": "/Tuning/operatorDashboard/High Algae Removal",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Low Algae Removal",
+            "x": 672.0,
+            "y": 368.0,
+            "width": 432.0,
+            "height": 144.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Low Algae Removal",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Level 1",
-            "x": 80.0,
+            "x": 64.0,
             "y": 528.0,
-            "width": 496.0,
+            "width": 544.0,
             "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorInterface/Level 1",
+              "topic": "/Tuning/operatorDashboard/Level 1",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Level 2",
-            "x": 80.0,
+            "x": 64.0,
             "y": 368.0,
-            "width": 496.0,
+            "width": 544.0,
             "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorInterface/Level 2",
+              "topic": "/Tuning/operatorDashboard/Level 2",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Level 3 ",
-            "x": 80.0,
+            "x": 64.0,
             "y": 208.0,
-            "width": 496.0,
+            "width": 544.0,
             "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorInterface/Level 3 ",
+              "topic": "/Tuning/operatorDashboard/Level 3 ",
               "period": 0.06,
               "data_type": "boolean"
             }
           },
           {
             "title": "Level 4 ",
-            "x": 80.0,
+            "x": 64.0,
             "y": 48.0,
-            "width": 496.0,
+            "width": 544.0,
             "height": 144.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/Tuning/operatorInterface/Level 4 ",
+              "topic": "/Tuning/operatorDashboard/Level 4 ",
               "period": 0.06,
               "data_type": "boolean"
             }
@@ -199,6 +212,32 @@
               "topic": "/SmartDashboard/SysId Chooser",
               "period": 0.06,
               "sort_options": false
+            }
+          },
+          {
+            "title": "Enable Primary IR Sensors",
+            "x": 416.0,
+            "y": 48.0,
+            "width": 288.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Enable Primary IR Sensors",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Enable Vision",
+            "x": 416.0,
+            "y": 192.0,
+            "width": 288.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Enable Vision",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]
