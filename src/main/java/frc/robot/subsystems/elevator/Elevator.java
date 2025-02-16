@@ -116,7 +116,7 @@ public class Elevator extends SubsystemBase {
       }
     } else {
       //have the hardstop set point be a little above zero, and then when we get there, have a constant voltage until we hit the hardstop and then zero the elevator
-      if (targetPosition == ReefBranch.HARDSTOP && getPosition().in(Inches) < BELOW_HARDSTOP.in(Inches)) {
+      if (targetPosition == ReefBranch.HARDSTOP && getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches)) {
         elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
         if(Math.abs(current.lastValue()) > STALL_CURRENT) {
           elevatorIO.setMotorVoltage(0);
