@@ -148,9 +148,6 @@ public class DriveToPose extends Command {
     xController.reset(currentPose.getX());
     yController.reset(currentPose.getY());
     thetaController.reset(currentPose.getRotation().getRadians());
-    xController.setTolerance(driveTolerance.get());
-    yController.setTolerance(driveTolerance.get());
-    thetaController.setTolerance(thetaTolerance.get());
     this.targetPose = poseSupplier.get();
 
     Logger.recordOutput("DriveToPose/targetPose", targetPose);
@@ -188,13 +185,6 @@ public class DriveToPose extends Command {
         },
         driveMaxVelocity,
         driveMaxAcceleration);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        tolerance -> {
-          xController.setTolerance(tolerance[0]);
-          yController.setTolerance(tolerance[0]);
-        },
-        driveTolerance);
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -207,8 +197,6 @@ public class DriveToPose extends Command {
         max -> thetaController.setConstraints(new TrapezoidProfile.Constraints(max[0], max[1])),
         thetaMaxVelocity,
         thetaMaxAcceleration);
-    LoggedTunableNumber.ifChanged(
-        hashCode(), tolerance -> thetaController.setTolerance(tolerance[0]), thetaTolerance);
 
     Pose2d currentPose = drivetrain.getPose();
 
@@ -217,9 +205,14 @@ public class DriveToPose extends Command {
     double thetaVelocity =
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
-    if (xController.atGoal()) xVelocity = 0.0;
-    if (yController.atGoal()) yVelocity = 0.0;
-    if (thetaController.atGoal()) thetaVelocity = 0.0;
+
+    Transform2d difference = drivetrain.getPose().minus(targetPose);
+    if (difference.getY() < 0.05 && difference.getY() > 0) {
+      yVelocity += 0.5;
+    }
+    if (difference.getY() > -0.05 && difference.getY() < 0) {
+      yVelocity -= 0.5;
+    }
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 

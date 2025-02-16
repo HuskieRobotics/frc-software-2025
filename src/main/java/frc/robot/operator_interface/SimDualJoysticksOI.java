@@ -65,12 +65,12 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToNearestLeftBranchButton() {
+  public Trigger getAlignToScoreCoralLeftButton() {
     return rotateJoystickButtons[2];
   }
 
   @Override
-  public Trigger getPrepareElevatorToScoreButton() {
+  public Trigger getAlignToScoreCoralRightButton() {
     return rotateJoystickButtons[3];
   }
 
