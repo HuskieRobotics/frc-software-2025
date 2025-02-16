@@ -203,11 +203,12 @@ public class DriveToPose extends Command {
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
 
     Transform2d difference = drivetrain.getPose().minus(targetPose);
-    if (difference.getY() < 0.05 && difference.getY() > 0) {
-      yVelocity += closeVelocityBoost.get();
-    }
-    if (difference.getY() > -0.05 && difference.getY() < 0) {
-      yVelocity -= closeVelocityBoost.get();
+    if (Math.abs(difference.getX()) < 0.0762) {
+      if (difference.getY() < 0.05 && difference.getY() > 0) {
+        yVelocity -= closeVelocityBoost.get();
+      } else if (difference.getY() > -0.05 && difference.getY() < 0) {
+        yVelocity += closeVelocityBoost.get();
+      }
     }
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
