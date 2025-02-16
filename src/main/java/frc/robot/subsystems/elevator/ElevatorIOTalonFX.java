@@ -171,6 +171,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.Feedback.SensorToMechanismRatio = GEAR_RATIO;
 
+    config.CurrentLimits.SupplyCurrentLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerTime = 0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
     config.MotorOutput.Inverted =
         IS_INVERTED ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
 

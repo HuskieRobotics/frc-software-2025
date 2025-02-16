@@ -103,4 +103,6 @@ public class ElevatorConstants {
 
   public static final Distance BELOW_ALGAE_1_HEIGHT = Inches.of(7.0);
   public static final Distance ABOVE_ALGAE_1_HEIGHT = Inches.of(16.0);
+
+  public static final double ELEVATOR_PEAK_CURRENT_LIMIT = 60.0;
 }

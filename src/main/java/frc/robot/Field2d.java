@@ -44,6 +44,7 @@ public class Field2d {
 
   private Map<Pose2d, Pose2d> leftReefPoses = new HashMap<Pose2d, Pose2d>();
   private Map<Pose2d, Pose2d> rightReefPoses = new HashMap<Pose2d, Pose2d>();
+  private Map<Pose2d, Pose2d> removeAlgaePoses = new HashMap<Pose2d, Pose2d>();
 
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
       6.469; // taken from FieldConstants adjustY for reef y offset
@@ -244,9 +245,16 @@ public class Field2d {
                   RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
                   Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
                   Rotation2d.fromDegrees(180)));
+      Pose2d removeAlgaePose =
+          reefCenterFace.transformBy(
+              new Transform2d(
+                  RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                  -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                  Rotation2d.fromDegrees(180)));
 
       leftReefPoses.put(reefCenterFace, leftPose);
       rightReefPoses.put(reefCenterFace, rightPose);
+      removeAlgaePoses.put(reefCenterFace, removeAlgaePose);
     }
   }
 
@@ -259,8 +267,10 @@ public class Field2d {
     Pose2d bumpersOnReefAlignedToBranch;
     if (side == Side.LEFT) {
       bumpersOnReefAlignedToBranch = leftReefPoses.get(nearestReefCenterFace);
-    } else {
+    } else if (side == Side.RIGHT) {
       bumpersOnReefAlignedToBranch = rightReefPoses.get(nearestReefCenterFace);
+    } else {
+      bumpersOnReefAlignedToBranch = removeAlgaePoses.get(nearestReefCenterFace);
     }
 
     return bumpersOnReefAlignedToBranch;
@@ -268,6 +278,7 @@ public class Field2d {
 
   public enum Side {
     LEFT,
-    RIGHT
+    RIGHT,
+    REMOVE_ALGAE
   }
 }

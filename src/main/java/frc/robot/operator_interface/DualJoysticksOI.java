@@ -65,12 +65,12 @@ public class DualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getAlignToScoreCoralLeftButton() {
-    return translateJoystickButtons[4];
+    return translateJoystickButtons[2];
   }
 
   @Override
   public Trigger getAlignToScoreCoralRightButton() {
-    return translateJoystickButtons[5];
+    return rotateJoystickButtons[2];
   }
 
   @Override
