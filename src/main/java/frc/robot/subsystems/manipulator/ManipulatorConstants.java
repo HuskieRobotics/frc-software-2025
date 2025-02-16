@@ -33,14 +33,14 @@ public class ManipulatorConstants {
   public static final double GEAR_RATIO_MANIPULATOR = 1.0;
 
   // tunable PID constants for both motors -- ALL ARE TBD
-  public static final double FUNNEL_MOTOR_KP = 0;
+  public static final double FUNNEL_MOTOR_KP = 2.0;
   public static final double FUNNEL_MOTOR_KI = 0;
   public static final double FUNNEL_MOTOR_KD = 0;
-  public static final double FUNNEL_MOTOR_KS = 0;
-  public static final double FUNNEL_MOTOR_KV = 0.05;
-  public static final double FUNNEL_MOTOR_KA = 0.01;
+  public static final double FUNNEL_MOTOR_KS = 5.4239;
+  public static final double FUNNEL_MOTOR_KV = 0.031366;
+  public static final double FUNNEL_MOTOR_KA = 0.015456;
 
-  public static final double INDEXER_MOTOR_KP = 0;
+  public static final double INDEXER_MOTOR_KP = 0.0;
   public static final double INDEXER_MOTOR_KI = 0;
   public static final double INDEXER_MOTOR_KD = 0;
   public static final double INDEXER_MOTOR_KS = 0;
@@ -54,7 +54,8 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -10;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 8.0;
 
-  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
+  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 10.0;
+  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL_HIGH = 40.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -9.5;
 
@@ -88,9 +89,11 @@ public class ManipulatorConstants {
   public static final double EJECT_CORAL_DURATION_SECONDS = 5.0;
 
   // current limits -- all are set to default values
-  public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
+  public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 60;
 
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
+
+  public static final double FUNNEL_STALL_VELOCITY_THRESHOLD_RPS = 1.0;
 }
