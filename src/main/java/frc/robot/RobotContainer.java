@@ -148,7 +148,8 @@ public class RobotContainer {
 
     updateOI();
 
-    AutonomousCommandFactory.getInstance().configureAutoCommands(drivetrain, vision);
+    AutonomousCommandFactory.getInstance()
+        .configureAutoCommands(drivetrain, vision, manipulator, elevator);
 
     // Alert when tuning
     if (Constants.TUNING_MODE) {
@@ -296,8 +297,6 @@ public class RobotContainer {
     CommandScheduler.getInstance().clearComposedCommands();
     configureButtonBindings();
   }
-
-  private void registerHeightCommands() {}
 
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {

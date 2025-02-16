@@ -21,6 +21,9 @@ import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.FieldConstants;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -69,16 +72,17 @@ public class AutonomousCommandFactory {
     return autoChooser.get();
   }
 
-  public void configureAutoCommands(Drivetrain drivetrain, Vision vision) {
+  public void configureAutoCommands(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
     /************* PathPlanner Named Commands *****************/
     NamedCommands.registerCommand(
-        "Score Left L4", getScoreL4Command(drivetrain, vision, Side.LEFT));
+        "Score Left L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
     NamedCommands.registerCommand(
-        "Score Right L4", getScoreL4Command(drivetrain, vision, Side.RIGHT));
-    NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand());
+        "Score Right L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
+    NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand(manipulator));
 
     /************ Two Piece Blue Left ************
      *
@@ -86,7 +90,8 @@ public class AutonomousCommandFactory {
      *
      */
 
-    Command twoPieceBlueLeft = getTwoCoralLeftAutoCommand(drivetrain, vision);
+    Command twoPieceBlueLeft =
+        getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
 
     /************ Two Piece Blue Right ************
@@ -94,7 +99,8 @@ public class AutonomousCommandFactory {
      * 2 corals scored E L4; D L4
      *
      */
-    Command twoPieceBlueRight = getTwoCoralRightAutoCommand(drivetrain, vision);
+    Command twoPieceBlueRight =
+        getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("2 Piece Blue Right", twoPieceBlueRight);
 
     /************ Start Point ************
@@ -235,7 +241,8 @@ public class AutonomousCommandFactory {
                 Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
   }
 
-  public Command getTwoCoralLeftAutoCommand(Drivetrain drivetrain, Vision vision) {
+  public Command getTwoCoralLeftAutoCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
       PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
       PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
@@ -244,13 +251,13 @@ public class AutonomousCommandFactory {
 
       return Commands.sequence(
           AutoBuilder.followPath(scoreCoralJ2BL),
-          getScoreL4Command(drivetrain, vision, Side.RIGHT),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralJ2BL),
-          getCollectCoralCommand(),
+          getCollectCoralCommand(manipulator),
           AutoBuilder.followPath(scoreCoralK2BL),
-          getScoreL4Command(drivetrain, vision, Side.LEFT),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralK2BL),
-          getCollectCoralCommand());
+          getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
       pathFileMissingAlert.setText(
@@ -261,7 +268,8 @@ public class AutonomousCommandFactory {
     }
   }
 
-  public Command getTwoCoralRightAutoCommand(Drivetrain drivetrain, Vision vision) {
+  public Command getTwoCoralRightAutoCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
       PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral F 2BR");
       PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral F 2BR");
@@ -270,13 +278,13 @@ public class AutonomousCommandFactory {
 
       return Commands.sequence(
           AutoBuilder.followPath(scoreCoralE2BR),
-          getScoreL4Command(drivetrain, vision, Side.LEFT),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralE2BR),
-          getCollectCoralCommand(),
+          getCollectCoralCommand(manipulator),
           AutoBuilder.followPath(scoreCoralD2BR),
-          getScoreL4Command(drivetrain, vision, Side.RIGHT),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralD2BR),
-          getCollectCoralCommand());
+          getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
       pathFileMissingAlert.setText(
@@ -290,22 +298,32 @@ public class AutonomousCommandFactory {
   // When programmed, each score coral command will drive to the specified pose on the reef and then
   // score the coral
 
-  private Command getScoreL4Command(Drivetrain drivetrain, Vision vision, Side side) {
+  private Command getScoreL4Command(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator, Side side) {
     return Commands.sequence(
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-        new DriveToPose(
-            drivetrain,
-            () -> Field2d.getInstance().getNearestBranch(side),
-            new Transform2d(
-                Units.inchesToMeters(2.0), Units.inchesToMeters(1.0), Rotation2d.fromDegrees(2.0))),
+        Commands.parallel(
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+                Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
+            new DriveToPose(
+                drivetrain,
+                () -> Field2d.getInstance().getNearestBranch(side),
+                new Transform2d(
+                    Units.inchesToMeters(2.0),
+                    Units.inchesToMeters(1.0),
+                    Rotation2d.fromDegrees(2.0)))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-        Commands.waitSeconds(1));
+        Commands.runOnce(manipulator::shootCoral, manipulator),
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
 
   // when programmed, this will wait until a coral is fully detected within the robot (use
   // manipulator state machine)
-  private Command getCollectCoralCommand() {
-    return Commands.waitSeconds(1);
+  private Command getCollectCoralCommand(Manipulator manipulator) {
+    return Commands.waitUntil(manipulator::hasCoral);
   }
 
   private Command createTuningAutoPath(
