@@ -250,11 +250,17 @@ public class AutonomousCommandFactory {
       PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
 
       return Commands.sequence(
-          AutoBuilder.followPath(scoreCoralJ2BL),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralJ2BL),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralJ2BL),
           getCollectCoralCommand(manipulator),
-          AutoBuilder.followPath(scoreCoralK2BL),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralK2BL),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralK2BL),
           getCollectCoralCommand(manipulator));
@@ -277,7 +283,10 @@ public class AutonomousCommandFactory {
       PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
 
       return Commands.sequence(
-          AutoBuilder.followPath(scoreCoralE2BR),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralE2BR),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralE2BR),
           getCollectCoralCommand(manipulator),
@@ -303,17 +312,14 @@ public class AutonomousCommandFactory {
     return Commands.sequence(
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
         Commands.parallel(
-            Commands.sequence(
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-                Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
             new DriveToPose(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
                 new Transform2d(
                     Units.inchesToMeters(2.0),
                     Units.inchesToMeters(1.0),
-                    Rotation2d.fromDegrees(2.0)))),
+                    Rotation2d.fromDegrees(2.0))),
+            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.runOnce(
