@@ -84,14 +84,10 @@ public class DriveToPose extends Command {
           RobotConfig.getInstance()
               .getDriveToPoseTurnMaxAcceleration()
               .in(RadiansPerSecondPerSecond));
-  private static final LoggedTunableNumber driveTolerance =
-      new LoggedTunableNumber(
-          "DriveToPose/DriveToleranceMeters",
-          RobotConfig.getInstance().getDriveToPoseDriveTolerance().in(Meters));
-  private static final LoggedTunableNumber thetaTolerance =
-      new LoggedTunableNumber(
-          "DriveToPose/ThetaToleranceRadians",
-          RobotConfig.getInstance().getDriveToPoseThetaTolerance().in(Radians));
+
+  private static final LoggedTunableNumber closeVelocityBoost =
+      new LoggedTunableNumber("DriveToPose/close velocity boost", 0.5);
+
   private static final LoggedTunableNumber timeout =
       new LoggedTunableNumber("DriveToPose/timeout", 5.0);
 
@@ -208,10 +204,10 @@ public class DriveToPose extends Command {
 
     Transform2d difference = drivetrain.getPose().minus(targetPose);
     if (difference.getY() < 0.05 && difference.getY() > 0) {
-      yVelocity += 0.5;
+      yVelocity += closeVelocityBoost.get();
     }
     if (difference.getY() > -0.05 && difference.getY() < 0) {
-      yVelocity -= 0.5;
+      yVelocity -= closeVelocityBoost.get();
     }
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
