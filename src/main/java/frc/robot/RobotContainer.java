@@ -514,26 +514,26 @@ public class RobotContainer {
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
 
     // drive to left branch of nearest reef face
-    oi.getDriveToNearestLeftBranchButton()
+    oi.getAlignToScoreCoralLeftButton()
         .onTrue(
             new DriveToPose(
                     drivetrain,
                     () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                     new Transform2d(
                         Units.inchesToMeters(2.0),
-                        Units.inchesToMeters(1.0),
+                        Units.inchesToMeters(0.5),
                         Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
-    oi.getDriveToNearestRightBranchButton()
+    oi.getAlignToScoreCoralRightButton()
         .onTrue(
             new DriveToPose(
                     drivetrain,
                     () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                     new Transform2d(
                         Units.inchesToMeters(2.0),
-                        Units.inchesToMeters(1.0),
+                        Units.inchesToMeters(0.5),
                         Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest right branch"));
 
