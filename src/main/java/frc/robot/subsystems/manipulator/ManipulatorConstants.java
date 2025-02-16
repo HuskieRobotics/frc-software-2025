@@ -27,12 +27,10 @@ public class ManipulatorConstants {
 
   public static final int INDEXER_IR_BACKUP_SENSOR_ID = 1;
 
-  // not sure what this is???
   public static final double GEAR_RATIO_FUNNEL = 1.0;
-
   public static final double GEAR_RATIO_MANIPULATOR = 1.0;
 
-  // tunable PID constants for both motors -- ALL ARE TBD
+  // tunable PID constants for both motors
   public static final double FUNNEL_MOTOR_KP = 0;
   public static final double FUNNEL_MOTOR_KI = 0;
   public static final double FUNNEL_MOTOR_KD = 0;
@@ -77,7 +75,7 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
-  // used for timer
+  // used for timer in indexing coral in manipulator state
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;
 
   // timeout for letting funnel ramp up and whole funnel scoring timeout

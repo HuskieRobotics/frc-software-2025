@@ -95,8 +95,7 @@ public class Manipulator extends SubsystemBase {
   private boolean removeAlgaeButtonPressed = false;
 
   private boolean algaeRemoved =
-      false; // need to actually figure out the IO stuff with this... how do we actually know if the
-  // algae has been removed??
+      false;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -345,10 +344,7 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        if (subsystem
-            .algaeRemoved) // I created an instance variable (algaeRemoved) thqat would keep track
-        // if the algae was removed but I need to do the IO stuff to actually
-        // check if the algae has been removed
+        if (subsystem.algaeRemoved)
         {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
           subsystem.algaeRemoved = false;
@@ -467,8 +463,6 @@ public class Manipulator extends SubsystemBase {
     io.setIndexerMotorVelocity(velocity);
   }
 
-  // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
-  // same exact thing but for the funnel and indexer motor, unsure if this is correct
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
