@@ -27,12 +27,13 @@ import frc.lib.team3061.vision.VisionConstants;
 import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
-import frc.lib.team6328.util.LoggedTunableBoolean;
 import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.ClimberCommandFactory;
+import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DriveToPose;
+import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.New2025RobotConfig;
@@ -47,6 +48,9 @@ import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.manipulator.Manipulator;
+import frc.robot.subsystems.manipulator.ManipulatorIO;
+import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -64,6 +68,7 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Manipulator manipulator;
   private Climber climber;
   private Elevator elevator;
 
@@ -77,21 +82,6 @@ public class RobotContainer {
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
 
   private Alert tuningAlert = new Alert("Tuning mode enabled", AlertType.kInfo);
-
-  private final LoggedTunableBoolean testBoolean =
-      new LoggedTunableBoolean("operatorInterface/testBoolean", false, true);
-
-  private final LoggedTunableBoolean level1 =
-      new LoggedTunableBoolean("operatorInterface/Level 1", false, true);
-  private final LoggedTunableBoolean level2 =
-      new LoggedTunableBoolean("operatorInterface/Level 2", false, true);
-  private final LoggedTunableBoolean level3 =
-      new LoggedTunableBoolean("operatorInterface/Level 3 ", false, true);
-  private final LoggedTunableBoolean level4 =
-      new LoggedTunableBoolean("operatorInterface/Level 4 ", false, true);
-
-  private final LoggedTunableBoolean algaeToggle =
-      new LoggedTunableBoolean("operatorInterface/Algae Toggle", false, true);
 
   /**
    * Create the container for the robot. Contains subsystems, operator interface (OI) devices, and
@@ -145,6 +135,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
+      manipulator = new Manipulator(new ManipulatorIO() {});
       climber = new Climber(new ClimberIO() {});
       elevator = new Elevator(new ElevatorIO() {});
     }
@@ -210,14 +201,16 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
-    DrivetrainIO drivetrainIO = new DrivetrainIOCTRE();
-    drivetrain = new Drivetrain(drivetrainIO);
+    drivetrain = new Drivetrain(new DrivetrainIOCTRE());
 
+    String[] cameraNames = config.getCameraNames();
+    VisionIO[] visionIOs = new VisionIO[cameraNames.length];
     AprilTagFieldLayout layout;
     try {
       layout = new AprilTagFieldLayout(VisionConstants.APRILTAG_FIELD_LAYOUT_PATH);
@@ -228,15 +221,17 @@ public class RobotContainer {
       layoutFileMissingAlert.set(true);
     }
 
-    vision =
-        new Vision(
-            new VisionIO[] {
-              new VisionIOSim(
-                  layout,
-                  drivetrain::getPose,
-                  RobotConfig.getInstance().getRobotToCameraTransforms()[0])
-            });
+    for (int i = 0; i < visionIOs.length; i++) {
+      visionIOs[i] =
+          new VisionIOSim(
+              cameraNames[i],
+              layout,
+              drivetrain::getPose,
+              RobotConfig.getInstance().getRobotToCameraTransforms()[0]);
+    }
+    vision = new Vision(visionIOs);
 
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
@@ -245,6 +240,7 @@ public class RobotContainer {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
@@ -269,6 +265,8 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
+
+    manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
@@ -310,8 +308,10 @@ public class RobotContainer {
     configureVisionCommands();
 
     ClimberCommandFactory.registerCommands(oi, climber);
+    ElevatorCommandsFactory.registerCommands(oi, elevator);
+    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator);
 
-    // Endgame alerts
+    // Endgame alerts[]
     new Trigger(
             () ->
                 DriverStation.isTeleopEnabled()
@@ -416,26 +416,26 @@ public class RobotContainer {
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
 
     // drive to left branch of nearest reef face
-    oi.getDriveToNearestLeftBranchButton()
+    oi.getAlignToScoreCoralLeftButton()
         .onTrue(
             new DriveToPose(
                     drivetrain,
                     () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                     new Transform2d(
-                        Units.inchesToMeters(7.0),
-                        Units.inchesToMeters(1.0),
+                        Units.inchesToMeters(2.0),
+                        Units.inchesToMeters(0.5),
                         Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
-    oi.getDriveToNearestRightBranchButton()
+    oi.getAlignToScoreCoralRightButton()
         .onTrue(
             new DriveToPose(
                     drivetrain,
                     () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                     new Transform2d(
-                        Units.inchesToMeters(7.0),
-                        Units.inchesToMeters(1.0),
+                        Units.inchesToMeters(2.0),
+                        Units.inchesToMeters(0.5),
                         Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest right branch"));
 
@@ -453,12 +453,12 @@ public class RobotContainer {
 
   private void configureVisionCommands() {
     // enable/disable vision
-    oi.getVisionIsEnabledSwitch()
+    oi.getVisionIsEnabledTrigger()
         .onTrue(
             Commands.runOnce(() -> vision.enable(true))
                 .ignoringDisable(true)
                 .withName("enable vision"));
-    oi.getVisionIsEnabledSwitch()
+    oi.getVisionIsEnabledTrigger()
         .onFalse(
             Commands.runOnce(() -> vision.enable(false), vision)
                 .ignoringDisable(true)
@@ -479,49 +479,6 @@ public class RobotContainer {
   }
 
   public void periodic() {
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level2.set(false);
-            level3.set(false);
-            level4.set(false);
-          }
-        },
-        level1);
-
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level1.set(false);
-            level3.set(false);
-            level4.set(false);
-          }
-        },
-        level2);
-
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level1.set(false);
-            level2.set(false);
-            level4.set(false);
-          }
-        },
-        level3);
-
-    LoggedTunableBoolean.ifChanged(
-        hashCode(),
-        reefLevels -> {
-          if (reefLevels[0]) {
-            level1.set(false);
-            level2.set(false);
-            level3.set(false);
-          }
-        },
-        level4);
     // add robot-wide periodic code here
   }
 

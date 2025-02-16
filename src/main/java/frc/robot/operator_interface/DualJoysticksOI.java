@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Class for controlling the robot with two joysticks. */
-public class DualJoysticksOI implements OperatorInterface {
+public class DualJoysticksOI extends OperatorDashboard {
   private final CommandJoystick translateJoystick;
   private final CommandJoystick rotateJoystick;
   private final Trigger[] translateJoystickButtons;
@@ -64,12 +64,12 @@ public class DualJoysticksOI implements OperatorInterface {
   }
 
   @Override
-  public Trigger getDriveToNearestLeftBranchButton() {
-    return rotateJoystickButtons[1];
+  public Trigger getAlignToScoreCoralLeftButton() {
+    return translateJoystickButtons[2];
   }
 
   @Override
-  public Trigger getDriveToNearestRightBranchButton() {
+  public Trigger getAlignToScoreCoralRightButton() {
     return rotateJoystickButtons[2];
   }
 
