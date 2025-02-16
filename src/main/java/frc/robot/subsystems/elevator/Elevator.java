@@ -178,7 +178,7 @@ public class Elevator extends SubsystemBase {
         break;
 
       case HARDSTOP:
-        height = BELOW_HARDSTOP;
+        height = JUST_ABOVE_HARDSTOP;
         break;
 
       default:
