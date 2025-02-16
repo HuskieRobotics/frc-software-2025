@@ -65,10 +65,6 @@ public class Manipulator extends SubsystemBase {
   public final LoggedTunableNumber funnelCollectionVoltage =
       new LoggedTunableNumber(
           "Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-  public final LoggedTunableNumber funnelCollectionVoltageHigh =
-      new LoggedTunableNumber(
-          "Manipulator/Funnel/CollectionVoltageHigh",
-          FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL_HIGH);
   public final LoggedTunableNumber funnelEjectingVoltage =
       new LoggedTunableNumber(
           "Manipulator/Funnel/EjectingVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
@@ -93,8 +89,6 @@ public class Manipulator extends SubsystemBase {
           0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
   // filter's impulse response, and the second value is the time-period, how often
   // the calculate() method will be called
-
-  private LinearFilter funnelVelocityInRPS = LinearFilter.singlePoleIIR(0.1, 0.02);
 
   private boolean shootCoralButtonPressed = false;
   private boolean scoreCoralThroughFunnelButtonPressed = false;
@@ -133,11 +127,11 @@ public class Manipulator extends SubsystemBase {
   private final SysIdRoutine sysIDFunnel = // changed name from SysIDManipulator to SysIDFunnel
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              Volts.of(5).per(Second), // Use default ramp rate (1 V/s)
-              Volts.of(40), // Use default step voltage (7 V)
+              null, // Use default ramp rate (1 V/s)
+              null, // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
-              sysIDState -> SignalLogger.writeString("SysId_State", sysIDState.toString())),
+              sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
               output -> setFunnelMotorCurrent(output.in(Volts)), null, this));
 
@@ -148,7 +142,7 @@ public class Manipulator extends SubsystemBase {
               null, // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
-              sysIDState -> SignalLogger.writeString("SysId_State", sysIDState.toString())),
+              sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
               output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
 
@@ -174,17 +168,12 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-        subsystem.funnelVelocityInRPS.reset();
       }
 
       @Override
       void execute(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-
-        if (subsystem.funnelVelocityInRPS.lastValue() < FUNNEL_STALL_VELOCITY_THRESHOLD_RPS) {
-          subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltageHigh.get());
-        }
 
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
@@ -211,11 +200,6 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-
-        if (subsystem.funnelVelocityInRPS.lastValue() < FUNNEL_STALL_VELOCITY_THRESHOLD_RPS) {
-          subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltageHigh.get());
-        }
-
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
                 > THRESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
@@ -418,7 +402,6 @@ public class Manipulator extends SubsystemBase {
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/scoreThroughFunnelPressed", scoreCoralThroughFunnelButtonPressed);
     currentInAmps.calculate(inputs.indexerStatorCurrentAmps);
-    funnelVelocityInRPS.calculate(inputs.funnelVelocityRPS);
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if
     // non-zero)

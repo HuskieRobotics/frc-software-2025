@@ -265,8 +265,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
    */
   @Override
   public void setFunnelMotorVoltage(double volts) {
-    // this.funnelMotor.setControl(funnelVoltageRequest.withOutput(volts));
-    this.funnelMotor.setControl(funnelCurrentRequest.withOutput(volts));
+    this.funnelMotor.setControl(funnelVoltageRequest.withOutput(volts));
   }
 
   /**
