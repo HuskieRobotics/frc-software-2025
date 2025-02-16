@@ -115,9 +115,13 @@ public class Elevator extends SubsystemBase {
         elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
       }
     } else {
-      if (targetPosition == ReefBranch.HARDSTOP && Math.abs(current.lastValue()) > STALL_CURRENT) {
-        elevatorIO.setMotorVoltage(0);
-        elevatorIO.zeroPosition();
+      //have the hardstop set point be a little above zero, and then when we get there, have a constant voltage until we hit the hardstop and then zero the elevator
+      if (targetPosition == ReefBranch.HARDSTOP && getPosition().in(Inches) < BELOW_HARDSTOP.in(Inches)) {
+        elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
+        if(Math.abs(current.lastValue()) > STALL_CURRENT) {
+          elevatorIO.setMotorVoltage(0);
+          elevatorIO.zeroPosition();
+        }
       } else if (Constants.getMode() == Mode.SIM
           && targetPosition == ReefBranch.HARDSTOP
           && inputs.positionInches < 0.0) {
@@ -125,6 +129,7 @@ public class Elevator extends SubsystemBase {
         elevatorIO.zeroPosition();
       }
     }
+    
   }
 
   private Distance reefBranchToDistance(ReefBranch reefBranch) {
@@ -195,7 +200,7 @@ public class Elevator extends SubsystemBase {
 
   public void goToPosition(ReefBranch reefBranch) {
     targetPosition = reefBranch;
-    elevatorIO.setPosition(reefBranchToDistance(reefBranch));
+      elevatorIO.setPosition(reefBranchToDistance(reefBranch));
   }
 
   public Distance getPosition() {

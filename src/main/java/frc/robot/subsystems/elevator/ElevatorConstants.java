@@ -10,9 +10,10 @@ public class ElevatorConstants {
 
   public static final double TOLERANCE_INCHES = 0.25;
   public static final Distance MAX_HEIGHT = Inches.of(74);
+
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
 
-  public static final Distance BELOW_HARDSTOP = Inches.of(-1.0);
+  public static final Distance BELOW_HARDSTOP = Inches.of(1.0); // set hardstop a bit above 0
 
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
   public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
@@ -29,6 +30,8 @@ public class ElevatorConstants {
   public static final boolean TESTING = true;
 
   public static final String SUBSYSTEM_NAME = "Elevator";
+
+  public static final double ELEVATOR_LOWERING_VOLTAGE = -1.0; // FIXME: Update this value
 
   // FIXME: Update all K values
 
