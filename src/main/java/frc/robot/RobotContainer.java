@@ -321,7 +321,7 @@ public class RobotContainer {
 
     ClimberCommandFactory.registerCommands(oi, climber);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
-    CrossSubsystemsCommandsFactory.registerCommands(oi, elevator, manipulator);
+    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator);
 
     // Endgame alerts[]
     new Trigger(
@@ -520,7 +520,7 @@ public class RobotContainer {
                     drivetrain,
                     () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                     new Transform2d(
-                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(2.0),
                         Units.inchesToMeters(1.0),
                         Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest left branch"));
@@ -532,7 +532,7 @@ public class RobotContainer {
                     drivetrain,
                     () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                     new Transform2d(
-                        Units.inchesToMeters(7.0),
+                        Units.inchesToMeters(2.0),
                         Units.inchesToMeters(1.0),
                         Rotation2d.fromDegrees(2.0)))
                 .withName("drive to nearest right branch"));

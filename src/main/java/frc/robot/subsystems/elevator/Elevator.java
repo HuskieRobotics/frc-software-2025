@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
 import org.littletonrobotics.junction.Logger;
@@ -106,6 +108,11 @@ public class Elevator extends SubsystemBase {
       }
     } else {
       if (targetPosition == ReefBranch.HARDSTOP && Math.abs(current.lastValue()) > STALL_CURRENT) {
+        elevatorIO.setMotorVoltage(0);
+        elevatorIO.zeroPosition();
+      } else if (Constants.getMode() == Mode.SIM
+          && targetPosition == ReefBranch.HARDSTOP
+          && inputs.positionInches < 0.0) {
         elevatorIO.setMotorVoltage(0);
         elevatorIO.zeroPosition();
       }
@@ -205,5 +212,55 @@ public class Elevator extends SubsystemBase {
 
   public boolean isAtSelectedPosition() {
     return isAtPosition(getSelectedPosition());
+  }
+
+  private ReefBranch getSelectedAlgaePosition() {
+    if (OISelector.getOperatorInterface().getRemoveLowAlgaeTrigger().getAsBoolean()) {
+      return ReefBranch.ALGAE_1;
+    } else if (OISelector.getOperatorInterface().getRemoveHighAlgaeTrigger().getAsBoolean()) {
+      return ReefBranch.ALGAE_2;
+    } else {
+      return ReefBranch.HARDSTOP;
+    }
+  }
+
+  public boolean isAlgaePositionSelected() {
+    return getSelectedAlgaePosition() != ReefBranch.HARDSTOP;
+  }
+
+  public void goBelowSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      goToPosition(ReefBranch.BELOW_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      goToPosition(ReefBranch.BELOW_ALGAE_2);
+    }
+  }
+
+  public void goAboveSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      goToPosition(ReefBranch.ABOVE_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      goToPosition(ReefBranch.ABOVE_ALGAE_2);
+    }
+  }
+
+  public boolean isBelowSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      return isAtPosition(ReefBranch.BELOW_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      return isAtPosition(ReefBranch.BELOW_ALGAE_2);
+    } else {
+      return true;
+    }
+  }
+
+  public boolean isAboveSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      return isAtPosition(ReefBranch.ABOVE_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      return isAtPosition(ReefBranch.ABOVE_ALGAE_2);
+    } else {
+      return true;
+    }
   }
 }
