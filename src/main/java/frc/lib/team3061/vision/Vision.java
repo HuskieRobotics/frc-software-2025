@@ -43,6 +43,8 @@ public class Vision extends SubsystemBase {
   private int[] updatePoseCount;
   private Alert[] disconnectedAlerts;
 
+  private List<Integer> camerasToConsider = new ArrayList<>();
+
   private AprilTagFieldLayout layout;
   private Alert noAprilTagLayoutAlert =
       new Alert(
@@ -94,9 +96,12 @@ public class Vision extends SubsystemBase {
     this.updatePoseCount = new int[visionIOs.length];
     this.inputs = new VisionIOInputsAutoLogged[visionIOs.length];
     this.disconnectedAlerts = new Alert[visionIOs.length];
+    this.camerasToConsider = new ArrayList<>();
+
     for (int i = 0; i < visionIOs.length; i++) {
       this.inputs[i] = new VisionIOInputsAutoLogged();
       this.disconnectedAlerts[i] = new Alert("camera" + i + " is disconnected", AlertType.kError);
+      this.camerasToConsider.add(i);
     }
 
     // retrieve a reference to the pose estimator singleton
@@ -146,6 +151,7 @@ public class Vision extends SubsystemBase {
     this.allRobotPosesRejected.clear();
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
+
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
       this.cyclesWithNoResults[cameraIndex] += 1;
 
@@ -190,6 +196,7 @@ public class Vision extends SubsystemBase {
           // single-tag, ensure the ambiguity is less than the threshold.
           boolean acceptPose =
               isEnabled
+                  && this.camerasToConsider.contains(cameraIndex)
                   && (observation.type() == PoseObservationType.MULTI_TAG
                       || observation.averageAmbiguity() < AMBIGUITY_THRESHOLD)
                   && (observation.type() == PoseObservationType.SINGLE_TAG
@@ -298,6 +305,10 @@ public class Vision extends SubsystemBase {
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsEnabled", isEnabled);
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsUpdating", isVisionUpdating);
+  }
+
+  public void specifyCamerasToConsider(List<Integer> cameraIndices) {
+    this.camerasToConsider = cameraIndices;
   }
 
   /**

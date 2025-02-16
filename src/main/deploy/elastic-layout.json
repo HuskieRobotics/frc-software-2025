@@ -94,7 +94,82 @@
       "name": "Autonomous",
       "grid_layout": {
         "layouts": [],
-        "containers": []
+        "containers": [
+          {
+            "title": "alignedForAuto",
+            "x": 304.0,
+            "y": 48.0,
+            "width": 240.0,
+            "height": 160.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/PathFinding/alignedForAuto",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "rotDiff",
+            "x": 304.0,
+            "y": 224.0,
+            "width": 240.0,
+            "height": 272.0,
+            "type": "Radial Gauge",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/PathFinding/rotDiff",
+              "period": 0.06,
+              "data_type": "double",
+              "start_angle": -180.0,
+              "end_angle": 180.0,
+              "min_value": -180.0,
+              "max_value": 180.0,
+              "number_of_labels": 8,
+              "wrap_value": false,
+              "show_pointer": true,
+              "show_ticks": true
+            }
+          },
+          {
+            "title": "xDiff",
+            "x": 64.0,
+            "y": 48.0,
+            "width": 224.0,
+            "height": 160.0,
+            "type": "Number Bar",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/PathFinding/xDiff",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": -2.0,
+              "max_value": 2.0,
+              "divisions": 5,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          },
+          {
+            "title": "yDiff",
+            "x": 64.0,
+            "y": 224.0,
+            "width": 224.0,
+            "height": 160.0,
+            "type": "Number Bar",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/PathFinding/yDiff",
+              "period": 0.06,
+              "data_type": "double",
+              "min_value": -2.0,
+              "max_value": 2.0,
+              "divisions": 5,
+              "inverted": false,
+              "orientation": "horizontal"
+            }
+          }
+        ]
       }
     },
     {

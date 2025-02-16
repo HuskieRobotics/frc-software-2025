@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.352,
+        "y": 7.05267551369863
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 2.5240034246575345,
+        "y": 6.496725171232876
+      },
+      "isLocked": false,
+      "linkedName": "Collect Coral"
+    },
+    {
+      "anchor": {
+        "x": 3.5397441723695464,
+        "y": 5.328360076721557
+      },
+      "prevControl": {
+        "x": 2.457894857301053,
+        "y": 6.109695693159914
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Near Branch L"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 2.0,
+    "rotation": -57.99499999999999
+  },
+  "reversed": false,
+  "folder": "2 Piece Blue Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -53.13010235415599
+  },
+  "useDefaultConstraints": true
+}

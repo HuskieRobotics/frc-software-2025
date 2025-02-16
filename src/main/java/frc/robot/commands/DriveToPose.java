@@ -93,7 +93,7 @@ public class DriveToPose extends Command {
           "DriveToPose/ThetaToleranceRadians",
           RobotConfig.getInstance().getDriveToPoseThetaTolerance().in(Radians));
   private static final LoggedTunableNumber timeout =
-      new LoggedTunableNumber("DriveToPose/timeout", 50.0);
+      new LoggedTunableNumber("DriveToPose/timeout", 5.0);
 
   private final ProfiledPIDController xController =
       new ProfiledPIDController(
@@ -152,6 +152,8 @@ public class DriveToPose extends Command {
     yController.setTolerance(driveTolerance.get());
     thetaController.setTolerance(thetaTolerance.get());
     this.targetPose = poseSupplier.get();
+
+    drivetrain.enableAccelerationLimiting();
 
     Logger.recordOutput("DriveToPose/targetPose", targetPose);
 
@@ -212,11 +214,33 @@ public class DriveToPose extends Command {
 
     Pose2d currentPose = drivetrain.getPose();
 
+    // Transform2d difference = currentPose.minus(targetPose);
+    // double highVelocityDistanceThresholdMeters = 1.0; // arbitrary 1 meters away right now
+    // double straightLineHighVelocityMPS = 2.0; // arbitrary 2 m/s right now
+
+    // use last values of filter
     double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
     double yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
     double thetaVelocity =
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+
+    // xVelocity =
+    //     Math.abs(difference.getX()) > highVelocityDistanceThresholdMeters
+    //         ? (xController.calculate(currentPose.getX(), this.targetPose.getX()) >= 0
+    //             ? straightLineHighVelocityMPS
+    //             : -straightLineHighVelocityMPS)
+    //         : xController.calculate(currentPose.getX(), this.targetPose.getX());
+    // yVelocity =
+    //     Math.abs(difference.getY()) > highVelocityDistanceThresholdMeters
+    //         ? (yController.calculate(currentPose.getY(), this.targetPose.getY()) >= 0
+    //             ? straightLineHighVelocityMPS
+    //             : -straightLineHighVelocityMPS)
+    //         : yController.calculate(currentPose.getY(), this.targetPose.getY());
+    // thetaVelocity =
+    //     thetaController.calculate(
+    //         currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
+
     if (xController.atGoal()) xVelocity = 0.0;
     if (yController.atGoal()) yVelocity = 0.0;
     if (thetaController.atGoal()) thetaVelocity = 0.0;
@@ -260,6 +284,7 @@ public class DriveToPose extends Command {
    */
   @Override
   public void end(boolean interrupted) {
+    drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
     running = false;
   }
