@@ -22,7 +22,6 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,6 +67,13 @@ public class Vision extends SubsystemBase {
   private List<Pose3d> allRobotPoses = new ArrayList<>();
   private List<Pose3d> allRobotPosesAccepted = new ArrayList<>();
   private List<Pose3d> allRobotPosesRejected = new ArrayList<>();
+  private List<Pose3d> allTagPoses = new ArrayList<>();
+
+  private List<List<Pose3d>> tagPoses;
+  private List<List<Pose3d>> cameraPoses;
+  private List<List<Pose3d>> robotPoses;
+  private List<List<Pose3d>> robotPosesAccepted;
+  private List<List<Pose3d>> robotPosesRejected;
 
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
@@ -98,10 +104,22 @@ public class Vision extends SubsystemBase {
     this.disconnectedAlerts = new Alert[visionIOs.length];
     this.camerasToConsider = new ArrayList<>();
 
+    tagPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
+    cameraPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
+    robotPoses = new ArrayList<List<Pose3d>>(visionIOs.length);
+    robotPosesAccepted = new ArrayList<List<Pose3d>>(visionIOs.length);
+    robotPosesRejected = new ArrayList<List<Pose3d>>(visionIOs.length);
+
     for (int i = 0; i < visionIOs.length; i++) {
       this.inputs[i] = new VisionIOInputsAutoLogged();
       this.disconnectedAlerts[i] = new Alert("camera" + i + " is disconnected", AlertType.kError);
       this.camerasToConsider.add(i);
+
+      tagPoses.add(new ArrayList<>());
+      cameraPoses.add(new ArrayList<>());
+      robotPoses.add(new ArrayList<>());
+      robotPosesAccepted.add(new ArrayList<>());
+      robotPosesRejected.add(new ArrayList<>());
     }
 
     // retrieve a reference to the pose estimator singleton
@@ -149,6 +167,7 @@ public class Vision extends SubsystemBase {
     this.allRobotPoses.clear();
     this.allRobotPosesAccepted.clear();
     this.allRobotPosesRejected.clear();
+    this.allTagPoses.clear();
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
 
@@ -156,27 +175,31 @@ public class Vision extends SubsystemBase {
       this.cyclesWithNoResults[cameraIndex] += 1;
 
       // Initialize logging values
-      List<Pose3d> tagPoses = new LinkedList<>();
-      List<Pose3d> cameraPoses = new LinkedList<>();
-      List<Pose3d> robotPoses = new LinkedList<>();
-      List<Pose3d> robotPosesAccepted = new LinkedList<>();
-      List<Pose3d> robotPosesRejected = new LinkedList<>();
+      tagPoses.get(cameraIndex).clear();
+      cameraPoses.get(cameraIndex).clear();
+      robotPoses.get(cameraIndex).clear();
+      robotPosesAccepted.get(cameraIndex).clear();
+      robotPosesRejected.get(cameraIndex).clear();
 
       for (PoseObservation observation : inputs[cameraIndex].poseObservations) {
         // only process the vision data if the timestamp is newer than the last one
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()) {
+          final int finalCameraIndex = cameraIndex;
           // get tag poses and update last detection times
           for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
             if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
               lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
               Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
-              tagPose.ifPresent(tagPoses::add);
+              tagPose.ifPresent(
+                  (e) -> {
+                    tagPoses.get(finalCameraIndex).add(e);
+                  });
             }
           }
 
           // Initialize logging values
           this.lastTimestamps[cameraIndex] = observation.timestamp();
-          cameraPoses.add(observation.cameraPose());
+          cameraPoses.get(cameraIndex).add(observation.cameraPose());
           Pose3d estimatedRobotPose3d =
               observation
                   .cameraPose()
@@ -185,7 +208,7 @@ public class Vision extends SubsystemBase {
                           .getRobotToCameraTransforms()[cameraIndex]
                           .inverse());
           Pose2d estimatedRobotPose2d = estimatedRobotPose3d.toPose2d();
-          robotPoses.add(estimatedRobotPose3d);
+          robotPoses.get(cameraIndex).add(estimatedRobotPose3d);
 
           // only update the pose estimator if the vision subsystem is enabled and the vision's
           // estimated pose is on (or very close to) the field
@@ -201,7 +224,7 @@ public class Vision extends SubsystemBase {
                   && poseIsOnField(estimatedRobotPose3d);
 
           if (acceptPose) {
-            robotPosesAccepted.add(estimatedRobotPose3d);
+            robotPosesAccepted.get(cameraIndex).add(estimatedRobotPose3d);
             lastPoseEstimationAcceptedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
 
             Matrix<N3, N1> stdDev = getStandardDeviations(cameraIndex, observation);
@@ -231,7 +254,7 @@ public class Vision extends SubsystemBase {
             Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraIndex + "/StdDevY", stdDev.get(1, 0));
             Logger.recordOutput(SUBSYSTEM_NAME + "/" + cameraIndex + "/StdDevT", stdDev.get(2, 0));
           } else {
-            robotPosesRejected.add(estimatedRobotPose3d);
+            robotPosesRejected.get(cameraIndex).add(estimatedRobotPose3d);
             lastPoseEstimationRejectedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
           }
           this.cyclesWithNoResults[cameraIndex] = 0;
@@ -247,19 +270,24 @@ public class Vision extends SubsystemBase {
           SUBSYSTEM_NAME + "/" + cameraIndex + "/CyclesWithNoResults",
           this.cyclesWithNoResults[cameraIndex]);
       Logger.recordOutput(
-          SUBSYSTEM_NAME + "/" + cameraIndex + "/TagPoses", tagPoses.toArray(Pose3d[]::new));
+          SUBSYSTEM_NAME + "/" + cameraIndex + "/TagPoses",
+          tagPoses.get(cameraIndex).toArray(Pose3d[]::new));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/CameraPoses",
-          cameraPoses.toArray(new Pose3d[cameraPoses.size()]));
+          cameraPoses.get(cameraIndex).toArray(new Pose3d[cameraPoses.get(cameraIndex).size()]));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotPoses",
-          robotPoses.toArray(new Pose3d[robotPoses.size()]));
+          robotPoses.get(cameraIndex).toArray(new Pose3d[robotPoses.get(cameraIndex).size()]));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotPosesAccepted",
-          robotPosesAccepted.toArray(new Pose3d[robotPosesAccepted.size()]));
+          robotPosesAccepted
+              .get(cameraIndex)
+              .toArray(new Pose3d[robotPosesAccepted.get(cameraIndex).size()]));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotPosesRejected",
-          robotPosesRejected.toArray(new Pose3d[robotPosesRejected.size()]));
+          robotPosesRejected
+              .get(cameraIndex)
+              .toArray(new Pose3d[robotPosesRejected.get(cameraIndex).size()]));
       Logger.recordOutput(
           SUBSYSTEM_NAME + "/" + cameraIndex + "/CameraAxes",
           new Pose3d(RobotOdometry.getInstance().getEstimatedPose())
@@ -291,7 +319,6 @@ public class Vision extends SubsystemBase {
         SUBSYSTEM_NAME + "/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
 
     // Log tag poses
-    List<Pose3d> allTagPoses = new ArrayList<>();
     for (Map.Entry<Integer, Double> detectionEntry : lastTagDetectionTimes.entrySet()) {
       if (Timer.getTimestamp() - detectionEntry.getValue() < TAG_LOG_TIME_SECS) {
         layout.getTagPose(detectionEntry.getKey()).ifPresent(allTagPoses::add);
