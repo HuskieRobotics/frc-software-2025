@@ -49,8 +49,7 @@ public class New2025RobotConfig extends RobotConfig {
       KilogramSquareMeters.of(6.5); // FIXME: update based on mass
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
-  private static final Distance WHEEL_RADIUS =
-      Meters.of(0.049930);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
@@ -77,8 +76,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_KV = 0.072502;
   private static final double DRIVE_KA = 0.43636;
 
-  private static final LinearVelocity MAX_VELOCITY =
-      MetersPerSecond.of(4.16); 
+  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.16);
   private static final LinearVelocity MAX_COAST_VELOCITY =
       MetersPerSecond.of(0.04); // FIXME: determine with real robot
   private static final double SLOW_MODE_MULTIPLIER = 0.7;

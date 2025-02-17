@@ -64,7 +64,7 @@ public class ElevatorConstants {
 
   public static final double CRUISE_VELOCITY = 0;
 
-  public static final double STALL_CURRENT = 50.0;
+  public static final double STALL_CURRENT = 40.0;
 
   public enum ReefBranch {
     HARDSTOP,
