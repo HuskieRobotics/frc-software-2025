@@ -9,6 +9,7 @@ public class ElevatorConstants {
   public static final boolean IS_INVERTED = true;
 
   public static final double TOLERANCE_INCHES = 0.25;
+
   public static final Distance MAX_HEIGHT = Inches.of(74);
 
   public static final Distance MIN_HEIGHT = Inches.of(0.0);
@@ -32,6 +33,10 @@ public class ElevatorConstants {
   public static final String SUBSYSTEM_NAME = "Elevator";
 
   public static final double ELEVATOR_LOWERING_VOLTAGE = -2.0; // FIXME: Update this value
+
+  public static final double ELEVATOR_RAISE_SLOW_VOLTAGE = 2.0; // FIXME: Update this value
+  
+  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -2.0; // FIXME: Update this value
 
   // FIXME: Update all K values
 

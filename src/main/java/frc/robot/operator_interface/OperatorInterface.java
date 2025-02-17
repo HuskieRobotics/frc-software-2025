@@ -149,6 +149,18 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger raiseElevatorSlow(){
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger lowerElevatorSlow(){
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getRaiseElevatorButton() {
+    return new Trigger(() -> false);
+  }
+
   // miscellaneous
   public default Trigger getInterruptAll() {
     return new Trigger(() -> false);

@@ -56,7 +56,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getResetPoseToVisionButton() {
-    return translateJoystickButtons[1];
+    return translateJoystickButtons[3];
   }
 
   @Override
@@ -71,7 +71,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getAlignToScoreCoralLeftButton() {
-    return rotateJoystickButtons[2];
+    return rotateJoystickButtons[4];
   }
 
   @Override
@@ -82,5 +82,15 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getScoreCoralButton() {
     return rotateJoystickButtons[4];
+  }
+
+  @Override
+  public Trigger getPrepareElevatorToScoreButton() {
+    return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getDeployIntakeButton() {
+    return translateJoystickButtons[2];
   }
 }

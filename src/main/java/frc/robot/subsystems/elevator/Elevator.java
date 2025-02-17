@@ -288,4 +288,17 @@ public class Elevator extends SubsystemBase {
       return true;
     }
   }
+
+  public void raiseElevatorSlow(){
+    elevatorIO.setMotorVoltage(ELEVATOR_RAISE_SLOW_VOLTAGE);
+  }
+  public void lowerElevatorSlow(){
+    elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
+  }
+  public void stop() {
+    elevatorIO.setMotorVoltage(0);
+  }
+  public void zero() {
+    elevatorIO.zeroPosition();
+  }
 }
