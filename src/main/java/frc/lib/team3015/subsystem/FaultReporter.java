@@ -279,7 +279,7 @@ public class FaultReporter {
     SystemStatus worstStatus = SystemStatus.OK;
 
     for (SubsystemFault f : subsystemFaults) {
-      if (f.sticky || f.timestamp > Timer.getFPGATimestamp() - 10) {
+      if (f.sticky || f.timestamp > Timer.getTimestamp() - 10) {
         if (f.isWarning) {
           if (worstStatus != SystemStatus.ERROR) {
             worstStatus = SystemStatus.WARNING;
