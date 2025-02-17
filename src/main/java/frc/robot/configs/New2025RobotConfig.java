@@ -73,9 +73,9 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_KP = 12.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
-  private static final double DRIVE_KS = 5.7421;
-  private static final double DRIVE_KV = 0.004493;
-  private static final double DRIVE_KA = 0.63109;
+  private static final double DRIVE_KS = 5.4854;
+  private static final double DRIVE_KV = 0.072502;
+  private static final double DRIVE_KA = 0.43636;
 
   private static final LinearVelocity MAX_VELOCITY =
       MetersPerSecond.of(6.0); // FIXME: determine with real robot
