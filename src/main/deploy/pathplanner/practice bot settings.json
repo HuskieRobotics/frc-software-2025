@@ -3,15 +3,13 @@
   "robotLength": 0.88,
   "holonomicMode": true,
   "pathFolders": [
-    "2 Piece Blue Left",
-    "2 Piece Blue Right",
     "Tuning"
   ],
   "autoFolders": [
     "Tuning"
   ],
   "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 1.5,
+  "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

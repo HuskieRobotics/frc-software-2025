@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.0,
-        "y": 1.0
+        "x": 7.016994863013698,
+        "y": 6.076005993150685
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.118033988749895,
-        "y": 1.0
+        "x": 6.32950819672131,
+        "y": 5.33765368852459
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 1.0
+        "x": 5.909938524590164,
+        "y": 5.469518442622951
       },
       "prevControl": {
-        "x": 3.4793093674254454,
-        "y": 1.0000000000000002
+        "x": 6.749077868852459,
+        "y": 5.889088114754098
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Near Branch J"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": -120.38
   },
   "reversed": false,
-  "folder": "Tuning",
+  "folder": "2 Piece Blue Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -120.38
   },
   "useDefaultConstraints": true
 }

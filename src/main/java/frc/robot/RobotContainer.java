@@ -4,9 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -16,10 +13,8 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
@@ -36,7 +31,9 @@ import frc.robot.Constants.Mode;
 import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.ClimberCommandFactory;
+import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.DriveToPose;
+import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.New2025RobotConfig;
@@ -51,10 +48,13 @@ import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
+import frc.robot.subsystems.manipulator.Manipulator;
+import frc.robot.subsystems.manipulator.ManipulatorIO;
+import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /**
@@ -69,20 +69,15 @@ public class RobotContainer {
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
   private Vision vision;
+  private Manipulator manipulator;
   private Climber climber;
   private Elevator elevator;
-
-  // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
-  private final LoggedDashboardChooser<Command> autoChooser =
-      new LoggedDashboardChooser<>("Auto Routine");
 
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
   private final LoggedNetworkNumber endgameAlert2 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #2", 10.0);
 
-  private Alert pathFileMissingAlert =
-      new Alert("Could not find the specified path file.", AlertType.kError);
   private static final String LAYOUT_FILE_MISSING =
       "Could not find the specified AprilTags layout file";
   private Alert layoutFileMissingAlert = new Alert(LAYOUT_FILE_MISSING, AlertType.kError);
@@ -141,6 +136,7 @@ public class RobotContainer {
         visionIOs[i] = new VisionIO() {};
       }
       vision = new Vision(visionIOs);
+      manipulator = new Manipulator(new ManipulatorIO() {});
       climber = new Climber(new ClimberIO() {});
       elevator = new Elevator(new ElevatorIO() {});
     }
@@ -152,7 +148,8 @@ public class RobotContainer {
 
     updateOI();
 
-    configureAutoCommands();
+    AutonomousCommandFactory.getInstance()
+        .configureAutoCommands(drivetrain, vision, manipulator, elevator);
 
     // Alert when tuning
     if (Constants.TUNING_MODE) {
@@ -206,6 +203,7 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
@@ -231,10 +229,11 @@ public class RobotContainer {
               cameraNames[i],
               layout,
               drivetrain::getPose,
-              RobotConfig.getInstance().getRobotToCameraTransforms()[0]);
+              RobotConfig.getInstance().getRobotToCameraTransforms()[i]);
     }
     vision = new Vision(visionIOs);
 
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
     climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
@@ -243,6 +242,7 @@ public class RobotContainer {
     // change the following to connect the subsystem being tested to actual hardware
     drivetrain = new Drivetrain(new DrivetrainIO() {});
     vision = new Vision(new VisionIO[] {new VisionIO() {}});
+    manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
@@ -267,6 +267,8 @@ public class RobotContainer {
       visionIOs[i] = new VisionIOPhotonVision(cameraNames[i], layout);
     }
     vision = new Vision(visionIOs);
+
+    manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
     elevator = new Elevator(new ElevatorIO() {});
   }
@@ -296,8 +298,6 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  private void registerHeightCommands() {}
-
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
 
@@ -308,18 +308,10 @@ public class RobotContainer {
     configureVisionCommands();
 
     ClimberCommandFactory.registerCommands(oi, climber);
+    ElevatorCommandsFactory.registerCommands(oi, elevator);
+    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator);
 
-    // example which will be replaced when manipulator is merged into main
-    // oi.getEnablePrimaryIRSensors()
-    //     .onTrue(
-    //         Commands.runOnce(manipulator::enablePrimaryIRSensors)
-    //             .withName("enable primary IR sensors"));
-    // oi.getEnablePrimaryIRSensors()
-    //     .onFalse(
-    //         Commands.runOnce(manipulator::disablePrimaryIRSensors)
-    //             .withName("disable primary IR sensors"));
-
-    // Endgame alerts
+    // Endgame alerts[]
     new Trigger(
             () ->
                 DriverStation.isTeleopEnabled()
@@ -349,92 +341,6 @@ public class RobotContainer {
         .onTrue(
             Commands.parallel(
                 new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
-  }
-
-  /** Use this method to define your commands for autonomous mode. */
-  private void configureAutoCommands() {
-    // Event Markers
-    new EventTrigger("Marker").onTrue(Commands.print("reached event marker"));
-    new EventTrigger("ZoneMarker").onTrue(Commands.print("entered zone"));
-    new EventTrigger("ZoneMarker").onFalse(Commands.print("left zone"));
-
-    // build auto path commands
-
-    // add commands to the auto chooser
-    autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
-
-    /************ Start Point ************
-     *
-     * useful for initializing the pose of the robot to a known location
-     *
-     */
-
-    Command startPoint =
-        Commands.runOnce(
-            () -> {
-              try {
-                drivetrain.resetPose(
-                    PathPlannerPath.fromPathFile("Start Point").getStartingDifferentialPose());
-              } catch (Exception e) {
-                pathFileMissingAlert.setText("Could not find the specified path file: Start Point");
-                pathFileMissingAlert.set(true);
-              }
-            },
-            drivetrain);
-    autoChooser.addOption("Start Point", startPoint);
-
-    /************ Distance Test ************
-     *
-     * used for empirically determining the wheel radius
-     *
-     */
-    autoChooser.addOption("Distance Test Slow", createTuningAutoPath("DistanceTestSlow", true));
-    autoChooser.addOption("Distance Test Med", createTuningAutoPath("DistanceTestMed", true));
-    autoChooser.addOption("Distance Test Fast", createTuningAutoPath("DistanceTestFast", true));
-
-    /************ Auto Tuning ************
-     *
-     * useful for tuning the autonomous PID controllers
-     *
-     */
-    autoChooser.addOption("Rotation Test Slow", createTuningAutoPath("RotationTestSlow", false));
-    autoChooser.addOption("Rotation Test Fast", createTuningAutoPath("RotationTestFast", false));
-
-    autoChooser.addOption("Oval Test Slow", createTuningAutoPath("OvalTestSlow", false));
-    autoChooser.addOption("Oval Test Fast", createTuningAutoPath("OvalTestFast", false));
-
-    /************ Drive Velocity Tuning ************
-     *
-     * useful for tuning the drive velocity PID controller
-     *
-     */
-    autoChooser.addOption(
-        "Drive Velocity Tuning",
-        AutonomousCommandFactory.getDriveVelocityTuningCommand(drivetrain));
-
-    /************ Swerve Rotation Tuning ************
-     *
-     * useful for tuning the swerve module rotation PID controller
-     *
-     */
-    autoChooser.addOption(
-        "Swerve Rotation Tuning",
-        AutonomousCommandFactory.getSwerveRotationTuningCommand(drivetrain));
-    /************ Drive Wheel Radius Characterization ************
-     *
-     * useful for characterizing the drive wheel Radius
-     *
-     */
-    autoChooser.addOption( // start by driving slowing in a circle to align wheels
-        "Drive Wheel Radius Characterization",
-        AutonomousCommandFactory.getDriveWheelRadiusCharacterizationCommand(drivetrain));
-  }
-
-  private Command createTuningAutoPath(String autoName, boolean measureDistance) {
-    return Commands.sequence(
-        Commands.runOnce(drivetrain::captureInitialConditions),
-        new PathPlannerAuto(autoName),
-        Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
   }
 
   private void configureDrivetrainCommands() {
@@ -514,25 +420,32 @@ public class RobotContainer {
     // drive to left branch of nearest reef face
     oi.getAlignToScoreCoralLeftButton()
         .onTrue(
-            new DriveToPose(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                    new Transform2d(
-                        Units.inchesToMeters(7.0),
-                        Units.inchesToMeters(1.0),
-                        Rotation2d.fromDegrees(2.0)))
+            Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                        new Transform2d(
+                            Units.inchesToMeters(2.0),
+                            Units.inchesToMeters(0.5),
+                            Rotation2d.fromDegrees(2.0))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getAlignToScoreCoralRightButton()
         .onTrue(
-            new DriveToPose(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                    new Transform2d(
-                        Units.inchesToMeters(7.0),
-                        Units.inchesToMeters(1.0),
-                        Rotation2d.fromDegrees(2.0)))
+            Commands.sequence(
+                    /* only consider front cameras for precision */
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                        new Transform2d(
+                            Units.inchesToMeters(2.0), /* tolerances */
+                            Units.inchesToMeters(0.5),
+                            Rotation2d.fromDegrees(2.0))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
                 .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
@@ -559,15 +472,6 @@ public class RobotContainer {
             Commands.runOnce(() -> vision.enable(false), vision)
                 .ignoringDisable(true)
                 .withName("disable vision"));
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return autoChooser.get();
   }
 
   /**

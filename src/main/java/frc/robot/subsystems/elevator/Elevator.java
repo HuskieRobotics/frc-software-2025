@@ -4,18 +4,31 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
+import frc.robot.Constants.Mode;
+import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
   private ElevatorIO elevatorIO;
+  private ReefBranch targetPosition = ReefBranch.HARDSTOP;
+
+  private LinearFilter current =
+      LinearFilter.singlePoleIIR(
+          0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
+  // filter's impulse response, and the second value is the time-period, how often
+  // the calculate() method will be called
 
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
@@ -36,21 +49,27 @@ public class Elevator extends SubsystemBase {
 
     // Add sysId routine for each stage of the elevator
 
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage1);
+    SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 1", sysIdRoutineStage1);
 
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage2);
+    SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 2", sysIdRoutineStage2);
 
-    SysIdRoutineChooser.getInstance().addOption("Subsystem Voltage", sysIdRoutineStage3);
+    SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 3", sysIdRoutineStage3);
 
     // FaultReporter.getInstance()
     //     .registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
+
+    SmartDashboard.putData(
+        SUBSYSTEM_NAME + "/Zero Elevator",
+        Commands.runOnce(elevatorIO::zeroPosition, this)
+            .ignoringDisable(true)
+            .withName("Zero Elevator"));
   }
 
   private final SysIdRoutine sysIdRoutineStage1 =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
+              Volts.of(2.0).per(Second), // Use default ramp rate (1 V/s)
+              Volts.of(2.0), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
@@ -60,8 +79,8 @@ public class Elevator extends SubsystemBase {
   private final SysIdRoutine sysIdRoutineStage2 =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
+              Volts.of(2).per(Second), // Use default ramp rate (1 V/s)
+              Volts.of(2), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
@@ -71,8 +90,8 @@ public class Elevator extends SubsystemBase {
   private final SysIdRoutine sysIdRoutineStage3 =
       new SysIdRoutine(
           new SysIdRoutine.Config(
-              null, // Use default ramp rate (1 V/s)
-              null, // Use default step voltage (7 V)
+              Volts.of(2).per(Second), // Use default ramp rate (1 V/s)
+              Volts.of(2), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               state -> SignalLogger.writeString("SysId_State", state.toString())),
@@ -84,12 +103,26 @@ public class Elevator extends SubsystemBase {
     elevatorIO.updateInputs(inputs);
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
+    Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
+
+    current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+
     if (testingMode.get() == 1) {
 
       if (elevatorVoltage.get() != 0) {
         elevatorIO.setMotorVoltage(elevatorVoltage.get());
       } else if (elevatorHeightInches.get() != 0) {
         elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
+      }
+    } else {
+      if (targetPosition == ReefBranch.HARDSTOP && Math.abs(current.lastValue()) > STALL_CURRENT) {
+        elevatorIO.setMotorVoltage(0);
+        elevatorIO.zeroPosition();
+      } else if (Constants.getMode() == Mode.SIM
+          && targetPosition == ReefBranch.HARDSTOP
+          && inputs.positionInches < 0.0) {
+        elevatorIO.setMotorVoltage(0);
+        elevatorIO.zeroPosition();
       }
     }
   }
@@ -122,6 +155,27 @@ public class Elevator extends SubsystemBase {
       case ALGAE_2:
         height = ALGAE2_HEIGHT;
         break;
+
+      case ABOVE_ALGAE_1:
+        height = ABOVE_ALGAE_1_HEIGHT;
+        break;
+
+      case BELOW_ALGAE_1:
+        height = BELOW_ALGAE_1_HEIGHT;
+        break;
+
+      case ABOVE_ALGAE_2:
+        height = ABOVE_ALGAE_2_HEIGHT;
+        break;
+
+      case BELOW_ALGAE_2:
+        height = BELOW_ALGAE_2_HEIGHT;
+        break;
+
+      case HARDSTOP:
+        height = BELOW_HARDSTOP;
+        break;
+
       default:
         height = MIN_HEIGHT;
         break;
@@ -140,10 +194,81 @@ public class Elevator extends SubsystemBase {
   }
 
   public void goToPosition(ReefBranch reefBranch) {
+    targetPosition = reefBranch;
     elevatorIO.setPosition(reefBranchToDistance(reefBranch));
   }
 
   public Distance getPosition() {
     return Inches.of(inputs.positionInches);
+  }
+
+  private ReefBranch getSelectedPosition() {
+    if (OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()) {
+      return ReefBranch.L4;
+    } else if (OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+      return ReefBranch.L3;
+    } else if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()) {
+      return ReefBranch.L2;
+    } else {
+      return ReefBranch.L1;
+    }
+  }
+
+  public void goToSelectedPosition() {
+    goToPosition(getSelectedPosition());
+  }
+
+  public boolean isAtSelectedPosition() {
+    return isAtPosition(getSelectedPosition());
+  }
+
+  private ReefBranch getSelectedAlgaePosition() {
+    if (OISelector.getOperatorInterface().getRemoveLowAlgaeTrigger().getAsBoolean()) {
+      return ReefBranch.ALGAE_1;
+    } else if (OISelector.getOperatorInterface().getRemoveHighAlgaeTrigger().getAsBoolean()) {
+      return ReefBranch.ALGAE_2;
+    } else {
+      return ReefBranch.HARDSTOP;
+    }
+  }
+
+  public boolean isAlgaePositionSelected() {
+    return getSelectedAlgaePosition() != ReefBranch.HARDSTOP;
+  }
+
+  public void goBelowSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      goToPosition(ReefBranch.BELOW_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      goToPosition(ReefBranch.BELOW_ALGAE_2);
+    }
+  }
+
+  public void goAboveSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      goToPosition(ReefBranch.ABOVE_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      goToPosition(ReefBranch.ABOVE_ALGAE_2);
+    }
+  }
+
+  public boolean isBelowSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      return isAtPosition(ReefBranch.BELOW_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      return isAtPosition(ReefBranch.BELOW_ALGAE_2);
+    } else {
+      return true;
+    }
+  }
+
+  public boolean isAboveSelectedAlgaePosition() {
+    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
+      return isAtPosition(ReefBranch.ABOVE_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
+      return isAtPosition(ReefBranch.ABOVE_ALGAE_2);
+    } else {
+      return true;
+    }
   }
 }

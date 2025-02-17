@@ -25,11 +25,16 @@
       "/SmartDashboard/SysId Chooser": "String Chooser",
       "/SmartDashboard/SystemStatus/ClearAllFaults": "Command",
       "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck": "Command",
+      "/SmartDashboard/SystemStatus/Manipulator/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/Subsystem/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/SwerveModule0/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/SwerveModule1/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/SwerveModule2/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/SwerveModule3/SystemCheck": "Command",
+      "/SmartDashboard/VisionSystemSim-OV2311BL/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-OV2311BR/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-OV2311FL/Sim Field": "Field2d",
+      "/SmartDashboard/VisionSystemSim-OV2311FR/Sim Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-simCamera/Sim Field": "Field2d"
     }
   },

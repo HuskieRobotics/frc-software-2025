@@ -32,7 +32,7 @@ public class RobotOdometry {
    * When tuning vision, it is useful to log vision pose estimates and display them in
    * AdvantageScope but not add them to the pose estimators.
    */
-  private static final boolean INCLUDE_VISION_POSE_ESTIMATES = false; // typically false
+  private static final boolean INCLUDE_VISION_POSE_ESTIMATES = false;
 
   /**
    * When tuning vision, it is useful to log vision pose estimates and display them in
