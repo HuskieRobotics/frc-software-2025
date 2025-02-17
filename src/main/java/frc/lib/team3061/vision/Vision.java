@@ -75,6 +75,8 @@ public class Vision extends SubsystemBase {
   private List<List<Pose3d>> robotPosesAccepted;
   private List<List<Pose3d>> robotPosesRejected;
 
+  private int clearPosesCount = 0;
+
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
@@ -164,10 +166,13 @@ public class Vision extends SubsystemBase {
       Logger.processInputs(SUBSYSTEM_NAME + "/" + cameraIndex, inputs[cameraIndex]);
     }
 
-    this.allRobotPoses.clear();
-    this.allRobotPosesAccepted.clear();
-    this.allRobotPosesRejected.clear();
-    this.allTagPoses.clear();
+    clearPosesCount++;
+    if (!ENABLE_DETAILED_LOGGING && clearPosesCount % CLEAR_POSES_PERIOD == 0) {
+      this.allRobotPoses.clear();
+      this.allRobotPosesAccepted.clear();
+      this.allRobotPosesRejected.clear();
+      this.allTagPoses.clear();
+    }
 
     for (int cameraIndex = 0; cameraIndex < visionIOs.length; cameraIndex++) {
 
