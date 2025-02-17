@@ -85,12 +85,12 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getPrepareElevatorToScoreButton() {
+  public Trigger getRaiseElevatorSlowButton() {
     return translateJoystickButtons[1];
   }
 
   @Override
-  public Trigger getDeployIntakeButton() {
+  public Trigger getLowerElevatorSlowButton() {
     return translateJoystickButtons[2];
   }
 }

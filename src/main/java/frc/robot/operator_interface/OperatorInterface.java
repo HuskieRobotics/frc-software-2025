@@ -149,15 +149,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger raiseElevatorSlow(){
+  public default Trigger getRaiseElevatorSlowButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger lowerElevatorSlow(){
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getRaiseElevatorButton() {
+  public default Trigger getLowerElevatorSlowButton() {
     return new Trigger(() -> false);
   }
 

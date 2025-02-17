@@ -76,6 +76,16 @@ public class DualJoysticksOI extends OperatorDashboard {
     return translateJoystickButtons[9];
   }
 
+  @Override
+  public Trigger getRaiseElevatorSlowButton() {
+    return translateJoystickButtons[10];
+  }
+
+  @Override
+  public Trigger getLowerElevatorSlowButton() {
+    return translateJoystickButtons[11];
+  }
+
   // Rotate Joystick
   @Override
   public double getRotate() {
@@ -110,16 +120,6 @@ public class DualJoysticksOI extends OperatorDashboard {
 
   @Override
   public Trigger getZeroClimberButton() {
-    return rotateJoystickButtons[11];
-  }
-
-  @Override
-  public Trigger raiseElevatorSlow(){
-    return rotateJoystickButtons[10];
-  }
-
-  @Override
-  public Trigger lowerElevatorSlow(){
     return rotateJoystickButtons[11];
   }
 }
