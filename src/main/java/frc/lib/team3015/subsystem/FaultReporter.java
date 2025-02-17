@@ -148,14 +148,14 @@ public class FaultReporter {
     CommandScheduler.getInstance()
         .schedule(
             Commands.repeatingSequence(
-                    Commands.runOnce(this::checkForFaults), Commands.waitSeconds(0.25))
+                    Commands.runOnce(this::checkForFaults), Commands.waitSeconds(1.0))
                 .ignoringDisable(true)
                 .withName("check for faults"));
 
     CommandScheduler.getInstance()
         .schedule(
             Commands.repeatingSequence(
-                    Commands.runOnce(this::publishStatus), Commands.waitSeconds(1.0))
+                    Commands.runOnce(this::publishStatus), Commands.waitSeconds(2.0))
                 .ignoringDisable(true)
                 .withName("publish faults"));
   }
