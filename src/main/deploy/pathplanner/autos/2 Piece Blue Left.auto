@@ -31,19 +31,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "#3 Score Coral K 2BL"
+            "pathName": "#3 Score Coral L 2BL"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score Left L4"
+            "name": "Score Right L4"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "#4 Collect Coral K 2BL"
+            "pathName": "#4 Collect Coral L 2BL"
           }
         },
         {

@@ -146,6 +146,8 @@ public class DriveToPose extends Command {
     thetaController.reset(currentPose.getRotation().getRadians());
     this.targetPose = poseSupplier.get();
 
+    drivetrain.enableAccelerationLimiting();
+
     Logger.recordOutput("DriveToPose/targetPose", targetPose);
 
     this.timer.restart();
@@ -196,6 +198,11 @@ public class DriveToPose extends Command {
 
     Pose2d currentPose = drivetrain.getPose();
 
+    // Transform2d difference = currentPose.minus(targetPose);
+    // double highVelocityDistanceThresholdMeters = 1.0; // arbitrary 1 meters away right now
+    // double straightLineHighVelocityMPS = 2.0; // arbitrary 2 m/s right now
+
+    // use last values of filter
     double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
     double yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
     double thetaVelocity =
@@ -250,6 +257,7 @@ public class DriveToPose extends Command {
    */
   @Override
   public void end(boolean interrupted) {
+    drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
     running = false;
   }

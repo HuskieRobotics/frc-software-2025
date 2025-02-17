@@ -62,7 +62,7 @@ public class Elevator extends SubsystemBase {
         SUBSYSTEM_NAME + "/Zero Elevator",
         Commands.runOnce(elevatorIO::zeroPosition, this)
             .ignoringDisable(true)
-            .withName("ClearAllFaults"));
+            .withName("Zero Elevator"));
   }
 
   private final SysIdRoutine sysIdRoutineStage1 =

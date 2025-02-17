@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.983439037104362,
-        "y": 5.280037525395637
+        "x": 5.29580910011574,
+        "y": 2.9433394820601846
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.578260362335842,
-        "y": 6.752609863358601
+        "x": 4.112708333333333,
+        "y": 1.8045533130787033
       },
       "isLocked": false,
-      "linkedName": "At Branch J"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3523116438356164,
-        "y": 7.05267551369863
+        "x": 1.473,
+        "y": 0.922
       },
       "prevControl": {
-        "x": 3.395527397260273,
-        "y": 6.451708904109589
+        "x": 3.035188356164383,
+        "y": 1.1175299657534241
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Collect Coral"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -53.13010235415599
+    "rotation": 53.941
   },
   "reversed": false,
-  "folder": "2 Piece Blue Left",
+  "folder": "2 Piece Blue Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -120.38
+    "rotation": 122.619
   },
   "useDefaultConstraints": true
 }

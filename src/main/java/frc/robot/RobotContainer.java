@@ -53,6 +53,7 @@ import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -147,7 +148,8 @@ public class RobotContainer {
 
     updateOI();
 
-    AutonomousCommandFactory.getInstance().configureAutoCommands(drivetrain);
+    AutonomousCommandFactory.getInstance()
+        .configureAutoCommands(drivetrain, vision, manipulator, elevator);
 
     // Alert when tuning
     if (Constants.TUNING_MODE) {
@@ -227,7 +229,7 @@ public class RobotContainer {
               cameraNames[i],
               layout,
               drivetrain::getPose,
-              RobotConfig.getInstance().getRobotToCameraTransforms()[0]);
+              RobotConfig.getInstance().getRobotToCameraTransforms()[i]);
     }
     vision = new Vision(visionIOs);
 
@@ -295,8 +297,6 @@ public class RobotContainer {
     CommandScheduler.getInstance().clearComposedCommands();
     configureButtonBindings();
   }
-
-  private void registerHeightCommands() {}
 
   /** Use this method to define your button->command mappings. */
   private void configureButtonBindings() {
@@ -418,25 +418,32 @@ public class RobotContainer {
     // drive to left branch of nearest reef face
     oi.getAlignToScoreCoralLeftButton()
         .onTrue(
-            new DriveToPose(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                    new Transform2d(
-                        Units.inchesToMeters(2.0),
-                        Units.inchesToMeters(0.5),
-                        Rotation2d.fromDegrees(2.0)))
+            Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                        new Transform2d(
+                            Units.inchesToMeters(2.0),
+                            Units.inchesToMeters(0.5),
+                            Rotation2d.fromDegrees(2.0))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getAlignToScoreCoralRightButton()
         .onTrue(
-            new DriveToPose(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                    new Transform2d(
-                        Units.inchesToMeters(2.0),
-                        Units.inchesToMeters(0.5),
-                        Rotation2d.fromDegrees(2.0)))
+            Commands.sequence(
+                    /* only consider front cameras for precision */
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToPose(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                        new Transform2d(
+                            Units.inchesToMeters(2.0), /* tolerances */
+                            Units.inchesToMeters(0.5),
+                            Rotation2d.fromDegrees(2.0))),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
                 .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());

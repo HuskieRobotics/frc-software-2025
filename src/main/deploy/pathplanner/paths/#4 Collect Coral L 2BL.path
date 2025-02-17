@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.983439037104362,
-        "y": 5.280037525395637
+        "x": 3.669874926486313,
+        "y": 5.076484642322497
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.578260362335842,
-        "y": 6.752609863358601
+        "x": 2.738292734705491,
+        "y": 5.707644745062224
       },
       "isLocked": false,
-      "linkedName": "At Branch J"
+      "linkedName": "At Branch L"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 7.05267551369863
       },
       "prevControl": {
-        "x": 3.395527397260273,
-        "y": 6.451708904109589
+        "x": 2.7497003424657533,
+        "y": 6.24128852739726
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "2 Piece Blue Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -120.38
+    "rotation": -57.99499999999999
   },
   "useDefaultConstraints": true
 }
