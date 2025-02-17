@@ -3,7 +3,7 @@ package frc.robot.subsystems.climber;
 public class ClimberConstants {
   public static final int CLIMBER_MOTOR_CAN_ID = 16;
 
-  public static final boolean CLIMBER_MOTOR_INVERTED = false;
+  public static final boolean CLIMBER_MOTOR_INVERTED = true; // untested, told to change
   public static final double CLIMBER_CONTINUOUS_CURRENT_LIMIT = 40.0;
   public static final double CLIMBER_STATOR_CURRENT_LIMIT = 60.0;
   public static final double CLIMBER_PEAK_CURRENT_LIMIT = 60.0;
