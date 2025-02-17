@@ -7,6 +7,9 @@ import org.littletonrobotics.junction.Logger;
 public class Climber extends SubsystemBase {
   private ClimberIO io;
 
+  private boolean extendingCageCatcher = false;
+  private boolean retractingSlow = false;
+
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
   private final LoggedTunableNumber climberVoltage =
@@ -16,21 +19,33 @@ public class Climber extends SubsystemBase {
     this.io = io;
   }
 
-  // getPosition() is placeholder
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
     if (testingMode.get() == 1) {
       io.setVoltage(climberVoltage.get());
+    } else if (inputs.voltage > 0
+        && this.extendingCageCatcher
+        && inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES) {
+      stop();
+      this.extendingCageCatcher = false;
     } else if (inputs.voltage > 0 && inputs.positionInches > ClimberConstants.MAX_HEIGHT_INCHES) {
       stop();
-    } else if (inputs.voltage < 0 && inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES) {
+    } else if (inputs.voltage < 0
+        && inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES
+        && !retractingSlow) {
       stop();
     }
   }
 
   public void extend() {
+    this.extendingCageCatcher = false;
+    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
+  }
+
+  public void extendCageCatcher() {
+    this.extendingCageCatcher = true;
     io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
@@ -39,6 +54,7 @@ public class Climber extends SubsystemBase {
   }
 
   public void retractSlow() {
+    retractingSlow = true;
     io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
   }
 
@@ -47,11 +63,18 @@ public class Climber extends SubsystemBase {
   }
 
   public void stop() {
+    retractingSlow = false;
     io.setVoltage(0);
   }
 
   public void zero() {
     io.zeroPosition();
+  }
+
+  // should we add a tolerance here for if the position slips a little bit?
+  public boolean cageCatcherReleased() {
+    return !this.extendingCageCatcher
+        && inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES - 0.0;
   }
 
   public double getPosition() {

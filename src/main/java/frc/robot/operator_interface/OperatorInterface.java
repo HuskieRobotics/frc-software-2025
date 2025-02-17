@@ -76,6 +76,7 @@ public interface OperatorInterface {
   }
 
   // drivetrain, game-specific
+
   public default Trigger getPrepareElevatorToScoreButton() {
     return new Trigger(() -> false);
   }
@@ -84,7 +85,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getPrepClimbSequence() {
+  public default Trigger getExtendClimberButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getExtendCageCatcherButton() {
     return new Trigger(() -> false);
   }
 
