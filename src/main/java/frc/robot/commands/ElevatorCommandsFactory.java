@@ -27,7 +27,7 @@ public class ElevatorCommandsFactory {
         .onFalse(
             Commands.sequence(
                     Commands.runOnce(elevator::stop, elevator),
-                    Commands.runOnce(elevator::zero, elevator).withName("stop and zero elevator"))
+                    Commands.runOnce(elevator::zero, elevator))
                 .withName("stop and zero elevator"));
   }
 }

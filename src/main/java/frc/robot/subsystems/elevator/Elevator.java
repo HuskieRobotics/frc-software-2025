@@ -41,6 +41,8 @@ public class Elevator extends SubsystemBase {
   private final LoggedTunableNumber elevatorHeightInches =
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
+  private boolean loweringVoltageApplied = false;
+
   public Elevator(ElevatorIO io) {
 
     this.elevatorIO = io;
@@ -106,8 +108,6 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
-
-    boolean loweringVoltageApplied = false;
 
     if (testingMode.get() == 1) {
 
