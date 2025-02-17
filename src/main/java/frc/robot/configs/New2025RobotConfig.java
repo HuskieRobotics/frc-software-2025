@@ -70,7 +70,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double ANGLE_KV = 2.2855;
   private static final double ANGLE_KA = 0.080209;
 
-  private static final double DRIVE_KP = 12.0;
+  private static final double DRIVE_KP = 14.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
   private static final double DRIVE_KS = 5.4854;
