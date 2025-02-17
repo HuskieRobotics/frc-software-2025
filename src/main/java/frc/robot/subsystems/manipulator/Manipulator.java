@@ -172,9 +172,6 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
-        subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (DriverStation.isDisabled() && subsystem.inputs.isIndexerIRBlocked) {
@@ -186,12 +183,14 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void onExit(Manipulator subsystem) {
-        /*NO-OP */
+        subsystem.setIndexerMotorVoltage(0.0);
+        subsystem.setFunnelMotorVoltage(0.0);
       }
     },
     INDEXING_CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
+        subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         subsystem.coralInIndexingState.restart(); // start timer
         subsystem.currentInAmps
