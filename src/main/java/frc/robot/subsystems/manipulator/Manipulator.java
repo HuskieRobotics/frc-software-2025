@@ -497,7 +497,7 @@ public class Manipulator extends SubsystemBase {
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
-  // method to shoot coral which assigns coral  button pressed to true
+  // method to shoot coral which assigns coral button pressed to true
   public void shootCoral() {
     shootCoralButtonPressed = true;
   }

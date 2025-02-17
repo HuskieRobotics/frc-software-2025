@@ -91,4 +91,13 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
+
+  //constants for the Manipulator System test --> all tbd
+  public static final double FUNNEL_MOTOR_VOLTAGE_DURING_SYSTEM_CHECK = 0.0; 
+
+  public static final double INDEXER_MOTOR_VOLTAGE_DURING_SYSTEM_CHECK = 0.0;
+
+  public static final double FUNNEL_MOTOR_VELOCITY_TOLERANCE_DURING_SYSTEM_CHECK = 0.0;
+  
+  public static final double INDEXER_MOTOR_VELOCITY_TOLERANCE_DURING_SYSTEM_CHECK = 0.0;
 }
