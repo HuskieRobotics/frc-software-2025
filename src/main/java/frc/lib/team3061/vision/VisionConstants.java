@@ -30,8 +30,6 @@ public final class VisionConstants {
   // logged
   public static final double TAG_LOG_TIME_SECS = 0.1;
 
-  public static final int CLEAR_POSES_PERIOD = 5;
-
   // Vision poses that were estimated more than this many seconds ago are considered stale and are
   // not logged
   public static final double POSE_LOG_TIME_SECS = 0.1;
