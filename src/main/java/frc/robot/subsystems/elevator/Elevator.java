@@ -118,20 +118,24 @@ public class Elevator extends SubsystemBase {
       }
     } else {
       if (targetPosition == ReefBranch.HARDSTOP
-          && getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches)) {
+          && getPosition().in(Inches) < (JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES)) {
 
         if (!loweringVoltageApplied) {
           elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
           loweringVoltageApplied = true;
+        }
 
-          if (Math.abs(current.lastValue()) > STALL_CURRENT) {
+        if (Math.abs(current.lastValue()) > STALL_CURRENT) {
 
             elevatorIO.setMotorVoltage(0);
             elevatorIO.zeroPosition();
-            loweringVoltageApplied = false;
-          }
         }
-      } else if (Constants.getMode() == Mode.SIM
+      }
+      else if(targetPosition != ReefBranch.HARDSTOP){
+        loweringVoltageApplied = false;
+      } 
+      
+      else if (Constants.getMode() == Mode.SIM
           && targetPosition == ReefBranch.HARDSTOP
           && inputs.positionInches < 0.0) {
         elevatorIO.setMotorVoltage(0);
