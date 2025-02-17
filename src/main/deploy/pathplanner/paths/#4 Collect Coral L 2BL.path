@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.0,
-        "y": 1.0
+        "x": 3.669874926486313,
+        "y": 5.076484642322497
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.118033988749895,
-        "y": 1.0
+        "x": 2.738292734705491,
+        "y": 5.707644745062224
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "At Branch L"
     },
     {
       "anchor": {
-        "x": 5.0,
-        "y": 1.0
+        "x": 1.3523116438356164,
+        "y": 7.05267551369863
       },
       "prevControl": {
-        "x": 3.4793093674254454,
-        "y": 1.0000000000000002
+        "x": 2.7497003424657533,
+        "y": 6.24128852739726
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Collect Coral"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -53.13010235415599
   },
   "reversed": false,
-  "folder": "Tuning",
+  "folder": "2 Piece Blue Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -57.99499999999999
   },
   "useDefaultConstraints": true
 }
