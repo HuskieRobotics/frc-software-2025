@@ -301,6 +301,8 @@ public class Vision extends SubsystemBase {
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsEnabled", isEnabled);
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsUpdating", isVisionUpdating);
+
+    Logger.recordOutput(SUBSYSTEM_NAME + "/CamerasToConsider", camerasToConsider.toString());
   }
 
   public void specifyCamerasToConsider(List<Integer> cameraIndices) {
