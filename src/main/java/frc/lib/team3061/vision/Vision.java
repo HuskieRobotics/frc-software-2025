@@ -182,6 +182,10 @@ public class Vision extends SubsystemBase {
       robotPosesRejected.get(cameraIndex).clear();
 
       for (PoseObservation observation : inputs[cameraIndex].poseObservations) {
+        double observationTimestamp = observation.timestamp();
+        double timestamp = Timer.getTimestamp();
+        double convertedTime = Utils.fpgaToCurrentTime(observation.timestamp());
+
         // only process the vision data if the timestamp is newer than the last one
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()) {
           final int finalCameraIndex = cameraIndex;
@@ -234,7 +238,7 @@ public class Vision extends SubsystemBase {
             Matrix<N3, N1> stdDev = getStandardDeviations(cameraIndex, observation);
             odometry.addVisionMeasurement(
                 estimatedRobotPose2d,
-                Utils.fpgaToCurrentTime(observation.timestamp()),
+                observation.timestamp(),
                 latencyAdjustmentSeconds.get(),
                 stdDev);
 

@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 446,
-      "y": 1238,
-      "width": 1298,
-      "height": 944,
+      "x": 236,
+      "y": 25,
+      "width": 1778,
+      "height": 1127,
       "state": {
         "sidebar": {
           "width": 300,
@@ -41,7 +41,6 @@
             "/RealOutputs/Vision",
             "/RealOutputs/Drivetrain/AutoPoseDiff/translation",
             "/RealOutputs/Drivetrain/AutoPoseDiff/rotation",
-            "/RealOutputs/Vision/2",
             "/Vision",
             "/Vision/2",
             "/Vision/2/PoseObservations",
@@ -49,11 +48,13 @@
             "/Vision/2/PoseObservations/0",
             "/NetworkInputs/Tuning/Drivetrain",
             "/DriverStation",
-            "/RealOutputs/PathFollowing/targetPose"
+            "/RealOutputs/PathFollowing/targetPose",
+            "/ReplayOutputs",
+            "/ReplayOutputs/RobotOdometry"
           ]
         },
         "tabs": {
-          "selected": 9,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -72,17 +73,15 @@
                     "type": "robot",
                     "logKey": "/RealOutputs/Drivetrain/CustomPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {}
                   },
                   {
-                    "type": "ghost",
+                    "type": "robot",
                     "logKey": "/RealOutputs/Drivetrain/Pose",
                     "logType": "Pose2d",
                     "visible": true,
-                    "options": {
-                      "color": "#00ff00"
-                    }
+                    "options": {}
                   },
                   {
                     "type": "vision",
@@ -98,7 +97,7 @@
                     "type": "arrow",
                     "logKey": "/RealOutputs/Drivetrain/FRPose",
                     "logType": "Pose2d",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "position": "center"
                     }
@@ -107,7 +106,7 @@
                     "type": "trajectory",
                     "logKey": "/RealOutputs/PathFollowing/activePath",
                     "logType": "Pose2d[]",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#00ff00",
                       "size": "normal"
@@ -117,6 +116,33 @@
                     "type": "ghost",
                     "logKey": "/RealOutputs/PathFollowing/targetPose",
                     "logType": "Pose2d",
+                    "visible": false,
+                    "options": {
+                      "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/RobotOdometry/pastPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff00ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/RobotPosesAccepted",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/RobotPosesRejected",
+                    "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
                       "color": "#ff0000"
@@ -124,24 +150,15 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "/RealOutputs/Vision/0/RobotPose2d",
+                    "logKey": "/ReplayOutputs/RobotOdometry/pastPose",
                     "logType": "Pose2d",
-                    "visible": false,
+                    "visible": true,
                     "options": {
-                      "color": "#ff8c00"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/RobotOdometry/pastPose",
-                    "logType": "Pose2d",
-                    "visible": false,
-                    "options": {
-                      "color": "#ff00ff"
+                      "color": "#00ffff"
                     }
                   }
                 ],
-                "game": "2025 Field",
+                "game": "2025 Field (Welded)",
                 "bumpers": "auto",
                 "origin": "blue",
                 "orientation": 0,
@@ -162,13 +179,13 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "3061 (Artemis)"
+                      "model": "3061 (2025)"
                     }
                   },
                   {
                     "type": "vision",
                     "logKey": "/RealOutputs/Vision/AprilTags",
-                    "logType": "Pose2d[]",
+                    "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
                       "color": "#00ff00",
@@ -193,16 +210,36 @@
                   },
                   {
                     "type": "ghost",
-                    "logKey": "/RealOutputs/Vision/0/RobotPose3d",
-                    "logType": "Pose3d",
+                    "logKey": "/RealOutputs/RobotOdometry/pastPose",
+                    "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "model": "3061 (Artemis)",
+                      "model": "3061 (2025)",
+                      "color": "#ff00ff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/RobotPosesAccepted",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "3061 (2025)",
                       "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/RobotPosesRejected",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "model": "3061 (2025)",
+                      "color": "#ff0000"
                     }
                   }
                 ],
-                "game": "2025 Field",
+                "game": "2025 Field (Welded)",
                 "origin": "blue"
               },
               "controllerUUID": "evx1fftrozhehzcwb3pbjh0pa9ucx1m9",
@@ -210,9 +247,9 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -1.255513917736491,
-                  10.661227284806358,
-                  -7.83475256878263
+                  -0.16651698355888112,
+                  6.059313671877298,
+                  -4.130823548790296
                 ],
                 "cameraTarget": [
                   6.379872123824222,
@@ -220,7 +257,7 @@
                   18.13495134001521
                 ]
               },
-              "controlsHeight": 200
+              "controlsHeight": 261
             },
             {
               "type": 1,
@@ -1043,5 +1080,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.1.1"
+  "version": "4.1.2"
 }
