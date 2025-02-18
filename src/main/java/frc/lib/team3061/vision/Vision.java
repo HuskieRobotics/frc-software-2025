@@ -76,7 +76,7 @@ public class Vision extends SubsystemBase {
   private List<List<Pose3d>> robotPosesRejected;
 
   private final LoggedTunableNumber latencyAdjustmentSeconds =
-      new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", -3.0);
+      new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
   private final LoggedTunableNumber ambiguityScaleFactor =
       new LoggedTunableNumber("Vision/AmbiguityScaleFactor", AMBIGUITY_SCALE_FACTOR);
   private final LoggedTunableNumber reprojectionErrorScaleFactor =
