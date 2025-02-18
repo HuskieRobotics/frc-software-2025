@@ -41,6 +41,8 @@ public class Elevator extends SubsystemBase {
   private final LoggedTunableNumber elevatorHeightInches =
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
+  private boolean loweringVoltageApplied = false;
+
   public Elevator(ElevatorIO io) {
 
     this.elevatorIO = io;
@@ -115,9 +117,21 @@ public class Elevator extends SubsystemBase {
         elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
       }
     } else {
-      if (targetPosition == ReefBranch.HARDSTOP && Math.abs(current.lastValue()) > STALL_CURRENT) {
-        elevatorIO.setMotorVoltage(0);
-        elevatorIO.zeroPosition();
+      if (targetPosition == ReefBranch.HARDSTOP
+          && getPosition().in(Inches) < (JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES)) {
+
+        if (!loweringVoltageApplied) {
+          elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
+          loweringVoltageApplied = true;
+        }
+
+        if (Math.abs(current.lastValue()) > STALL_CURRENT) {
+
+          elevatorIO.setMotorVoltage(0);
+          elevatorIO.zeroPosition();
+        }
+      } else if (targetPosition != ReefBranch.HARDSTOP) {
+        loweringVoltageApplied = false;
       } else if (Constants.getMode() == Mode.SIM
           && targetPosition == ReefBranch.HARDSTOP
           && inputs.positionInches < 0.0) {
@@ -173,7 +187,7 @@ public class Elevator extends SubsystemBase {
         break;
 
       case HARDSTOP:
-        height = BELOW_HARDSTOP;
+        height = JUST_ABOVE_HARDSTOP;
         break;
 
       default:
@@ -270,5 +284,21 @@ public class Elevator extends SubsystemBase {
     } else {
       return true;
     }
+  }
+
+  public void raiseElevatorSlow() {
+    elevatorIO.setMotorVoltage(ELEVATOR_RAISE_SLOW_VOLTAGE);
+  }
+
+  public void lowerElevatorSlow() {
+    elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_SLOW_VOLTAGE);
+  }
+
+  public void stop() {
+    elevatorIO.setMotorVoltage(0);
+  }
+
+  public void zero() {
+    elevatorIO.zeroPosition();
   }
 }

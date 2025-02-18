@@ -14,5 +14,23 @@ public class ElevatorCommandsFactory {
         .onTrue(
             Commands.runOnce(elevator::goToSelectedPosition, elevator)
                 .withName("raise elevator to score"));
+
+    oi.getRaiseElevatorSlowButton()
+        .onTrue(
+            Commands.runOnce(elevator::raiseElevatorSlow, elevator)
+                .withName("raise elevator slow"));
+
+    oi.getRaiseElevatorSlowButton().onFalse(Commands.runOnce(elevator::stop, elevator));
+
+    oi.getLowerElevatorSlowButton()
+        .onTrue(
+            Commands.runOnce(elevator::lowerElevatorSlow, elevator)
+                .withName("lower elevator slow"));
+    oi.getLowerElevatorSlowButton()
+        .onFalse(
+            Commands.sequence(
+                    Commands.runOnce(elevator::stop, elevator),
+                    Commands.runOnce(elevator::zero, elevator))
+                .withName("stop and zero elevator"));
   }
 }
