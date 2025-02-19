@@ -628,6 +628,12 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/FieldRelative", this.getFieldRelative());
 
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/Speed",
+        Math.hypot(
+            inputs.drivetrain.measuredChassisSpeeds.vxMetersPerSecond,
+            inputs.drivetrain.measuredChassisSpeeds.vyMetersPerSecond));
+
     // update the brake mode based on the robot's velocity and state (enabled/disabled)
     updateBrakeMode();
 

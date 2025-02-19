@@ -513,6 +513,7 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
     inputs.driveStatorCurrentAmps = module.getDriveMotor().getStatorCurrent().getValue().in(Amps);
     inputs.driveSupplyCurrentAmps = module.getDriveMotor().getSupplyCurrent().getValue().in(Amps);
     inputs.driveTempCelsius = module.getDriveMotor().getDeviceTemp().getValue().in(Celsius);
+    inputs.driveVoltage = module.getDriveMotor().getMotorVoltage().getValue().in(Volts);
 
     inputs.steerAbsolutePositionDeg =
         module.getEncoder().getAbsolutePosition().getValue().in(Degrees);
