@@ -519,5 +519,4 @@ public class Manipulator extends SubsystemBase {
   public boolean hasCoral() {
     return inputs.isIndexerIRBlocked;
   }
-  
 }
