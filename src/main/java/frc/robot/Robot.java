@@ -259,7 +259,7 @@ public class Robot extends LoggedRobot {
 
     robotContainer.periodic();
 
-    Threads.setCurrentThreadPriority(true, 10);
+    Threads.setCurrentThreadPriority(false, 10);
   }
 
   /** This method is invoked periodically when the robot is in the disabled state. */
