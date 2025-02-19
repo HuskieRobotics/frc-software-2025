@@ -230,30 +230,23 @@ public class AutonomousCommandFactory {
     try {
       PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
       PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
-      PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
-      PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
+      PathPlannerPath scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
+      PathPlannerPath collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
 
       return Commands.sequence(
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralJ2BL),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
-          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralJ2BL),
-          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator),
-          Commands.waitSeconds(2.0),
           Commands.parallel(
-              AutoBuilder.followPath(scoreCoralK2BL),
+              AutoBuilder.followPath(scoreCoralL2BL),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
-          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          Commands.waitSeconds(2.0),
-          AutoBuilder.followPath(collectCoralK2BL),
-          Commands.waitSeconds(2.0),
+          AutoBuilder.followPath(collectCoralL2BL),
           getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
