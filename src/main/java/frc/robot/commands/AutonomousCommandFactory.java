@@ -240,15 +240,22 @@ public class AutonomousCommandFactory {
               AutoBuilder.followPath(scoreCoralJ2BL),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralJ2BL),
+          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator),
+          Commands.waitSeconds(2.0),
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralK2BL),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralK2BL),
+          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
@@ -273,12 +280,22 @@ public class AutonomousCommandFactory {
               AutoBuilder.followPath(scoreCoralE2BR),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralE2BR),
+          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator),
-          AutoBuilder.followPath(scoreCoralD2BR),
+          Commands.waitSeconds(2.0),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralD2BR),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralD2BR),
+          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
@@ -307,8 +324,10 @@ public class AutonomousCommandFactory {
                     Rotation2d.fromDegrees(2.0))),
             Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+        Commands.waitSeconds(2.0),
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
