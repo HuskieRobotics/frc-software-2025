@@ -52,7 +52,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
-      new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
+      new Translation2d(0.34925, 0.34925);
 
   private static final Distance ROBOT_WIDTH_WITH_BUMPERS =
       Meters.of(0.85725); // confirm with actual bumpers
