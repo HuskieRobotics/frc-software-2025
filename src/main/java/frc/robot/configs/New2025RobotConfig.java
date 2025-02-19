@@ -46,7 +46,7 @@ public class New2025RobotConfig extends RobotConfig {
 
   private static final Mass MASS = Pounds.of(146.5);
   private static final MomentOfInertia MOI =
-      KilogramSquareMeters.of(6.5); // FIXME: update based on mass
+      KilogramSquareMeters.of(6.985073979);
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
   private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
