@@ -68,8 +68,8 @@ public final class VisionConstants {
   public static final double THETA_STD_DEV_COEFFICIENT = 0.01;
 
   // the average error in pixels for the simulated camera
-  public static final double SIM_AVERAGE_ERROR_PIXELS = 0.35;
+  public static final double SIM_AVERAGE_ERROR_PIXELS = 0.1;
 
   // te standard deviation of the error in pixels for the simulated camera
-  public static final double SIM_ERROR_STD_DEV_PIXELS = 0.1;
+  public static final double SIM_ERROR_STD_DEV_PIXELS = 0.05;
 }
