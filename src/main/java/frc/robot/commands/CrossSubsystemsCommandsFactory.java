@@ -89,6 +89,8 @@ public class CrossSubsystemsCommandsFactory {
                             () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                     Commands.runOnce(elevator::goToSelectedPosition, elevator))
                 .withName("drive to nearest right branch"));
+
+    oi.getInterruptAll().onTrue(getInterruptAllCommand());
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator) {
@@ -98,5 +100,13 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(manipulator::shootCoral, manipulator),
             () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
         Commands.waitUntil(() -> !manipulator.hasCoral()));
+  }
+
+  // interrupt all commands by running a command that requires every subsystem. This is used to
+  // recover to a known state if the robot becomes "stuck" in a command.
+  // "run all wheels backwards and bring elevator and carriage back to initial configuration"
+  // FIXME: confirm what functionality will be run and implement
+  private static Command getInterruptAllCommand() {
+    return Commands.parallel(Commands.waitSeconds(1));
   }
 }

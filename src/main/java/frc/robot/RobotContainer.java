@@ -327,15 +327,6 @@ public class RobotContainer {
                 Commands.waitSeconds(0.25),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ENDGAME_ALERT))
                     .withTimeout(0.5)));
-
-    // interrupt all commands by running a command that requires every subsystem. This is used to
-    // recover to a known state if the robot becomes "stuck" in a command.
-    // FIXME: program this to have all subsystems that need to be reset
-    // FIXME: move to cross subsystem commands
-    oi.getInterruptAll()
-        .onTrue(
-            Commands.parallel(
-                new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
   private void configureDrivetrainCommands() {
