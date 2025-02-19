@@ -93,11 +93,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getAlignToScoreCoralLeftButton() {
+  public default Trigger getPrepToScoreCoralLeftButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getAlignToScoreCoralRightButton() {
+  public default Trigger getPrepToScoreCoralRightButton() {
     return new Trigger(() -> false);
   }
 
