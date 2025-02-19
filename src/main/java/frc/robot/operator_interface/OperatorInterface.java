@@ -77,10 +77,6 @@ public interface OperatorInterface {
 
   // drivetrain, game-specific
 
-  public default Trigger getPrepareElevatorToScoreButton() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getDeployIntakeButton() {
     return new Trigger(() -> false);
   }
