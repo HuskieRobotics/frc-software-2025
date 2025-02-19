@@ -6,6 +6,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -259,10 +260,14 @@ public class Field2d {
   }
 
   public Pose2d getNearestBranch(Side side) {
-    Pose2d nearestReefCenterFace =
-        RobotOdometry.getInstance()
-            .getEstimatedPose()
-            .nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    // If we are on the red alliance, flip the current pose to the blue alliance to find the nearest
+    // reef face. We will then flip back to the red alliance.
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+    Pose2d nearestReefCenterFace = pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
 
     Pose2d bumpersOnReefAlignedToBranch;
     if (side == Side.LEFT) {
@@ -271,6 +276,13 @@ public class Field2d {
       bumpersOnReefAlignedToBranch = rightReefPoses.get(nearestReefCenterFace);
     } else {
       bumpersOnReefAlignedToBranch = removeAlgaePoses.get(nearestReefCenterFace);
+    }
+
+    // If we are on the rest alliance, we have flipped the current pose to the blue alliance and
+    // have found the nearest reef face on the blue alliance side. We now need to flip the pose for
+    // that reef face back to the red alliance.
+    if (getAlliance() == Alliance.Red) {
+      bumpersOnReefAlignedToBranch = FlippingUtil.flipFieldPose(bumpersOnReefAlignedToBranch);
     }
 
     return bumpersOnReefAlignedToBranch;
