@@ -84,24 +84,22 @@ public class AutonomousCommandFactory {
         "Score Right L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
     NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand(manipulator));
 
-    /************ Two Piece Blue Left ************
+    /************ Two Piece Left ************
      *
      * 2 corals scored J L4; K L4
      *
      */
 
-    Command twoPieceBlueLeft =
-        getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
+    Command twoPieceLeft = getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("2 Piece Left", twoPieceLeft);
 
-    /************ Two Piece Blue Right ************
+    /************ Two Piece Right ************
      *
      * 2 corals scored E L4; D L4
      *
      */
-    Command twoPieceBlueRight =
-        getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("2 Piece Blue Right", twoPieceBlueRight);
+    Command twoPieceRight = getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("2 Piece Right", twoPieceRight);
 
     /************ Start Point ************
      *
