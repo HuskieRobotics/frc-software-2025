@@ -60,12 +60,12 @@ public final class VisionConstants {
 
   // the coefficient from which the standard deviation for the x and y components is initiated
   // FIXME: tune
-  public static final double X_Y_STD_DEV_COEFFICIENT = 0.005;
+  public static final double X_Y_STD_DEV_COEFFICIENT = 0.08;
 
   // the coefficient from which the standard deviation for the theta component is initiated (only
   // used with multi-tag estimation)
   // FIXME: tune
-  public static final double THETA_STD_DEV_COEFFICIENT = 0.01;
+  public static final double THETA_STD_DEV_COEFFICIENT = 0.1;
 
   // the average error in pixels for the simulated camera
   public static final double SIM_AVERAGE_ERROR_PIXELS = 0.1;
