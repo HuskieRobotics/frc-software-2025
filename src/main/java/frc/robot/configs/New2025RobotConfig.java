@@ -44,13 +44,12 @@ public class New2025RobotConfig extends RobotConfig {
 
   private static final int GYRO_ID = 26;
 
-  private static final Mass MASS = Kilograms.of(54.000); // FIXME: update based on actual robot mass
+  private static final Mass MASS = Pounds.of(146.5);
   private static final MomentOfInertia MOI =
       KilogramSquareMeters.of(6.5); // FIXME: update based on mass
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
-  private static final Distance WHEEL_RADIUS =
-      Meters.of(0.096 / 2.0); // FIXME: update with sysid routine
+  private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.3556, 0.3556); // FIXME: confirm (just did 14x14 from the center)
@@ -66,19 +65,18 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double ANGLE_KP = 100.0;
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD = 0.5;
-  private static final double ANGLE_KS = 0.28516;
-  private static final double ANGLE_KV = 2.3345;
-  private static final double ANGLE_KA = 0.049918;
+  private static final double ANGLE_KS = 0.24055;
+  private static final double ANGLE_KV = 2.2855;
+  private static final double ANGLE_KA = 0.080209;
 
-  private static final double DRIVE_KP = 12.0;
+  private static final double DRIVE_KP = 14.0;
   private static final double DRIVE_KI = 0.0;
   private static final double DRIVE_KD = 0.0;
-  private static final double DRIVE_KS = 5.7421;
-  private static final double DRIVE_KV = 0.004493;
-  private static final double DRIVE_KA = 0.63109;
+  private static final double DRIVE_KS = 5.4854;
+  private static final double DRIVE_KV = 0.072502;
+  private static final double DRIVE_KA = 0.43636;
 
-  private static final LinearVelocity MAX_VELOCITY =
-      MetersPerSecond.of(6.0); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(5.0); // actually 4.16
   private static final LinearVelocity MAX_COAST_VELOCITY =
       MetersPerSecond.of(0.04); // FIXME: determine with real robot
   private static final double SLOW_MODE_MULTIPLIER = 0.7;

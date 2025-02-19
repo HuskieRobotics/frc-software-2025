@@ -224,21 +224,7 @@ public class AutonomousCommandFactory {
   }
 
   private Command getDriveWheelRadiusCharacterizationCommand(Drivetrain drivetrain) {
-    return Commands.sequence(
-        Commands.runOnce(drivetrain::enableFieldRelative, drivetrain),
-        Commands.repeatingSequence(
-            Commands.deadline(
-                Commands.waitSeconds(0.5),
-                Commands.run(() -> drivetrain.drive(0.1, 0.1, 0.0, true, false), drivetrain)),
-            Commands.deadline(
-                Commands.waitSeconds(0.5),
-                Commands.run(() -> drivetrain.drive(-0.1, 0.1, 0.0, true, false), drivetrain)),
-            Commands.deadline(
-                Commands.waitSeconds(0.5),
-                Commands.run(() -> drivetrain.drive(-0.1, -0.1, 0.0, true, false), drivetrain)),
-            Commands.deadline(
-                Commands.waitSeconds(0.5),
-                Commands.run(() -> drivetrain.drive(0.1, -0.1, 0.0, true, false), drivetrain))));
+    return CharacterizationCommands.wheelRadiusCharacterization(drivetrain);
   }
 
   public Command getTwoCoralLeftAutoCommand(
