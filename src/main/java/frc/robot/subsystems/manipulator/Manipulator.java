@@ -286,7 +286,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         // should not need to request led state here as it is done in the scoring command
-        
+
         subsystem.setIndexerMotorVoltage(
             subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
         // shooting coral should be different
