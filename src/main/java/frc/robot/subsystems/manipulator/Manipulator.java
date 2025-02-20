@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -166,6 +168,7 @@ public class Manipulator extends SubsystemBase {
     WAITING_FOR_CORAL_IN_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
       }
@@ -195,6 +198,8 @@ public class Manipulator extends SubsystemBase {
         subsystem.coralInIndexingState.restart(); // start timer
         subsystem.currentInAmps
             .reset(); // reset the linear filter thats used to detect a current spike
+
+        LEDs.getInstance().requestState(States.INDEXING_CORAL);
       }
 
       @Override
@@ -256,6 +261,7 @@ public class Manipulator extends SubsystemBase {
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.HAS_CORAL);
         subsystem.shootCoralButtonPressed = false;
         subsystem.scoreCoralThroughFunnelButtonPressed = false;
       }
@@ -279,6 +285,8 @@ public class Manipulator extends SubsystemBase {
     SHOOT_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
+        // should not need to request led state here as it is done in the scoring command
+        
         subsystem.setIndexerMotorVoltage(
             subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
         // shooting coral should be different
@@ -308,6 +316,8 @@ public class Manipulator extends SubsystemBase {
     SCORE_CORAL_THROUGH_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
+        // should not need to request led state here as it is done in the scoring command
+
         subsystem.setFunnelMotorVoltage(subsystem.funnelShootingOutFunnelVoltage.get());
         subsystem.setIndexerMotorVoltage(0);
         subsystem.scoringFunnelTimer.restart();
