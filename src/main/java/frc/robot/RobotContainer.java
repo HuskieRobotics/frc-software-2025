@@ -21,6 +21,7 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainIO;
 import frc.lib.team3061.drivetrain.DrivetrainIOCTRE;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team3061.vision.VisionConstants;
@@ -421,6 +422,8 @@ public class RobotContainer {
     oi.getAlignToScoreCoralLeftButton()
         .onTrue(
             Commands.sequence(
+                    Commands.runOnce(
+                        () -> LEDs.getInstance().requestState(States.AUTO_DRIVING_TO_SCORE)),
                     Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                     new DriveToPose(
                         drivetrain,
@@ -429,14 +432,16 @@ public class RobotContainer {
                             Units.inchesToMeters(2.0),
                             Units.inchesToMeters(0.5),
                             Rotation2d.fromDegrees(2.0))),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
+                    Commands.runOnce(() -> LEDs.getInstance().requestState(States.READY_TO_SCORE)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getAlignToScoreCoralRightButton()
         .onTrue(
             Commands.sequence(
-                    /* only consider front cameras for precision */
+                    Commands.runOnce(
+                        () -> LEDs.getInstance().requestState(States.AUTO_DRIVING_TO_SCORE)),
                     Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                     new DriveToPose(
                         drivetrain,
@@ -445,7 +450,8 @@ public class RobotContainer {
                             Units.inchesToMeters(2.0), /* tolerances */
                             Units.inchesToMeters(0.5),
                             Rotation2d.fromDegrees(2.0))),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
+                    Commands.runOnce(() -> LEDs.getInstance().requestState(States.READY_TO_SCORE)))
                 .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());

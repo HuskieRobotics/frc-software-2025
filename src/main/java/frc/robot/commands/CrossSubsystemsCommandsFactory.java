@@ -6,6 +6,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.leds.LEDs.States;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import frc.robot.operator_interface.OISelector;
@@ -23,6 +25,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreCoralButton()
         .onTrue(
             Commands.sequence(
+                    Commands.runOnce(() -> LEDs.getInstance().requestState(States.SCORING_CORAL)),
                     Commands.either(
                         Commands.parallel(
                             Commands.runOnce(manipulator::removeAlgae),
@@ -45,7 +48,9 @@ public class CrossSubsystemsCommandsFactory {
                         elevator::isAlgaePositionSelected),
                     Commands.runOnce(
                         () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP),
-                        elevator))
+                        elevator),
+                    Commands.runOnce(
+                        () -> LEDs.getInstance().requestState(States.WAITING_FOR_CORAL)))
                 .withName("score coral"));
   }
 

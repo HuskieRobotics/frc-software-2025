@@ -70,13 +70,20 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
-      
+
     SCORING_CORAL((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
     READY_TO_SCORE((leds, section) -> leds.solid(section, Color.kGreen)),
     AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     HAS_CORAL((leds, section) -> leds.solid(section, Color.kBlue)),
     INDEXING_CORAL((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
-    WAITING_FOR_CORAL((leds, section) -> leds.wave(section, Color.kBlue, new Color(255, 20, 0), WAVE_FAST_CYCLE_LENGTH, WAVE_SLOW_DURATION)),
+    WAITING_FOR_CORAL(
+        (leds, section) ->
+            leds.wave(
+                section,
+                Color.kBlue,
+                new Color(255, 20, 0),
+                WAVE_FAST_CYCLE_LENGTH,
+                WAVE_SLOW_DURATION)),
 
     DEFAULT((leds, section) -> leds.solid(section, Color.kBlack)),
     AUTO_IN_POSITION((leds, section) -> leds.solid(section, Color.kGreen));
