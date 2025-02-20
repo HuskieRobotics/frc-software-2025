@@ -271,22 +271,15 @@ public class AutonomousCommandFactory {
               AutoBuilder.followPath(scoreCoralE2BR),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
-          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralE2BR),
-          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator),
-          Commands.waitSeconds(2.0),
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralD2BR),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
-          Commands.waitSeconds(2.0),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          Commands.waitSeconds(2.0),
           AutoBuilder.followPath(collectCoralD2BR),
-          Commands.waitSeconds(2.0),
           getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
