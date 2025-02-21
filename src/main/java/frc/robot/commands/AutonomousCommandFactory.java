@@ -84,24 +84,22 @@ public class AutonomousCommandFactory {
         "Score Right L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
     NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand(manipulator));
 
-    /************ Two Piece Blue Left ************
+    /************ Two Piece Left ************
      *
      * 2 corals scored J L4; K L4
      *
      */
 
-    Command twoPieceBlueLeft =
-        getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("2 Piece Blue Left", twoPieceBlueLeft);
+    Command twoPieceLeft = getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("2 Piece Left", twoPieceLeft);
 
-    /************ Two Piece Blue Right ************
+    /************ Two Piece Right ************
      *
      * 2 corals scored E L4; D L4
      *
      */
-    Command twoPieceBlueRight =
-        getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("2 Piece Blue Right", twoPieceBlueRight);
+    Command twoPieceRight = getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("2 Piece Right", twoPieceRight);
 
     /************ Start Point ************
      *
@@ -232,8 +230,8 @@ public class AutonomousCommandFactory {
     try {
       PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
       PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
-      PathPlannerPath scoreCoralK2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
-      PathPlannerPath collectCoralK2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
+      PathPlannerPath scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
+      PathPlannerPath collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
 
       return Commands.sequence(
           Commands.parallel(
@@ -244,11 +242,11 @@ public class AutonomousCommandFactory {
           AutoBuilder.followPath(collectCoralJ2BL),
           getCollectCoralCommand(manipulator),
           Commands.parallel(
-              AutoBuilder.followPath(scoreCoralK2BL),
+              AutoBuilder.followPath(scoreCoralL2BL),
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          AutoBuilder.followPath(collectCoralK2BL),
+          AutoBuilder.followPath(collectCoralL2BL),
           getCollectCoralCommand(manipulator));
 
     } catch (Exception e) {
@@ -276,7 +274,10 @@ public class AutonomousCommandFactory {
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralE2BR),
           getCollectCoralCommand(manipulator),
-          AutoBuilder.followPath(scoreCoralD2BR),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralD2BR),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralD2BR),
           getCollectCoralCommand(manipulator));

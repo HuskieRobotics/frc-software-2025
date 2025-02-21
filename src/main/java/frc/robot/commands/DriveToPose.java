@@ -15,6 +15,7 @@ import static frc.robot.Constants.*;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -209,19 +210,40 @@ public class DriveToPose extends Command {
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
 
-    Transform2d difference = drivetrain.getPose().minus(targetPose);
-    if (Math.abs(difference.getX()) < 0.0762) {
-      if (difference.getY() < 0.05 && difference.getY() > 0) {
-        yVelocity -= closeVelocityBoost.get();
-      } else if (difference.getY() > -0.05 && difference.getY() < 0) {
-        yVelocity += closeVelocityBoost.get();
+    Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
+
+    // FIXME: this need to be adjusted into the coordinate system of the reef frame
+
+    // CCW rotation into reef frame
+    var reefRelativeVelocities =
+        new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation());
+
+    if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
+      if (reefRelativeDifference.getY() < 0.05 && reefRelativeDifference.getY() > 0) {
+        reefRelativeVelocities =
+            new Translation2d(
+                reefRelativeVelocities.getX(),
+                reefRelativeVelocities.getY() - closeVelocityBoost.get());
+      } else if (reefRelativeDifference.getY() > -0.05 && reefRelativeDifference.getY() < 0) {
+        reefRelativeVelocities =
+            new Translation2d(
+                reefRelativeVelocities.getX(),
+                reefRelativeVelocities.getY() + closeVelocityBoost.get());
       }
     }
+
+    // CW rotation back into the field frame
+    var fieldRelativeVelocities =
+        reefRelativeVelocities.rotateBy(targetPose.getRotation().unaryMinus());
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
     drivetrain.drive(
-        allianceMultiplier * xVelocity, allianceMultiplier * yVelocity, thetaVelocity, true, true);
+        allianceMultiplier * fieldRelativeVelocities.getX(),
+        allianceMultiplier * fieldRelativeVelocities.getY(),
+        thetaVelocity,
+        true,
+        true);
   }
 
   /**

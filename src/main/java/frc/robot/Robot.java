@@ -68,6 +68,8 @@ public class Robot extends LoggedRobot {
       new Alert(
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.kWarning);
+  private final Alert gcAlert =
+      new Alert("Please wait to enable, JITing in progress.", AlertType.kWarning);
 
   /** Create a new Robot. */
   public Robot() {
@@ -145,6 +147,7 @@ public class Robot extends LoggedRobot {
     // Default to blue alliance in sim
     if (Constants.getMode() == Constants.Mode.SIM) {
       DriverStationSim.setAllianceStationId(AllianceStationID.Blue1);
+      DriverStationSim.notifyNewData();
     }
 
     // Logging of autonomous paths
@@ -243,23 +246,24 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
 
+    // GC alert
+    gcAlert.set(Timer.getTimestamp() < 45.0);
+
     // Print auto duration
     if (autonomousCommand != null && !autonomousCommand.isScheduled() && !autoMessagePrinted) {
       if (DriverStation.isAutonomousEnabled()) {
         System.out.println(
-            String.format(
-                "*** Auto finished in %.2f secs ***", Timer.getFPGATimestamp() - autoStart));
+            String.format("*** Auto finished in %.2f secs ***", Timer.getTimestamp() - autoStart));
       } else {
         System.out.println(
-            String.format(
-                "*** Auto cancelled in %.2f secs ***", Timer.getFPGATimestamp() - autoStart));
+            String.format("*** Auto cancelled in %.2f secs ***", Timer.getTimestamp() - autoStart));
       }
       autoMessagePrinted = true;
     }
 
     robotContainer.periodic();
 
-    Threads.setCurrentThreadPriority(true, 10);
+    Threads.setCurrentThreadPriority(false, 10);
   }
 
   /** This method is invoked periodically when the robot is in the disabled state. */
@@ -284,7 +288,7 @@ public class Robot extends LoggedRobot {
     // not guaranteed to be correct until the start of autonomous
     robotContainer.checkAllianceColor();
 
-    autoStart = Timer.getFPGATimestamp();
+    autoStart = Timer.getTimestamp();
     autoMessagePrinted = false;
     autonomousCommand = AutonomousCommandFactory.getInstance().getAutonomousCommand();
 

@@ -6,8 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -28,11 +26,9 @@ import frc.lib.team3061.vision.VisionIO;
 import frc.lib.team3061.vision.VisionIOPhotonVision;
 import frc.lib.team3061.vision.VisionIOSim;
 import frc.robot.Constants.Mode;
-import frc.robot.Field2d.Side;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.ClimberCommandFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
-import frc.robot.commands.DriveToPose;
 import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.DefaultRobotConfig;
@@ -53,7 +49,6 @@ import frc.robot.subsystems.manipulator.ManipulatorIO;
 import frc.robot.subsystems.manipulator.ManipulatorIOTalonFX;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
@@ -309,7 +304,7 @@ public class RobotContainer {
 
     ClimberCommandFactory.registerCommands(oi, climber);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
-    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator);
+    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator, vision);
 
     // Endgame alerts[]
     new Trigger(
@@ -332,15 +327,6 @@ public class RobotContainer {
                 Commands.waitSeconds(0.25),
                 Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ENDGAME_ALERT))
                     .withTimeout(0.5)));
-
-    // interrupt all commands by running a command that requires every subsystem. This is used to
-    // recover to a known state if the robot becomes "stuck" in a command.
-    // FIXME: program this to have all subsystems that need to be reset
-    // FIXME: move to cross subsystem commands
-    oi.getInterruptAll()
-        .onTrue(
-            Commands.parallel(
-                new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)));
   }
 
   private void configureDrivetrainCommands() {
@@ -416,37 +402,6 @@ public class RobotContainer {
     // x-stance
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
-
-    // drive to left branch of nearest reef face
-    oi.getAlignToScoreCoralLeftButton()
-        .onTrue(
-            Commands.sequence(
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                    new DriveToPose(
-                        drivetrain,
-                        () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                        new Transform2d(
-                            Units.inchesToMeters(2.0),
-                            Units.inchesToMeters(0.5),
-                            Rotation2d.fromDegrees(2.0))),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
-                .withName("drive to nearest left branch"));
-
-    // drive to right branch of nearest reef face
-    oi.getAlignToScoreCoralRightButton()
-        .onTrue(
-            Commands.sequence(
-                    /* only consider front cameras for precision */
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                    new DriveToPose(
-                        drivetrain,
-                        () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                        new Transform2d(
-                            Units.inchesToMeters(2.0), /* tolerances */
-                            Units.inchesToMeters(0.5),
-                            Rotation2d.fromDegrees(2.0))),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
-                .withName("drive to nearest right branch"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
