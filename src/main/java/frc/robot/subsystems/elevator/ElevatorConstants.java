@@ -99,7 +99,7 @@ public class ElevatorConstants {
   public static final Distance L1_HEIGHT = Inches.of(15.94);
   public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
   public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
-  public static final Distance L4_HEIGHT = Inches.of(70);
+  public static final Distance L4_HEIGHT = Inches.of(71);
 
   public static final Distance ALGAE1_HEIGHT =
       Inches.of(13.0); // height under is 9 // height of impact is 13

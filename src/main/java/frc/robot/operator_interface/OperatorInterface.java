@@ -77,10 +77,6 @@ public interface OperatorInterface {
 
   // drivetrain, game-specific
 
-  public default Trigger getPrepareElevatorToScoreButton() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getDeployIntakeButton() {
     return new Trigger(() -> false);
   }
@@ -93,11 +89,11 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getAlignToScoreCoralLeftButton() {
+  public default Trigger getPrepToScoreCoralLeftButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getAlignToScoreCoralRightButton() {
+  public default Trigger getPrepToScoreCoralRightButton() {
     return new Trigger(() -> false);
   }
 

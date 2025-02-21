@@ -10,11 +10,6 @@ public class ElevatorCommandsFactory {
 
   public static void registerCommands(OperatorInterface oi, Elevator elevator) {
 
-    oi.getPrepareElevatorToScoreButton()
-        .onTrue(
-            Commands.runOnce(elevator::goToSelectedPosition, elevator)
-                .withName("raise elevator to score"));
-
     oi.getRaiseElevatorSlowButton()
         .onTrue(
             Commands.runOnce(elevator::raiseElevatorSlow, elevator)
