@@ -22,6 +22,7 @@ import frc.robot.Field2d;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
+import org.littletonrobotics.junction.Logger;
 
 @java.lang.SuppressWarnings({"java:S6548"})
 public abstract class LEDs extends SubsystemBase {
@@ -67,9 +68,25 @@ public abstract class LEDs extends SubsystemBase {
                 Color.kGreen)),
     LOW_BATTERY((leds, section) -> leds.solid(section, new Color(255, 20, 0))),
     DISABLED_DEMO_MODE((leds, section) -> leds.updateToPridePattern()),
+    ALIGNED_FOR_AUTO((leds, section) -> leds.solid(section, Color.kGreen)),
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
+
+    SCORING_CORAL((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
+    READY_TO_SCORE((leds, section) -> leds.solid(section, Color.kGreen)),
+    AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
+    HAS_CORAL((leds, section) -> leds.solid(section, Color.kBlue)),
+    INDEXING_CORAL((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
+    WAITING_FOR_CORAL(
+        (leds, section) ->
+            leds.wave(
+                section,
+                Color.kBlue,
+                new Color(255, 20, 0),
+                WAVE_FAST_CYCLE_LENGTH,
+                WAVE_SLOW_DURATION)),
+
     DEFAULT((leds, section) -> leds.solid(section, Color.kBlack));
 
     public final BiConsumer<LEDs, Section> setter;
@@ -95,7 +112,7 @@ public abstract class LEDs extends SubsystemBase {
    * This is handled by specifying the length as half the actual length and mirroring the buffer
    * before updating the LEDs.
    */
-  protected static final boolean MIRROR_LEDS = true;
+  protected static final boolean MIRROR_LEDS = false;
   protected static final int ACTUAL_LENGTH = RobotConfig.getInstance().getLEDCount();
   protected static final int LENGTH = MIRROR_LEDS ? ACTUAL_LENGTH / 2 : ACTUAL_LENGTH;
   private static final int STATIC_LENGTH = LENGTH / 2;
@@ -213,19 +230,25 @@ public abstract class LEDs extends SubsystemBase {
     if (!fullStates.isEmpty()) {
       States fullState = fullStates.first();
       fullState.setter.accept(this, Section.FULL);
+      Logger.recordOutput("LEDS/state", fullState);
     } else {
       States shoulderState = shoulderStates.first();
       shoulderState.setter.accept(this, Section.SHOULDER);
+      Logger.recordOutput("LEDS/shoulder state", shoulderState);
       if (!staticStates.isEmpty()) {
         States staticState = staticStates.first();
         staticState.setter.accept(this, Section.STATIC);
+        Logger.recordOutput("LEDS/static state", staticState);
       } else {
         States staticLowState = staticLowStates.first();
         staticLowState.setter.accept(this, Section.STATIC_LOW);
+        Logger.recordOutput("LEDS/low state", staticLowState);
         States staticMidState = staticMidStates.first();
         staticMidState.setter.accept(this, Section.STATIC_MID);
+        Logger.recordOutput("LEDS/mid state", staticMidState);
         States staticHighState = staticHighStates.first();
         staticHighState.setter.accept(this, Section.STATIC_HIGH);
+        Logger.recordOutput("LEDS/high state", staticHighState);
       }
     }
 
