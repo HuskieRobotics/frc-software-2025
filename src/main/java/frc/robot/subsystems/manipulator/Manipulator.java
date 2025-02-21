@@ -96,6 +96,7 @@ public class Manipulator extends SubsystemBase {
   private boolean scoreCoralThroughFunnelButtonPressed = false;
   private boolean removeAlgaeButtonPressed = false;
 
+  private boolean readyToScore = false;
   private boolean algaeRemoved =
       false; // need to actually figure out the IO stuff with this... how do we actually know if the
   // algae has been removed??
@@ -170,6 +171,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
+        subsystem.readyToScore = false;
       }
 
       @Override
@@ -288,7 +290,7 @@ public class Manipulator extends SubsystemBase {
     SHOOT_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
-        // should not need to request led state here as it is done in the scoring command
+        subsystem.readyToScore = false;
 
         subsystem.setIndexerMotorVoltage(
             subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
@@ -321,7 +323,7 @@ public class Manipulator extends SubsystemBase {
     SCORE_CORAL_THROUGH_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
-        // should not need to request led state here as it is done in the scoring command
+        subsystem.readyToScore = false;
 
         subsystem.setFunnelMotorVoltage(subsystem.funnelShootingOutFunnelVoltage.get());
         subsystem.setIndexerMotorVoltage(0);
@@ -543,5 +545,13 @@ public class Manipulator extends SubsystemBase {
 
   public boolean hasIndexedCoral() {
     return state == State.CORAL_IN_MANIPULATOR;
+  }
+
+  public void setReadyToScore(boolean readyToScore) {
+    this.readyToScore = readyToScore;
+  }
+
+  public boolean isReadyToScore() {
+    return readyToScore;
   }
 }
