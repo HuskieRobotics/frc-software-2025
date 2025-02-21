@@ -81,7 +81,7 @@ public class New2025RobotConfig extends RobotConfig {
       MetersPerSecond.of(0.04); // FIXME: determine with real robot
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
-  private static final String CAN_BUS_NAME = "canbus1";
+  private static final String CAN_BUS_NAME = "";
 
   private static final String CAMERA_NAME_0 = "OV2311FR";
   private static final String CAMERA_NAME_1 = "OV2311BR";
@@ -156,7 +156,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 35; // FIXME: update for new leds
+  private static final int LED_COUNT = 34; // 17 on each strip
 
   @Override
   public boolean getPhoenix6Licensed() {
