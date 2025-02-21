@@ -22,6 +22,7 @@ import frc.robot.Field2d;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
+import org.littletonrobotics.junction.Logger;
 
 @java.lang.SuppressWarnings({"java:S6548"})
 public abstract class LEDs extends SubsystemBase {
@@ -229,19 +230,25 @@ public abstract class LEDs extends SubsystemBase {
     if (!fullStates.isEmpty()) {
       States fullState = fullStates.first();
       fullState.setter.accept(this, Section.FULL);
+      Logger.recordOutput("LEDS/state", fullState);
     } else {
       States shoulderState = shoulderStates.first();
       shoulderState.setter.accept(this, Section.SHOULDER);
+      Logger.recordOutput("LEDS/shoulder state", shoulderState);
       if (!staticStates.isEmpty()) {
         States staticState = staticStates.first();
         staticState.setter.accept(this, Section.STATIC);
+        Logger.recordOutput("LEDS/static state", staticState);
       } else {
         States staticLowState = staticLowStates.first();
         staticLowState.setter.accept(this, Section.STATIC_LOW);
+        Logger.recordOutput("LEDS/low state", staticLowState);
         States staticMidState = staticMidStates.first();
         staticMidState.setter.accept(this, Section.STATIC_MID);
+        Logger.recordOutput("LEDS/mid state", staticMidState);
         States staticHighState = staticHighStates.first();
         staticHighState.setter.accept(this, Section.STATIC_HIGH);
+        Logger.recordOutput("LEDS/high state", staticHighState);
       }
     }
 
