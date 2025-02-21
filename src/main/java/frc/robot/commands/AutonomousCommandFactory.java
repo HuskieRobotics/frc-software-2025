@@ -101,6 +101,14 @@ public class AutonomousCommandFactory {
     Command twoPieceRight = getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("2 Piece Right", twoPieceRight);
 
+    /************ One Piece Center ************
+     *
+     * 1 coral scored H L4
+     *
+     */
+    Command onePieceCenter = getOneCoralCenterCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("1 Piece Center", onePieceCenter);
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -291,8 +299,12 @@ public class AutonomousCommandFactory {
     }
   }
 
-  // When programmed, each score coral command will drive to the specified pose on the reef and then
-  // score the coral
+  public Command getOneCoralCenterCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
+  }
 
   private Command getScoreL4Command(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator, Side side) {
