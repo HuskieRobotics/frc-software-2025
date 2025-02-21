@@ -308,10 +308,8 @@ public class AutonomousCommandFactory {
                     Rotation2d.fromDegrees(2.0))),
             Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-        Commands.waitSeconds(2.0),
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
-        Commands.waitSeconds(2.0),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
