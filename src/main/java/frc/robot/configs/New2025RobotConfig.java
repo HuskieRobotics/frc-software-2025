@@ -81,7 +81,7 @@ public class New2025RobotConfig extends RobotConfig {
       MetersPerSecond.of(0.04); // FIXME: determine with real robot
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
-  private static final String CAN_BUS_NAME = "";
+  private static final String CAN_BUS_NAME = "canbus1";
 
   private static final String CAMERA_NAME_0 = "OV2311FR";
   private static final String CAMERA_NAME_1 = "OV2311BR";

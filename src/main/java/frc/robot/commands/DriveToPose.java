@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import java.util.function.Supplier;
@@ -164,6 +165,8 @@ public class DriveToPose extends Command {
     // the PID controllers. This is important since these controllers will return true for atGoal if
     // the calculate method has not yet been invoked.
     running = true;
+
+    LEDs.getInstance().requestState(LEDs.States.AUTO_DRIVING_TO_SCORE);
 
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(

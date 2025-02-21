@@ -168,13 +168,15 @@ public class Manipulator extends SubsystemBase {
     WAITING_FOR_CORAL_IN_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
-        LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
       }
 
       @Override
       void execute(Manipulator subsystem) {
+
+        LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
+
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (DriverStation.isDisabled() && subsystem.inputs.isIndexerIRBlocked) {
@@ -198,12 +200,13 @@ public class Manipulator extends SubsystemBase {
         subsystem.coralInIndexingState.restart(); // start timer
         subsystem.currentInAmps
             .reset(); // reset the linear filter thats used to detect a current spike
-
-        LEDs.getInstance().requestState(States.INDEXING_CORAL);
       }
 
       @Override
       void execute(Manipulator subsystem) {
+
+        LEDs.getInstance().requestState(States.INDEXING_CORAL);
+
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
                 > THRESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
@@ -261,13 +264,13 @@ public class Manipulator extends SubsystemBase {
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        LEDs.getInstance().requestState(States.HAS_CORAL);
         subsystem.shootCoralButtonPressed = false;
         subsystem.scoreCoralThroughFunnelButtonPressed = false;
       }
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.HAS_CORAL);
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
           subsystem.shootCoralButtonPressed = false;
@@ -295,6 +298,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.SCORING_CORAL);
+
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
             && subsystem.removeAlgaeButtonPressed) {
           subsystem.setState(State.REMOVE_ALGAE);
@@ -325,6 +330,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.SCORING_CORAL);
+
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
             && subsystem.removeAlgaeButtonPressed) {
           subsystem.setState(State.REMOVE_ALGAE);
