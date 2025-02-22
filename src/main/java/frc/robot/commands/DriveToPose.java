@@ -67,7 +67,7 @@ public class DriveToPose extends Command {
           "DriveToPose/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
   private static final LoggedTunableNumber closeVelocityBoost =
-      new LoggedTunableNumber("DriveToPose/close velocity boost", 1);
+      new LoggedTunableNumber("DriveToPose/close velocity boost", 0.5);
 
   private static final LoggedTunableNumber timeout =
       new LoggedTunableNumber("DriveToPose/timeout", 5.0);
