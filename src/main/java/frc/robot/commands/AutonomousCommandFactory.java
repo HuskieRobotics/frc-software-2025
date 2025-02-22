@@ -329,7 +329,7 @@ public class AutonomousCommandFactory {
   // when programmed, this will wait until a coral is fully detected within the robot (use
   // manipulator state machine)
   private Command getCollectCoralCommand(Manipulator manipulator) {
-    return Commands.waitUntil(manipulator::hasCoral);
+    return Commands.waitUntil(manipulator::hasIndexedCoral);
   }
 
   private Command createTuningAutoPath(
