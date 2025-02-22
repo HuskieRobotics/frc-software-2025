@@ -245,10 +245,9 @@ public class AutonomousCommandFactory {
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralJ2BL),
               Commands.sequence(
-                Commands.waitUntil(manipulator::hasIndexedCoral),
-                Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))
-              ),
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(
+                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralJ2BL),
           getCollectCoralCommand(manipulator),
@@ -278,13 +277,12 @@ public class AutonomousCommandFactory {
       PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
 
       return Commands.sequence(
-            Commands.parallel(
-                AutoBuilder.followPath(scoreCoralE2BR),
-                Commands.sequence(
-                    Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.runOnce(
-                        () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))
-            ),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralE2BR),
+              Commands.sequence(
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(
+                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralE2BR),
           getCollectCoralCommand(manipulator),
@@ -307,9 +305,19 @@ public class AutonomousCommandFactory {
 
   public Command getOneCoralCenterCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
+    try {
+      PathPlannerPath backUpH1C = PathPlannerPath.fromPathFile("Back Up H 1C");
+      return Commands.sequence(
+          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+          AutoBuilder.followPath(backUpH1C));
+    } catch (Exception e) {
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getOneCoralCenterCommand.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.waitSeconds(0);
+    }
   }
 
   private Command getScoreL4Command(
