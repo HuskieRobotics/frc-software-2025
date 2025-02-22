@@ -444,6 +444,10 @@ public class RobotContainer {
 
   public void periodic() {
     // add robot-wide periodic code here
+
+    if (manipulator.isReadyToScore()) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
+    }
   }
 
   public void autonomousInit() {

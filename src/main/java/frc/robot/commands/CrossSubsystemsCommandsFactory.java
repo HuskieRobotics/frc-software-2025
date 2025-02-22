@@ -39,6 +39,7 @@ public class CrossSubsystemsCommandsFactory {
                                 new DriveToPose(
                                     drivetrain,
                                     () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
+                                    manipulator::setReadyToScore,
                                     new Transform2d(
                                         Units.inchesToMeters(1.0),
                                         Units.inchesToMeters(1.0),
@@ -63,6 +64,7 @@ public class CrossSubsystemsCommandsFactory {
                         new DriveToPose(
                             drivetrain,
                             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                            manipulator::setReadyToScore,
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
@@ -81,6 +83,7 @@ public class CrossSubsystemsCommandsFactory {
                         new DriveToPose(
                             drivetrain,
                             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                            manipulator::setReadyToScore,
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
