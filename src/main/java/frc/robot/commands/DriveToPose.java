@@ -65,28 +65,8 @@ public class DriveToPose extends Command {
   private static final LoggedTunableNumber thetaKi =
       new LoggedTunableNumber(
           "DriveToPose/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
-  private static final LoggedTunableNumber driveMaxVelocity =
-      new LoggedTunableNumber(
-          "DriveToPose/DriveMaxVelocityMetersPerSecond",
-          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond));
-  private static final LoggedTunableNumber driveMaxAcceleration =
-      new LoggedTunableNumber(
-          "DriveToPose/DriveMaxAccelerationMetersPerSecondPerSecond",
-          RobotConfig.getInstance()
-              .getDriveToPoseDriveMaxAcceleration()
-              .in(MetersPerSecondPerSecond));
-  private static final LoggedTunableNumber thetaMaxVelocity =
-      new LoggedTunableNumber(
-          "DriveToPose/ThetaMaxVelocityRadiansPerSecond",
-          RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity().in(RadiansPerSecond));
-  private static final LoggedTunableNumber thetaMaxAcceleration =
-      new LoggedTunableNumber(
-          "DriveToPose/ThetaMaxAccelerationRadiansPerSecondPerSecond",
-          RobotConfig.getInstance()
-              .getDriveToPoseTurnMaxAcceleration()
-              .in(RadiansPerSecondPerSecond));
-
-  private static final LoggedTunableNumber closeVelocityBoost =
+  
+          private static final LoggedTunableNumber closeVelocityBoost =
       new LoggedTunableNumber("DriveToPose/close velocity boost", 0.5);
 
   private static final LoggedTunableNumber timeout =
@@ -183,7 +163,7 @@ public class DriveToPose extends Command {
     // convert the pose difference and velocities into the reef frame
     Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
     var reefRelativeVelocities =
-        new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation());
+        new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation().unaryMinus());
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
       Logger.recordOutput("DriveToPose/boost velocity", true);
@@ -206,8 +186,7 @@ public class DriveToPose extends Command {
     Logger.recordOutput("DriveToPose/y velocity (reef frame)", reefRelativeVelocities.getY());
 
     // convert the velocities back into the field frame
-    var fieldRelativeVelocities =
-        reefRelativeVelocities.rotateBy(targetPose.getRotation().unaryMinus());
+    var fieldRelativeVelocities = reefRelativeVelocities.rotateBy(targetPose.getRotation());
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
