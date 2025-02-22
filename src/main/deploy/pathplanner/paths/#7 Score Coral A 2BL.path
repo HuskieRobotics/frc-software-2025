@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 2.0,
-    "rotation": 1.332219853869625
+    "velocity": 1.0,
+    "rotation": 1.332
   },
   "reversed": false,
   "folder": "2 Piece Blue Left",
