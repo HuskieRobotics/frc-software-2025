@@ -36,6 +36,8 @@ public class OperatorDashboard implements OperatorInterface {
                       level2.set(false);
                       level3.set(false);
                       level4.set(false);
+                      highAlgaeRemoval.set(false);
+                      lowAlgaeRemoval.set(false);
                     })
                 .ignoringDisable(true));
 
@@ -46,6 +48,8 @@ public class OperatorDashboard implements OperatorInterface {
                       level1.set(false);
                       level3.set(false);
                       level4.set(false);
+                      highAlgaeRemoval.set(false);
+                      lowAlgaeRemoval.set(false);
                     })
                 .ignoringDisable(true));
 
@@ -56,6 +60,8 @@ public class OperatorDashboard implements OperatorInterface {
                       level1.set(false);
                       level2.set(false);
                       level4.set(false);
+                      highAlgaeRemoval.set(false);
+                      lowAlgaeRemoval.set(false);
                     })
                 .ignoringDisable(true));
 
