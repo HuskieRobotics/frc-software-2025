@@ -432,6 +432,10 @@ public class Manipulator extends SubsystemBase {
     this.state = state;
   }
 
+  public void resetStateMachine() {
+    this.state = State.WAITING_FOR_CORAL_IN_FUNNEL;
+  }
+
   private void runStateMachine() {
     if (state != lastState) {
       lastState.onExit(this);

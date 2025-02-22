@@ -90,7 +90,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.runOnce(elevator::goToSelectedPosition, elevator))
                 .withName("drive to nearest right branch"));
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand());
+    oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator) {
@@ -105,8 +105,27 @@ public class CrossSubsystemsCommandsFactory {
   // interrupt all commands by running a command that requires every subsystem. This is used to
   // recover to a known state if the robot becomes "stuck" in a command.
   // "run all wheels backwards and bring elevator and carriage back to initial configuration"
-  // FIXME: confirm what functionality will be run and implement
-  private static Command getInterruptAllCommand() {
-    return Commands.parallel(Commands.waitSeconds(1));
+
+  /*
+   * 1. Shoot coral
+   * 2. Bring elevator down to hardstop (can further adjust with manual override if necessary)
+   * 3. Reset manipulator state machine
+   * 4. Interrupt drive to pose (run TeleopSwerve)
+   */
+  /*
+   * If we want to truly reset the state machine, we can add a condition within the WAITING state that does not allow us
+   * to pass to the next state until 1-2 seconds after we interrupt all. This would stop the state from transitioning even if the
+   * IRs say that we should.
+   */
+  private static Command getInterruptAllCommand(
+      Manipulator manipulator, Elevator elevator, Drivetrain drivetrain, OperatorInterface oi) {
+    return Commands.parallel(
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoral, manipulator),
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
+                Commands.runOnce(manipulator::resetStateMachine, manipulator)),
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
+        .withName("interrupt all");
   }
 }
