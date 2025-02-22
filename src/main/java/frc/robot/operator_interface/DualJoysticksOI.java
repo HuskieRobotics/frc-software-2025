@@ -41,6 +41,12 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   // Translation Joystick
+
+  @Override
+  public Trigger getRaiseElevatorSlowButton() {
+    return translateJoystickButtons[1];
+  }
+  
   @Override
   public Trigger getPrepToScoreCoralLeftButton() {
     return translateJoystickButtons[2];
@@ -69,11 +75,6 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[9];
-  }
-
-  @Override
-  public Trigger getRaiseElevatorSlowButton() {
-    return translateJoystickButtons[10];
   }
 
   @Override
