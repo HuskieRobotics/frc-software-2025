@@ -94,6 +94,8 @@ public class CrossSubsystemsCommandsFactory {
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand());
+
+    oi.getDriveToPoseOverrideButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator) {
@@ -111,5 +113,11 @@ public class CrossSubsystemsCommandsFactory {
   // FIXME: confirm what functionality will be run and implement
   private static Command getInterruptAllCommand() {
     return Commands.parallel(Commands.waitSeconds(1));
+  }
+
+  private static Command getDriveToPoseOverrideCommand(
+      Drivetrain drivetrain, OperatorInterface oi) {
+    return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
+        .withName("Override driveToPose");
   }
 }
