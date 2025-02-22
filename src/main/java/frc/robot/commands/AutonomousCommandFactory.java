@@ -244,8 +244,11 @@ public class AutonomousCommandFactory {
       return Commands.sequence(
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralJ2BL),
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+              Commands.sequence(
+                Commands.waitUntil(manipulator::hasIndexedCoral),
+                Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))
+              ),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralJ2BL),
           getCollectCoralCommand(manipulator),
@@ -275,10 +278,13 @@ public class AutonomousCommandFactory {
       PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
 
       return Commands.sequence(
-          Commands.parallel(
-              AutoBuilder.followPath(scoreCoralE2BR),
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+            Commands.parallel(
+                AutoBuilder.followPath(scoreCoralE2BR),
+                Commands.sequence(
+                    Commands.waitUntil(manipulator::hasIndexedCoral),
+                    Commands.runOnce(
+                        () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))
+            ),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralE2BR),
           getCollectCoralCommand(manipulator),
@@ -329,7 +335,7 @@ public class AutonomousCommandFactory {
   // when programmed, this will wait until a coral is fully detected within the robot (use
   // manipulator state machine)
   private Command getCollectCoralCommand(Manipulator manipulator) {
-    return Commands.waitUntil(manipulator::hasIndexedCoral);
+    return Commands.waitUntil(manipulator::indexingCoral);
   }
 
   private Command createTuningAutoPath(
