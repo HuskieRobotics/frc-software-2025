@@ -104,6 +104,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getDriveToPoseOverrideButton() {
+    return rotateJoystickButtons[4];
+  }
+
+  @Override
   public Trigger getResetPoseToVisionButton() {
     return rotateJoystickButtons[5];
   }
@@ -116,10 +121,5 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getZeroClimberButton() {
     return rotateJoystickButtons[11];
-  }
-
-  @Override
-  public Trigger getDriveToPoseOverrideButton() {
-    return rotateJoystickButtons[4];
   }
 }
