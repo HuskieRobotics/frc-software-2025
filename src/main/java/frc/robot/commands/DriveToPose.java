@@ -65,8 +65,8 @@ public class DriveToPose extends Command {
   private static final LoggedTunableNumber thetaKi =
       new LoggedTunableNumber(
           "DriveToPose/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
-  
-          private static final LoggedTunableNumber closeVelocityBoost =
+
+  private static final LoggedTunableNumber closeVelocityBoost =
       new LoggedTunableNumber("DriveToPose/close velocity boost", 0.5);
 
   private static final LoggedTunableNumber timeout =
@@ -223,9 +223,9 @@ public class DriveToPose extends Command {
     Logger.recordOutput("DriveToPose/difference (reef frame)", reefRelativeDifference);
 
     boolean atGoal =
-        Math.abs(difference.getX()) < targetTolerance.getX()
-            && Math.abs(difference.getY()) < targetTolerance.getY()
-            && Math.abs(difference.getRotation().getRadians())
+        Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
+            && Math.abs(reefRelativeDifference.getY()) < targetTolerance.getY()
+            && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
 
     // check that running is true (i.e., the calculate method has been invoked on the PID
