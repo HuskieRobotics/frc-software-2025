@@ -466,39 +466,38 @@ public class Manipulator extends SubsystemBase {
     io.setIndexerMotorVelocity(velocity);
   }
 
-  // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
-  // same exact thing but for the funnel and indexer motor, unsure if this is correct
-  private Command getSystemCheckCommand() {
+  //Manipulator system test method
+  public Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
-            Commands.run(() -> io.setFunnelMotorVoltage(3.6)).withTimeout(1.0),
-            Commands.run(() -> io.setIndexerMotorVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_DURING_SYSTEM_CHECK)).withTimeout(1.0), //funnel and indexer motor voltage originally set to 3.6 volts
+            Commands.run(() -> io.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_DURING_SYSTEM_CHECK)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
-                  if (inputs.funnelVelocityRPS < 2.0) {
+                  if (inputs.funnelVelocityRPS < FUNNEL_MOTOR_VELOCITY_TOLERANCE_DURING_SYSTEM_CHECK) {
                     FaultReporter.getInstance()
                         .addFault(
                             SUBSYSTEM_NAME,
-                            "[System Check] Subsystem motor not moving as fast as expected",
+                            "[System Check] Funnel motor not moving as fast as expected",
                             false,
                             true);
                   }
                 }),
-            Commands.run(() -> io.setFunnelMotorVoltage(-2.4)).withTimeout(1.0),
-            Commands.run(() -> io.setIndexerMotorVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelMotorVoltage(FUNNEL_MOTOR_VOLTAGE_DURING_SYSTEM_CHECK)).withTimeout(1.0), //funnel and indexer motor originally set to -2.4 volts
+            Commands.run(() -> io.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_DURING_SYSTEM_CHECK)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
-                  if (inputs.indexerVelocityRPS > -2.0) {
+                  if (inputs.indexerVelocityRPS > INDEXER_MOTOR_VELOCITY_TOLERANCE_DURING_SYSTEM_CHECK) {
                     FaultReporter.getInstance()
                         .addFault(
                             SUBSYSTEM_NAME,
-                            "[System Check] Subsystem motor moving too slow or in the wrong direction",
+                            "[System Check] Indexer motor moving too slow or in the wrong direction",
                             false,
                             true);
                   }
                 }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0)))
+        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0))) //set voltage of both motors to 0 once system check is done
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
