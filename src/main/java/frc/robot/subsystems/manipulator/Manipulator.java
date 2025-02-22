@@ -98,8 +98,7 @@ public class Manipulator extends SubsystemBase {
 
   private boolean readyToScore = false;
   private boolean algaeRemoved =
-      false; // need to actually figure out the IO stuff with this... how do we actually know if the
-  // algae has been removed??
+      false; 
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -279,6 +278,10 @@ public class Manipulator extends SubsystemBase {
         } else if (subsystem.scoreCoralThroughFunnelButtonPressed) {
           subsystem.setState(State.SCORE_CORAL_THROUGH_FUNNEL);
           subsystem.scoreCoralThroughFunnelButtonPressed = false;
+        }
+        else if(!subsystem.inputs.isIndexerIRBlocked)
+        {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
 
