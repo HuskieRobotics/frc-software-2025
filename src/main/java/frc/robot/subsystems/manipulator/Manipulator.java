@@ -529,6 +529,10 @@ public class Manipulator extends SubsystemBase {
     return inputs.isIndexerIRBlocked;
   }
 
+  public boolean indexingCoral() {
+    return state == State.INDEXING_CORAL_IN_MANIPULATOR;
+  }
+
   public boolean hasIndexedCoral() {
     return state == State.CORAL_IN_MANIPULATOR;
   }
