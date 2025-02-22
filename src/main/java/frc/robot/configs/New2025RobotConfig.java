@@ -136,9 +136,9 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
   // Drive to Pose constants
-  private static final double DRIVE_TO_POSE_DRIVE_KP = 6.0; // was 8.0
+  private static final double DRIVE_TO_POSE_DRIVE_KP = 2.0;
   private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
-  private static final double DRIVE_TO_POSE_THETA_KP = 7.5; // FIXME: update with testing
+  private static final double DRIVE_TO_POSE_THETA_KP = 2.0;
   private static final double DRIVE_TO_POSE_THETA_KI = 0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
   private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE =
