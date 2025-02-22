@@ -269,6 +269,7 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.SCORE_CORAL_THROUGH_FUNNEL);
           subsystem.scoreCoralThroughFunnelButtonPressed = false;
         }
+        // FIXME: add a transition back to WAITING_FOR_CORAL_IN_FUNNEL if the coral is dropped
       }
 
       @Override
