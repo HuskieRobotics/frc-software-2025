@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
+import frc.lib.team3061.leds.LEDs;
+import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
@@ -94,9 +96,8 @@ public class Manipulator extends SubsystemBase {
   private boolean scoreCoralThroughFunnelButtonPressed = false;
   private boolean removeAlgaeButtonPressed = false;
 
-  private boolean algaeRemoved =
-      false; // need to actually figure out the IO stuff with this... how do we actually know if the
-  // algae has been removed??
+  private boolean readyToScore = false;
+  private boolean algaeRemoved = false;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -168,10 +169,14 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
+        subsystem.readyToScore = false;
       }
 
       @Override
       void execute(Manipulator subsystem) {
+
+        LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
+
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (DriverStation.isDisabled() && subsystem.inputs.isIndexerIRBlocked) {
@@ -199,6 +204,9 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+
+        LEDs.getInstance().requestState(States.INDEXING_CORAL);
+
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
                 > THRESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
@@ -262,12 +270,15 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.HAS_CORAL);
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
           subsystem.shootCoralButtonPressed = false;
         } else if (subsystem.scoreCoralThroughFunnelButtonPressed) {
           subsystem.setState(State.SCORE_CORAL_THROUGH_FUNNEL);
           subsystem.scoreCoralThroughFunnelButtonPressed = false;
+        } else if (!subsystem.inputs.isIndexerIRBlocked) {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
         // FIXME: add a transition back to WAITING_FOR_CORAL_IN_FUNNEL if the coral is dropped
       }
@@ -280,6 +291,8 @@ public class Manipulator extends SubsystemBase {
     SHOOT_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
+        subsystem.readyToScore = false;
+
         subsystem.setIndexerMotorVoltage(
             subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
         // shooting coral should be different
@@ -288,6 +301,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.SCORING_CORAL);
+
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
             && subsystem.removeAlgaeButtonPressed) {
           subsystem.setState(State.REMOVE_ALGAE);
@@ -309,6 +324,8 @@ public class Manipulator extends SubsystemBase {
     SCORE_CORAL_THROUGH_FUNNEL {
       @Override
       void onEnter(Manipulator subsystem) {
+        subsystem.readyToScore = false;
+
         subsystem.setFunnelMotorVoltage(subsystem.funnelShootingOutFunnelVoltage.get());
         subsystem.setIndexerMotorVoltage(0);
         subsystem.scoringFunnelTimer.restart();
@@ -316,6 +333,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.SCORING_CORAL);
+
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
             && subsystem.removeAlgaeButtonPressed) {
           subsystem.setState(State.REMOVE_ALGAE);
@@ -535,5 +554,13 @@ public class Manipulator extends SubsystemBase {
 
   public boolean hasIndexedCoral() {
     return state == State.CORAL_IN_MANIPULATOR;
+  }
+
+  public void setReadyToScore(boolean readyToScore) {
+    this.readyToScore = readyToScore;
+  }
+
+  public boolean isReadyToScore() {
+    return readyToScore;
   }
 }

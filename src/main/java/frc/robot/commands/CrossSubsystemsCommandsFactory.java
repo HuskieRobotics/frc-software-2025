@@ -39,6 +39,7 @@ public class CrossSubsystemsCommandsFactory {
                                 new DriveToPose(
                                     drivetrain,
                                     () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
+                                    manipulator::setReadyToScore,
                                     new Transform2d(
                                         Units.inchesToMeters(1.0),
                                         Units.inchesToMeters(1.0),
@@ -63,6 +64,7 @@ public class CrossSubsystemsCommandsFactory {
                         new DriveToPose(
                             drivetrain,
                             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                            manipulator::setReadyToScore,
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
@@ -81,6 +83,7 @@ public class CrossSubsystemsCommandsFactory {
                         new DriveToPose(
                             drivetrain,
                             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                            manipulator::setReadyToScore,
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
@@ -91,6 +94,8 @@ public class CrossSubsystemsCommandsFactory {
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
+
+    oi.getDriveToPoseOverrideButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator) {
@@ -127,5 +132,11 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.runOnce(manipulator::resetStateMachine, manipulator)),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
         .withName("interrupt all");
+  }
+
+  private static Command getDriveToPoseOverrideCommand(
+      Drivetrain drivetrain, OperatorInterface oi) {
+    return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
+        .withName("Override driveToPose");
   }
 }

@@ -328,6 +328,7 @@ public class AutonomousCommandFactory {
             new DriveToPose(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
+                manipulator::setReadyToScore,
                 new Transform2d(
                     Units.inchesToMeters(2.0),
                     Units.inchesToMeters(1.0),

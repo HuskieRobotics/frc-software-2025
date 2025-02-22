@@ -22,8 +22,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -42,6 +44,7 @@ import org.littletonrobotics.junction.Logger;
 public class DriveToPose extends Command {
   private final Drivetrain drivetrain;
   private final Supplier<Pose2d> poseSupplier;
+  private final Consumer<Boolean> onTarget;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
@@ -87,9 +90,14 @@ public class DriveToPose extends Command {
    * @param drivetrain the drivetrain subsystem required by this command
    * @param poseSupplier a supplier that returns the pose to drive to
    */
-  public DriveToPose(Drivetrain drivetrain, Supplier<Pose2d> poseSupplier, Transform2d tolerance) {
+  public DriveToPose(
+      Drivetrain drivetrain,
+      Supplier<Pose2d> poseSupplier,
+      Consumer<Boolean> onTargetConsumer,
+      Transform2d tolerance) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
+    this.onTarget = onTargetConsumer;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
     addRequirements(drivetrain);
@@ -126,6 +134,8 @@ public class DriveToPose extends Command {
     // the PID controllers. This is important since these controllers will return true for atGoal if
     // the calculate method has not yet been invoked.
     running = true;
+
+    LEDs.getInstance().requestState(LEDs.States.AUTO_DRIVING_TO_SCORE);
 
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(
@@ -227,6 +237,12 @@ public class DriveToPose extends Command {
             && Math.abs(reefRelativeDifference.getY()) < targetTolerance.getY()
             && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
+
+    if (atGoal) {
+      onTarget.accept(true);
+    } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout.get())) {
+      onTarget.accept(false);
+    }
 
     // check that running is true (i.e., the calculate method has been invoked on the PID
     // controllers) and that each of the controllers is at their goal. This is important since these
