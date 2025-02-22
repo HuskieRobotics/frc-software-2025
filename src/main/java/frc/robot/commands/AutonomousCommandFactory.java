@@ -244,10 +244,8 @@ public class AutonomousCommandFactory {
       return Commands.sequence(
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralJ2BL),
-              Commands.sequence(
-                  Commands.waitUntil(manipulator::hasIndexedCoral),
-                  Commands.runOnce(
-                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralJ2BL),
           getCollectCoralCommand(manipulator),
@@ -279,10 +277,8 @@ public class AutonomousCommandFactory {
       return Commands.sequence(
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralE2BR),
-              Commands.sequence(
-                  Commands.waitUntil(manipulator::hasIndexedCoral),
-                  Commands.runOnce(
-                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralE2BR),
           getCollectCoralCommand(manipulator),
@@ -343,7 +339,7 @@ public class AutonomousCommandFactory {
   // when programmed, this will wait until a coral is fully detected within the robot (use
   // manipulator state machine)
   private Command getCollectCoralCommand(Manipulator manipulator) {
-    return Commands.waitUntil(manipulator::indexingCoral);
+    return Commands.waitUntil(manipulator::hasIndexedCoral);
   }
 
   private Command createTuningAutoPath(

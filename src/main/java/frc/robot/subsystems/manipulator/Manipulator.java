@@ -525,10 +525,6 @@ public class Manipulator extends SubsystemBase {
     algaeRemoved = true;
   }
 
-  public boolean indexingCoral() {
-    return state == State.INDEXING_CORAL_IN_MANIPULATOR;
-  }
-
   public boolean hasCoral() {
     return inputs.isIndexerIRBlocked;
   }
