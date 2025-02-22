@@ -45,7 +45,6 @@ public class CrossSubsystemsCommandsFactory {
                                         Rotation2d.fromDegrees(2.0))),
                                 Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
                                 Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
-                                Commands.waitSeconds(1.0),
                                 Commands.runOnce(manipulator::algaeIsRemoved))),
                         getScoreCoralCommand(manipulator),
                         elevator::isAlgaePositionSelected),
