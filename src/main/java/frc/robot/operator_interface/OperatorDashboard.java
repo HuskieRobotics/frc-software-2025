@@ -72,27 +72,27 @@ public class OperatorDashboard implements OperatorInterface {
     getRemoveHighAlgaeTrigger()
         .onTrue(
             Commands.sequence(
-                Commands.runOnce(
-                () -> {
-                  lowAlgaeRemoval.set(false);
-                }),
-                Commands.runOnce(
-                () -> {
-                  level4.set(true);
-                }))
+                    Commands.runOnce(
+                        () -> {
+                          lowAlgaeRemoval.set(false);
+                        }),
+                    Commands.runOnce(
+                        () -> {
+                          level4.set(true);
+                        }))
                 .ignoringDisable(true));
 
     getRemoveLowAlgaeTrigger()
         .onTrue(
             Commands.sequence(
-            Commands.runOnce(
-                    () -> {
-                      highAlgaeRemoval.set(false);
-                    }),
-            Commands.runOnce(
-              () -> {
-                level4.set(true);
-              }))
+                    Commands.runOnce(
+                        () -> {
+                          highAlgaeRemoval.set(false);
+                        }),
+                    Commands.runOnce(
+                        () -> {
+                          level4.set(true);
+                        }))
                 .ignoringDisable(true));
   }
 
