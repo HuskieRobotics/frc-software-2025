@@ -29,6 +29,8 @@ public class SimDualJoysticksOI extends OperatorDashboard {
     }
   }
 
+  // translation joystick
+
   @Override
   public double getTranslateX() {
     return -translateJoystick.getY();
@@ -40,57 +42,34 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getFieldRelativeButton() {
+    return translateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getResetPoseToVisionButton() {
+    return translateJoystickButtons[2];
+  }
+
+  // rotation joystick
+
+  @Override
   public double getRotate() {
     return -rotateJoystick.getX();
   }
 
   @Override
-  public Trigger getFieldRelativeButton() {
-    return translateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getLock180Button() {
-    return new Trigger(() -> false);
-  }
-
-  @Override
-  public Trigger getResetPoseToVisionButton() {
-    return translateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getExtendClimberButton() {
-    return translateJoystickButtons[3];
-  }
-
-  @Override
-  public Trigger getExtendCageCatcherButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
   public Trigger getPrepToScoreCoralLeftButton() {
-    return rotateJoystickButtons[4];
+    return rotateJoystickButtons[1];
   }
 
   @Override
   public Trigger getPrepToScoreCoralRightButton() {
-    return rotateJoystickButtons[3];
+    return rotateJoystickButtons[2];
   }
 
   @Override
   public Trigger getScoreCoralButton() {
-    return rotateJoystickButtons[4];
-  }
-
-  @Override
-  public Trigger getRaiseElevatorSlowButton() {
-    return translateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getLowerElevatorSlowButton() {
-    return translateJoystickButtons[2];
+    return rotateJoystickButtons[3];
   }
 }
