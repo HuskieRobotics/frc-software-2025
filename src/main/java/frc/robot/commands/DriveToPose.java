@@ -119,6 +119,8 @@ public class DriveToPose extends Command {
     drivetrain.enableAccelerationLimiting();
 
     Logger.recordOutput("DriveToPose/targetPose", targetPose);
+    Logger.recordOutput("DriveToPose/isFinished", false);
+    Logger.recordOutput("DriveToPose/withinTolerance", false);
 
     this.timer.restart();
   }
@@ -240,6 +242,7 @@ public class DriveToPose extends Command {
 
     if (atGoal) {
       onTarget.accept(true);
+      Logger.recordOutput("DriveToPose/withinTolerance", true);
     } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout.get())) {
       onTarget.accept(false);
     }
@@ -260,6 +263,7 @@ public class DriveToPose extends Command {
   public void end(boolean interrupted) {
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
+    Logger.recordOutput("DriveToPose/isFinished", true);
     running = false;
   }
 }
