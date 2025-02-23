@@ -177,12 +177,12 @@ public class DriveToPose extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
       Logger.recordOutput("DriveToPose/boost velocity", true);
-      if (reefRelativeDifference.getY() < 0.05 && reefRelativeDifference.getY() > 0) {
+      if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
                 reefRelativeVelocities.getX(),
                 reefRelativeVelocities.getY() - closeVelocityBoost.get());
-      } else if (reefRelativeDifference.getY() > -0.05 && reefRelativeDifference.getY() < 0) {
+      } else if (reefRelativeDifference.getY() < 0) {
         reefRelativeVelocities =
             new Translation2d(
                 reefRelativeVelocities.getX(),
