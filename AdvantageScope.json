@@ -53,23 +53,17 @@
             "/Vision/Camera0/PoseObservations",
             "/Vision/Camera0/PoseObservations/0",
             "/Drivetrain/MeasuredChassisSpeeds",
-            "/RealOutputs/DriveToPose",
             "/RealOutputs/DriveToPose/difference",
             "/RealOutputs/DriveToPose/difference/translation",
-            "/RealOutputs/Elevator",
-            "/RealOutputs/Manipulator",
-            "/Manipulator",
-            "/Elevator",
             "/RealOutputs/Vision",
             "/RealOutputs/Vision/1",
             "/RealOutputs/Vision/2",
             "/RealOutputs/Vision/3",
-            "/DriverStation",
-            "/Drivetrain"
+            "/RealOutputs/LoggedRobot"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 14,
           "tabs": [
             {
               "type": 0,
@@ -936,6 +930,41 @@
                 "stepSize": 0.1
               },
               "controllerUUID": "yqbbacv88i356600ip0ruy3qo9rntz3m",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "GC",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/LoggedRobot/GCTimeMS",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "ug8gpkziauhlyhhzvhxda89tzyj5n7po",
               "renderer": null,
               "controlsHeight": 200
             },
