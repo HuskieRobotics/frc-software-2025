@@ -12,11 +12,11 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -68,26 +68,6 @@ public class DriveToPose extends Command {
   private static final LoggedTunableNumber thetaKi =
       new LoggedTunableNumber(
           "DriveToPose/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
-  private static final LoggedTunableNumber driveMaxVelocity =
-      new LoggedTunableNumber(
-          "DriveToPose/DriveMaxVelocityMetersPerSecond",
-          RobotConfig.getInstance().getDriveToPoseDriveMaxVelocity().in(MetersPerSecond));
-  private static final LoggedTunableNumber driveMaxAcceleration =
-      new LoggedTunableNumber(
-          "DriveToPose/DriveMaxAccelerationMetersPerSecondPerSecond",
-          RobotConfig.getInstance()
-              .getDriveToPoseDriveMaxAcceleration()
-              .in(MetersPerSecondPerSecond));
-  private static final LoggedTunableNumber thetaMaxVelocity =
-      new LoggedTunableNumber(
-          "DriveToPose/ThetaMaxVelocityRadiansPerSecond",
-          RobotConfig.getInstance().getDriveToPoseTurnMaxVelocity().in(RadiansPerSecond));
-  private static final LoggedTunableNumber thetaMaxAcceleration =
-      new LoggedTunableNumber(
-          "DriveToPose/ThetaMaxAccelerationRadiansPerSecondPerSecond",
-          RobotConfig.getInstance()
-              .getDriveToPoseTurnMaxAcceleration()
-              .in(RadiansPerSecondPerSecond));
 
   private static final LoggedTunableNumber closeVelocityBoost =
       new LoggedTunableNumber("DriveToPose/close velocity boost", 0.5);
@@ -95,27 +75,12 @@ public class DriveToPose extends Command {
   private static final LoggedTunableNumber timeout =
       new LoggedTunableNumber("DriveToPose/timeout", 5.0);
 
-  private final ProfiledPIDController xController =
-      new ProfiledPIDController(
-          driveKp.get(),
-          driveKi.get(),
-          driveKd.get(),
-          new TrapezoidProfile.Constraints(driveMaxVelocity.get(), driveMaxAcceleration.get()),
-          LOOP_PERIOD_SECS);
-  private final ProfiledPIDController yController =
-      new ProfiledPIDController(
-          driveKp.get(),
-          driveKi.get(),
-          driveKd.get(),
-          new TrapezoidProfile.Constraints(driveMaxVelocity.get(), driveMaxAcceleration.get()),
-          LOOP_PERIOD_SECS);
-  private final ProfiledPIDController thetaController =
-      new ProfiledPIDController(
-          thetaKp.get(),
-          thetaKi.get(),
-          thetaKd.get(),
-          new TrapezoidProfile.Constraints(thetaMaxVelocity.get(), thetaMaxAcceleration.get()),
-          LOOP_PERIOD_SECS);
+  private final PIDController xController =
+      new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
+  private final PIDController yController =
+      new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
+  private final PIDController thetaController =
+      new PIDController(thetaKp.get(), thetaKi.get(), thetaKd.get(), LOOP_PERIOD_SECS);
 
   /**
    * Constructs a new DriveToPose command that drives the robot in a straight line to the specified
@@ -149,10 +114,6 @@ public class DriveToPose extends Command {
   @Override
   public void initialize() {
     // Reset all controllers
-    Pose2d currentPose = drivetrain.getPose();
-    xController.reset(currentPose.getX());
-    yController.reset(currentPose.getY());
-    thetaController.reset(currentPose.getRotation().getRadians());
     this.targetPose = poseSupplier.get();
 
     drivetrain.enableAccelerationLimiting();
@@ -188,24 +149,10 @@ public class DriveToPose extends Command {
         driveKd);
     LoggedTunableNumber.ifChanged(
         hashCode(),
-        max -> {
-          xController.setConstraints(new TrapezoidProfile.Constraints(max[0], max[1]));
-          yController.setConstraints(new TrapezoidProfile.Constraints(max[0], max[1]));
-        },
-        driveMaxVelocity,
-        driveMaxAcceleration);
-
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
         pid -> thetaController.setPID(pid[0], pid[1], pid[2]),
         thetaKp,
         thetaKi,
         thetaKd);
-    LoggedTunableNumber.ifChanged(
-        hashCode(),
-        max -> thetaController.setConstraints(new TrapezoidProfile.Constraints(max[0], max[1])),
-        thetaMaxVelocity,
-        thetaMaxAcceleration);
 
     Pose2d currentPose = drivetrain.getPose();
 
@@ -220,15 +167,16 @@ public class DriveToPose extends Command {
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
 
+    Logger.recordOutput("DriveToPose/x velocity (field frame)", xVelocity);
+    Logger.recordOutput("DriveToPose/y velocity (field frame)", yVelocity);
+
+    // convert the pose difference and velocities into the reef frame
     Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
-
-    // FIXME: this need to be adjusted into the coordinate system of the reef frame
-
-    // CCW rotation into reef frame
     var reefRelativeVelocities =
-        new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation());
+        new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation().unaryMinus());
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
+      Logger.recordOutput("DriveToPose/boost velocity", true);
       if (reefRelativeDifference.getY() < 0.05 && reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
@@ -240,11 +188,15 @@ public class DriveToPose extends Command {
                 reefRelativeVelocities.getX(),
                 reefRelativeVelocities.getY() + closeVelocityBoost.get());
       }
+    } else {
+      Logger.recordOutput("DriveToPose/boost velocity", false);
     }
 
-    // CW rotation back into the field frame
-    var fieldRelativeVelocities =
-        reefRelativeVelocities.rotateBy(targetPose.getRotation().unaryMinus());
+    Logger.recordOutput("DriveToPose/x velocity (reef frame)", reefRelativeVelocities.getX());
+    Logger.recordOutput("DriveToPose/y velocity (reef frame)", reefRelativeVelocities.getY());
+
+    // convert the velocities back into the field frame
+    var fieldRelativeVelocities = reefRelativeVelocities.rotateBy(targetPose.getRotation());
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
@@ -267,12 +219,23 @@ public class DriveToPose extends Command {
   @Override
   public boolean isFinished() {
     Transform2d difference = drivetrain.getPose().minus(targetPose);
-    Logger.recordOutput("DriveToPose/difference", difference);
+    Logger.recordOutput(
+        "DriveToPose/difference",
+        new Transform2d(
+            drivetrain.getPose().getX() - targetPose.getX(),
+            drivetrain.getPose().getY() - targetPose.getY(),
+            Rotation2d.fromRadians(
+                drivetrain.getPose().getRotation().getRadians()
+                    - targetPose.getRotation().getRadians())));
+
+    // convert the pose difference and velocities into the reef frame
+    Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
+    Logger.recordOutput("DriveToPose/difference (reef frame)", reefRelativeDifference);
 
     boolean atGoal =
-        Math.abs(difference.getX()) < targetTolerance.getX()
-            && Math.abs(difference.getY()) < targetTolerance.getY()
-            && Math.abs(difference.getRotation().getRadians())
+        Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
+            && Math.abs(reefRelativeDifference.getY()) < targetTolerance.getY()
+            && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
 
     if (atGoal) {

@@ -101,6 +101,14 @@ public class AutonomousCommandFactory {
     Command twoPieceRight = getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("2 Piece Right", twoPieceRight);
 
+    /************ One Piece Center ************
+     *
+     * 1 coral scored H L4
+     *
+     */
+    Command onePieceCenter = getOneCoralCenterCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("1 Piece Center", onePieceCenter);
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -243,8 +251,10 @@ public class AutonomousCommandFactory {
           getCollectCoralCommand(manipulator),
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralL2BL),
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+              Commands.sequence(
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(
+                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralL2BL),
           getCollectCoralCommand(manipulator));
@@ -276,8 +286,10 @@ public class AutonomousCommandFactory {
           getCollectCoralCommand(manipulator),
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralD2BR),
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+              Commands.sequence(
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(
+                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
           AutoBuilder.followPath(collectCoralD2BR),
           getCollectCoralCommand(manipulator));
@@ -291,8 +303,22 @@ public class AutonomousCommandFactory {
     }
   }
 
-  // When programmed, each score coral command will drive to the specified pose on the reef and then
-  // score the coral
+  public Command getOneCoralCenterCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    try {
+      PathPlannerPath backUpH1C = PathPlannerPath.fromPathFile("Back Up H 1C");
+      return Commands.sequence(
+          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+          AutoBuilder.followPath(backUpH1C));
+    } catch (Exception e) {
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getOneCoralCenterCommand.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.waitSeconds(0);
+    }
+  }
 
   private Command getScoreL4Command(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator, Side side) {
@@ -318,7 +344,7 @@ public class AutonomousCommandFactory {
   // when programmed, this will wait until a coral is fully detected within the robot (use
   // manipulator state machine)
   private Command getCollectCoralCommand(Manipulator manipulator) {
-    return Commands.waitUntil(manipulator::hasIndexedCoral);
+    return Commands.waitUntil(manipulator::indexingCoral);
   }
 
   private Command createTuningAutoPath(

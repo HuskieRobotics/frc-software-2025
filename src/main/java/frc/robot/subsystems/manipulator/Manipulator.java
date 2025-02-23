@@ -280,6 +280,7 @@ public class Manipulator extends SubsystemBase {
         } else if (!subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
+        // FIXME: add a transition back to WAITING_FOR_CORAL_IN_FUNNEL if the coral is dropped
       }
 
       @Override
@@ -451,6 +452,10 @@ public class Manipulator extends SubsystemBase {
     this.state = state;
   }
 
+  public void resetStateMachine() {
+    this.state = State.WAITING_FOR_CORAL_IN_FUNNEL;
+  }
+
   private void runStateMachine() {
     if (state != lastState) {
       lastState.onExit(this);
@@ -541,6 +546,10 @@ public class Manipulator extends SubsystemBase {
 
   public boolean hasCoral() {
     return inputs.isIndexerIRBlocked;
+  }
+
+  public boolean indexingCoral() {
+    return state == State.INDEXING_CORAL_IN_MANIPULATOR;
   }
 
   public boolean hasIndexedCoral() {
