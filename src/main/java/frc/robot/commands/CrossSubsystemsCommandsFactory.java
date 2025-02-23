@@ -101,7 +101,9 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreCoralCommand(Manipulator manipulator) {
     return Commands.sequence(
         Commands.either(
-            Commands.runOnce(manipulator::scoreCoralThroughFunnel, manipulator),
+            Commands.sequence(
+                Commands.runOnce(manipulator::scoreCoralThroughFunnel, manipulator),
+                Commands.waitUntil(manipulator::isWaitingForCoral)),
             Commands.runOnce(manipulator::shootCoral, manipulator),
             () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
         Commands.waitUntil(() -> !manipulator.hasCoral()));

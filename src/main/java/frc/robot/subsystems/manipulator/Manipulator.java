@@ -547,6 +547,10 @@ public class Manipulator extends SubsystemBase {
     return state == State.CORAL_IN_MANIPULATOR;
   }
 
+  public boolean isWaitingForCoral() {
+    return state == State.WAITING_FOR_CORAL_IN_FUNNEL;
+  }
+
   public void setReadyToScore(boolean readyToScore) {
     this.readyToScore = readyToScore;
   }
