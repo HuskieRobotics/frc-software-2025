@@ -1,9 +1,9 @@
 {
   "hubs": [
     {
-      "x": 671,
+      "x": 236,
       "y": 25,
-      "width": 1342,
+      "width": 1778,
       "height": 1127,
       "state": {
         "sidebar": {
@@ -24,8 +24,6 @@
             "/RealOutputs/PathFollowing/currentPose/rotation",
             "/RealOutputs/PathFollowing/targetPose/translation",
             "/RealOutputs/PathFollowing/targetPose/rotation",
-            "/Drivetrain/MeasuredChassisSpeeds",
-            "/Drivetrain/ReferenceChassisSpeeds",
             "/Drivetrain/SwerveMeasuredStates/0",
             "/Drivetrain/SwerveReferenceStates/0",
             "/NetworkInputs/SmartDashboard",
@@ -98,11 +96,12 @@
             "/Tuning/DriveToPose",
             "/RealOutputs/Elevator",
             "/RealOutputs/Manipulator",
-            "/Manipulator"
+            "/Drivetrain",
+            "/RealOutputs/Drivetrain/Pose"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 19,
           "tabs": [
             {
               "type": 0,
@@ -329,6 +328,26 @@
                       "color": "#d993aa",
                       "size": "normal"
                     }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/FL/DriveStatorCurrentAmps",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/FR/DriveStatorCurrentAmps",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
                   }
                 ],
                 "rightSources": [
@@ -397,7 +416,7 @@
               },
               "controllerUUID": "dwlbps75jfq1xony3kpwq1hofkqhgo9l",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 275
             },
             {
               "type": 1,
@@ -1443,15 +1462,6 @@
                     }
                   },
                   {
-                    "type": "rotationLegacy",
-                    "logKey": "/Drivetrain/Gyro/YawDeg",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "units": "radians"
-                    }
-                  },
-                  {
                     "type": "chassisSpeeds",
                     "logKey": "/Drivetrain/MeasuredChassisSpeeds",
                     "logType": "ChassisSpeeds",
@@ -1468,12 +1478,21 @@
                     "options": {
                       "color": "#0000ff"
                     }
+                  },
+                  {
+                    "type": "rotationLegacy",
+                    "logKey": "/RealOutputs/Drivetrain/Pose/rotation/value",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "units": "radians"
+                    }
                   }
                 ],
                 "maxSpeed": 5,
                 "sizeX": 0.65,
                 "sizeY": 0.65,
-                "orientation": 1
+                "orientation": 0
               },
               "controllerUUID": "xl0u6oymqkjm45npjm7srhm3ccuitawi",
               "renderer": null,
@@ -1565,6 +1584,18 @@
       }
     }
   ],
-  "satellites": [],
+  "satellites": [
+    {
+      "x": 320,
+      "y": 1190,
+      "width": 1511,
+      "height": 722,
+      "state": {
+        "type": 2,
+        "visualizer": null
+      },
+      "uuid": "qcnqmnu8c7710fc7oyb9xyg0qaw85zg1"
+    }
+  ],
   "version": "4.1.2"
 }

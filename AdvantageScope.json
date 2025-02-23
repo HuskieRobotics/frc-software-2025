@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 214,
-      "y": 38,
-      "width": 1265,
-      "height": 944,
+      "x": 236,
+      "y": 25,
+      "width": 1778,
+      "height": 1127,
       "state": {
         "sidebar": {
           "width": 324,
@@ -64,11 +64,12 @@
             "/RealOutputs/Vision/1",
             "/RealOutputs/Vision/2",
             "/RealOutputs/Vision/3",
-            "/DriverStation"
+            "/DriverStation",
+            "/Drivetrain"
           ]
         },
         "tabs": {
-          "selected": 5,
+          "selected": 1,
           "tabs": [
             {
               "type": 0,
@@ -84,11 +85,30 @@
               "controller": {
                 "sources": [
                   {
-                    "type": "robot",
+                    "type": "ghost",
                     "logKey": "/RealOutputs/Drivetrain/CustomPose",
                     "logType": "Pose2d",
                     "visible": true,
+                    "options": {
+                      "color": "#ff8c00"
+                    }
+                  },
+                  {
+                    "type": "robot",
+                    "logKey": "/RealOutputs/Drivetrain/Pose",
+                    "logType": "Pose2d",
+                    "visible": true,
                     "options": {}
+                  },
+                  {
+                    "type": "swerveStates",
+                    "logKey": "/Drivetrain/SwerveMeasuredStates",
+                    "logType": "SwerveModuleState[]",
+                    "visible": true,
+                    "options": {
+                      "color": "#ff0000",
+                      "arrangement": "0,1,2,3"
+                    }
                   },
                   {
                     "type": "vision",
@@ -98,24 +118,6 @@
                     "options": {
                       "color": "#00ff00",
                       "size": "normal"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/Drivetrain/Pose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "color": "#0000ff"
-                    }
-                  },
-                  {
-                    "type": "arrow",
-                    "logKey": "/RealOutputs/Drivetrain/FRPose",
-                    "logType": "Pose2d",
-                    "visible": true,
-                    "options": {
-                      "position": "center"
                     }
                   },
                   {
@@ -135,15 +137,6 @@
                     "visible": true,
                     "options": {
                       "color": "#ff0000"
-                    }
-                  },
-                  {
-                    "type": "ghost",
-                    "logKey": "/RealOutputs/RobotOdometry/pastPose",
-                    "logType": "Pose2d",
-                    "visible": false,
-                    "options": {
-                      "color": "#ff00ff"
                     }
                   },
                   {
