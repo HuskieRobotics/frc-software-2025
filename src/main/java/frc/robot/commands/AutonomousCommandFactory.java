@@ -332,7 +332,8 @@ public class AutonomousCommandFactory {
                 new Transform2d(
                     Units.inchesToMeters(2.0),
                     Units.inchesToMeters(1.0),
-                    Rotation2d.fromDegrees(2.0))),
+                    Rotation2d.fromDegrees(2.0)),
+                    1.2),
             Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoral, manipulator),

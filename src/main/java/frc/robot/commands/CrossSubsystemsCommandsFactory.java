@@ -43,7 +43,8 @@ public class CrossSubsystemsCommandsFactory {
                                     new Transform2d(
                                         Units.inchesToMeters(2.0),
                                         Units.inchesToMeters(1.0),
-                                        Rotation2d.fromDegrees(2.0))),
+                                        Rotation2d.fromDegrees(2.0)),
+                                        0.5),
                                 Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
                                 Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
                                 Commands.waitSeconds(0.5),
@@ -68,7 +69,8 @@ public class CrossSubsystemsCommandsFactory {
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0))),
+                                Rotation2d.fromDegrees(2.0)),
+                                5.0),
                         Commands.runOnce(
                             () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                     Commands.runOnce(elevator::goToSelectedPosition, elevator))
@@ -87,7 +89,8 @@ public class CrossSubsystemsCommandsFactory {
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0))),
+                                Rotation2d.fromDegrees(2.0)),
+                                5.0),
                         Commands.runOnce(
                             () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                     Commands.runOnce(elevator::goToSelectedPosition, elevator))
