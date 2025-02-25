@@ -345,7 +345,8 @@ public class AutonomousCommandFactory {
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
 
-  private Command getDescoreAlgaeCommand(Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
+  private Command getDescoreAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.parallel(
         Commands.runOnce(manipulator::removeAlgae),
         Commands.sequence(
@@ -359,13 +360,11 @@ public class AutonomousCommandFactory {
                     Units.inchesToMeters(2.0),
                     Units.inchesToMeters(1.0),
                     Rotation2d.fromDegrees(2.0)),
-                    0.5),
+                0.5),
             Commands.runOnce(() -> elevator.goToPosition(ReefBranch.ABOVE_ALGAE_1)),
             Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.ABOVE_ALGAE_1)),
             Commands.waitSeconds(0.5),
-            Commands.runOnce(manipulator::algaeIsRemoved)
-        )
-    );
+            Commands.runOnce(manipulator::algaeIsRemoved)));
   }
 
   // when programmed, this will wait until a coral is fully detected within the robot (use
