@@ -110,9 +110,7 @@ public class AutonomousCommandFactory {
     Command onePieceCenter = getOneCoralCenterCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("1 Piece Center", onePieceCenter);
 
-    /** Three Piece Left
-     *  3 Coral Scored J, K, L L4
-     */
+    /** Three Piece Left 3 Coral Scored J, K, L L4 */
     Command threePieceLeft = getThreeCoralLeftCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("3 Piece Left", threePieceLeft);
 
@@ -310,21 +308,24 @@ public class AutonomousCommandFactory {
     }
   }
 
-  public Command getThreeCoralLeftCommand(Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+  public Command getThreeCoralLeftCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
-        PathPlannerPath scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3BL");
-        
-        return Commands.sequence(
-            getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
-            AutoBuilder.followPath(scoreCoralK),
-            getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT)
-        );
+      PathPlannerPath scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3BL");
+
+      return Commands.sequence(
+          getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralK),
+              Commands.runOnce(
+                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
     } catch (Exception e) {
-        pathFileMissingAlert.setText(
+      pathFileMissingAlert.setText(
           "Could not find the specified path file in getTwoCoralRightAutoCommand.");
-        pathFileMissingAlert.set(true);
-        
-        return Commands.waitSeconds(0);
+      pathFileMissingAlert.set(true);
+
+      return Commands.waitSeconds(0);
     }
   }
 
