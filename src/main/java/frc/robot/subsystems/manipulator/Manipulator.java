@@ -252,6 +252,8 @@ public class Manipulator extends SubsystemBase {
             && subsystem.ejectingCoralTimer.hasElapsed(
                 ManipulatorConstants.EJECT_CORAL_DURATION_SECONDS)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        } else if (subsystem.inputs.isIndexerIRBlocked) {
+          subsystem.setState(State.CORAL_IN_MANIPULATOR);
         }
       }
 
