@@ -87,7 +87,7 @@ public class AutonomousCommandFactory {
 
     /************ Two Piece Left ************
      *
-     * 2 corals scored J L4; K L4
+     * 2 corals scored J L4; L L4
      *
      */
 
@@ -109,6 +109,12 @@ public class AutonomousCommandFactory {
      */
     Command onePieceCenter = getOneCoralCenterCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("1 Piece Center", onePieceCenter);
+
+    /** Three Piece Left
+     *  3 Coral Scored J, K, L L4
+     */
+    Command threePieceLeft = getThreeCoralLeftCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("3 Piece Left", threePieceLeft);
 
     /************ Start Point ************
      *
@@ -301,6 +307,24 @@ public class AutonomousCommandFactory {
       pathFileMissingAlert.set(true);
 
       return Commands.waitSeconds(0);
+    }
+  }
+
+  public Command getThreeCoralLeftCommand(Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    try {
+        PathPlannerPath scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3BL");
+        
+        return Commands.sequence(
+            getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
+            AutoBuilder.followPath(scoreCoralK),
+            getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT)
+        );
+    } catch (Exception e) {
+        pathFileMissingAlert.setText(
+          "Could not find the specified path file in getTwoCoralRightAutoCommand.");
+        pathFileMissingAlert.set(true);
+        
+        return Commands.waitSeconds(0);
     }
   }
 
