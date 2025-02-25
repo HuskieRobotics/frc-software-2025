@@ -317,8 +317,10 @@ public class AutonomousCommandFactory {
           getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
           Commands.parallel(
               AutoBuilder.followPath(scoreCoralK),
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)),
+              Commands.sequence(
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(
+                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
     } catch (Exception e) {
       pathFileMissingAlert.setText(
