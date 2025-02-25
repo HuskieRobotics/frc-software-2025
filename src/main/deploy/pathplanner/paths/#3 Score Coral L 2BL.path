@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0881596676397933,
-        "y": 5.9122835026948115
+        "x": 2.128713944878101,
+        "y": 6.419253401678785
       },
       "isLocked": false,
       "linkedName": "Collect Coral"
@@ -20,8 +20,8 @@
         "y": 5.5414446721311466
       },
       "prevControl": {
-        "x": 2.1704880417695933,
-        "y": 6.247630459802379
+        "x": 2.308633347144996,
+        "y": 6.249244813943542
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
