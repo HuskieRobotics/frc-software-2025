@@ -26,7 +26,6 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OISelector;
-import frc.robot.operator_interface.OperatorDashboard;
 
 /** TalonFX implementation of the generic SubsystemIO */
 public class ManipulatorIOTalonFX implements ManipulatorIO {
@@ -205,7 +204,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
-    
+
     if (OISelector.getOperatorInterface().getTogglePrimaryIRSensorsTrigger().getAsBoolean()) {
       inputs.isFunnelIRBlocked = !funnelIRSensor.get();
       inputs.isIndexerIRBlocked = !indexerIRSensor.get();
@@ -213,7 +212,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       inputs.isFunnelIRBlocked = !backupFunnelIRSensor.get();
       inputs.isIndexerIRBlocked = !backupIndexerIRSensor.get();
     }
-    
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
