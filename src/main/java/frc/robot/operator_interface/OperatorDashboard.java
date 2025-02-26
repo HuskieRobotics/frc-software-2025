@@ -108,7 +108,7 @@ public class OperatorDashboard implements OperatorInterface {
   }
 
   @Override
-  public Trigger getEnablePrimaryIRSensors() {
+  public Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> enablePrimaryIRSensors.get());
   }
 
@@ -140,10 +140,5 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getRemoveLowAlgaeTrigger() {
     return new Trigger(() -> lowAlgaeRemoval.get());
-  }
-
-  @Override
-  public Trigger getEnablePrimaryIRSensorsTrigger() {
-    return new Trigger(() -> enablePrimaryIRSensors.get());
   }
 }

@@ -117,7 +117,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getEnablePrimaryIRSensors() {
+  public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
   }
 
@@ -142,10 +142,6 @@ public interface OperatorInterface {
   }
 
   public default Trigger getRemoveLowAlgaeTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
   }
 
