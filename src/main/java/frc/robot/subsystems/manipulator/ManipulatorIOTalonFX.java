@@ -25,6 +25,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.operator_interface.OperatorDashboard;
 
 /** TalonFX implementation of the generic SubsystemIO */
 public class ManipulatorIOTalonFX implements ManipulatorIO {
@@ -35,8 +36,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private DigitalInput funnelIRSensor;
   private DigitalInput indexerIRSensor;
 
-  private DigitalInput backupFunnelIrSensor;
-  private DigitalInput backupIndexerIrSensor;
+  private DigitalInput backupFunnelIRSensor;
+  private DigitalInput backupIndexerIRSensor;
 
   private VoltageOut funnelVoltageRequest;
   private VoltageOut indexerVoltageRequest;
@@ -51,12 +52,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
 
   private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
-
-  /* You will create StatusSignal<> objects for each logged input.
-    These status signals will then be insantiated in the constructor with what value they should be tracking, which you do in updateInputs right now.
-    In updateInputs, you will refresh all of the status signals,
-    and set each input variable by retrieving each of the values of your statussignals with the statussignal.getValueAs___() methods.
-  */
 
   private final LoggedTunableNumber funnelKp =
       new LoggedTunableNumber("Manipulator/Funnel/kP", FUNNEL_MOTOR_KP);
@@ -115,8 +110,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     funnelIRSensor = new DigitalInput(FUNNEL_IR_SENSOR_ID);
     indexerIRSensor = new DigitalInput(INDEXER_IR_SENSOR_ID);
 
-    backupFunnelIrSensor = new DigitalInput(FUNNEL_IR_BACKUP_SENSOR_ID);
-    backupIndexerIrSensor = new DigitalInput(INDEXER_IR_BACKUP_SENSOR_ID);
+    backupFunnelIRSensor = new DigitalInput(FUNNEL_IR_BACKUP_SENSOR_ID);
+    backupIndexerIRSensor = new DigitalInput(INDEXER_IR_BACKUP_SENSOR_ID);
 
     funnelMotorSim =
         new VelocitySystemSim(
@@ -209,7 +204,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
-
+    
     inputs.isFunnelIRBlocked = !funnelIRSensor.get();
     inputs.isIndexerIRBlocked = !indexerIRSensor.get();
 

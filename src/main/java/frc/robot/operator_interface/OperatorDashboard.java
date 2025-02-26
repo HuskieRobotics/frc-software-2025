@@ -24,7 +24,8 @@ public class OperatorDashboard implements OperatorInterface {
       new LoggedTunableBoolean("operatorDashboard/High Algae Removal", false, true);
   public final LoggedTunableBoolean lowAlgaeRemoval =
       new LoggedTunableBoolean("operatorDashboard/Low Algae Removal", false, true);
-
+    
+  
   public OperatorDashboard() {
 
     // The controls to select reef branch levels must be mutually exclusive; if one is selected
@@ -100,6 +101,14 @@ public class OperatorDashboard implements OperatorInterface {
                           level4.set(true);
                         }))
                 .ignoringDisable(true));
+    
+    getTogglePrimaryIRSensorsTrigger().onTrue(
+      Commands.either(
+        Commands.runOnce(() -> enablePrimaryIRSensors.set(false)),
+        Commands.runOnce(() -> enablePrimaryIRSensors.set(true)),
+        enablePrimaryIRSensors::get
+      )
+    );
   }
 
   @Override
@@ -140,5 +149,10 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getRemoveLowAlgaeTrigger() {
     return new Trigger(() -> lowAlgaeRemoval.get());
+  }
+
+  @Override
+  public Trigger getTogglePrimaryIRSensorsTrigger() {
+    return new Trigger(() -> enablePrimaryIRSensors.get());
   }
 }
