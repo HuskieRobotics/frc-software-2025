@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.578260362335842,
-        "y": 6.752609863358601
+        "x": 4.287160333351155,
+        "y": 6.161337648363985
       },
       "isLocked": false,
       "linkedName": "At Branch J"
@@ -20,8 +20,8 @@
         "y": 7.23171106557377
       },
       "prevControl": {
-        "x": 3.397826409162361,
-        "y": 6.630744455984729
+        "x": 3.7445285767750214,
+        "y": 6.261560027266894
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,15 +34,15 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 1.5,
+    "maxAcceleration": 3.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -53.13010235415599
+    "velocity": 0.0,
+    "rotation": -53.13
   },
   "reversed": false,
   "folder": "2 Piece Blue Left",
