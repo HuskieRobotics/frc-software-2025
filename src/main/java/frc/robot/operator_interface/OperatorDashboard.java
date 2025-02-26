@@ -104,9 +104,9 @@ public class OperatorDashboard implements OperatorInterface {
     // getTogglePrimaryIRSensorsTrigger().onTrue(
     //   Commands.runOnce(() -> enablePrimaryIRSensors.set(!enablePrimaryIRSensors.get()))
     // );
-    getTogglePrimaryIRSensorsTrigger()
+    getEnablePrimaryIRSensorsTrigger()
         .onTrue(Commands.runOnce(() -> enablePrimaryIRSensors.set(true)));
-    getTogglePrimaryIRSensorsTrigger()
+    getEnablePrimaryIRSensorsTrigger()
         .onFalse(Commands.runOnce(() -> enablePrimaryIRSensors.set(false)));
   }
 
@@ -151,7 +151,7 @@ public class OperatorDashboard implements OperatorInterface {
   }
 
   @Override
-  public Trigger getTogglePrimaryIRSensorsTrigger() {
+  public Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> enablePrimaryIRSensors.get());
   }
 }
