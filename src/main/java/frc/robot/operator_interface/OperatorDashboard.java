@@ -100,14 +100,6 @@ public class OperatorDashboard implements OperatorInterface {
                           level4.set(true);
                         }))
                 .ignoringDisable(true));
-
-    // getTogglePrimaryIRSensorsTrigger().onTrue(
-    //   Commands.runOnce(() -> enablePrimaryIRSensors.set(!enablePrimaryIRSensors.get()))
-    // );
-    getEnablePrimaryIRSensorsTrigger()
-        .onTrue(Commands.runOnce(() -> enablePrimaryIRSensors.set(true)));
-    getEnablePrimaryIRSensorsTrigger()
-        .onFalse(Commands.runOnce(() -> enablePrimaryIRSensors.set(false)));
   }
 
   @Override

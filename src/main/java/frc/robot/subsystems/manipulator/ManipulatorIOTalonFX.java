@@ -205,7 +205,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
 
-    if (OISelector.getOperatorInterface().getTogglePrimaryIRSensorsTrigger().getAsBoolean()) {
+    if (OISelector.getOperatorInterface().getEnablePrimaryIRSensorsTrigger().getAsBoolean()) {
       inputs.isFunnelIRBlocked = !funnelIRSensor.get();
       inputs.isIndexerIRBlocked = !indexerIRSensor.get();
     } else {
