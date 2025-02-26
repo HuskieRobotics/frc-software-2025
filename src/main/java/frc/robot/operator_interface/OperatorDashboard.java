@@ -103,11 +103,7 @@ public class OperatorDashboard implements OperatorInterface {
                 .ignoringDisable(true));
     
     getTogglePrimaryIRSensorsTrigger().onTrue(
-      Commands.either(
-        Commands.runOnce(() -> enablePrimaryIRSensors.set(false)),
-        Commands.runOnce(() -> enablePrimaryIRSensors.set(true)),
-        enablePrimaryIRSensors::get
-      )
+      Commands.runOnce(() -> enablePrimaryIRSensors.set(!enablePrimaryIRSensors.get()))
     );
   }
 
