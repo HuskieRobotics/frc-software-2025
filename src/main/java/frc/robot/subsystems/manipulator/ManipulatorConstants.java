@@ -82,8 +82,8 @@ public class ManipulatorConstants {
 
   // timeout for letting funnel ramp up and whole funnel scoring timeout
   // *TEMPORARY: we might make a "reverse state machine" for scoring the funnel
-  public static final double FUNNEL_RAMP_UP_TIMEOUT = 1.0;
-  public static final double FUNNEL_SCORING_TIMEOUT = 4.0;
+  public static final double FUNNEL_RAMP_UP_TIMEOUT = 0.15;
+  public static final double FUNNEL_SCORING_TIMEOUT = 2.0;
 
   public static final double EJECT_CORAL_DURATION_SECONDS = 5.0;
 

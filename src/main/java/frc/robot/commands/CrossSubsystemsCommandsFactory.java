@@ -28,31 +28,41 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision) {
     oi.getScoreCoralButton()
         .onTrue(
-            Commands.sequence(
-                    Commands.either(
-                        Commands.parallel(
-                            Commands.runOnce(manipulator::removeAlgae),
-                            Commands.sequence(
-                                getScoreCoralCommand(manipulator),
-                                Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
-                                Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
-                                new DriveToPose(
-                                    drivetrain,
-                                    () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
-                                    manipulator::setReadyToScore,
-                                    new Transform2d(
-                                        Units.inchesToMeters(1.0),
-                                        Units.inchesToMeters(1.0),
-                                        Rotation2d.fromDegrees(2.0))),
-                                Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
-                                Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
-                                Commands.waitSeconds(0.5),
-                                Commands.runOnce(manipulator::algaeIsRemoved))),
-                        getScoreCoralCommand(manipulator),
-                        elevator::isAlgaePositionSelected),
-                    Commands.runOnce(
-                        () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP),
-                        elevator))
+            Commands.either(
+                    Commands.sequence(
+                        Commands.runOnce(manipulator::scoreCoralThroughFunnel, manipulator),
+                        Commands.waitUntil(manipulator::isWaitingForCoral)),
+                    Commands.sequence(
+                        Commands.either(
+                            Commands.parallel(
+                                Commands.runOnce(manipulator::removeAlgae),
+                                Commands.sequence(
+                                    getScoreCoralCommand(manipulator),
+                                    Commands.runOnce(
+                                        elevator::goBelowSelectedAlgaePosition, elevator),
+                                    Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
+                                    new DriveToPose(
+                                        drivetrain,
+                                        () ->
+                                            Field2d.getInstance()
+                                                .getNearestBranch(Side.REMOVE_ALGAE),
+                                        manipulator::setReadyToScore,
+                                        new Transform2d(
+                                            Units.inchesToMeters(2.0),
+                                            Units.inchesToMeters(1.0),
+                                            Rotation2d.fromDegrees(2.0)),
+                                        0.5),
+                                    Commands.runOnce(
+                                        elevator::goAboveSelectedAlgaePosition, elevator),
+                                    Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
+                                    Commands.waitSeconds(0.5),
+                                    Commands.runOnce(manipulator::algaeIsRemoved))),
+                            getScoreCoralCommand(manipulator),
+                            elevator::isAlgaePositionSelected),
+                        Commands.runOnce(
+                            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP),
+                            elevator)),
+                    () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
                 .withName("score coral"));
 
     // drive to left branch of nearest reef face
@@ -68,7 +78,8 @@ public class CrossSubsystemsCommandsFactory {
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0))),
+                                Rotation2d.fromDegrees(2.0)),
+                            5.0),
                         Commands.runOnce(
                             () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                     Commands.runOnce(elevator::goToSelectedPosition, elevator))
@@ -87,7 +98,8 @@ public class CrossSubsystemsCommandsFactory {
                             new Transform2d(
                                 Units.inchesToMeters(2.0),
                                 Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0))),
+                                Rotation2d.fromDegrees(2.0)),
+                            5.0),
                         Commands.runOnce(
                             () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                     Commands.runOnce(elevator::goToSelectedPosition, elevator))
@@ -100,10 +112,7 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getScoreCoralCommand(Manipulator manipulator) {
     return Commands.sequence(
-        Commands.either(
-            Commands.runOnce(manipulator::scoreCoralThroughFunnel, manipulator),
-            Commands.runOnce(manipulator::shootCoral, manipulator),
-            () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
+        Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()));
   }
 

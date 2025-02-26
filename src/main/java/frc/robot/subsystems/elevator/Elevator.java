@@ -6,9 +6,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
@@ -59,12 +57,6 @@ public class Elevator extends SubsystemBase {
 
     // FaultReporter.getInstance()
     //     .registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
-
-    SmartDashboard.putData(
-        SUBSYSTEM_NAME + "/Zero Elevator",
-        Commands.runOnce(elevatorIO::zeroPosition, this)
-            .ignoringDisable(true)
-            .withName("Zero Elevator"));
   }
 
   private final SysIdRoutine sysIdRoutineStage1 =

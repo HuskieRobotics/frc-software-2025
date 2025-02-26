@@ -48,6 +48,8 @@ public class DriveToPose extends Command {
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
+  private double timeout;
+
   private boolean running = false;
   private Timer timer;
 
@@ -72,9 +74,6 @@ public class DriveToPose extends Command {
   private static final LoggedTunableNumber closeVelocityBoost =
       new LoggedTunableNumber("DriveToPose/close velocity boost", 0.5);
 
-  private static final LoggedTunableNumber timeout =
-      new LoggedTunableNumber("DriveToPose/timeout", 5.0);
-
   private final PIDController xController =
       new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
   private final PIDController yController =
@@ -94,12 +93,14 @@ public class DriveToPose extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
-      Transform2d tolerance) {
+      Transform2d tolerance,
+      double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
     this.onTarget = onTargetConsumer;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
+    this.timeout = timeout;
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -119,6 +120,8 @@ public class DriveToPose extends Command {
     drivetrain.enableAccelerationLimiting();
 
     Logger.recordOutput("DriveToPose/targetPose", targetPose);
+    Logger.recordOutput("DriveToPose/isFinished", false);
+    Logger.recordOutput("DriveToPose/withinTolerance", false);
 
     this.timer.restart();
   }
@@ -177,12 +180,12 @@ public class DriveToPose extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
       Logger.recordOutput("DriveToPose/boost velocity", true);
-      if (reefRelativeDifference.getY() < 0.05 && reefRelativeDifference.getY() > 0) {
+      if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
                 reefRelativeVelocities.getX(),
                 reefRelativeVelocities.getY() - closeVelocityBoost.get());
-      } else if (reefRelativeDifference.getY() > -0.05 && reefRelativeDifference.getY() < 0) {
+      } else if (reefRelativeDifference.getY() < 0) {
         reefRelativeVelocities =
             new Translation2d(
                 reefRelativeVelocities.getX(),
@@ -240,14 +243,15 @@ public class DriveToPose extends Command {
 
     if (atGoal) {
       onTarget.accept(true);
-    } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout.get())) {
+      Logger.recordOutput("DriveToPose/withinTolerance", true);
+    } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout)) {
       onTarget.accept(false);
     }
 
     // check that running is true (i.e., the calculate method has been invoked on the PID
     // controllers) and that each of the controllers is at their goal. This is important since these
     // controllers will return true for atGoal if the calculate method has not yet been invoked.
-    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout.get()) || atGoal;
+    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
   }
 
   /**
@@ -260,6 +264,7 @@ public class DriveToPose extends Command {
   public void end(boolean interrupted) {
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
+    Logger.recordOutput("DriveToPose/isFinished", true);
     running = false;
   }
 }
