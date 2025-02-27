@@ -46,7 +46,7 @@ public class CrossSubsystemsCommandsFactory {
                                         () ->
                                             Field2d.getInstance()
                                                 .getNearestBranch(Side.REMOVE_ALGAE),
-                                        manipulator::setReadyToScore,
+                                        manipulator::setReadyToRemoveAlgae,
                                         new Transform2d(
                                             Units.inchesToMeters(2.0),
                                             Units.inchesToMeters(1.0),

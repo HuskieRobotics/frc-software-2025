@@ -565,6 +565,8 @@ public class Manipulator extends SubsystemBase {
     this.readyToScore = readyToScore;
   }
 
+  public void setReadyToRemoveAlgae(boolean readyToRemoveAlgae) {}
+
   public boolean isReadyToScore() {
     return readyToScore;
   }
