@@ -155,7 +155,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 43; // 17 on each strip
+  private static final int LED_COUNT = 42; // 17 on each strip
 
   @Override
   public boolean getPhoenix6Licensed() {
