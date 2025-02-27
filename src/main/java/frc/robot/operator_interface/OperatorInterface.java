@@ -117,7 +117,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getEnablePrimaryIRSensors() {
+  public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
   }
 

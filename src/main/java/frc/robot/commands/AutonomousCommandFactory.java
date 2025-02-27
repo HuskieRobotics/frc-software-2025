@@ -114,6 +114,9 @@ public class AutonomousCommandFactory {
     Command threePieceLeft = getThreeCoralLeftCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("3 Piece Left", threePieceLeft);
 
+    Command threePieceRight = getThreeCoralRightCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("3 Piece Right", threePieceRight);
+
     /************ Start Point ************
      *
      * useful for initializing the pose of the robot to a known location
@@ -324,7 +327,30 @@ public class AutonomousCommandFactory {
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
     } catch (Exception e) {
       pathFileMissingAlert.setText(
-          "Could not find the specified path file in getTwoCoralRightAutoCommand.");
+          "Could not find the specified path file in getThreeCoralLeftAutoCommand.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.waitSeconds(0);
+    }
+  }
+
+  public Command getThreeCoralRightCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    try {
+      PathPlannerPath scoreCoralC = PathPlannerPath.fromPathFile("#5 Score Coral C 3BR");
+
+      return Commands.sequence(
+          getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator),
+          Commands.parallel(
+              AutoBuilder.followPath(scoreCoralC),
+              Commands.sequence(
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(
+                      () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
+          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
+    } catch (Exception e) {
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getThreeCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
       return Commands.waitSeconds(0);

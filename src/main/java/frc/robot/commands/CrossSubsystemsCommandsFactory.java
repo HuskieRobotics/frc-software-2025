@@ -68,41 +68,45 @@ public class CrossSubsystemsCommandsFactory {
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
         .onTrue(
-            Commands.parallel(
-                    Commands.sequence(
-                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                        new DriveToPose(
-                            drivetrain,
-                            () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                            manipulator::setReadyToScore,
-                            new Transform2d(
-                                Units.inchesToMeters(2.0),
-                                Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0)),
-                            5.0),
-                        Commands.runOnce(
-                            () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                    Commands.runOnce(elevator::goToSelectedPosition, elevator))
+            Commands.sequence(
+                    Commands.waitUntil(manipulator::hasIndexedCoral),
+                    Commands.parallel(
+                        Commands.sequence(
+                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                            new DriveToPose(
+                                drivetrain,
+                                () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                                manipulator::setReadyToScore,
+                                new Transform2d(
+                                    Units.inchesToMeters(2.0),
+                                    Units.inchesToMeters(0.5),
+                                    Rotation2d.fromDegrees(2.0)),
+                                5.0),
+                            Commands.runOnce(
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getPrepToScoreCoralRightButton()
         .onTrue(
-            Commands.parallel(
-                    Commands.sequence(
-                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                        new DriveToPose(
-                            drivetrain,
-                            () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                            manipulator::setReadyToScore,
-                            new Transform2d(
-                                Units.inchesToMeters(2.0),
-                                Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0)),
-                            5.0),
-                        Commands.runOnce(
-                            () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                    Commands.runOnce(elevator::goToSelectedPosition, elevator))
+            Commands.sequence(
+                    Commands.waitUntil(manipulator::hasIndexedCoral),
+                    Commands.parallel(
+                        Commands.sequence(
+                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                            new DriveToPose(
+                                drivetrain,
+                                () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                                manipulator::setReadyToScore,
+                                new Transform2d(
+                                    Units.inchesToMeters(2.0),
+                                    Units.inchesToMeters(0.5),
+                                    Rotation2d.fromDegrees(2.0)),
+                                5.0),
+                            Commands.runOnce(
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));

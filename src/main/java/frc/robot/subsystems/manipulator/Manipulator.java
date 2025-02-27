@@ -247,6 +247,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.EJECTING_CORAL);
+
         if (!subsystem.inputs.isFunnelIRBlocked
             && !subsystem.inputs.isIndexerIRBlocked
             && subsystem.ejectingCoralTimer.hasElapsed(
@@ -366,11 +368,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        if (subsystem
-            .algaeRemoved) // I created an instance variable (algaeRemoved) thqat would keep track
-        // if the algae was removed but I need to do the IO stuff to actually
-        // check if the algae has been removed
-        {
+        LEDs.getInstance().requestState(States.REMOVING_ALGAE);
+        if (subsystem.algaeRemoved) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
           subsystem.algaeRemoved = false;
         }
