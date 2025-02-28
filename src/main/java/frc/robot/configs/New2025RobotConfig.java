@@ -27,8 +27,8 @@ public class New2025RobotConfig extends RobotConfig {
   private static final int FRONT_LEFT_MODULE_STEER_ENCODER = 25;
   private static final Angle FRONT_LEFT_MODULE_STEER_OFFSET = Rotations.of(-0.181152);
 
-  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5; 
-  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7; 
+  private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
+  private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
   private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.483643); // -.299805
 
