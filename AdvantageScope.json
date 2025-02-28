@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 236,
-      "y": 25,
-      "width": 1778,
-      "height": 1127,
+      "x": -8,
+      "y": -8,
+      "width": 1936,
+      "height": 1168,
       "state": {
         "sidebar": {
           "width": 324,
@@ -53,18 +53,21 @@
             "/Vision/Camera0/PoseObservations/0",
             "/RealOutputs/DriveToPose/difference",
             "/RealOutputs/DriveToPose/difference/translation",
-            "/RealOutputs/Vision",
             "/RealOutputs/Vision/1",
             "/RealOutputs/Vision/2",
             "/RealOutputs/Vision/3",
-            "/RealOutputs/LoggedRobot",
             "/RealOutputs/CommandsAll",
             "/PowerDistribution",
-            "/Elevator"
+            "/Drivetrain",
+            "/Drivetrain/FR",
+            "/RealOutputs/DriveToPose",
+            "/RealOutputs/LEDS",
+            "/RealOutputs/CANivoreStatus",
+            "/RealOutputs/CANStatus"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 8,
           "tabs": [
             {
               "type": 0,
@@ -150,6 +153,15 @@
                     "visible": true,
                     "options": {
                       "color": "#ff0000"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/DriveToPose/targetPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff"
                     }
                   }
                 ],
@@ -338,6 +350,24 @@
                     "visible": true,
                     "options": {
                       "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/DriveToPose/withinTolerance",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#5f4528"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/LEDS/state",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
                     }
                   }
                 ],
@@ -595,6 +625,146 @@
                 "rightFilter": 0
               },
               "controllerUUID": "38oq3909kqg1b5eu3ug8dil68yi1olsp",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
+              "title": "CAN",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANivoreStatus/Utilization",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANivoreStatus/OffCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANivoreStatus/ReceiveErrorCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANivoreStatus/TransmitErrorCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANStatus/OffCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANStatus/ReceiveErrorCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANStatus/TransmitErrorCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/CANStatus/TxFullCount",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/CANivoreStatus/Status",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "bqopp2t2l4a247p4ayu3ggyvdylik465",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 6,
+              "title": "Statistics",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "independent",
+                    "logKey": "/RealOutputs/CANivoreStatus/Utilization",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  }
+                ],
+                "timeRange": "full",
+                "rangeMin": 0,
+                "rangeMax": 1,
+                "stepSize": 0.01
+              },
+              "controllerUUID": "8c1rythy4k4c53l1srzzef6l50o86tcm",
               "renderer": null,
               "controlsHeight": 200
             },
