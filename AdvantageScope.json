@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": -8,
-      "y": -8,
-      "width": 1936,
-      "height": 1168,
+      "x": 0,
+      "y": 38,
+      "width": 1478,
+      "height": 944,
       "state": {
         "sidebar": {
           "width": 324,
@@ -57,17 +57,22 @@
             "/RealOutputs/Vision/2",
             "/RealOutputs/Vision/3",
             "/RealOutputs/CommandsAll",
-            "/PowerDistribution",
-            "/Drivetrain",
             "/Drivetrain/FR",
             "/RealOutputs/DriveToPose",
             "/RealOutputs/LEDS",
-            "/RealOutputs/CANivoreStatus",
-            "/RealOutputs/CANStatus"
+            "/RealOutputs/DriveToPose/difference (reef frame)",
+            "/RealOutputs/DriveToPose/difference (reef frame)/translation",
+            "/Vision",
+            "/Vision/3",
+            "/Vision/3/PoseObservations",
+            "/Vision/3/PoseObservations/0",
+            "/Vision/2",
+            "/Vision/2/PoseObservations",
+            "/Vision/2/PoseObservations/0"
           ]
         },
         "tabs": {
-          "selected": 8,
+          "selected": 3,
           "tabs": [
             {
               "type": 0,
@@ -134,7 +139,7 @@
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
-                      "color": "#ff0000"
+                      "color": "#ffff00"
                     }
                   },
                   {
@@ -247,14 +252,14 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  0.3590463260845276,
-                  3.0950224153982866,
-                  -6.636920707499418
+                  -3.4133651456358036,
+                  3.4390724682751896,
+                  -7.7475460010804245
                 ],
                 "cameraTarget": [
-                  3.548328271261648,
-                  0.8448639919436073,
-                  -1.838462217564402
+                  -3.8519104237044157,
+                  -0.8051139801948198,
+                  1.3445369057883565
                 ]
               },
               "controlsHeight": 200
@@ -359,6 +364,15 @@
                     "visible": true,
                     "options": {
                       "color": "#5f4528"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/DriveToPose/isFinished",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
                     }
                   },
                   {
