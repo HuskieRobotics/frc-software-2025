@@ -65,6 +65,11 @@ public class CrossSubsystemsCommandsFactory {
                     () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
                 .withName("score coral"));
 
+    oi.getDescoreAlgaeAfterAutoButton()
+        .onTrue(
+            AutonomousCommandFactory.getInstance()
+                .getDescoreAlgaeCommand(drivetrain, manipulator, elevator));
+
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
         .onTrue(

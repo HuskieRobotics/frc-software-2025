@@ -398,7 +398,7 @@ public class AutonomousCommandFactory {
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
 
-  private Command getDescoreAlgaeCommand(
+  public Command getDescoreAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.parallel(
         Commands.runOnce(manipulator::removeAlgae),
