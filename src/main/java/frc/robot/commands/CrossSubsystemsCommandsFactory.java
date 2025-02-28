@@ -49,7 +49,7 @@ public class CrossSubsystemsCommandsFactory {
                                         manipulator::setReadyToRemoveAlgae,
                                         new Transform2d(
                                             Units.inchesToMeters(2.0),
-                                            Units.inchesToMeters(1.0),
+                                            Units.inchesToMeters(0.5),
                                             Rotation2d.fromDegrees(2.0)),
                                         0.5),
                                     Commands.runOnce(
