@@ -85,7 +85,7 @@ public class ManipulatorConstants {
   public static final double FUNNEL_RAMP_UP_TIMEOUT = 0.15;
   public static final double FUNNEL_SCORING_TIMEOUT = 2.0;
 
-  public static final double EJECT_CORAL_DURATION_SECONDS = 5.0;
+  public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
