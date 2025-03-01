@@ -392,6 +392,7 @@ public class AutonomousCommandFactory {
                 1.6),
             Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+        Commands.waitSeconds(0.2), // ADD WAIT TO SEE IF NOT WAITING WAS IMPEDING PRECISION
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
