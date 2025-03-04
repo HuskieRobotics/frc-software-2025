@@ -19,8 +19,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.swerve.SwerveConstants;
 
 /** Most of this is copied from Artemis; update with actual values */
-public class New2025RobotConfig extends RobotConfig {
-  // FIXME: UPDATE ALL OFFSETS WITH REAL ROBOT TOMORROW
+public class CalypsoRobotConfig extends RobotConfig {
 
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
   private static final int FRONT_LEFT_MODULE_STEER_MOTOR = 3;
@@ -30,7 +29,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.299805);
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.483643);
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
@@ -60,7 +59,6 @@ public class New2025RobotConfig extends RobotConfig {
 
   private static final double COUPLE_RATIO = 3.125; // possibly needs to be updated for mk4ns
 
-  /* PID Values, Update all of these based on sysid routine when new robot arrives */
   private static final double ANGLE_KP = 100.0;
   private static final double ANGLE_KI = 0.0;
   private static final double ANGLE_KD = 0.5;
@@ -141,9 +139,6 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_TO_POSE_THETA_KP = 2.0;
   private static final double DRIVE_TO_POSE_THETA_KI = 0;
   private static final double DRIVE_TO_POSE_THETA_KD = 0.0;
-  private static final Distance DRIVE_TO_POSE_DRIVE_TOLERANCE =
-      Meters.of(0.06); // FIXME: update with testing (different from reef?)
-  private static final Angle DRIVE_TO_POSE_THETA_TOLERANCE = Radians.of(0.02);
   private static final LinearVelocity DRIVE_TO_POSE_MAX_VELOCITY = MetersPerSecond.of(1.25);
   private static final LinearAcceleration DRIVE_TO_POSE_MAX_ACCELERATION =
       MetersPerSecondPerSecond.of(2.5);
@@ -155,7 +150,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 34; // 17 on each strip
+  private static final int LED_COUNT = 42;
 
   @Override
   public boolean getPhoenix6Licensed() {
@@ -417,16 +412,6 @@ public class New2025RobotConfig extends RobotConfig {
   @Override
   public LinearAcceleration getDriveToPoseDriveMaxAcceleration() {
     return DRIVE_TO_POSE_MAX_ACCELERATION;
-  }
-
-  @Override
-  public Distance getDriveToPoseDriveTolerance() {
-    return DRIVE_TO_POSE_DRIVE_TOLERANCE;
-  }
-
-  @Override
-  public Angle getDriveToPoseThetaTolerance() {
-    return DRIVE_TO_POSE_THETA_TOLERANCE;
   }
 
   @Override

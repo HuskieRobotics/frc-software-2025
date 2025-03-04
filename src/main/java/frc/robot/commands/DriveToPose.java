@@ -249,7 +249,8 @@ public class DriveToPose extends Command {
     }
 
     // check that running is true (i.e., the calculate method has been invoked on the PID
-    // controllers) and that each of the controllers is at their goal. This is important since these
+    // controllers) and that each of the controllers is at their goal. This is important since
+    // these
     // controllers will return true for atGoal if the calculate method has not yet been invoked.
     return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
   }

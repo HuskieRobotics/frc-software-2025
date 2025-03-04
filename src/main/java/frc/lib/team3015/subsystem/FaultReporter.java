@@ -122,6 +122,12 @@ public class FaultReporter {
                     for (SelfChecking device : subsystemFaults.hardware) {
                       device.clearStickyFaults();
                     }
+
+                    for (Alert alert : subsystemFaults.faultAlerts) {
+                      alert.set(false);
+                    }
+                    subsystemFaults.faultAlerts.clear();
+                    subsystemFaults.faults.clear();
                   }
                 })
             .ignoringDisable(true)

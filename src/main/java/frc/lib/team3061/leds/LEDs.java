@@ -73,6 +73,9 @@ public abstract class LEDs extends SubsystemBase {
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
 
+    EJECTING_CORAL(
+        (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),
+    REMOVING_ALGAE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     SCORING_CORAL((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
     READY_TO_SCORE((leds, section) -> leds.solid(section, Color.kGreen)),
     AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
@@ -112,7 +115,7 @@ public abstract class LEDs extends SubsystemBase {
    * This is handled by specifying the length as half the actual length and mirroring the buffer
    * before updating the LEDs.
    */
-  protected static final boolean MIRROR_LEDS = false;
+  protected static final boolean MIRROR_LEDS = true;
   protected static final int ACTUAL_LENGTH = RobotConfig.getInstance().getLEDCount();
   protected static final int LENGTH = MIRROR_LEDS ? ACTUAL_LENGTH / 2 : ACTUAL_LENGTH;
   private static final int STATIC_LENGTH = LENGTH / 2;

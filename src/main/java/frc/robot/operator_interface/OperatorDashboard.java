@@ -108,7 +108,7 @@ public class OperatorDashboard implements OperatorInterface {
   }
 
   @Override
-  public Trigger getEnablePrimaryIRSensors() {
+  public Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> enablePrimaryIRSensors.get());
   }
 
