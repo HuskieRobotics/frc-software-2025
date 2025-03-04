@@ -19,7 +19,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.swerve.SwerveConstants;
 
 /** Most of this is copied from Artemis; update with actual values */
-public class New2025RobotConfig extends RobotConfig {
+public class CalypsoRobotConfig extends RobotConfig {
   // FIXME: UPDATE ALL OFFSETS WITH REAL ROBOT TOMORROW
 
   private static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 1;
