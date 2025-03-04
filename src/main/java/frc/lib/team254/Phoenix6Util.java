@@ -32,6 +32,8 @@ public class Phoenix6Util {
     if (statusCode != StatusCode.OK) {
       alert.setText(message + " " + statusCode);
       alert.set(true);
+    } else {
+      alert.set(false);
     }
   }
 

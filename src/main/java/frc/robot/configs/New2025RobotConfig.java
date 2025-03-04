@@ -30,7 +30,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 5;
   private static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 7;
   private static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 24;
-  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.299805);
+  private static final Angle FRONT_RIGHT_MODULE_STEER_OFFSET = Rotations.of(-0.483643); // -.299805
 
   private static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
   private static final int BACK_LEFT_MODULE_STEER_MOTOR = 8;
@@ -155,7 +155,7 @@ public class New2025RobotConfig extends RobotConfig {
   private static final double DRIVE_FACING_ANGLE_KD = 0.1;
   private static final double DRIVE_FACING_ANGLE_KI = 0.0;
 
-  private static final int LED_COUNT = 34; // 17 on each strip
+  private static final int LED_COUNT = 42;
 
   @Override
   public boolean getPhoenix6Licensed() {

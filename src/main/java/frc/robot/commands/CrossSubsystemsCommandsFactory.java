@@ -46,10 +46,10 @@ public class CrossSubsystemsCommandsFactory {
                                         () ->
                                             Field2d.getInstance()
                                                 .getNearestBranch(Side.REMOVE_ALGAE),
-                                        manipulator::setReadyToScore,
+                                        manipulator::setReadyToRemoveAlgae,
                                         new Transform2d(
                                             Units.inchesToMeters(2.0),
-                                            Units.inchesToMeters(1.0),
+                                            Units.inchesToMeters(0.5),
                                             Rotation2d.fromDegrees(2.0)),
                                         0.5),
                                     Commands.runOnce(
@@ -65,44 +65,53 @@ public class CrossSubsystemsCommandsFactory {
                     () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
                 .withName("score coral"));
 
+    oi.getDescoreAlgaeAfterAutoButton()
+        .onTrue(
+            AutonomousCommandFactory.getInstance()
+                .getDescoreAlgaeCommand(drivetrain, manipulator, elevator));
+
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
         .onTrue(
-            Commands.parallel(
-                    Commands.sequence(
-                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                        new DriveToPose(
-                            drivetrain,
-                            () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                            manipulator::setReadyToScore,
-                            new Transform2d(
-                                Units.inchesToMeters(2.0),
-                                Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0)),
-                            5.0),
-                        Commands.runOnce(
-                            () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                    Commands.runOnce(elevator::goToSelectedPosition, elevator))
+            Commands.sequence(
+                    Commands.waitUntil(manipulator::hasIndexedCoral),
+                    Commands.parallel(
+                        Commands.sequence(
+                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                            new DriveToPose(
+                                drivetrain,
+                                () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+                                manipulator::setReadyToScore,
+                                new Transform2d(
+                                    Units.inchesToMeters(2.0),
+                                    Units.inchesToMeters(0.5),
+                                    Rotation2d.fromDegrees(2.0)),
+                                5.0),
+                            Commands.runOnce(
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getPrepToScoreCoralRightButton()
         .onTrue(
-            Commands.parallel(
-                    Commands.sequence(
-                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                        new DriveToPose(
-                            drivetrain,
-                            () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                            manipulator::setReadyToScore,
-                            new Transform2d(
-                                Units.inchesToMeters(2.0),
-                                Units.inchesToMeters(0.5),
-                                Rotation2d.fromDegrees(2.0)),
-                            5.0),
-                        Commands.runOnce(
-                            () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                    Commands.runOnce(elevator::goToSelectedPosition, elevator))
+            Commands.sequence(
+                    Commands.waitUntil(manipulator::hasIndexedCoral),
+                    Commands.parallel(
+                        Commands.sequence(
+                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                            new DriveToPose(
+                                drivetrain,
+                                () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                                manipulator::setReadyToScore,
+                                new Transform2d(
+                                    Units.inchesToMeters(2.0),
+                                    Units.inchesToMeters(0.5),
+                                    Rotation2d.fromDegrees(2.0)),
+                                5.0),
+                            Commands.runOnce(
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));

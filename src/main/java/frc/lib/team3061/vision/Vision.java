@@ -190,6 +190,7 @@ public class Vision extends SubsystemBase {
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()) {
           final int finalCameraIndex = cameraIndex;
           // get tag poses and update last detection times
+          // FIXME: only do this is the estimate is accepted
           for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
             if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
               if (ENABLE_DETAILED_LOGGING) {
