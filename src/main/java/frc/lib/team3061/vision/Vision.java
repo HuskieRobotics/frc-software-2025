@@ -213,7 +213,8 @@ public class Vision extends SubsystemBase {
                       || observation.averageAmbiguity() < AMBIGUITY_THRESHOLD)
                   && (observation.type() == PoseObservationType.SINGLE_TAG
                       || Math.abs(observation.reprojectionError()) < REPROJECTION_ERROR_THRESHOLD)
-                  && poseIsOnField(estimatedRobotPose3d);
+                  && poseIsOnField(estimatedRobotPose3d)
+                  && arePoseRotationsReasonable(estimatedRobotPose3d);
 
           if (acceptPose) {
             // get tag poses and update last detection times
@@ -403,6 +404,16 @@ public class Vision extends SubsystemBase {
         && pose.getY() > -FIELD_BORDER_MARGIN_METERS
         && pose.getY() < layout.getFieldWidth() + FIELD_BORDER_MARGIN_METERS
         && Math.abs(pose.getZ()) < MAX_Z_ERROR_METERS;
+  }
+
+  private boolean arePoseRotationsReasonable(Pose3d pose) {
+    return Math.abs(
+            RobotOdometry.getInstance()
+                .getEstimatedPose()
+                .getRotation()
+                .minus(pose.getRotation().toRotation2d())
+                .getRadians())
+        < ROTATION_THRESHOLD_DEGREES;
   }
 
   /**

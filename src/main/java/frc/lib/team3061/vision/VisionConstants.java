@@ -37,6 +37,11 @@ public final class VisionConstants {
   // the pose ambiguity must be less than this value for the target to be considered valid
   public static final double AMBIGUITY_THRESHOLD = 0.5;
 
+  // FIXME: tune
+  // the maximum difference, in degrees, between the robot's current rotation and the rotation
+  // calculated from the vision target for the pose to be considered valid
+  public static final double ROTATION_THRESHOLD_DEGREES = 10.0;
+
   // the reprojection error must be less than this value for the target to be considered valid
   public static final double REPROJECTION_ERROR_THRESHOLD = 5.0;
 
