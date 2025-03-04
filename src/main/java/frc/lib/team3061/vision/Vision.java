@@ -188,21 +188,6 @@ public class Vision extends SubsystemBase {
 
         // only process the vision data if the timestamp is newer than the last one
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()) {
-          final int finalCameraIndex = cameraIndex;
-          // get tag poses and update last detection times
-          // FIXME: only do this is the estimate is accepted
-          for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
-            if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
-              if (ENABLE_DETAILED_LOGGING) {
-                lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
-              }
-              Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
-              tagPose.ifPresent(
-                  (e) -> {
-                    tagPoses.get(finalCameraIndex).add(e);
-                  });
-            }
-          }
 
           // Initialize logging values
           this.lastTimestamps[cameraIndex] = observation.timestamp();
@@ -231,6 +216,20 @@ public class Vision extends SubsystemBase {
                   && poseIsOnField(estimatedRobotPose3d);
 
           if (acceptPose) {
+            // get tag poses and update last detection times
+            final int finalCameraIndex = cameraIndex;
+            for (int tagID = 1; tagID < MAX_NUMBER_TAGS; tagID++) {
+              if ((observation.tagsSeenBitMap() & (1L << tagID)) != 0) {
+                if (ENABLE_DETAILED_LOGGING) {
+                  lastTagDetectionTimes.put(tagID, Timer.getTimestamp());
+                }
+                Optional<Pose3d> tagPose = this.layout.getTagPose(tagID);
+                tagPose.ifPresent(
+                    (e) -> {
+                      tagPoses.get(finalCameraIndex).add(e);
+                    });
+              }
+            }
             robotPosesAccepted.get(cameraIndex).add(estimatedRobotPose3d);
             if (ENABLE_DETAILED_LOGGING) {
               lastPoseEstimationAcceptedTimes.put(estimatedRobotPose3d, Timer.getTimestamp());
