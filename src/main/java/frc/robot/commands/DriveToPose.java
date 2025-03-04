@@ -164,7 +164,8 @@ public class DriveToPose extends Command {
     // double straightLineHighVelocityMPS = 2.0; // arbitrary 2 m/s right now
 
     // use last values of filter
-    double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
+    // FIXME: Tune arbitrary extra x-velocity to drive robot into the reef
+    double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX()) + 0.5;
     double yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
     double thetaVelocity =
         thetaController.calculate(
