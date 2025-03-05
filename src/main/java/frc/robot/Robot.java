@@ -71,11 +71,14 @@ public class Robot extends LoggedRobot {
       new Alert(
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.kWarning);
-  private final Alert gcAlert =
+  private final Alert gitAlert =
       new Alert("Please wait to enable, JITing in progress.", AlertType.kWarning);
 
   /** Create a new Robot. */
   public Robot() {
+    // start code loading LED animation
+    LEDs.getInstance();
+
     // Record metadata
     Logger.recordMetadata("Robot", Constants.getRobot().toString());
     Logger.recordMetadata("TuningMode", Boolean.toString(Constants.TUNING_MODE));
@@ -124,6 +127,7 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // start Elastic Dashboard server
+    // FIXME: disable this and check loop times
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // DO THIS FIRST
@@ -208,7 +212,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Threads.setCurrentThreadPriority(true, 99);
+    Threads.setCurrentThreadPriority(true, 10);
 
     /*
      * Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands,
@@ -261,8 +265,8 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
 
-    // GC alert
-    gcAlert.set(Timer.getTimestamp() < 45.0);
+    // JIT alert
+    gitAlert.set(Timer.getTimestamp() < 45.0);
 
     // Print auto duration
     if (autonomousCommand != null && !autonomousCommand.isScheduled() && !autoMessagePrinted) {
@@ -278,7 +282,7 @@ public class Robot extends LoggedRobot {
 
     robotContainer.periodic();
 
-    Threads.setCurrentThreadPriority(false, 10);
+    Threads.setCurrentThreadPriority(false, 0);
   }
 
   /** This method is invoked periodically when the robot is in the disabled state. */
