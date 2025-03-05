@@ -202,6 +202,8 @@ public class Robot extends LoggedRobot {
     // background when code starts.
     // DO THIS AFTER CONFIGURATION OF YOUR DESIRED PATHFINDER
     PathfindingCommand.warmupCommand().schedule();
+
+    Threads.setCurrentThreadPriority(true, 10);
   }
 
   /**
@@ -213,8 +215,6 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Threads.setCurrentThreadPriority(true, 10);
-
     LoggedTracer.reset();
 
     /*
@@ -287,8 +287,6 @@ public class Robot extends LoggedRobot {
     robotContainer.periodic();
     // Record cycle time
     LoggedTracer.record("RobotPeriodic");
-
-    Threads.setCurrentThreadPriority(false, 0);
   }
 
   /** This method is invoked periodically when the robot is in the disabled state. */
