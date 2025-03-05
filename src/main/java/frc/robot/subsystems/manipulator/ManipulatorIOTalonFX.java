@@ -193,7 +193,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.funnelTempCelsius = funnelMotorTemp.getValueAsDouble();
     inputs.indexerTempCelsius = indexerMotorTemp.getValueAsDouble();
 
-    inputs.indexerSupplyCurrentAmps = funnelMotorSupplyCurrent.getValueAsDouble();
+    inputs.funnelSupplyCurrentAmps = funnelMotorSupplyCurrent.getValueAsDouble();
     inputs.indexerSupplyCurrentAmps = indexerMotorSupplyCurrent.getValueAsDouble();
 
     inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
