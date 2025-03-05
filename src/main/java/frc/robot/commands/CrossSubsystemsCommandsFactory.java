@@ -96,7 +96,7 @@ public class CrossSubsystemsCommandsFactory {
                                     Units.inchesToMeters(0.25),
                                     Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(2.0)),
-                                5.0),
+                                3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
@@ -118,7 +118,7 @@ public class CrossSubsystemsCommandsFactory {
                                     Units.inchesToMeters(0.25),
                                     Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(2.0)),
-                                5.0),
+                                3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
