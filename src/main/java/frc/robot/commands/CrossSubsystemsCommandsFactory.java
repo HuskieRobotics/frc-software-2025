@@ -40,6 +40,8 @@ public class CrossSubsystemsCommandsFactory {
                                     getScoreCoralCommand(manipulator),
                                     Commands.runOnce(
                                         elevator::goBelowSelectedAlgaePosition, elevator),
+                                    Commands.runOnce(
+                                        () -> vision.specifyCamerasToConsider(List.of(0, 2))),
                                     Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
                                     new DriveToPose(
                                         drivetrain,
@@ -54,6 +56,8 @@ public class CrossSubsystemsCommandsFactory {
                                         0.5),
                                     Commands.runOnce(
                                         elevator::goAboveSelectedAlgaePosition, elevator),
+                                    Commands.runOnce(
+                                        () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
                                     Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
                                     Commands.waitSeconds(0.5),
                                     Commands.runOnce(manipulator::algaeIsRemoved))),
@@ -74,7 +78,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getDescoreAlgaeAfterAutoButton()
         .onTrue(
             AutonomousCommandFactory.getInstance()
-                .getDescoreAlgaeCommand(drivetrain, manipulator, elevator));
+                .getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator));
 
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
