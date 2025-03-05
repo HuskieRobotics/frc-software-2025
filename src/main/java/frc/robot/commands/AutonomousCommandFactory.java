@@ -364,7 +364,7 @@ public class AutonomousCommandFactory {
       return Commands.sequence(
           Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
           getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          getDescoreAlgaeCommand(drivetrain, manipulator, elevator),
+          getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator),
           AutoBuilder.followPath(backUpH1C));
 
     } catch (Exception e) {
@@ -400,11 +400,12 @@ public class AutonomousCommandFactory {
   }
 
   public Command getDescoreAlgaeCommand(
-      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     return Commands.parallel(
         Commands.runOnce(manipulator::removeAlgae),
         Commands.sequence(
             Commands.runOnce(() -> elevator.goToPosition(ReefBranch.BELOW_ALGAE_1)),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
             Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.BELOW_ALGAE_1)),
             new DriveToPose(
                 drivetrain,
@@ -416,6 +417,7 @@ public class AutonomousCommandFactory {
                     Rotation2d.fromDegrees(2.0)),
                 0.5),
             Commands.runOnce(() -> elevator.goToPosition(ReefBranch.ABOVE_ALGAE_1)),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
             Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.ABOVE_ALGAE_1)),
             Commands.waitSeconds(0.5),
             Commands.runOnce(manipulator::algaeIsRemoved)));

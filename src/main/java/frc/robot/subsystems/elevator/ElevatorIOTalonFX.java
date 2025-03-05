@@ -218,6 +218,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     leadMotorConfig.MotionMagicCruiseVelocity = cruiseVelocity.get();
 
+    // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
+    // limit switch, but we will set it using a control request
+    config.HardwareLimitSwitch.ReverseLimitAutosetPositionEnable = true;
+    config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0.0;
+    config.HardwareLimitSwitch.ReverseLimitEnable = true;
+
     Phoenix6Util.applyAndCheckConfiguration(elevatorMotorLead, config, configAlert);
 
     FaultReporter.getInstance()
@@ -349,7 +355,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void zeroPosition() {
-    elevatorMotorLead.setPosition(0.0);
+    // we set the reverse limit instead of directly setting the position to avoid the overhead of a
+    // config call
+    elevatorMotorLead.setControl(leadVoltageRequest.withLimitReverseMotion(true).withOutput(0.0));
   }
 
   @Override
