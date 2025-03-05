@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTracer;
+import frc.lib.team6328.util.NTClientLogger;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandFactory;
 import java.lang.reflect.Field;
@@ -253,6 +254,9 @@ public class Robot extends LoggedRobot {
               && canInitialErrorTimer.hasElapsed(CAN_ERROR_TIME_THRESHOLD));
     }
 
+    // Log NT client list
+    NTClientLogger.log();
+
     // Update low battery alert
     if (DriverStation.isEnabled()) {
       disabledTimer.reset();
@@ -279,6 +283,7 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.periodic();
+
     // Record cycle time
     LoggedTracer.record("RobotPeriodic");
 
