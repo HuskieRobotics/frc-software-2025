@@ -59,9 +59,15 @@ public class CrossSubsystemsCommandsFactory {
                                     Commands.runOnce(manipulator::algaeIsRemoved))),
                             getScoreCoralCommand(manipulator),
                             elevator::isAlgaePositionSelected),
-                        Commands.runOnce(
-                            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP),
-                            elevator)),
+                        Commands.deadline(
+                            // run TeleopSwerve to allow driver to move away from reef while
+                            // elevator is lowering
+                            elevator.getElevatorLowerAndResetCommand(),
+                            new TeleopSwerve(
+                                drivetrain,
+                                OISelector.getOperatorInterface()::getTranslateX,
+                                OISelector.getOperatorInterface()::getTranslateY,
+                                OISelector.getOperatorInterface()::getRotate))),
                     () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
                 .withName("score coral"));
 
