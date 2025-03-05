@@ -15,6 +15,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -447,6 +448,9 @@ public class Manipulator extends SubsystemBase {
     } else {
       runStateMachine();
     }
+
+    // Record cycle time
+    LoggedTracer.record("Manipulator");
   }
 
   private void setState(State state) {
