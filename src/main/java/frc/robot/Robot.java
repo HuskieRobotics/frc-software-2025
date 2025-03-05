@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandFactory;
 import java.lang.reflect.Field;
@@ -214,6 +215,8 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     Threads.setCurrentThreadPriority(true, 10);
 
+    LoggedTracer.reset();
+
     /*
      * Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands,
      * running already-scheduled commands, removing finished or interrupted commands, and running
@@ -221,6 +224,7 @@ public class Robot extends LoggedRobot {
      * for anything in the Command-based framework to work.
      */
     CommandScheduler.getInstance().run();
+    LoggedTracer.record("Commands");
 
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
 
@@ -281,6 +285,8 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.periodic();
+    // Record cycle time
+    LoggedTracer.record("RobotPeriodic");
 
     Threads.setCurrentThreadPriority(false, 0);
   }

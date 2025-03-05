@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
@@ -27,18 +28,10 @@ public class Climber extends SubsystemBase {
     Logger.processInputs("Climber", inputs);
     if (testingMode.get() == 1) {
       io.setVoltage(climberVoltage.get());
-    } else if (inputs.voltage > 0
-        && this.extendingCageCatcher
-        && inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES) {
-      stop();
-      this.extendingCageCatcher = false;
-    } else if (inputs.voltage > 0 && inputs.positionInches > ClimberConstants.MAX_HEIGHT_INCHES) {
-      stop();
-    } else if (inputs.voltage < 0
-        && inputs.positionInches < ClimberConstants.MIN_HEIGHT_INCHES
-        && !retractingSlow) {
-      stop();
     }
+
+    // Record cycle time
+    LoggedTracer.record("Climber");
   }
 
   public void extend() {

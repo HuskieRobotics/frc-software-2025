@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.robot.Constants;
 import frc.robot.Field2d;
 import java.util.List;
@@ -259,6 +260,9 @@ public abstract class LEDs extends SubsystemBase {
     staticLowStates.clear();
     staticMidStates.clear();
     staticHighStates.clear();
+
+    // Record cycle time
+    LoggedTracer.record("LEDs");
   }
 
   private void updateToDisabledPattern(Section section) {

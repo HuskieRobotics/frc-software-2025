@@ -1,10 +1,10 @@
 {
   "hubs": [
     {
-      "x": 236,
-      "y": 25,
-      "width": 1778,
-      "height": 1127,
+      "x": 320,
+      "y": 1190,
+      "width": 1512,
+      "height": 944,
       "state": {
         "sidebar": {
           "width": 300,
@@ -48,7 +48,6 @@
             "/RealOutputs/Vision/0",
             "/RealOutputs/Vision/2",
             "/RealOutputs/Vision/2/RobotPosesRejected",
-            "/RealOutputs/TeleopSwerve",
             "/Phoenix6",
             "/Log1",
             "/Log1/Phoenix6",
@@ -69,10 +68,8 @@
             "/RealOutputs/DriveToPose/difference/translation",
             "/ReplayOutputs/RobotOdometry/visionPoseDiff",
             "/ReplayOutputs/RobotOdometry/visionPoseDiff/translation",
-            "/RealOutputs/LEDS",
             "/RealOutputs/Vision/1",
             "/RealOutputs/Vision/3",
-            "/RealOutputs/Vision/1/RobotPosesAccepted",
             "/RealOutputs/Vision/3/RobotPosesAccepted",
             "/RealOutputs/Vision/3/RobotPosesRejected",
             "/RealOutputs/DriveToPose",
@@ -94,14 +91,14 @@
             "/RealOutputs/DriveToPose/difference (reef frame)",
             "/RealOutputs/DriveToPose/difference (reef frame)/translation",
             "/Tuning/DriveToPose",
-            "/RealOutputs/Elevator",
-            "/RealOutputs/Manipulator",
-            "/Drivetrain",
-            "/RealOutputs/Drivetrain/Pose"
+            "/RealOutputs/Vision/0/CameraPoses",
+            "/RealOutputs/Vision/1/CameraPoses",
+            "/RealOutputs/Vision/2/CameraPoses",
+            "/RealOutputs/Vision/3/CameraPoses"
           ]
         },
         "tabs": {
-          "selected": 19,
+          "selected": 2,
           "tabs": [
             {
               "type": 0,
@@ -223,6 +220,107 @@
               },
               "controllerUUID": "qcnqmnu8c7710fc7oyb9xyg0qaw85zg1",
               "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 3,
+              "title": "camera transforms",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "robot",
+                    "logKey": "/RealOutputs/Drivetrain/Pose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "model": "3061 (2025)"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/Vision/0/RobotToCameraPose",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {
+                      "model": "3061 (2025)",
+                      "color": "#00ff00"
+                    }
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/0/CameraPoses/0",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/0/RobotToCameraTransform",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/1/CameraPoses",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/1/RobotToCameraTransform",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/2/CameraPoses/0",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/2/RobotToCameraTransform",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/3/CameraPoses/0",
+                    "logType": "Pose3d",
+                    "visible": true,
+                    "options": {}
+                  },
+                  {
+                    "type": "axes",
+                    "logKey": "/RealOutputs/Vision/3/RobotToCameraTransform",
+                    "logType": "Transform3d",
+                    "visible": true,
+                    "options": {}
+                  }
+                ],
+                "game": "2025 Field (Welded)",
+                "origin": "blue"
+              },
+              "controllerUUID": "v8de94sw767ofrs9xy6f0j9qs69bfnlm",
+              "renderer": {
+                "cameraIndex": -1,
+                "orbitFov": 50,
+                "cameraPosition": [
+                  5.639497163763347,
+                  1.1098085590481928,
+                  -2.2326330712457105
+                ],
+                "cameraTarget": [
+                  5.7355498277028945,
+                  0.3817895813408314,
+                  -0.05417977521878486
+                ]
+              },
               "controlsHeight": 200
             },
             {
@@ -1584,18 +1682,6 @@
       }
     }
   ],
-  "satellites": [
-    {
-      "x": 320,
-      "y": 1190,
-      "width": 1511,
-      "height": 722,
-      "state": {
-        "type": 2,
-        "visualizer": null
-      },
-      "uuid": "qcnqmnu8c7710fc7oyb9xyg0qaw85zg1"
-    }
-  ],
+  "satellites": [],
   "version": "4.1.2"
 }
