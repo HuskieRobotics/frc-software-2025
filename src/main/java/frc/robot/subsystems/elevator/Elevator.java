@@ -6,6 +6,8 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,6 +24,8 @@ public class Elevator extends SubsystemBase {
 
   private ElevatorIO elevatorIO;
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
+
+  private Alert hardStopAlert = new Alert("Elevator is not at zero position", AlertType.kError);
 
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
@@ -271,6 +275,15 @@ public class Elevator extends SubsystemBase {
     elevatorIO.zeroPosition();
   }
 
+  public void checkHeight(){
+    if (getPosition().in(Inches) > RESET_TOLERANCE){
+      hardStopAlert.set(true);
+    } 
+    else {
+      hardStopAlert.set(false);
+    }
+  }
+
   public Command getElevatorLowerAndResetCommand() {
     return Commands.sequence(
         Commands.runOnce(() -> goToPosition(ReefBranch.HARDSTOP)),
@@ -280,6 +293,7 @@ public class Elevator extends SubsystemBase {
         Commands.waitUntil(
             () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
+        Commands.runOnce(this::checkHeight),
         Commands.runOnce(() -> elevatorIO.zeroPosition()));
   }
 }
