@@ -49,7 +49,7 @@ public final class VisionConstants {
   // the maximum error in the z component of the robot's pose for the pose to be considered valid
   // (assumes that the robot is always on the carpet)
   // FIXME: tune
-  public static final double MAX_Z_ERROR_METERS = 0.75;
+  public static final double MAX_Z_ERROR_METERS = 0.25;
 
   // the maximum distance off the field for the robot's pose for the pose to be considered valid
   public static final double FIELD_BORDER_MARGIN_METERS = 0.5;
