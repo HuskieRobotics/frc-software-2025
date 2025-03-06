@@ -50,7 +50,7 @@ public class CrossSubsystemsCommandsFactory {
                                                 .getNearestBranch(Side.REMOVE_ALGAE),
                                         manipulator::setReadyToRemoveAlgae,
                                         new Transform2d(
-                                            Units.inchesToMeters(0.25),
+                                            Units.inchesToMeters(0.5),
                                             Units.inchesToMeters(0.5),
                                             Rotation2d.fromDegrees(2.0)),
                                         0.5),
@@ -93,7 +93,7 @@ public class CrossSubsystemsCommandsFactory {
                                 () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                                 manipulator::setReadyToScore,
                                 new Transform2d(
-                                    Units.inchesToMeters(0.25),
+                                    Units.inchesToMeters(0.5),
                                     Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(2.0)),
                                 3.0),
@@ -115,7 +115,7 @@ public class CrossSubsystemsCommandsFactory {
                                 () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                                 manipulator::setReadyToScore,
                                 new Transform2d(
-                                    Units.inchesToMeters(0.25),
+                                    Units.inchesToMeters(0.5),
                                     Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(2.0)),
                                 3.0),

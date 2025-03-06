@@ -164,8 +164,8 @@ public class DriveToPose extends Command {
     // double straightLineHighVelocityMPS = 2.0; // arbitrary 2 m/s right now
 
     // use last values of filter
-    // FIXME: Tune arbitrary extra x-velocity to drive robot into the reef
-    double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX()) + 0.5;
+
+    double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
     double yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
     double thetaVelocity =
         thetaController.calculate(
@@ -178,6 +178,10 @@ public class DriveToPose extends Command {
     Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
     var reefRelativeVelocities =
         new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation().unaryMinus());
+
+    // FIXME: Tune arbitrary extra x-velocity to drive robot into the reef
+    reefRelativeVelocities =
+        new Translation2d(reefRelativeVelocities.getX() + 0.25, reefRelativeVelocities.getY());
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
       Logger.recordOutput("DriveToPose/boost velocity", true);

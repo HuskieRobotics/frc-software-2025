@@ -386,7 +386,7 @@ public class AutonomousCommandFactory {
                 () -> Field2d.getInstance().getNearestBranch(side),
                 manipulator::setReadyToScore,
                 new Transform2d(
-                    Units.inchesToMeters(0.25),
+                    Units.inchesToMeters(0.5),
                     Units.inchesToMeters(0.5),
                     Rotation2d.fromDegrees(2.0)),
                 1.6),
@@ -412,7 +412,7 @@ public class AutonomousCommandFactory {
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                 manipulator::setReadyToScore,
                 new Transform2d(
-                    Units.inchesToMeters(0.25),
+                    Units.inchesToMeters(0.5),
                     Units.inchesToMeters(0.5),
                     Rotation2d.fromDegrees(2.0)),
                 0.5),
