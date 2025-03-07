@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -16,6 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -43,7 +43,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
-  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   private StatusSignal<Current> leadStatorCurrent;
   private StatusSignal<Current> followerStatorCurrent;
@@ -60,6 +59,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private StatusSignal<Temperature> elevatorFollowerTempStatusSignal;
 
   private StatusSignal<AngularVelocity> elevatorVelocityStatusSignal;
+
+  private final Debouncer connectedLeadDebouncer = new Debouncer(0.5);
+  private final Debouncer connectedFollowerDebouncer = new Debouncer(0.5);
 
   private double localPosition = 0.0;
 
@@ -141,6 +143,19 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     elevatorFollowerTempStatusSignal = elevatorMotorFollower.getDeviceTemp();
 
     elevatorVelocityStatusSignal = elevatorMotorLead.getVelocity();
+
+    Phoenix6Util.registerSignals(
+        true,
+        leadStatorCurrent,
+        followerStatorCurrent,
+        leadVoltageSupplied,
+        followerVoltageSupplied,
+        leadSupplyCurrent,
+        followerSupplyCurrent,
+        elevatorPositionStatusSignal,
+        elevatorLeadTempStatusSignal,
+        elevatorFollowerTempStatusSignal,
+        elevatorVelocityStatusSignal);
 
     leadPositionRequest = new MotionMagicExpoVoltage(0);
     leadPositionRequestDown = new DynamicMotionMagicVoltage(0, 10, 100, 500);
@@ -245,20 +260,22 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
-
-    StatusCode status =
-        BaseStatusSignal.refreshAll(
-            elevatorPositionStatusSignal,
-            leadStatorCurrent,
-            followerStatorCurrent,
-            leadSupplyCurrent,
-            followerSupplyCurrent,
-            leadVoltageSupplied,
-            followerVoltageSupplied,
-            elevatorLeadTempStatusSignal,
-            elevatorFollowerTempStatusSignal,
-            elevatorVelocityStatusSignal);
-    Phoenix6Util.checkError(status, "Failed to refresh elevator motor signals.", refreshAlert);
+    inputs.connectedLead =
+        connectedLeadDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                leadVoltageSupplied,
+                leadStatorCurrent,
+                leadSupplyCurrent,
+                elevatorLeadTempStatusSignal,
+                elevatorVelocityStatusSignal,
+                elevatorPositionStatusSignal));
+    inputs.connectedFollower =
+        connectedFollowerDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                followerVoltageSupplied,
+                followerStatorCurrent,
+                followerSupplyCurrent,
+                elevatorFollowerTempStatusSignal));
 
     inputs.voltageSuppliedLead = leadVoltageSupplied.getValueAsDouble();
     inputs.voltageSuppliedFollower = followerVoltageSupplied.getValueAsDouble();

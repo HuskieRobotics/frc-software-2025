@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -13,6 +12,7 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -51,8 +51,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
-
-  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   private final LoggedTunableNumber funnelKp =
       new LoggedTunableNumber("Manipulator/Funnel/kP", FUNNEL_MOTOR_KP);
@@ -101,6 +99,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private StatusSignal<Voltage> funnelMotorVoltage;
   private StatusSignal<Voltage> indexerMotorVoltage;
+
+  private final Debouncer funnelConnectedDebouncer = new Debouncer(0.5);
+  private final Debouncer indexerConnectedDebouncer = new Debouncer(0.5);
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
@@ -153,6 +154,21 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     funnelMotorStatorCurrent = funnelMotor.getStatorCurrent();
     indexerMotorStatorCurrent = indexerMotor.getStatorCurrent();
 
+    Phoenix6Util.registerSignals(
+        true,
+        funnelMotorVelocity,
+        funnelMotorVoltage,
+        funnelMotorStatorCurrent,
+        funnelMotorTemp,
+        funnelMotorSupplyCurrent);
+    Phoenix6Util.registerSignals(
+        false,
+        indexerMotorVelocity,
+        indexerMotorVoltage,
+        indexerMotorStatorCurrent,
+        indexerMotorTemp,
+        indexerMotorSupplyCurrent);
+
     configFunnelMotor(funnelMotor);
     configIndexerMotor(indexerMotor);
   }
@@ -165,25 +181,22 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
 
-    // refresh all status signal objects for funnel motor
-    StatusCode status =
-        BaseStatusSignal.refreshAll(
-            funnelMotorVelocity,
-            funnelMotorStatorCurrent,
-            funnelMotorTemp,
-            funnelMotorSupplyCurrent,
-            funnelMotorVoltage);
-    Phoenix6Util.checkError(status, "Failed to refresh funnel motor signals.", refreshAlert);
-
-    // refresh all status signal objects for indexer motor
-    status =
-        BaseStatusSignal.refreshAll(
-            indexerMotorVelocity,
-            indexerMotorStatorCurrent,
-            indexerMotorTemp,
-            indexerMotorSupplyCurrent,
-            indexerMotorVoltage);
-    Phoenix6Util.checkError(status, "Failed to refresh indexer motor signals.", refreshAlert);
+    inputs.funnelConnected =
+        funnelConnectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                funnelMotorVelocity,
+                funnelMotorVoltage,
+                funnelMotorStatorCurrent,
+                funnelMotorTemp,
+                funnelMotorSupplyCurrent));
+    inputs.indexerConnected =
+        indexerConnectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                indexerMotorVelocity,
+                indexerMotorVoltage,
+                indexerMotorStatorCurrent,
+                indexerMotorTemp,
+                indexerMotorSupplyCurrent));
 
     inputs.funnelVelocityRPS = funnelMotorVelocity.getValue().in(RotationsPerSecond);
     inputs.indexerVelocityRPS = indexerMotorVelocity.getValue().in(RotationsPerSecond);
