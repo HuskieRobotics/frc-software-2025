@@ -81,7 +81,8 @@ public class AutonomousCommandFactory {
     NamedCommands.registerCommand(
         "Raise Elevator",
         Commands.sequence(
-            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
+            Commands.print("Raising Elevator"),
+            Commands.waitUntil(manipulator::hasIndexedCoral),
             Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4))));
 
     /************ Two Piece Left ************
@@ -240,6 +241,7 @@ public class AutonomousCommandFactory {
     return CharacterizationCommands.wheelRadiusCharacterization(drivetrain);
   }
 
+  // FIXME: remove elevator setpoints in code since we have event markers now
   public Command getTwoCoralLeftAutoCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {

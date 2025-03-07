@@ -36,7 +36,12 @@
       "name": "Raise Elevator",
       "waypointRelativePos": 0.5,
       "endWaypointRelativePos": null,
-      "command": null
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Raise Elevator"
+        }
+      }
     }
   ],
   "globalConstraints": {
