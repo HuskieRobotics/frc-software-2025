@@ -92,7 +92,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
-          new Translation3d(0.180, -0.277, 0.240),
+          new Translation3d(0.180, -0.267, 0.240),
           new Rotation3d(new Quaternion(-0.978, -0.032, 0.107, -0.176)));
   // pitch 45 degrees
 
@@ -108,7 +108,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
-          new Translation3d(0.181, 0.257, 0.242),
+          new Translation3d(0.181, 0.267, 0.242),
           new Rotation3d(new Quaternion(-0.978, 0.011, 0.103, 0.183)));
 
   // Back left camera
