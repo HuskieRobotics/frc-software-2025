@@ -78,12 +78,11 @@ public class AutonomousCommandFactory {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
-    /************* PathPlanner Named Commands *****************/
     NamedCommands.registerCommand(
-        "Score Left L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
-    NamedCommands.registerCommand(
-        "Score Right L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
-    NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand(manipulator));
+        "Raise Elevator",
+        Commands.sequence(
+            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
+            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4))));
 
     /************ Two Piece Left ************
      *
