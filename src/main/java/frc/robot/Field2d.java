@@ -250,11 +250,27 @@ public class Field2d {
       // put all the right and left poses into their maps, corresponded by approximate center poses
 
       // right
+      // HARDCODE REMOVE ALGAE POSES TO THE MIDDLE FOR NOW:
+      // FIXME: unhardcode remove algae poses
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i], blueReefRightBranches[i]);
+        Pose2d removeAlgaePose =
+            allReefCenterFaces[i].transformBy(
+                new Transform2d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Rotation2d.fromDegrees(180)));
+        removeAlgaePoses.put(allReefCenterFaces[i], removeAlgaePose);
       }
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i + 6], redReefRightBranches[i]);
+        Pose2d removeAlgaePose =
+            allReefCenterFaces[i + 6].transformBy(
+                new Transform2d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Rotation2d.fromDegrees(180)));
+        removeAlgaePoses.put(allReefCenterFaces[i + 6], removeAlgaePose);
       }
 
       // left
@@ -263,12 +279,6 @@ public class Field2d {
       }
       for (int i = 0; i < 6; i++) {
         leftReefPoses.put(allReefCenterFaces[i + 6], redReefLeftBranches[i]);
-      }
-
-      // HARDCODE REMOVE ALGAE POSES TO THE MIDDLE FOR NOW:
-      // FIXME: unhardcode remove algae poses
-      for (Pose2d centerFace : allReefCenterFaces) {
-        removeAlgaePoses.put(centerFace, centerFace);
       }
 
     } else {
