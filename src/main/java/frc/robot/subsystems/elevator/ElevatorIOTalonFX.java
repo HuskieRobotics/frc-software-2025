@@ -30,6 +30,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 
 public class ElevatorIOTalonFX implements ElevatorIO {
 
@@ -273,9 +274,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.velocityRPS = elevatorVelocityStatusSignal.getValueAsDouble();
 
-    inputs.closedLoopError = elevatorMotorLead.getClosedLoopError().getValueAsDouble();
-
-    inputs.closedLoopReference = elevatorMotorLead.getClosedLoopReference().getValueAsDouble();
+    // Getting the signal from the TalonFX is more time consuming than having the signal already
+    // available. However, if we attempt to get the signal earlier, it won't be bound to the correct
+    // control type. So, we only take the hit when tuning which is when this information is needed
+    // more.
+    if (Constants.TUNING_MODE) {
+      inputs.closedLoopError = elevatorMotorLead.getClosedLoopError().getValueAsDouble();
+      inputs.closedLoopReference = elevatorMotorLead.getClosedLoopReference().getValueAsDouble();
+    }
 
     inputs.positionRotations = elevatorPositionStatusSignal.getValueAsDouble();
 

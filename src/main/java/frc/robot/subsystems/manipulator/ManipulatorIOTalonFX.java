@@ -25,6 +25,7 @@ import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.operator_interface.OISelector;
 
 /** TalonFX implementation of the generic SubsystemIO */
@@ -196,11 +197,17 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.funnelSupplyCurrentAmps = funnelMotorSupplyCurrent.getValueAsDouble();
     inputs.indexerSupplyCurrentAmps = indexerMotorSupplyCurrent.getValueAsDouble();
 
-    inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
-    inputs.indexerClosedLoopErrorRPS = indexerMotor.getClosedLoopError().getValueAsDouble();
+    // Getting the signal from the TalonFX is more time consuming than having the signal already
+    // available. However, if we attempt to get the signal earlier, it won't be bound to the correct
+    // control type. So, we only take the hit when tuning which is when this information is needed
+    // more.
+    if (Constants.TUNING_MODE) {
+      inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
+      inputs.indexerClosedLoopErrorRPS = indexerMotor.getClosedLoopError().getValueAsDouble();
 
-    inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
-    inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
+      inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
+      inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
+    }
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
