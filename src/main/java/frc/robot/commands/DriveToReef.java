@@ -41,7 +41,7 @@ import org.littletonrobotics.junction.Logger;
  *
  * <p>At End: stops the drivetrain
  */
-public class DriveToPose extends Command {
+public class DriveToReef extends Command {
   private final Drivetrain drivetrain;
   private final Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
@@ -89,7 +89,7 @@ public class DriveToPose extends Command {
    * @param drivetrain the drivetrain subsystem required by this command
    * @param poseSupplier a supplier that returns the pose to drive to
    */
-  public DriveToPose(
+  public DriveToReef(
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,

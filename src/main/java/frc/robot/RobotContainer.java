@@ -405,8 +405,7 @@ public class RobotContainer {
 
     // print pose to console for field calibration
     // format the string so that it shows how to make the pose2d object given our current x
-    // (double),
-    // current y (double), and current rotation (Rotation2d)
+    // (double), current y (double), and current rotation (Rotation2d)
     oi.getCurrentPoseButton()
         .onTrue(
             Commands.runOnce(

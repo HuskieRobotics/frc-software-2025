@@ -43,7 +43,7 @@ public class CrossSubsystemsCommandsFactory {
                                     Commands.runOnce(
                                         () -> vision.specifyCamerasToConsider(List.of(0, 2))),
                                     Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
-                                    new DriveToPose(
+                                    new DriveToReef(
                                         drivetrain,
                                         () ->
                                             Field2d.getInstance()
@@ -88,7 +88,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.parallel(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToPose(
+                            new DriveToReef(
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                                 manipulator::setReadyToScore,
@@ -110,7 +110,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.parallel(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToPose(
+                            new DriveToReef(
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                                 manipulator::setReadyToScore,

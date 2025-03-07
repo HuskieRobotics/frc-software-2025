@@ -253,7 +253,7 @@ public class AutonomousCommandFactory {
           AutoBuilder.followPath(scoreCoralJ2BL),
           Commands.sequence(
               Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-              new DriveToPose(
+              new DriveToReef(
                   drivetrain,
                   () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                   manipulator::setReadyToScore,
@@ -384,7 +384,7 @@ public class AutonomousCommandFactory {
         Commands.parallel(
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-            new DriveToPose(
+            new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
                 manipulator::setReadyToScore,
@@ -410,7 +410,7 @@ public class AutonomousCommandFactory {
             Commands.runOnce(() -> elevator.goToPosition(ReefBranch.BELOW_ALGAE_1)),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
             Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.BELOW_ALGAE_1)),
-            new DriveToPose(
+            new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                 manipulator::setReadyToScore,
