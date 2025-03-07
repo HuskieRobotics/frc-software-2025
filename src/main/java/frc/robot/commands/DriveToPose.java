@@ -188,10 +188,13 @@ public class DriveToPose extends Command {
 
     Logger.recordOutput("DriveToPose/difference", difference);
 
+    Transform2d robotRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
+    Logger.recordOutput("DriveToPose/difference (robot relative)", robotRelativeDifference);
+
     boolean atGoal =
-        Math.abs(difference.getX()) < targetTolerance.getX()
-            && Math.abs(difference.getY()) < targetTolerance.getY()
-            && Math.abs(difference.getRotation().getRadians())
+        Math.abs(robotRelativeDifference.getX()) < targetTolerance.getX()
+            && Math.abs(robotRelativeDifference.getY()) < targetTolerance.getY()
+            && Math.abs(robotRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
 
     if (atGoal) {
