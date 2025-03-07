@@ -259,7 +259,7 @@ public class AutonomousCommandFactory {
                   Units.inchesToMeters(0.5),
                   Units.inchesToMeters(0.5),
                   Rotation2d.fromDegrees(2.0)),
-              1.6),
+              3.0),
           Commands.parallel(
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
@@ -305,7 +305,7 @@ public class AutonomousCommandFactory {
                   Units.inchesToMeters(0.5),
                   Units.inchesToMeters(0.5),
                   Rotation2d.fromDegrees(2.0)),
-              1.6),
+              3.0),
           Commands.parallel(
               Commands.runOnce(
                   () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
