@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.leds.LEDs;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandFactory;
 import java.lang.reflect.Field;
@@ -71,11 +72,14 @@ public class Robot extends LoggedRobot {
       new Alert(
           "Battery voltage is very low, consider turning off the robot or replacing the battery.",
           AlertType.kWarning);
-  private final Alert gcAlert =
+  private final Alert gitAlert =
       new Alert("Please wait to enable, JITing in progress.", AlertType.kWarning);
 
   /** Create a new Robot. */
   public Robot() {
+    // start code loading LED animation
+    LEDs.getInstance();
+
     // Record metadata
     Logger.recordMetadata("Robot", Constants.getRobot().toString());
     Logger.recordMetadata("TuningMode", Boolean.toString(Constants.TUNING_MODE));
@@ -124,6 +128,7 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // start Elastic Dashboard server
+    // FIXME: disable this and check loop times
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // DO THIS FIRST
@@ -173,13 +178,15 @@ public class Robot extends LoggedRobot {
     disabledTimer.restart();
 
     // adjust loop overrun warning timeout
-    try {
-      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
-      watchdogField.setAccessible(true);
-      Watchdog watchdog = (Watchdog) watchdogField.get(this);
-      watchdog.setTimeout(0.2);
-    } catch (Exception e) {
-      DriverStation.reportWarning("Failed to disable loop overrun warnings", false);
+    if (!Constants.TUNING_MODE) {
+      try {
+        Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+        watchdogField.setAccessible(true);
+        Watchdog watchdog = (Watchdog) watchdogField.get(this);
+        watchdog.setTimeout(0.2);
+      } catch (Exception e) {
+        DriverStation.reportWarning("Failed to disable loop overrun warnings", false);
+      }
     }
 
     // Instantiate our RobotContainer. This will perform all our button bindings,
@@ -195,6 +202,8 @@ public class Robot extends LoggedRobot {
     // background when code starts.
     // DO THIS AFTER CONFIGURATION OF YOUR DESIRED PATHFINDER
     PathfindingCommand.warmupCommand().schedule();
+
+    Threads.setCurrentThreadPriority(true, 10);
   }
 
   /**
@@ -206,7 +215,7 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    Threads.setCurrentThreadPriority(true, 99);
+    LoggedTracer.reset();
 
     /*
      * Runs the Scheduler. This is responsible for polling buttons, adding newly-scheduled commands,
@@ -215,6 +224,7 @@ public class Robot extends LoggedRobot {
      * for anything in the Command-based framework to work.
      */
     CommandScheduler.getInstance().run();
+    LoggedTracer.record("Commands");
 
     logReceiverQueueAlert.set(Logger.getReceiverQueueFault());
 
@@ -259,8 +269,8 @@ public class Robot extends LoggedRobot {
       lowBatteryAlert.set(true);
     }
 
-    // GC alert
-    gcAlert.set(Timer.getTimestamp() < 45.0);
+    // JIT alert
+    gitAlert.set(Timer.getTimestamp() < 45.0);
 
     // Print auto duration
     if (autonomousCommand != null && !autonomousCommand.isScheduled() && !autoMessagePrinted) {
@@ -275,8 +285,8 @@ public class Robot extends LoggedRobot {
     }
 
     robotContainer.periodic();
-
-    Threads.setCurrentThreadPriority(false, 10);
+    // Record cycle time
+    LoggedTracer.record("RobotPeriodic");
   }
 
   /** This method is invoked periodically when the robot is in the disabled state. */

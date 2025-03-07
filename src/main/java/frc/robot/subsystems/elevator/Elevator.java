@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.util.SysIdRoutineChooser;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -112,6 +113,9 @@ public class Elevator extends SubsystemBase {
         elevatorIO.setPosition(Inches.of(elevatorHeightInches.get()));
       }
     }
+
+    // Record cycle time
+    LoggedTracer.record("Elevator");
   }
 
   private Distance reefBranchToDistance(ReefBranch reefBranch) {
@@ -160,7 +164,7 @@ public class Elevator extends SubsystemBase {
         break;
 
       case HARDSTOP:
-        height = JUST_ABOVE_HARDSTOP;
+        height = MIN_HEIGHT;
         break;
 
       default:

@@ -50,7 +50,7 @@ public class CrossSubsystemsCommandsFactory {
                                                 .getNearestBranch(Side.REMOVE_ALGAE),
                                         manipulator::setReadyToRemoveAlgae,
                                         new Transform2d(
-                                            Units.inchesToMeters(2.0),
+                                            Units.inchesToMeters(0.5),
                                             Units.inchesToMeters(0.5),
                                             Rotation2d.fromDegrees(2.0)),
                                         0.5),
@@ -93,10 +93,10 @@ public class CrossSubsystemsCommandsFactory {
                                 () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                                 manipulator::setReadyToScore,
                                 new Transform2d(
-                                    Units.inchesToMeters(2.0),
+                                    Units.inchesToMeters(0.5),
                                     Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(2.0)),
-                                5.0),
+                                3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
@@ -115,10 +115,10 @@ public class CrossSubsystemsCommandsFactory {
                                 () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                                 manipulator::setReadyToScore,
                                 new Transform2d(
-                                    Units.inchesToMeters(2.0),
+                                    Units.inchesToMeters(0.5),
                                     Units.inchesToMeters(0.5),
                                     Rotation2d.fromDegrees(2.0)),
-                                5.0),
+                                3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))

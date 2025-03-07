@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -91,11 +92,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(6.659),
-              Units.inchesToMeters(-10.725),
-              Units.inchesToMeters(9.601)),
-          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(20.577)));
+          new Translation3d(0.180, -0.277, 0.240),
+          new Rotation3d(new Quaternion(-0.978, -0.032, 0.107, -0.176)));
   // pitch 45 degrees
 
   // Back right camera
@@ -110,11 +108,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(6.657),
-              Units.inchesToMeters(10.724),
-              Units.inchesToMeters(9.605)),
-          new Rotation3d(0, Units.degreesToRadians(-24.248), Units.degreesToRadians(-20.577)));
+          new Translation3d(0.181, 0.257, 0.242),
+          new Rotation3d(new Quaternion(-0.978, 0.011, 0.103, 0.183)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =

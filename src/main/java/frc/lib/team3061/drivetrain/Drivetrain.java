@@ -43,6 +43,7 @@ import frc.lib.team3061.util.CustomPoseEstimator;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.FieldConstants;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Field2d;
@@ -664,6 +665,9 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
         autoTurnKp,
         autoTurnKi,
         autoTurnKd);
+
+    // Record cycle time
+    LoggedTracer.record("Drivetrain");
   }
 
   /**
