@@ -409,15 +409,17 @@ public class RobotContainer {
     oi.getCurrentPoseButton()
         .onTrue(
             Commands.runOnce(
-                () ->
-                    System.out.println(
-                        "new Pose2d("
-                            + drivetrain.getPose().getTranslation().getX()
-                            + ", "
-                            + drivetrain.getPose().getTranslation().getY()
-                            + ", Rotation2d.fromDegrees("
-                            + drivetrain.getPose().getRotation().getDegrees()
-                            + "));")));
+                    () ->
+                        System.out.println(
+                            "new Pose2d("
+                                + drivetrain.getPose().getTranslation().getX()
+                                + ", "
+                                + drivetrain.getPose().getTranslation().getY()
+                                + ", Rotation2d.fromDegrees("
+                                + drivetrain.getPose().getRotation().getDegrees()
+                                + "));"))
+                .ignoringDisable(true)
+                .withName("print current pose"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
