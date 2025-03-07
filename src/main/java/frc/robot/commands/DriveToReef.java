@@ -9,7 +9,6 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -53,7 +52,6 @@ public class DriveToReef extends Command {
 
   private double timeout;
 
-  private boolean running = false;
   private Timer timer;
 
   private static final LoggedTunableNumber driveKp =
@@ -136,11 +134,6 @@ public class DriveToReef extends Command {
    */
   @Override
   public void execute() {
-    // set running to true in this method to capture that the calculate method has been invoked on
-    // the PID controllers. This is important since these controllers will return true for atGoal if
-    // the calculate method has not yet been invoked.
-    running = true;
-
     LEDs.getInstance().requestState(LEDs.States.AUTO_DRIVING_TO_SCORE);
 
     // Update from tunable numbers
@@ -251,10 +244,7 @@ public class DriveToReef extends Command {
       onTarget.accept(false);
     }
 
-    // check that running is true (i.e., the calculate method has been invoked on the PID
-    // controllers) and that each of the controllers is at their goal. This is important since
-    // these
-    // controllers will return true for atGoal if the calculate method has not yet been invoked.
+    // check that each of the controllers is at their goal or if the timeout is elapsed
     return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
   }
 
@@ -269,6 +259,5 @@ public class DriveToReef extends Command {
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
     Logger.recordOutput("DriveToReef/isFinished", true);
-    running = false;
   }
 }
