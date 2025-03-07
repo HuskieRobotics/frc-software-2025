@@ -284,7 +284,7 @@ public class Elevator extends SubsystemBase {
         Commands.waitUntil(
             () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
-        Commands.runOnce(() -> hardStopAlert.set(getPosition().in(Inches) > RESET_TOLERANCE)),
+        Commands.runOnce(() -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
         Commands.runOnce(() -> elevatorIO.zeroPosition()));
   }
 }
