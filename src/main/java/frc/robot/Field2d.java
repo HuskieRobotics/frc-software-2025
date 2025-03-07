@@ -46,6 +46,10 @@ public class Field2d {
   private Map<Pose2d, Pose2d> leftReefPoses = new HashMap<Pose2d, Pose2d>();
   private Map<Pose2d, Pose2d> rightReefPoses = new HashMap<Pose2d, Pose2d>();
   private Map<Pose2d, Pose2d> removeAlgaePoses = new HashMap<Pose2d, Pose2d>();
+  private Pose2d[] allReefCenterFaces = new Pose2d[12];
+
+  private final boolean competitionField =
+      true; // set TRUE if home field calibration or at competition
 
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
       6.469; // taken from FieldConstants adjustY for reef y offset
@@ -230,44 +234,90 @@ public class Field2d {
   }
 
   public void populateReefBranchPoseMaps() {
-    // get each transformed pose on the reef (center of the hexagonal side)
-    // add left or right offset (y) as well as bumper offset (x)
-    Pose2d[] reefCenterFaces = FieldConstants.Reef.centerFaces;
-    for (Pose2d reefCenterFace : reefCenterFaces) {
-      Pose2d leftPose =
-          reefCenterFace.transformBy(
-              new Transform2d(
-                  RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                  -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
-                  Rotation2d.fromDegrees(180)));
-      Pose2d rightPose =
-          reefCenterFace.transformBy(
-              new Transform2d(
-                  RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                  Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
-                  Rotation2d.fromDegrees(180)));
-      Pose2d removeAlgaePose =
-          reefCenterFace.transformBy(
-              new Transform2d(
-                  RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                  -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
-                  Rotation2d.fromDegrees(180)));
+    if (competitionField) {
+      Pose2d[] blueReefRightBranches = populateBlueReefRightBranches();
+      Pose2d[] blueReefLeftBranches = populateBlueReefLeftBranches();
+      Pose2d[] redReefRightBranches = populateRedReefRightBranches();
+      Pose2d[] redReefLeftBranches = populateRedReefLeftBranches();
 
-      leftReefPoses.put(reefCenterFace, leftPose);
-      rightReefPoses.put(reefCenterFace, rightPose);
-      removeAlgaePoses.put(reefCenterFace, removeAlgaePose);
+      Pose2d[] blueCenterFaces = FieldConstants.Reef.centerFaces;
+      for (int i = 0; i < 6; i++) {
+        allReefCenterFaces[i] = blueCenterFaces[i];
+        allReefCenterFaces[i + 6] = FlippingUtil.flipFieldPose(blueCenterFaces[i]);
+      }
+
+      // FIXME: make this more efficient / coherent
+      // put all the right and left poses into their maps, corresponded by approximate center poses
+
+      // right
+      for (int i = 0; i < 6; i++) {
+        rightReefPoses.put(allReefCenterFaces[i], blueReefRightBranches[i]);
+      }
+      for (int i = 0; i < 6; i++) {
+        rightReefPoses.put(allReefCenterFaces[i + 6], redReefRightBranches[i]);
+      }
+
+      // left
+      for (int i = 0; i < 6; i++) {
+        leftReefPoses.put(allReefCenterFaces[i], blueReefLeftBranches[i]);
+      }
+      for (int i = 0; i < 6; i++) {
+        leftReefPoses.put(allReefCenterFaces[i + 6], redReefLeftBranches[i]);
+      }
+
+      // HARDCODE REMOVE ALGAE POSES TO THE MIDDLE FOR NOW:
+      for (Pose2d centerFace : allReefCenterFaces) {
+        removeAlgaePoses.put(centerFace, centerFace);
+      }
+
+    } else {
+      // get each transformed pose on the reef (center of the hexagonal side)
+      // add left or right offset (y) as well as bumper offset (x)
+      Pose2d[] reefCenterFaces = FieldConstants.Reef.centerFaces;
+      for (Pose2d reefCenterFace : reefCenterFaces) {
+        Pose2d leftPose =
+            reefCenterFace.transformBy(
+                new Transform2d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
+                    Rotation2d.fromDegrees(180)));
+        Pose2d rightPose =
+            reefCenterFace.transformBy(
+                new Transform2d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES),
+                    Rotation2d.fromDegrees(180)));
+        Pose2d removeAlgaePose =
+            reefCenterFace.transformBy(
+                new Transform2d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Rotation2d.fromDegrees(180)));
+
+        leftReefPoses.put(reefCenterFace, leftPose);
+        rightReefPoses.put(reefCenterFace, rightPose);
+        removeAlgaePoses.put(reefCenterFace, removeAlgaePose);
+      }
     }
   }
 
+  @SuppressWarnings("unused")
   public Pose2d getNearestBranch(Side side) {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    // If we are on the red alliance, flip the current pose to the blue alliance to find the nearest
-    // reef face. We will then flip back to the red alliance.
-    if (getAlliance() == Alliance.Red) {
-      pose = FlippingUtil.flipFieldPose(pose);
+    Pose2d nearestReefCenterFace;
+    if (competitionField) {
+      nearestReefCenterFace = pose.nearest(Arrays.asList(allReefCenterFaces));
+    } else {
+      // If we are on the red alliance, flip the current pose to the blue alliance to find the
+      // nearest
+      // reef face. We will then flip back to the red alliance.
+      // ONLY IF NOT USING COMPETITION FIELD
+      if (getAlliance() == Alliance.Red) {
+        pose = FlippingUtil.flipFieldPose(pose);
+      }
+      nearestReefCenterFace = pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
     }
-    Pose2d nearestReefCenterFace = pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
 
     Pose2d bumpersOnReefAlignedToBranch;
     if (side == Side.LEFT) {
@@ -278,14 +328,70 @@ public class Field2d {
       bumpersOnReefAlignedToBranch = removeAlgaePoses.get(nearestReefCenterFace);
     }
 
-    // If we are on the rest alliance, we have flipped the current pose to the blue alliance and
+    // If we are on the red alliance, we have flipped the current pose to the blue alliance and
     // have found the nearest reef face on the blue alliance side. We now need to flip the pose for
     // that reef face back to the red alliance.
-    if (getAlliance() == Alliance.Red) {
+
+    if (!competitionField && getAlliance() == Alliance.Red) {
       bumpersOnReefAlignedToBranch = FlippingUtil.flipFieldPose(bumpersOnReefAlignedToBranch);
     }
 
     return bumpersOnReefAlignedToBranch;
+  }
+
+  /*
+   * These methods are for manually populating reef branch pose maps based on the measured robot pose in the correct scoring position.
+   */
+  private Pose2d[] populateBlueReefRightBranches() {
+    Pose2d[] blueReefRightBranches = new Pose2d[6];
+    // ORDER: B, D, F, H, J, L
+    blueReefRightBranches[0] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180));
+    blueReefRightBranches[1] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(120));
+    blueReefRightBranches[2] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(60));
+    blueReefRightBranches[3] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0));
+    blueReefRightBranches[4] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-60));
+    blueReefRightBranches[5] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-120));
+
+    return blueReefRightBranches;
+  }
+
+  private Pose2d[] populateBlueReefLeftBranches() {
+    Pose2d[] blueReefLeftBranches = new Pose2d[6];
+    // ORDER: A, C, E, G, I, K
+    blueReefLeftBranches[0] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180));
+    blueReefLeftBranches[1] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(120));
+    blueReefLeftBranches[2] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(60));
+    blueReefLeftBranches[3] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0));
+    blueReefLeftBranches[4] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-60));
+    blueReefLeftBranches[5] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-120));
+
+    return blueReefLeftBranches;
+  }
+
+  private Pose2d[] populateRedReefRightBranches() {
+    Pose2d[] redReefRightBranches = new Pose2d[6];
+    // ORDER: B, D, F, H, J, L
+    redReefRightBranches[0] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180));
+    redReefRightBranches[1] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(120));
+    redReefRightBranches[2] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(60));
+    redReefRightBranches[3] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0));
+    redReefRightBranches[4] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-60));
+    redReefRightBranches[5] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-120));
+
+    return redReefRightBranches;
+  }
+
+  private Pose2d[] populateRedReefLeftBranches() {
+    Pose2d[] redReefLeftBranches = new Pose2d[6];
+    // ORDER: A, C, E, G, I, K
+    redReefLeftBranches[0] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180));
+    redReefLeftBranches[1] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(120));
+    redReefLeftBranches[2] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(60));
+    redReefLeftBranches[3] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0));
+    redReefLeftBranches[4] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-60));
+    redReefLeftBranches[5] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-120));
+
+    return redReefLeftBranches;
   }
 
   public enum Side {
