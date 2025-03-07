@@ -160,7 +160,7 @@ public class Elevator extends SubsystemBase {
         break;
 
       case HARDSTOP:
-        height = JUST_ABOVE_HARDSTOP;
+        height = MIN_HEIGHT;
         break;
 
       default:
