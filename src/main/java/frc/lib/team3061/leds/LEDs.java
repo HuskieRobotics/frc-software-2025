@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.team3061.RobotConfig;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.robot.Constants;
 import frc.robot.Field2d;
 import java.util.List;
@@ -31,11 +31,7 @@ public abstract class LEDs extends SubsystemBase {
 
   public static LEDs getInstance() {
     if (instance == null) {
-      if (RobotConfig.getInstance().getLEDHardware() == RobotConfig.LED_HARDWARE.CANDLE) {
-        instance = new LEDsCANdle();
-      } else {
-        instance = new LEDsRIO();
-      }
+      instance = new LEDsRIO();
     }
     return instance;
   }
@@ -116,7 +112,7 @@ public abstract class LEDs extends SubsystemBase {
    * before updating the LEDs.
    */
   protected static final boolean MIRROR_LEDS = true;
-  protected static final int ACTUAL_LENGTH = RobotConfig.getInstance().getLEDCount();
+  protected static final int ACTUAL_LENGTH = 42; // RobotConfig.getInstance().getLEDCount();
   protected static final int LENGTH = MIRROR_LEDS ? ACTUAL_LENGTH / 2 : ACTUAL_LENGTH;
   private static final int STATIC_LENGTH = LENGTH / 2;
   private static final int STATIC_SECTION_LENGTH = STATIC_LENGTH / 3;
@@ -264,6 +260,9 @@ public abstract class LEDs extends SubsystemBase {
     staticLowStates.clear();
     staticMidStates.clear();
     staticHighStates.clear();
+
+    // Record cycle time
+    LoggedTracer.record("LEDs");
   }
 
   private void updateToDisabledPattern(Section section) {
