@@ -116,7 +116,11 @@ public class Elevator extends SubsystemBase {
 
     switch (reefBranch) {
       case L1:
-        height = MIN_HEIGHT;
+        height = L1_HEIGHT; // MIN_HEIGHT previously
+        break;
+
+      case ABOVE_L1:
+        height = ABOVE_L1_HEIGHT;
         break;
 
       case L2:

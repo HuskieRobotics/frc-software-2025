@@ -30,7 +30,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.either(
                     Commands.sequence(
-                        Commands.runOnce(manipulator::scoreCoralThroughFunnel, manipulator),
+                        getScoreL1Command(manipulator, elevator),
                         Commands.waitUntil(manipulator::isWaitingForCoral)),
                     Commands.sequence(
                         Commands.either(
@@ -133,6 +133,18 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()));
+  }
+
+  private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
+        Commands.runOnce(manipulator::shootCoral, manipulator),
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.HARDSTOP)));
   }
 
   // interrupt all commands by running a command that requires every subsystem. This is used to
