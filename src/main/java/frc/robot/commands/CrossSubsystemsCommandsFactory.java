@@ -49,7 +49,7 @@ public class CrossSubsystemsCommandsFactory {
                                             Field2d.getInstance()
                                                 .getNearestBranch(Side.REMOVE_ALGAE),
                                         manipulator::setReadyToRemoveAlgae,
-                                        elevator::getDistanceFromReef,
+                                        elevator::setDistanceFromReef,
                                         new Transform2d(
                                             DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                                             DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
@@ -95,7 +95,7 @@ public class CrossSubsystemsCommandsFactory {
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                                 manipulator::setReadyToScore,
-                                elevator::getDistanceFromReef,
+                                elevator::setDistanceFromReef,
                                 new Transform2d(
                                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
@@ -119,7 +119,7 @@ public class CrossSubsystemsCommandsFactory {
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                                 manipulator::setReadyToScore,
-                                elevator::getDistanceFromReef,
+                                elevator::setDistanceFromReef,
                                 new Transform2d(
                                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,

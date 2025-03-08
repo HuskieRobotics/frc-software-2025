@@ -6,7 +6,6 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -14,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
@@ -116,11 +116,13 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
-    if (distanceFromReef < Units.inchesToMeters(6)
-        && distanceFromReef > Units.inchesToMeters(0.5)) {
+    // FIXME: consider y to be on target as well
+    if (distanceFromReef < FAR_SCORING_DISTANCE
+        && distanceFromReef > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     }
 
@@ -271,7 +273,7 @@ public class Elevator extends SubsystemBase {
     }
   }
 
-  public void getDistanceFromReef(double distance) {
+  public void setDistanceFromReef(double distance) {
     distanceFromReef = distance;
   }
 
