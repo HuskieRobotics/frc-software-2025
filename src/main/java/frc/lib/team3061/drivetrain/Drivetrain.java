@@ -984,8 +984,8 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
 
   public boolean isTilted() {
     boolean isTilted =
-        this.inputs.drivetrain.rollDeg > TILT_THRESHOLD_DEG
-            || this.inputs.drivetrain.pitchDeg > TILT_THRESHOLD_DEG;
+        Math.abs(this.inputs.drivetrain.rollDeg) > TILT_THRESHOLD_DEG
+            || Math.abs(this.inputs.drivetrain.pitchDeg) > TILT_THRESHOLD_DEG;
     if (isTilted) {
       LEDs.getInstance().requestState(LEDs.States.UNTILTING_ROBOT);
     }
@@ -997,7 +997,7 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
     double roll = Units.degreesToRadians(this.inputs.drivetrain.rollDeg);
     double pitch = Units.degreesToRadians(this.inputs.drivetrain.pitchDeg);
 
-    double gravityX = (9.8 * Math.cos(roll) * Math.cos(roll) * Math.cos(pitch) * Math.sin(pitch));
+    double gravityX = (9.8 * Math.cos(pitch) * Math.cos(roll) * Math.sin(pitch) * Math.cos(pitch));
     double gravityY = (-9.8 * Math.cos(pitch) * Math.cos(roll) * Math.sin(roll));
 
     double heading = Math.atan2(gravityY, gravityX);
