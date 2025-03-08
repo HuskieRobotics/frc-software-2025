@@ -16,6 +16,8 @@ public class ElevatorConstants {
 
   public static final Distance JUST_ABOVE_HARDSTOP = Inches.of(1.0); // set hardstop a bit above 0
 
+  public static final double RESET_TOLERANCE = 0.25;
+
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
   public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
 
@@ -36,7 +38,7 @@ public class ElevatorConstants {
 
   public static final double ELEVATOR_RAISE_SLOW_VOLTAGE = 2.0; // FIXME: Update this value
 
-  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -2.0; // FIXME: Update this value
+  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -6.0; // FIXME: Update this value
 
   // FIXME: Update all K values
 
@@ -78,6 +80,7 @@ public class ElevatorConstants {
     HARDSTOP,
 
     L1,
+    ABOVE_L1,
     L2,
     L3,
     L4,
@@ -96,6 +99,8 @@ public class ElevatorConstants {
    * Highest point of each reef branch in inches
    */
 
+  public static final Distance L1_HEIGHT = Inches.of(15.0); // arbitrary, tune
+  public static final Distance ABOVE_L1_HEIGHT = Inches.of(30.0); // arbitrary, tune
   public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
   public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
   public static final Distance L4_HEIGHT = Inches.of(71);

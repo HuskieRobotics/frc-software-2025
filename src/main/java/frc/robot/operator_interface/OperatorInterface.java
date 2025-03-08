@@ -161,6 +161,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getCurrentPoseButton() {
+    return new Trigger(() -> false);
+  }
+
   // miscellaneous
   public default Trigger getInterruptAll() {
     return new Trigger(() -> false);

@@ -30,7 +30,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.either(
                     Commands.sequence(
-                        Commands.runOnce(manipulator::scoreCoralThroughFunnel, manipulator),
+                        getScoreL1Command(manipulator, elevator),
                         Commands.waitUntil(manipulator::isWaitingForCoral)),
                     Commands.sequence(
                         Commands.either(
@@ -43,7 +43,7 @@ public class CrossSubsystemsCommandsFactory {
                                     Commands.runOnce(
                                         () -> vision.specifyCamerasToConsider(List.of(0, 2))),
                                     Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
-                                    new DriveToPose(
+                                    new DriveToReef(
                                         drivetrain,
                                         () ->
                                             Field2d.getInstance()
@@ -88,7 +88,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.parallel(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToPose(
+                            new DriveToReef(
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                                 manipulator::setReadyToScore,
@@ -110,7 +110,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.parallel(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToPose(
+                            new DriveToReef(
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                                 manipulator::setReadyToScore,
@@ -133,6 +133,19 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()));
+  }
+
+  private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
+        Commands.runOnce(manipulator::shootCoral, manipulator),
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.HARDSTOP)));
   }
 
   // interrupt all commands by running a command that requires every subsystem. This is used to

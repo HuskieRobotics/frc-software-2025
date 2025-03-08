@@ -78,12 +78,12 @@ public class AutonomousCommandFactory {
     // add commands to the auto chooser
     autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
 
-    /************* PathPlanner Named Commands *****************/
     NamedCommands.registerCommand(
-        "Score Left L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
-    NamedCommands.registerCommand(
-        "Score Right L4", getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT));
-    NamedCommands.registerCommand("Collect Coral", getCollectCoralCommand(manipulator));
+        "Raise Elevator",
+        Commands.sequence(
+            Commands.print("Raising Elevator"),
+            Commands.waitUntil(manipulator::hasIndexedCoral),
+            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4))));
 
     /************ Two Piece Left ************
      *
@@ -241,10 +241,11 @@ public class AutonomousCommandFactory {
     return CharacterizationCommands.wheelRadiusCharacterization(drivetrain);
   }
 
+  // FIXME: remove elevator setpoints in code since we have event markers now
   public Command getTwoCoralLeftAutoCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
-      PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
+      // PathPlannerPath scoreCoralJ2BL = PathPlannerPath.fromPathFile("#1 Score Coral J 2BL");
       PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
       PathPlannerPath scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
       PathPlannerPath collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
@@ -291,7 +292,7 @@ public class AutonomousCommandFactory {
   public Command getTwoCoralRightAutoCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
-      PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral F 2BR");
+      // PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral F 2BR");
       PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral F 2BR");
       PathPlannerPath scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
       PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
@@ -380,7 +381,7 @@ public class AutonomousCommandFactory {
         Commands.parallel(
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-            new DriveToPose(
+            new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
                 manipulator::setReadyToScore,
@@ -406,7 +407,7 @@ public class AutonomousCommandFactory {
             Commands.runOnce(() -> elevator.goToPosition(ReefBranch.BELOW_ALGAE_1)),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
             Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.BELOW_ALGAE_1)),
-            new DriveToPose(
+            new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                 manipulator::setReadyToScore,
