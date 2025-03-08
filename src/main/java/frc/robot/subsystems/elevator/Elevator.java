@@ -26,7 +26,8 @@ public class Elevator extends SubsystemBase {
   private ElevatorIO elevatorIO;
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
 
-  private Alert hardStopAlert = new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
+  private Alert hardStopAlert =
+      new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
 
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
@@ -288,7 +289,8 @@ public class Elevator extends SubsystemBase {
         Commands.waitUntil(
             () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
-        Commands.runOnce(() -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
+        Commands.runOnce(
+            () -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
         Commands.runOnce(() -> elevatorIO.zeroPosition()));
   }
 }
