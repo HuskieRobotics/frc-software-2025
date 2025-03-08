@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.DigitalInput; // imported this class for the sensor
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
+import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OISelector;
@@ -102,7 +103,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
-  private VelocitySystemSim pivotMotorSim; //new for pivot motorm might need to change type to ArmSystemSim
+  private ArmSystemSim pivotMotorSim; //new for pivot motor might need to change type to ArmSystemSim
 
   // Create StatusSignal objects for each loggable input from the ManipulatorIO class in the
   // updateInputs method
@@ -161,13 +162,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
             INDEXER_MOTOR_KA,
             GEAR_RATIO_MANIPULATOR);
     //new system sim for pivot motor
-    pivotMotorSim =
-            new VelocitySystemSim(
-                pivotMotor,
-                PIVOT_MOTOR_INVERTED,
-                PIVOT_MOTOR_KV,
-                PIVOT_MOTOR_KA,
-                GEAR_RATIO_PIVOT);
+    //  pivotMotorSim =
+    //          new ArmSystemSim(
+    //              );
 
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
@@ -253,21 +250,27 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.funnelStatorCurrentAmps = funnelMotorStatorCurrent.getValueAsDouble();
     inputs.indexerStatorCurrentAmps = indexerMotorStatorCurrent.getValueAsDouble();
+    inputs.pivotStatorCurrentAmps = pivotMotorStatorCurrent.getValueAsDouble();
 
     inputs.funnelTempCelsius = funnelMotorTemp.getValueAsDouble();
     inputs.indexerTempCelsius = indexerMotorTemp.getValueAsDouble();
+    inputs.pivotTempCelsius = pivotMotorTemp.getValueAsDouble();
 
     inputs.funnelSupplyCurrentAmps = funnelMotorSupplyCurrent.getValueAsDouble();
     inputs.indexerSupplyCurrentAmps = indexerMotorSupplyCurrent.getValueAsDouble();
+    inputs.pivotSupplyCurrentAmps = pivotMotorSupplyCurrent.getValueAsDouble();
 
     inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
     inputs.indexerClosedLoopErrorRPS = indexerMotor.getClosedLoopError().getValueAsDouble();
+    inputs.pivotClosedLoopErrorRPS = pivotMotor.getClosedLoopError().getValueAsDouble();
 
     inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
     inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.pivotReferenceVelocityRPS = pivotMotor.getClosedLoopReference().getValueAsDouble();
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
+    inputs.pivotMotorVoltage = pivotMotorVoltage.getValueAsDouble();
 
     inputs.pivotMotorAngle = pivotMotorAngle.getValueAsDouble();
 
@@ -322,6 +325,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // update funnel and indexer motor sim
     funnelMotorSim.updateSim();
     indexerMotorSim.updateSim();
+    pivotMotorSim.updateSim();
   }
 
   /**
@@ -462,13 +466,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // PIVOT_motor_inverted, sets the motor to a specific
     // value based on if the motor is inverted (first
     // choice) or not inverted (second choice)
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    config.Slot0.kP = pivotKp.get();
-    config.Slot0.kI = pivotKi.get();
-    config.Slot0.kD = pivotKd.get();
-    config.Slot0.kS = pivotKs.get();
-    config.Slot0.kV = pivotKv.get();
-    config.Slot0.kA = pivotKa.get();
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
