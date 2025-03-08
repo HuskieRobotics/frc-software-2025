@@ -36,7 +36,7 @@ public class ElevatorConstants {
 
   public static final double ELEVATOR_RAISE_SLOW_VOLTAGE = 2.0; // FIXME: Update this value
 
-  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -2.0; // FIXME: Update this value
+  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -6.0; // FIXME: Update this value
 
   // FIXME: Update all K values
 
