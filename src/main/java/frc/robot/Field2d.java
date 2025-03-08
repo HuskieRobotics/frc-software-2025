@@ -48,7 +48,7 @@ public class Field2d {
   private Map<Pose2d, Pose2d> removeAlgaePoses = new HashMap<Pose2d, Pose2d>();
   private Pose2d[] allReefCenterFaces = new Pose2d[12];
 
-  private final boolean competitionField =
+  private final boolean COMPETITION_FIELD =
       true; // set TRUE if home field calibration or at competition
 
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
@@ -234,7 +234,7 @@ public class Field2d {
   }
 
   public void populateReefBranchPoseMaps() {
-    if (competitionField) {
+    if (COMPETITION_FIELD) {
       Pose2d[] blueReefRightBranches = populateBlueReefRightBranches();
       Pose2d[] blueReefLeftBranches = populateBlueReefLeftBranches();
       Pose2d[] redReefRightBranches = populateRedReefRightBranches();
@@ -317,7 +317,7 @@ public class Field2d {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
     Pose2d nearestReefCenterFace;
-    if (competitionField) {
+    if (COMPETITION_FIELD) {
       nearestReefCenterFace = pose.nearest(Arrays.asList(allReefCenterFaces));
     } else {
       // If we are on the red alliance, flip the current pose to the blue alliance to find the
@@ -343,7 +343,7 @@ public class Field2d {
     // have found the nearest reef face on the blue alliance side. We now need to flip the pose for
     // that reef face back to the red alliance.
 
-    if (!competitionField && getAlliance() == Alliance.Red) {
+    if (!COMPETITION_FIELD && getAlliance() == Alliance.Red) {
       bumpersOnReefAlignedToBranch = FlippingUtil.flipFieldPose(bumpersOnReefAlignedToBranch);
     }
 
