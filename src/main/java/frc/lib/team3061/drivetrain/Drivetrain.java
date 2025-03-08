@@ -998,13 +998,13 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
     double pitch = Units.degreesToRadians(this.inputs.drivetrain.pitchDeg);
 
     double gravityX = (9.8 * Math.cos(roll) * Math.cos(roll) * Math.cos(pitch) * Math.sin(pitch));
-    double gravityY = (-9.8 * Math.cos(pitch) * Math.cos(roll) * Math.sin(roll));x
+    double gravityY = (-9.8 * Math.cos(pitch) * Math.cos(roll) * Math.sin(roll));
 
     double heading = Math.atan2(gravityY, gravityX);
+    double xVelocity = Math.cos(heading) * UNTILT_VELOCITY_MPS;
+    double yVelocity = Math.sin(heading) * UNTILT_VELOCITY_MPS;
 
-    this.drive(0, 0, 0.0, false, false);
-
-    // FIXME: implement this
+    this.drive(xVelocity, yVelocity, 0.0, false, false);
   }
 
   // method to convert swerve module number to location
