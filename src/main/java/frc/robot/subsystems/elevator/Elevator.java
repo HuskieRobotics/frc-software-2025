@@ -252,23 +252,6 @@ public class Elevator extends SubsystemBase {
     goToPosition(getSelectedPosition());
   }
 
-  private void adjustPositionFromInterpolation() {
-    // 4.5 inches is 1 coral away from the reef, we should probably be able to shoot up to 6 away
-    if (getSelectedPosition() == ReefBranch.L2) {
-      if (Math.abs(distanceFromReef) > FAR_SCORING_DISTANCE) {
-        goToPosition(ReefBranch.MAX_L2);
-      } else {
-        elevatorIO.setPosition(Inches.of(l2HeightMap.get(Math.abs(distanceFromReef))));
-      }
-    } else if (getSelectedPosition() == ReefBranch.L3) {
-      if (Math.abs(distanceFromReef) > FAR_SCORING_DISTANCE) {
-        goToPosition(ReefBranch.MAX_L3);
-      } else {
-        elevatorIO.setPosition(Inches.of(l3HeightMap.get(Math.abs(distanceFromReef))));
-      }
-    }
-  }
-
   public void setDistanceFromReef(double distance) {
     distanceFromReef = distance;
   }
