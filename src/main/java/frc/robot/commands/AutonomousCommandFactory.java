@@ -256,6 +256,7 @@ public class AutonomousCommandFactory {
               drivetrain,
               () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
               manipulator::setReadyToScore,
+              elevator::getDistanceFromReef,
               new Transform2d(
                   Units.inchesToMeters(0.5),
                   Units.inchesToMeters(0.5),
@@ -302,6 +303,7 @@ public class AutonomousCommandFactory {
               drivetrain,
               () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
               manipulator::setReadyToScore,
+              elevator::getDistanceFromReef,
               new Transform2d(
                   Units.inchesToMeters(0.5),
                   Units.inchesToMeters(0.5),
@@ -404,6 +406,7 @@ public class AutonomousCommandFactory {
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
                 manipulator::setReadyToScore,
+                elevator::getDistanceFromReef,
                 new Transform2d(
                     Units.inchesToMeters(0.5),
                     Units.inchesToMeters(0.5),
@@ -430,6 +433,7 @@ public class AutonomousCommandFactory {
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                 manipulator::setReadyToScore,
+                elevator::getDistanceFromReef,
                 new Transform2d(
                     Units.inchesToMeters(0.5),
                     Units.inchesToMeters(0.5),

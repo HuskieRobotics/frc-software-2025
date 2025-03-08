@@ -5,6 +5,8 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -12,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -26,7 +29,13 @@ public class Elevator extends SubsystemBase {
   private ElevatorIO elevatorIO;
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
 
-  private Alert hardStopAlert = new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
+  // arbitrary high value
+  private double distanceFromReef = 100.0;
+  private InterpolatingDoubleTreeMap l2HeightMap;
+  private InterpolatingDoubleTreeMap l3HeightMap;
+
+  private Alert hardStopAlert =
+      new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
 
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
@@ -46,6 +55,11 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
   public Elevator(ElevatorIO io) {
+    this.l2HeightMap = new InterpolatingDoubleTreeMap();
+    this.l3HeightMap = new InterpolatingDoubleTreeMap();
+
+    populateL2Map();
+    populateL3Map();
 
     this.elevatorIO = io;
 
@@ -105,6 +119,10 @@ public class Elevator extends SubsystemBase {
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
+    if (distanceFromReef < Units.inchesToMeters(6) && distanceFromReef > Units.inchesToMeters(0.5)) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
+    }
+
     if (testingMode.get() == 1) {
 
       if (elevatorVoltage.get() != 0) {
@@ -135,8 +153,16 @@ public class Elevator extends SubsystemBase {
         height = L2_HEIGHT;
         break;
 
+      case MAX_L2:
+        height = SIX_INCHES_L2_HEIGHT;
+        break;
+
       case L3:
         height = L3_HEIGHT;
+        break;
+
+      case MAX_L3:
+        height = SIX_INCHES_L3_HEIGHT;
         break;
 
       case L4:
@@ -188,6 +214,16 @@ public class Elevator extends SubsystemBase {
     return null;
   }
 
+  public void populateL2Map() {
+    l2HeightMap.put(Units.inchesToMeters(6), 38.0);
+    l2HeightMap.put(0.0, 30.0);
+  }
+
+  public void populateL3Map() {
+    l3HeightMap.put(Units.inchesToMeters(6), 53.0);
+    l3HeightMap.put(0.0, 45.0);
+  }
+
   public void goToPosition(ReefBranch reefBranch) {
     targetPosition = reefBranch;
     elevatorIO.setPosition(reefBranchToDistance(reefBranch));
@@ -210,7 +246,32 @@ public class Elevator extends SubsystemBase {
   }
 
   public void goToSelectedPosition() {
-    goToPosition(getSelectedPosition());
+    if (getSelectedPosition() == ReefBranch.L2 || getSelectedPosition() == ReefBranch.L3) {
+      adjustPositionFromInterpolation();
+    } else {
+      goToPosition(getSelectedPosition());
+    }
+  }
+
+  private void adjustPositionFromInterpolation() {
+    // 4.5 is 1 coral away from the reef, we should probably be able to shoot up to 6 away
+    if (getSelectedPosition() == ReefBranch.L2) {
+      if (distanceFromReef > Units.inchesToMeters(6)) {
+        goToPosition(ReefBranch.MAX_L2);
+      } else {
+        elevatorIO.setPosition(Inches.of(l2HeightMap.get(distanceFromReef)));
+      }
+    } else if (getSelectedPosition() == ReefBranch.L3) {
+      if (distanceFromReef > Units.inchesToMeters(6)) {
+        goToPosition(ReefBranch.MAX_L3);
+      } else {
+        elevatorIO.setPosition(Inches.of(l3HeightMap.get(distanceFromReef)));
+      }
+    }
+  }
+
+  public void getDistanceFromReef(double distance) {
+    distanceFromReef = distance;
   }
 
   public boolean isAtSelectedPosition() {
@@ -292,7 +353,8 @@ public class Elevator extends SubsystemBase {
         Commands.waitUntil(
             () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
-        Commands.runOnce(() -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
+        Commands.runOnce(
+            () -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
         Commands.runOnce(() -> elevatorIO.zeroPosition()));
   }
 }

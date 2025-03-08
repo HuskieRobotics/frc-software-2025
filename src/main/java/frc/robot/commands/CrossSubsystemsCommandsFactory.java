@@ -49,6 +49,7 @@ public class CrossSubsystemsCommandsFactory {
                                             Field2d.getInstance()
                                                 .getNearestBranch(Side.REMOVE_ALGAE),
                                         manipulator::setReadyToRemoveAlgae,
+                                        elevator::getDistanceFromReef,
                                         new Transform2d(
                                             Units.inchesToMeters(0.5),
                                             Units.inchesToMeters(0.5),
@@ -85,13 +86,14 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.sequence(
                     Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.parallel(
+                    Commands.deadline(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                             new DriveToReef(
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                                 manipulator::setReadyToScore,
+                                elevator::getDistanceFromReef,
                                 new Transform2d(
                                     Units.inchesToMeters(0.5),
                                     Units.inchesToMeters(0.5),
@@ -99,7 +101,7 @@ public class CrossSubsystemsCommandsFactory {
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
+                        Commands.run(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
@@ -107,13 +109,14 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.sequence(
                     Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.parallel(
+                    Commands.deadline(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                             new DriveToReef(
                                 drivetrain,
                                 () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
                                 manipulator::setReadyToScore,
+                                elevator::getDistanceFromReef,
                                 new Transform2d(
                                     Units.inchesToMeters(0.5),
                                     Units.inchesToMeters(0.5),
@@ -121,7 +124,7 @@ public class CrossSubsystemsCommandsFactory {
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
+                        Commands.run(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
