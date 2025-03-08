@@ -233,20 +233,15 @@ public class NewPracticeRobotConfig extends RobotConfig {
   public double getDriveKA() {
     return DRIVE_KA;
   }
-
-  @Override
-  public SwerveConstants getSwerveConstants() {
-    return SwerveConstants.MK4N_L3_PLUS_CONSTANTS;
-  }
-
+  
   @Override
   public SwerveConstants getFrontSwerveConstants() {
-    return SwerveConstants.MK4N_L3_PLUS_CONSTANTS;
+    return SwerveConstants.MK4N_L2_PLUS_CONSTANTS;
   }
 
   @Override
   public SwerveConstants getBackSwerveConstants() {
-    return SwerveConstants.MK4I_L3_PLUS_CONSTANTS;
+    return SwerveConstants.MK4I_L2_PLUS_CONSTANTS;
   }
 
   @Override
