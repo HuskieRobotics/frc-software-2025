@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climber;
 
+import static edu.wpi.first.units.Units.*;
+
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
@@ -68,7 +70,7 @@ public class ClimberIOTalonFX implements ClimberIO {
         new ElevatorSystemSim(
             climberMotor,
             ClimberConstants.CLIMBER_MOTOR_INVERTED,
-            ClimberConstants.GEAR_RATIO,
+            5.0, // should be ClimberConstants.GEAR_RATIO but that kills performance
             3,
             Units.inchesToMeters(ClimberConstants.DRUM_DIAMETER / 2.0),
             0,

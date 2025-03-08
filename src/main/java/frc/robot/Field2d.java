@@ -282,6 +282,8 @@ public class Field2d {
       }
 
     } else {
+      // Populate pose maps with default, non-field calibrated values (for if we ever have an inaccurate field and don't have time to calibrate)
+      
       // get each transformed pose on the reef (center of the hexagonal side)
       // add left or right offset (y) as well as bumper offset (x)
       Pose2d[] reefCenterFaces = FieldConstants.Reef.centerFaces;
@@ -321,8 +323,7 @@ public class Field2d {
       nearestReefCenterFace = pose.nearest(Arrays.asList(allReefCenterFaces));
     } else {
       // If we are on the red alliance, flip the current pose to the blue alliance to find the
-      // nearest
-      // reef face. We will then flip back to the red alliance.
+      // nearest reef face. We will then flip back to the red alliance.
       // ONLY IF NOT USING COMPETITION FIELD
       if (getAlliance() == Alliance.Red) {
         pose = FlippingUtil.flipFieldPose(pose);
@@ -380,26 +381,22 @@ public class Field2d {
 
   private Pose2d[] populateBlueReefLeftBranches() {
     Pose2d[] blueReefLeftBranches = new Pose2d[6];
-    // ORDER: A, K, I, G, E, C
+    // ORDER (clockwise): A, K, I, G, E, C
     blueReefLeftBranches[0] =
         new Pose2d(
             3.2246574302099544, 4.2028565860716265, Rotation2d.fromDegrees(-0.21597423869477203));
     blueReefLeftBranches[1] =
         new Pose2d(
             4.029247001342495, 5.222526388520616, Rotation2d.fromDegrees(-60.74455044893526));
-
     blueReefLeftBranches[2] =
         new Pose2d(
             5.261139946496552, 5.035092764563711, Rotation2d.fromDegrees(-119.40435420966065));
-
     blueReefLeftBranches[3] =
         new Pose2d(
             5.751222634546609, 3.876354231340153, Rotation2d.fromDegrees(-178.9844811787821));
-
     blueReefLeftBranches[4] =
         new Pose2d(
             4.971456188992748, 2.8261406625586996, Rotation2d.fromDegrees(121.2141054970013));
-
     blueReefLeftBranches[5] =
         new Pose2d(3.671385976123253, 3.037272511721054, Rotation2d.fromDegrees(60.07464648544542));
 
@@ -408,15 +405,9 @@ public class Field2d {
 
   private Pose2d[] populateRedReefRightBranches() {
     Pose2d[] redReefRightBranches = new Pose2d[6];
-    // ORDER: B, D, F, H, J, L
-    // redReefRightBranches[0] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180));
-    // redReefRightBranches[1] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(120));
-    // redReefRightBranches[2] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(60));
-    // redReefRightBranches[3] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0));
-    // redReefRightBranches[4] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-60));
-    // redReefRightBranches[5] = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(-120));
 
     // TEMPORARY HARDCODED TO NOT MESS WITH BLUE ALLIANCE POSES:
+    // Normally, these will be field calibrated, but we don't have a red alliance on our home field.
     Pose2d[] blueReefRightBranches = new Pose2d[6];
     // ORDER (clockwise): B, L, J, H, F, D
     blueReefRightBranches[0] =
@@ -452,30 +443,25 @@ public class Field2d {
     Pose2d[] redReefLeftBranches = new Pose2d[6];
 
     Pose2d[] blueReefLeftBranches = new Pose2d[6];
-    // ORDER: A, K, I, G, E, C
+    // ORDER (clockwise): A, K, I, G, E, C
     blueReefLeftBranches[0] =
         new Pose2d(
             3.2246574302099544, 4.2028565860716265, Rotation2d.fromDegrees(-0.21597423869477203));
     blueReefLeftBranches[1] =
         new Pose2d(
             4.029247001342495, 5.222526388520616, Rotation2d.fromDegrees(-60.74455044893526));
-
     blueReefLeftBranches[2] =
         new Pose2d(
             5.261139946496552, 5.035092764563711, Rotation2d.fromDegrees(-119.40435420966065));
-
     blueReefLeftBranches[3] =
         new Pose2d(
             5.751222634546609, 3.876354231340153, Rotation2d.fromDegrees(-178.9844811787821));
-
     blueReefLeftBranches[4] =
         new Pose2d(
             4.971456188992748, 2.8261406625586996, Rotation2d.fromDegrees(121.2141054970013));
-
     blueReefLeftBranches[5] =
         new Pose2d(3.671385976123253, 3.037272511721054, Rotation2d.fromDegrees(60.07464648544542));
 
-    // ORDER: A, C, E, G, I, K
     redReefLeftBranches[0] = FlippingUtil.flipFieldPose(blueReefLeftBranches[0]);
     redReefLeftBranches[1] = FlippingUtil.flipFieldPose(blueReefLeftBranches[1]);
     redReefLeftBranches[2] = FlippingUtil.flipFieldPose(blueReefLeftBranches[2]);
