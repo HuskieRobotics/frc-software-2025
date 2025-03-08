@@ -282,8 +282,9 @@ public class Field2d {
       }
 
     } else {
-      // Populate pose maps with default, non-field calibrated values (for if we ever have an inaccurate field and don't have time to calibrate)
-      
+      // Populate pose maps with default, non-field calibrated values (for if we ever have an
+      // inaccurate field and don't have time to calibrate)
+
       // get each transformed pose on the reef (center of the hexagonal side)
       // add left or right offset (y) as well as bumper offset (x)
       Pose2d[] reefCenterFaces = FieldConstants.Reef.centerFaces;
