@@ -121,7 +121,7 @@ public class Elevator extends SubsystemBase {
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
     // FIXME: consider y to be on target as well
-    if (distanceFromReef < FAR_SCORING_DISTANCE
+    if (Math.abs(distanceFromReef) < FAR_SCORING_DISTANCE
         && distanceFromReef > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     }
@@ -259,16 +259,16 @@ public class Elevator extends SubsystemBase {
   private void adjustPositionFromInterpolation() {
     // 4.5 inches is 1 coral away from the reef, we should probably be able to shoot up to 6 away
     if (getSelectedPosition() == ReefBranch.L2) {
-      if (distanceFromReef > FAR_SCORING_DISTANCE) {
+      if (Math.abs(distanceFromReef) > FAR_SCORING_DISTANCE) {
         goToPosition(ReefBranch.MAX_L2);
       } else {
-        elevatorIO.setPosition(Inches.of(l2HeightMap.get(distanceFromReef)));
+        elevatorIO.setPosition(Inches.of(l2HeightMap.get(Math.abs(distanceFromReef))));
       }
     } else if (getSelectedPosition() == ReefBranch.L3) {
-      if (distanceFromReef > FAR_SCORING_DISTANCE) {
+      if (Math.abs(distanceFromReef) > FAR_SCORING_DISTANCE) {
         goToPosition(ReefBranch.MAX_L3);
       } else {
-        elevatorIO.setPosition(Inches.of(l3HeightMap.get(distanceFromReef)));
+        elevatorIO.setPosition(Inches.of(l3HeightMap.get(Math.abs(distanceFromReef))));
       }
     }
   }
