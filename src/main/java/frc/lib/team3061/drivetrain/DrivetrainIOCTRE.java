@@ -3,6 +3,8 @@ package frc.lib.team3061.drivetrain;
 import static edu.wpi.first.units.Units.*;
 import static frc.lib.team3061.drivetrain.DrivetrainConstants.*;
 
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -23,6 +25,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Force;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Notifier;
@@ -314,6 +317,10 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
   Queue<Double> timestampQueue;
   Queue<Double> ctreTimestampQueue;
 
+  // gyro status signals
+  private StatusSignal<Angle> pitchStatusSignal;
+  private StatusSignal<Angle> rollStatusSignal;
+
   // brake mode
   private static final Executor brakeModeExecutor = Executors.newFixedThreadPool(1);
 
@@ -362,6 +369,9 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
     this.ctreTimestampQueue = new ArrayBlockingQueue<>(20);
 
     this.registerTelemetry(this::updateTelemetry);
+
+    this.rollStatusSignal = this.getPigeon2().getRoll();
+    this.pitchStatusSignal = this.getPigeon2().getPitch();
 
     // register all drivetrain-related devices with FaultReporter
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "Pigeon", this.getPigeon2());
@@ -417,6 +427,9 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
 
   @Override
   public void updateInputs(DrivetrainIOInputsCollection inputs) {
+
+    BaseStatusSignal.refreshAll(rollStatusSignal, pitchStatusSignal);
+
     // update and log the swerve modules inputs
     for (int i = 0; i < this.getModules().length; i++) {
       this.updateSwerveModuleInputs(inputs.swerve[i], this.getModule(i));
@@ -435,6 +448,8 @@ public class DrivetrainIOCTRE extends SwerveDrivetrain<TalonFX, TalonFX, CANcode
 
     inputs.drivetrain.averageDriveCurrent = this.getAverageDriveCurrent(inputs);
     inputs.drivetrain.rawHeadingDeg = this.getState().RawHeading.getDegrees();
+    inputs.drivetrain.pitchDeg = this.pitchStatusSignal.getValue().in(Degrees);
+    inputs.drivetrain.rollDeg = this.rollStatusSignal.getValue().in(Degrees);
 
     inputs.drivetrain.customPose = this.getState().Pose;
 

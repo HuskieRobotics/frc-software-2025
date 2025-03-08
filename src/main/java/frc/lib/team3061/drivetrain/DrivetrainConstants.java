@@ -15,6 +15,8 @@ public class DrivetrainConstants {
 
   public static final double DEMO_MODE_MAX_VELOCITY = 0.5;
 
+  public static final double TILT_THRESHOLD_DEG = 10.0;
+
   public enum SysIDCharacterizationMode {
     TRANSLATION_VOLTS,
     TRANSLATION_CURRENT,

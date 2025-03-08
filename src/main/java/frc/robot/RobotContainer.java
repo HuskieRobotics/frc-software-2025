@@ -419,6 +419,9 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("print current pose"));
 
+    new Trigger(() -> drivetrain.isTilted())
+        .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain));
+
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
     oi.getSysIdQuasistaticForward()
