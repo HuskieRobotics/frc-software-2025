@@ -401,6 +401,24 @@ public class RobotContainer {
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
 
+    // print pose to console for field calibration
+    // format the string so that it shows how to make the pose2d object given our current x
+    // (double), current y (double), and current rotation (Rotation2d)
+    oi.getCurrentPoseButton()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        System.out.println(
+                            "new Pose2d("
+                                + drivetrain.getPose().getTranslation().getX()
+                                + ", "
+                                + drivetrain.getPose().getTranslation().getY()
+                                + ", Rotation2d.fromDegrees("
+                                + drivetrain.getPose().getRotation().getDegrees()
+                                + "));"))
+                .ignoringDisable(true)
+                .withName("print current pose"));
+
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
     oi.getSysIdQuasistaticForward()
