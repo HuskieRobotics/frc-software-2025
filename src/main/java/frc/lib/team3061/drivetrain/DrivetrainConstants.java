@@ -1,5 +1,7 @@
 package frc.lib.team3061.drivetrain;
 
+import edu.wpi.first.math.util.Units;
+
 public class DrivetrainConstants {
 
   private static final String CONSTRUCTOR_EXCEPTION = "constant class";
@@ -12,6 +14,10 @@ public class DrivetrainConstants {
 
   public static final boolean ENABLE_TELEPORT_DETECTION = false;
   public static final double TELEPORT_DETECTION_THRESHOLD_METERS = 0.4;
+
+  public static final double DRIVE_TO_REEF_X_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final double DRIVE_TO_REEF_Y_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final double DRIVE_TO_REEF_THETA_TOLERANCE_DEG = 2.0;
 
   public static final double DEMO_MODE_MAX_VELOCITY = 0.5;
 

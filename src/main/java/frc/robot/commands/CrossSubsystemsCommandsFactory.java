@@ -2,10 +2,10 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.vision.Vision;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
@@ -51,9 +51,11 @@ public class CrossSubsystemsCommandsFactory {
                                         manipulator::setReadyToRemoveAlgae,
                                         elevator::getDistanceFromReef,
                                         new Transform2d(
-                                            Units.inchesToMeters(0.5),
-                                            Units.inchesToMeters(0.5),
-                                            Rotation2d.fromDegrees(2.0)),
+                                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                                            Rotation2d.fromDegrees(
+                                                DrivetrainConstants
+                                                    .DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                         0.5),
                                     Commands.runOnce(
                                         elevator::goAboveSelectedAlgaePosition, elevator),
@@ -95,9 +97,10 @@ public class CrossSubsystemsCommandsFactory {
                                 manipulator::setReadyToScore,
                                 elevator::getDistanceFromReef,
                                 new Transform2d(
-                                    Units.inchesToMeters(0.5),
-                                    Units.inchesToMeters(0.5),
-                                    Rotation2d.fromDegrees(2.0)),
+                                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                                    Rotation2d.fromDegrees(
+                                        DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
@@ -118,9 +121,10 @@ public class CrossSubsystemsCommandsFactory {
                                 manipulator::setReadyToScore,
                                 elevator::getDistanceFromReef,
                                 new Transform2d(
-                                    Units.inchesToMeters(0.5),
-                                    Units.inchesToMeters(0.5),
-                                    Rotation2d.fromDegrees(2.0)),
+                                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                                    Rotation2d.fromDegrees(
+                                        DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),

@@ -119,7 +119,8 @@ public class Elevator extends SubsystemBase {
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
-    if (distanceFromReef < Units.inchesToMeters(6) && distanceFromReef > Units.inchesToMeters(0.5)) {
+    if (distanceFromReef < Units.inchesToMeters(6)
+        && distanceFromReef > Units.inchesToMeters(0.5)) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     }
 
@@ -154,7 +155,7 @@ public class Elevator extends SubsystemBase {
         break;
 
       case MAX_L2:
-        height = SIX_INCHES_L2_HEIGHT;
+        height = FAR_L2_HEIGHT;
         break;
 
       case L3:
@@ -162,7 +163,7 @@ public class Elevator extends SubsystemBase {
         break;
 
       case MAX_L3:
-        height = SIX_INCHES_L3_HEIGHT;
+        height = FAR_L3_HEIGHT;
         break;
 
       case L4:
@@ -215,13 +216,13 @@ public class Elevator extends SubsystemBase {
   }
 
   public void populateL2Map() {
-    l2HeightMap.put(Units.inchesToMeters(6), 38.0);
-    l2HeightMap.put(0.0, 30.0);
+    l2HeightMap.put(FAR_SCORING_DISTANCE, FAR_L2_HEIGHT.in(Inches));
+    l2HeightMap.put(0.0, L2_HEIGHT.in(Inches));
   }
 
   public void populateL3Map() {
-    l3HeightMap.put(Units.inchesToMeters(6), 53.0);
-    l3HeightMap.put(0.0, 45.0);
+    l3HeightMap.put(FAR_SCORING_DISTANCE, FAR_L2_HEIGHT.in(Inches));
+    l3HeightMap.put(0.0, L3_HEIGHT.in(Inches));
   }
 
   public void goToPosition(ReefBranch reefBranch) {
@@ -254,15 +255,15 @@ public class Elevator extends SubsystemBase {
   }
 
   private void adjustPositionFromInterpolation() {
-    // 4.5 is 1 coral away from the reef, we should probably be able to shoot up to 6 away
+    // 4.5 inches is 1 coral away from the reef, we should probably be able to shoot up to 6 away
     if (getSelectedPosition() == ReefBranch.L2) {
-      if (distanceFromReef > Units.inchesToMeters(6)) {
+      if (distanceFromReef > FAR_SCORING_DISTANCE) {
         goToPosition(ReefBranch.MAX_L2);
       } else {
         elevatorIO.setPosition(Inches.of(l2HeightMap.get(distanceFromReef)));
       }
     } else if (getSelectedPosition() == ReefBranch.L3) {
-      if (distanceFromReef > Units.inchesToMeters(6)) {
+      if (distanceFromReef > FAR_SCORING_DISTANCE) {
         goToPosition(ReefBranch.MAX_L3);
       } else {
         elevatorIO.setPosition(Inches.of(l3HeightMap.get(distanceFromReef)));
