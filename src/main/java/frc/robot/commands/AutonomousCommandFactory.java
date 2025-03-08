@@ -249,36 +249,6 @@ public class AutonomousCommandFactory {
       PathPlannerPath collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
       PathPlannerPath scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
       PathPlannerPath collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
-
-      return Commands.sequence(
-          Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-          new DriveToReef(
-              drivetrain,
-              () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-              manipulator::setReadyToScore,
-              new Transform2d(
-                  Units.inchesToMeters(0.5),
-                  Units.inchesToMeters(0.5),
-                  Rotation2d.fromDegrees(2.0)),
-              3.0),
-          Commands.parallel(
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-              Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
-          Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-          Commands.runOnce(manipulator::shootCoral, manipulator),
-          Commands.waitUntil(() -> !manipulator.hasCoral()),
-          Commands.runOnce(
-              () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
-          AutoBuilder.followPath(collectCoralJ2BL),
-          getCollectCoralCommand(manipulator),
-          Commands.parallel(
-              AutoBuilder.followPath(scoreCoralL2BL),
-              Commands.waitUntil(manipulator::hasIndexedCoral)),
-          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          AutoBuilder.followPath(collectCoralL2BL),
-          getCollectCoralCommand(manipulator));
-
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
@@ -286,6 +256,37 @@ public class AutonomousCommandFactory {
 
       return Commands.waitSeconds(0);
     }
+
+    return Commands.sequence(
+        AutoBuilder.followPath(scoreCoralJ2BL),
+        Commands.sequence(
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+            new DriveToPose(
+                drivetrain,
+                () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                manipulator::setReadyToScore,
+                new Transform2d(
+                    Units.inchesToMeters(0.5),
+                    Units.inchesToMeters(0.5),
+                    Rotation2d.fromDegrees(2.0)),
+                1.6),
+            Commands.parallel(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+                Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+            Commands.runOnce(manipulator::shootCoral, manipulator),
+            Commands.waitUntil(() -> !manipulator.hasCoral()),
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator)),
+        AutoBuilder.followPath(collectCoralJ2BL),
+        getCollectCoralCommand(manipulator),
+        Commands.parallel(
+            AutoBuilder.followPath(scoreCoralL2BL),
+            Commands.waitUntil(manipulator::hasIndexedCoral)),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        AutoBuilder.followPath(collectCoralL2BL),
+        getCollectCoralCommand(manipulator));
   }
 
   public Command getTwoCoralRightAutoCommand(
@@ -295,36 +296,6 @@ public class AutonomousCommandFactory {
       PathPlannerPath collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral F 2BR");
       PathPlannerPath scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
       PathPlannerPath collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
-
-      return Commands.sequence(
-          Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-          new DriveToReef(
-              drivetrain,
-              () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-              manipulator::setReadyToScore,
-              new Transform2d(
-                  Units.inchesToMeters(0.5),
-                  Units.inchesToMeters(0.5),
-                  Rotation2d.fromDegrees(2.0)),
-              3.0),
-          Commands.parallel(
-              Commands.runOnce(
-                  () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-              Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
-          Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-          Commands.runOnce(manipulator::shootCoral, manipulator),
-          Commands.waitUntil(() -> !manipulator.hasCoral()),
-          Commands.runOnce(
-              () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
-          AutoBuilder.followPath(collectCoralE2BR),
-          getCollectCoralCommand(manipulator),
-          Commands.parallel(
-              AutoBuilder.followPath(scoreCoralD2BR),
-              Commands.waitUntil(manipulator::hasIndexedCoral)),
-          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          AutoBuilder.followPath(collectCoralD2BR),
-          getCollectCoralCommand(manipulator));
-
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getTwoCoralRightAutoCommand.");
@@ -332,19 +303,24 @@ public class AutonomousCommandFactory {
 
       return Commands.waitSeconds(0);
     }
+
+    return Commands.sequence(
+        AutoBuilder.followPath(scoreCoralE2BR),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        AutoBuilder.followPath(collectCoralE2BR),
+        getCollectCoralCommand(manipulator),
+        Commands.parallel(
+            AutoBuilder.followPath(scoreCoralD2BR),
+            Commands.waitUntil(manipulator::hasIndexedCoral)),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        AutoBuilder.followPath(collectCoralD2BR),
+        getCollectCoralCommand(manipulator));
   }
 
   public Command getThreeCoralLeftCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
       PathPlannerPath scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3BL");
-
-      return Commands.sequence(
-          getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
-          Commands.parallel(
-              AutoBuilder.followPath(scoreCoralK),
-              Commands.waitUntil(manipulator::hasIndexedCoral)),
-          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getThreeCoralLeftAutoCommand.");
@@ -352,19 +328,18 @@ public class AutonomousCommandFactory {
 
       return Commands.waitSeconds(0);
     }
+
+    return Commands.sequence(
+        getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
+        Commands.parallel(
+            AutoBuilder.followPath(scoreCoralK), Commands.waitUntil(manipulator::hasIndexedCoral)),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
   }
 
   public Command getThreeCoralRightCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
       PathPlannerPath scoreCoralC = PathPlannerPath.fromPathFile("#5 Score Coral C 3BR");
-
-      return Commands.sequence(
-          getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator),
-          Commands.parallel(
-              AutoBuilder.followPath(scoreCoralC),
-              Commands.waitUntil(manipulator::hasIndexedCoral)),
-          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getThreeCoralRightAutoCommand.");
@@ -372,18 +347,18 @@ public class AutonomousCommandFactory {
 
       return Commands.waitSeconds(0);
     }
+
+    return Commands.sequence(
+        getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator),
+        Commands.parallel(
+            AutoBuilder.followPath(scoreCoralC), Commands.waitUntil(manipulator::hasIndexedCoral)),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
   }
 
   public Command getOneCoralCenterCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     try {
       PathPlannerPath backUpH1C = PathPlannerPath.fromPathFile("Back Up H 1C");
-      return Commands.sequence(
-          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-          getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-          getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator),
-          AutoBuilder.followPath(backUpH1C));
-
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getOneCoralCenterCommand.");
@@ -391,6 +366,12 @@ public class AutonomousCommandFactory {
 
       return Commands.waitSeconds(0);
     }
+
+    return Commands.sequence(
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator),
+        AutoBuilder.followPath(backUpH1C));
   }
 
   private Command getScoreL4Command(
