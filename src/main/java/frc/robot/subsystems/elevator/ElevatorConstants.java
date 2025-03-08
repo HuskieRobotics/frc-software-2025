@@ -107,10 +107,10 @@ public class ElevatorConstants {
   public static final Distance ABOVE_L1_HEIGHT = Inches.of(30.0);
 
   public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
-  public static final Distance FAR_L2_HEIGHT = Inches.of(38); // tune
+  public static final Distance FAR_L2_HEIGHT = Inches.of(37); // tune
 
   public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
-  public static final Distance FAR_L3_HEIGHT = Inches.of(53); // tune
+  public static final Distance FAR_L3_HEIGHT = Inches.of(52); // tune
   public static final Distance L4_HEIGHT = Inches.of(71);
 
   public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);

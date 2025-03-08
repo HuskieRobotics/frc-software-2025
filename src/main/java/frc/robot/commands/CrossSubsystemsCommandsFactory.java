@@ -40,7 +40,7 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.parallel(
                                 Commands.runOnce(manipulator::removeAlgae),
                                 Commands.sequence(
-                                    getScoreCoralCommand(manipulator),
+                                    getScoreCoralCommand(manipulator, elevator),
                                     Commands.runOnce(
                                         elevator::goBelowSelectedAlgaePosition, elevator),
                                     Commands.runOnce(
@@ -67,7 +67,7 @@ public class CrossSubsystemsCommandsFactory {
                                     Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
                                     Commands.waitSeconds(0.5),
                                     Commands.runOnce(manipulator::algaeIsRemoved))),
-                            getScoreCoralCommand(manipulator),
+                            getScoreCoralCommand(manipulator, elevator),
                             elevator::isAlgaePositionSelected),
                         Commands.deadline(
                             // run TeleopSwerve to allow driver to move away from reef while
@@ -107,34 +107,7 @@ public class CrossSubsystemsCommandsFactory {
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)),
-                    Commands.either(
-                        /* FIXME: make this commands.either not insufferable */
-                        Commands.either(
-                            Commands.either(
-                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
-                                Commands.waitSeconds(0),
-                                () ->
-                                    elevator.getDistanceFromReef()
-                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
-                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
-                            Commands.either(
-                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
-                                Commands.waitSeconds(0),
-                                () ->
-                                    elevator.getDistanceFromReef()
-                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
-                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
-                            () ->
-                                OISelector.getOperatorInterface()
-                                    .getLevel2Trigger()
-                                    .getAsBoolean()),
-                        Commands.waitSeconds(0),
-                        () ->
-                            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
-                                || OISelector.getOperatorInterface()
-                                    .getLevel4Trigger()
-                                    .getAsBoolean())))
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
@@ -158,34 +131,7 @@ public class CrossSubsystemsCommandsFactory {
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)),
-                    Commands.either(
-                        /* FIXME: make this commands.either not insufferable */
-                        Commands.either(
-                            Commands.either(
-                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
-                                Commands.waitSeconds(0),
-                                () ->
-                                    elevator.getDistanceFromReef()
-                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
-                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
-                            Commands.either(
-                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
-                                Commands.waitSeconds(0),
-                                () ->
-                                    elevator.getDistanceFromReef()
-                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
-                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
-                            () ->
-                                OISelector.getOperatorInterface()
-                                    .getLevel2Trigger()
-                                    .getAsBoolean()),
-                        Commands.waitSeconds(0),
-                        () ->
-                            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
-                                || OISelector.getOperatorInterface()
-                                    .getLevel4Trigger()
-                                    .getAsBoolean())))
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
@@ -193,10 +139,41 @@ public class CrossSubsystemsCommandsFactory {
     oi.getDriveToPoseOverrideButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
 
-  private static Command getScoreCoralCommand(Manipulator manipulator) {
-    return Commands.sequence(
-        Commands.runOnce(manipulator::shootCoral, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasCoral()));
+  private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
+    return Commands.either(
+        /* FIXME: make this commands.either not insufferable */
+        Commands.either(
+            Commands.sequence(
+                Commands.either(
+                    Commands.sequence(
+                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
+                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
+                    Commands.waitSeconds(0),
+                    () ->
+                        elevator.getDistanceFromReef()
+                                > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                            && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
+                Commands.runOnce(manipulator::shootCoral, manipulator),
+                Commands.waitUntil(() -> !manipulator.hasCoral())),
+            Commands.sequence(
+                Commands.either(
+                    Commands.sequence(
+                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
+                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
+                    Commands.waitSeconds(0),
+                    () ->
+                        elevator.getDistanceFromReef()
+                                > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                            && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
+                Commands.runOnce(manipulator::shootCoral, manipulator),
+                Commands.waitUntil(() -> !manipulator.hasCoral())),
+            () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
+        Commands.sequence(
+            Commands.runOnce(manipulator::shootCoral, manipulator),
+            Commands.waitUntil(() -> !manipulator.hasCoral())),
+        () ->
+            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+                || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()));
   }
 
   private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {

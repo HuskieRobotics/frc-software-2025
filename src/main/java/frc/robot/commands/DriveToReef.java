@@ -261,6 +261,7 @@ public class DriveToReef extends Command {
    */
   @Override
   public void end(boolean interrupted) {
+    distanceFromReef.accept(100.0);
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
     Logger.recordOutput("DriveToReef/isFinished", true);

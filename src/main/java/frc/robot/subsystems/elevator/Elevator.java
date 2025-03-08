@@ -5,7 +5,6 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -53,7 +52,7 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
   public Elevator(ElevatorIO io) {
-  
+
     this.elevatorIO = io;
 
     io.zeroPosition();
