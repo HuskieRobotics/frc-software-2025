@@ -31,8 +31,6 @@ public class Elevator extends SubsystemBase {
 
   // arbitrary high value
   private double distanceFromReef = 100.0;
-  private InterpolatingDoubleTreeMap l2HeightMap;
-  private InterpolatingDoubleTreeMap l3HeightMap;
 
   private Alert hardStopAlert =
       new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
@@ -55,12 +53,7 @@ public class Elevator extends SubsystemBase {
       new LoggedTunableNumber("Elevator/Height(Inches)", 0);
 
   public Elevator(ElevatorIO io) {
-    this.l2HeightMap = new InterpolatingDoubleTreeMap();
-    this.l3HeightMap = new InterpolatingDoubleTreeMap();
-
-    populateL2Map();
-    populateL3Map();
-
+  
     this.elevatorIO = io;
 
     io.zeroPosition();
@@ -145,7 +138,7 @@ public class Elevator extends SubsystemBase {
 
     switch (reefBranch) {
       case L1:
-        height = L1_HEIGHT; // MIN_HEIGHT previously
+        height = L1_HEIGHT;
         break;
 
       case ABOVE_L1:
@@ -215,16 +208,6 @@ public class Elevator extends SubsystemBase {
   // TODO: Implement system check method
   public Command getElevatorSystemCheckCommand() {
     return null;
-  }
-
-  public void populateL2Map() {
-    l2HeightMap.put(FAR_SCORING_DISTANCE, FAR_L2_HEIGHT.in(Inches));
-    l2HeightMap.put(0.0, L2_HEIGHT.in(Inches));
-  }
-
-  public void populateL3Map() {
-    l3HeightMap.put(FAR_SCORING_DISTANCE, FAR_L2_HEIGHT.in(Inches));
-    l3HeightMap.put(0.0, L3_HEIGHT.in(Inches));
   }
 
   public void goToPosition(ReefBranch reefBranch) {
