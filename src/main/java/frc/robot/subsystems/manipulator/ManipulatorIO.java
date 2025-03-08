@@ -12,9 +12,6 @@ public interface ManipulatorIO {
     boolean isFunnelIRBlocked = false;
     boolean isIndexerIRBlocked = false;
 
-    boolean funnelConnected = false;
-    boolean indexerConnected = false;
-
     double funnelStatorCurrentAmps = 0;
     double indexerStatorCurrentAmps = 0;
 

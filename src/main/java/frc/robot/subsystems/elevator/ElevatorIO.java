@@ -9,9 +9,6 @@ public interface ElevatorIO {
   @AutoLog
   public static class ElevatorIOInputs {
 
-    boolean connectedLead = false;
-    boolean connectedFollower = false;
-
     double voltageSuppliedLead = 0.0;
     double voltageSuppliedFollower = 0.0;
 
