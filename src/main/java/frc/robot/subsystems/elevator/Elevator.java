@@ -249,11 +249,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void goToSelectedPosition() {
-    if (getSelectedPosition() == ReefBranch.L2 || getSelectedPosition() == ReefBranch.L3) {
-      adjustPositionFromInterpolation();
-    } else {
-      goToPosition(getSelectedPosition());
-    }
+    goToPosition(getSelectedPosition());
   }
 
   private void adjustPositionFromInterpolation() {
@@ -275,6 +271,10 @@ public class Elevator extends SubsystemBase {
 
   public void setDistanceFromReef(double distance) {
     distanceFromReef = distance;
+  }
+
+  public double getDistanceFromReef() {
+    return Math.abs(distanceFromReef);
   }
 
   public boolean isAtSelectedPosition() {

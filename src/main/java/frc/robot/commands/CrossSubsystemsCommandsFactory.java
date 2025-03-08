@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -13,6 +15,7 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 
@@ -88,7 +91,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.sequence(
                     Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.deadline(
+                    Commands.parallel(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                             new DriveToReef(
@@ -104,7 +107,34 @@ public class CrossSubsystemsCommandsFactory {
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.run(elevator::goToSelectedPosition, elevator)))
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+                    Commands.either(
+                        /* FIXME: make this commands.either not insufferable */
+                        Commands.either(
+                            Commands.either(
+                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
+                                Commands.waitSeconds(0),
+                                () ->
+                                    elevator.getDistanceFromReef()
+                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
+                            Commands.either(
+                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
+                                Commands.waitSeconds(0),
+                                () ->
+                                    elevator.getDistanceFromReef()
+                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
+                            () ->
+                                OISelector.getOperatorInterface()
+                                    .getLevel2Trigger()
+                                    .getAsBoolean()),
+                        Commands.waitSeconds(0),
+                        () ->
+                            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getLevel4Trigger()
+                                    .getAsBoolean())))
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
@@ -112,7 +142,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.sequence(
                     Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.deadline(
+                    Commands.parallel(
                         Commands.sequence(
                             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                             new DriveToReef(
@@ -128,7 +158,34 @@ public class CrossSubsystemsCommandsFactory {
                                 3.0),
                             Commands.runOnce(
                                 () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.run(elevator::goToSelectedPosition, elevator)))
+                        Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+                    Commands.either(
+                        /* FIXME: make this commands.either not insufferable */
+                        Commands.either(
+                            Commands.either(
+                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
+                                Commands.waitSeconds(0),
+                                () ->
+                                    elevator.getDistanceFromReef()
+                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
+                            Commands.either(
+                                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
+                                Commands.waitSeconds(0),
+                                () ->
+                                    elevator.getDistanceFromReef()
+                                            > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                                        && elevator.getDistanceFromReef() < FAR_SCORING_DISTANCE),
+                            () ->
+                                OISelector.getOperatorInterface()
+                                    .getLevel2Trigger()
+                                    .getAsBoolean()),
+                        Commands.waitSeconds(0),
+                        () ->
+                            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getLevel4Trigger()
+                                    .getAsBoolean())))
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
