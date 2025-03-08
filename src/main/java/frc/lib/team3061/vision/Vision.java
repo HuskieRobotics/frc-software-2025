@@ -23,6 +23,7 @@ import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.VisionIO.PoseObservation;
 import frc.lib.team3061.vision.VisionIO.PoseObservationType;
 import frc.lib.team6328.util.FieldConstants;
+import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -373,6 +374,9 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/IsUpdating", isVisionUpdating);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/CamerasToConsider", camerasToConsider.toString());
+
+    // Record cycle time
+    LoggedTracer.record("Vision");
   }
 
   public void specifyCamerasToConsider(List<Integer> cameraIndices) {

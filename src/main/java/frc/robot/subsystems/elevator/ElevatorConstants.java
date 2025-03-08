@@ -16,6 +16,8 @@ public class ElevatorConstants {
 
   public static final Distance JUST_ABOVE_HARDSTOP = Inches.of(1.0); // set hardstop a bit above 0
 
+  public static final double RESET_TOLERANCE = 0.25;
+
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
   public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
 
