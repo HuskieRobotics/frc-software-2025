@@ -114,7 +114,7 @@ public class Elevator extends SubsystemBase {
 
     // FIXME: consider y to be on target as well
     if (Math.abs(distanceFromReef) < FAR_SCORING_DISTANCE
-        && distanceFromReef > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE) {
+        && Math.abs(distanceFromReef) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     }
 
