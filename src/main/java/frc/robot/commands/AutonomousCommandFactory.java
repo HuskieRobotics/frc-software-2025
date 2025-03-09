@@ -266,8 +266,11 @@ public class AutonomousCommandFactory {
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
             manipulator::setReadyToScore,
+            elevator::setDistanceFromReef,
             new Transform2d(
-                Units.inchesToMeters(0.5), Units.inchesToMeters(0.5), Rotation2d.fromDegrees(2.0)),
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
             3.0),
         Commands.parallel(
             Commands.runOnce(
@@ -313,8 +316,11 @@ public class AutonomousCommandFactory {
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
             manipulator::setReadyToScore,
+            elevator::setDistanceFromReef,
             new Transform2d(
-                Units.inchesToMeters(0.5), Units.inchesToMeters(0.5), Rotation2d.fromDegrees(2.0)),
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
             3.0),
         Commands.parallel(
             Commands.runOnce(
