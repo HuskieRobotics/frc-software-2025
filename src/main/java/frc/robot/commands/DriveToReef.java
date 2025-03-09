@@ -47,6 +47,7 @@ public class DriveToReef extends Command {
   private final Drivetrain drivetrain;
   private final Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
+  private final Consumer<Double> distanceFromReef;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
@@ -94,11 +95,13 @@ public class DriveToReef extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
+      Consumer<Double> distanceFromReef,
       Transform2d tolerance,
       double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
     this.onTarget = onTargetConsumer;
+    this.distanceFromReef = distanceFromReef;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
     this.timeout = timeout;
@@ -230,6 +233,8 @@ public class DriveToReef extends Command {
     // convert the pose difference and velocities into the reef frame
     Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
     Logger.recordOutput("DriveToReef/difference (reef frame)", reefRelativeDifference);
+
+    distanceFromReef.accept(reefRelativeDifference.getX());
 
     boolean atGoal =
         Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()

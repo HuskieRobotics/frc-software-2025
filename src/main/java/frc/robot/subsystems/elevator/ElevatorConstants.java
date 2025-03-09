@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 
 public class ElevatorConstants {
@@ -38,7 +39,7 @@ public class ElevatorConstants {
 
   public static final double ELEVATOR_RAISE_SLOW_VOLTAGE = 2.0; // FIXME: Update this value
 
-  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -6.0; // FIXME: Update this value
+  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -2.0; // FIXME: Update this value
 
   // FIXME: Update all K values
 
@@ -85,6 +86,9 @@ public class ElevatorConstants {
     L3,
     L4,
 
+    MAX_L2,
+    MAX_L3,
+
     ALGAE_1,
     ALGAE_2,
 
@@ -99,11 +103,17 @@ public class ElevatorConstants {
    * Highest point of each reef branch in inches
    */
 
-  public static final Distance L1_HEIGHT = Inches.of(15.0); // arbitrary, tune
-  public static final Distance ABOVE_L1_HEIGHT = Inches.of(30.0); // arbitrary, tune
+  public static final Distance L1_HEIGHT = Inches.of(15.0);
+  public static final Distance ABOVE_L1_HEIGHT = Inches.of(25.0);
+
   public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
+  public static final Distance FAR_L2_HEIGHT = Inches.of(37); // tune
+
   public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
+  public static final Distance FAR_L3_HEIGHT = Inches.of(52); // tune
   public static final Distance L4_HEIGHT = Inches.of(71);
+
+  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);
 
   public static final Distance ALGAE1_HEIGHT =
       Inches.of(13.0); // height under is 9 // height of impact is 13

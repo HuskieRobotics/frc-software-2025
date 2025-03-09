@@ -467,6 +467,10 @@ public class RobotContainer {
   public void periodic() {
     // add robot-wide periodic code here
 
+    // update LEDs so that they turn yellow. maybe use our reef relative difference, and if it is
+    // less than 6
+    // but outside of our normal tolerance, turn yellow until we are within tolerance
+
     if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
     }

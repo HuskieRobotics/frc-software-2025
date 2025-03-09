@@ -373,7 +373,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   // Set motor voltage
   @Override
   public void setMotorVoltage(double voltage) {
-    elevatorMotorLead.setControl(leadVoltageRequest.withOutput(voltage));
+    elevatorMotorLead.setControl(
+        leadVoltageRequest.withLimitReverseMotion(false).withOutput(voltage));
   }
 
   @Override

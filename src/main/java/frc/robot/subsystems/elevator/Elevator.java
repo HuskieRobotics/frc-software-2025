@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team3061.drivetrain.DrivetrainConstants;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -25,6 +27,9 @@ public class Elevator extends SubsystemBase {
 
   private ElevatorIO elevatorIO;
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
+
+  // arbitrary high value
+  private double distanceFromReef = 100.0;
 
   private Alert hardStopAlert =
       new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
@@ -103,8 +108,15 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+
+    // FIXME: consider y to be on target as well
+    if (Math.abs(distanceFromReef) < FAR_SCORING_DISTANCE
+        && Math.abs(distanceFromReef) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
+    }
 
     if (testingMode.get() == 1) {
 
@@ -125,7 +137,7 @@ public class Elevator extends SubsystemBase {
 
     switch (reefBranch) {
       case L1:
-        height = L1_HEIGHT; // MIN_HEIGHT previously
+        height = L1_HEIGHT;
         break;
 
       case ABOVE_L1:
@@ -136,8 +148,16 @@ public class Elevator extends SubsystemBase {
         height = L2_HEIGHT;
         break;
 
+      case MAX_L2:
+        height = FAR_L2_HEIGHT;
+        break;
+
       case L3:
         height = L3_HEIGHT;
+        break;
+
+      case MAX_L3:
+        height = FAR_L3_HEIGHT;
         break;
 
       case L4:
@@ -212,6 +232,14 @@ public class Elevator extends SubsystemBase {
 
   public void goToSelectedPosition() {
     goToPosition(getSelectedPosition());
+  }
+
+  public void setDistanceFromReef(double distance) {
+    distanceFromReef = distance;
+  }
+
+  public double getDistanceFromReef() {
+    return Math.abs(distanceFromReef);
   }
 
   public boolean isAtSelectedPosition() {

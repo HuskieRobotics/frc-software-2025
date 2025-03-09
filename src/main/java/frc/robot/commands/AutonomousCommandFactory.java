@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.Vision;
 import frc.lib.team6328.util.FieldConstants;
@@ -256,7 +257,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -265,8 +266,11 @@ public class AutonomousCommandFactory {
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
             manipulator::setReadyToScore,
+            elevator::setDistanceFromReef,
             new Transform2d(
-                Units.inchesToMeters(0.5), Units.inchesToMeters(0.5), Rotation2d.fromDegrees(2.0)),
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
             3.0),
         Commands.parallel(
             Commands.runOnce(
@@ -303,7 +307,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getTwoCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -312,8 +316,11 @@ public class AutonomousCommandFactory {
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
             manipulator::setReadyToScore,
+            elevator::setDistanceFromReef,
             new Transform2d(
-                Units.inchesToMeters(0.5), Units.inchesToMeters(0.5), Rotation2d.fromDegrees(2.0)),
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
             3.0),
         Commands.parallel(
             Commands.runOnce(
@@ -345,7 +352,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getThreeCoralLeftAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -366,7 +373,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getThreeCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -386,7 +393,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getOneCoralCenterCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -407,10 +414,11 @@ public class AutonomousCommandFactory {
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
                 manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
                 new Transform2d(
-                    Units.inchesToMeters(0.5),
-                    Units.inchesToMeters(0.5),
-                    Rotation2d.fromDegrees(2.0)),
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 1.6),
             Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
@@ -433,10 +441,11 @@ public class AutonomousCommandFactory {
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                 manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
                 new Transform2d(
-                    Units.inchesToMeters(0.5),
-                    Units.inchesToMeters(0.5),
-                    Rotation2d.fromDegrees(2.0)),
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 0.5),
             Commands.runOnce(() -> elevator.goToPosition(ReefBranch.ABOVE_ALGAE_1)),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
