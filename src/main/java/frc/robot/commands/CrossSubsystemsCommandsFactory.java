@@ -186,7 +186,6 @@ public class CrossSubsystemsCommandsFactory {
         Commands.waitSeconds(0.25),
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
-        Commands.waitSeconds(0.25),
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP)));
   }
 
