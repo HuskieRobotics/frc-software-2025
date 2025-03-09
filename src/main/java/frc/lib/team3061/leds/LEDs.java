@@ -68,6 +68,7 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
+    UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
 
     EJECTING_CORAL(
         (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),

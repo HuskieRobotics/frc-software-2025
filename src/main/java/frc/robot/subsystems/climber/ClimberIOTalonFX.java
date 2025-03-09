@@ -3,13 +3,13 @@ package frc.robot.subsystems.climber;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Current;
@@ -34,8 +34,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   private StatusSignal<Voltage> voltage;
   private StatusSignal<Current> statorCurrentAmps;
   private StatusSignal<Current> supplyCurrentAmps;
-  private StatusSignal<Temperature> tempCelcius;
+  private StatusSignal<Temperature> tempCelsius;
   private StatusSignal<Angle> positionRotations;
+
+  private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
   private final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/KP", ClimberConstants.KP);
   private final LoggedTunableNumber KI = new LoggedTunableNumber("Climber/KI", ClimberConstants.KI);
@@ -49,8 +51,6 @@ public class ClimberIOTalonFX implements ClimberIO {
       new LoggedTunableNumber("Climber/KAEXP", ClimberConstants.KAEXP);
   private final LoggedTunableNumber KG = new LoggedTunableNumber("Climber/KG", ClimberConstants.KG);
 
-  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
-
   public ClimberIOTalonFX() {
     climberMotor =
         new TalonFX(
@@ -61,8 +61,11 @@ public class ClimberIOTalonFX implements ClimberIO {
     voltage = climberMotor.getMotorVoltage();
     statorCurrentAmps = climberMotor.getStatorCurrent();
     supplyCurrentAmps = climberMotor.getSupplyCurrent();
-    tempCelcius = climberMotor.getDeviceTemp();
+    tempCelsius = climberMotor.getDeviceTemp();
     positionRotations = climberMotor.getPosition();
+
+    Phoenix6Util.registerSignals(
+        true, voltage, statorCurrentAmps, supplyCurrentAmps, tempCelsius, positionRotations);
 
     climberVoltageRequest = new VoltageOut(0);
     // ask lauren for mass and max height
@@ -82,15 +85,14 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void updateInputs(ClimberIOInputs inputs) {
     // Update loggable values here (using status signals)
-    StatusCode status =
-        BaseStatusSignal.refreshAll(
-            voltage, statorCurrentAmps, supplyCurrentAmps, tempCelcius, positionRotations);
-    Phoenix6Util.checkError(status, "Failed to refresh climber motor signals.", refreshAlert);
-
+    inputs.connected =
+        connectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                voltage, statorCurrentAmps, supplyCurrentAmps, tempCelsius, positionRotations));
     inputs.voltage = voltage.getValueAsDouble();
     inputs.statorCurrentAmps = statorCurrentAmps.getValueAsDouble();
     inputs.supplyCurrentAmps = supplyCurrentAmps.getValueAsDouble();
-    inputs.tempCelcius = tempCelcius.getValueAsDouble();
+    inputs.tempCelsius = tempCelsius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
     elevatorSystemSim.updateSim();
