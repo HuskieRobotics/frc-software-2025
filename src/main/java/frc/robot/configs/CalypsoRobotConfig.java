@@ -442,7 +442,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   @Override
   public Pigeon2Configuration getPigeonConfigForSwerveDrivetrain() {
     return new Pigeon2Configuration()
-        .withMountPose(new MountPoseConfigs().withMountPoseRoll(-180.0));
+        .withMountPose(new MountPoseConfigs().withMountPoseYaw(-90.0).withMountPoseRoll(180.0));
   }
 
   @Override

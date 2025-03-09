@@ -63,6 +63,8 @@ public interface DrivetrainIO {
 
     double averageDriveCurrent = 0.0;
     double rawHeadingDeg = 0.0;
+    double pitchDeg = 0.0;
+    double rollDeg = 0.0;
 
     Pose2d customPose = new Pose2d();
 
