@@ -148,10 +148,10 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.sequence(
                         Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
                         Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
-                    Commands.waitSeconds(0),
+                    Commands.none(),
                     () ->
                         Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
                             && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
                 Commands.runOnce(manipulator::shootCoral, manipulator),
                 Commands.waitUntil(() -> !manipulator.hasCoral()),
@@ -161,10 +161,10 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.sequence(
                         Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
                         Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
-                    Commands.waitSeconds(0),
+                    Commands.none(),
                     () ->
                         Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE
+                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
                             && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
                 Commands.runOnce(manipulator::shootCoral, manipulator),
                 Commands.waitUntil(() -> !manipulator.hasCoral()),

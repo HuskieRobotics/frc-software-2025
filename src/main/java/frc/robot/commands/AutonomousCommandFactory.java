@@ -257,7 +257,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -307,7 +307,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getTwoCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -352,7 +352,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getThreeCoralLeftAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -373,7 +373,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getThreeCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
@@ -393,7 +393,7 @@ public class AutonomousCommandFactory {
           "Could not find the specified path file in getOneCoralCenterCommand.");
       pathFileMissingAlert.set(true);
 
-      return Commands.waitSeconds(0);
+      return Commands.none();
     }
 
     return Commands.sequence(
