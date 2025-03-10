@@ -249,9 +249,9 @@ public class AutonomousCommandFactory {
     PathPlannerPath scoreCoralL2BL;
     PathPlannerPath collectCoralL2BL;
     try {
-      collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral J 2BL");
-      scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2BL");
-      collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral L 2BL");
+      collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral After J 2L");
+      scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2L");
+      collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral After L 2L");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
@@ -304,7 +304,6 @@ public class AutonomousCommandFactory {
     PathPlannerPath collectCoralD2BR;
 
     try {
-      // PathPlannerPath scoreCoralE2BR = PathPlannerPath.fromPathFile("#1 Score Coral F 2BR");
       collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral F 2BR");
       scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
       collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
@@ -356,9 +355,11 @@ public class AutonomousCommandFactory {
   public Command getThreeCoralLeftCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     PathPlannerPath scoreCoralK;
+    PathPlannerPath collectCoralK;
 
     try {
-      scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3BL");
+      scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3L");
+      collectCoralK = PathPlannerPath.fromPathFile("#6 Collect Coral After K 3L");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getThreeCoralLeftAutoCommand.");
@@ -371,7 +372,8 @@ public class AutonomousCommandFactory {
         getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
         Commands.parallel(
             AutoBuilder.followPath(scoreCoralK), Commands.waitUntil(manipulator::hasIndexedCoral)),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT));
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        AutoBuilder.followPath(collectCoralK));
   }
 
   public Command getThreeCoralRightCommand(
