@@ -22,7 +22,7 @@ public class ClimberCommandFactory {
                         () ->
                             climber.getPosition()
                                 > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES),
-                    Commands.runOnce(climber::stop))
+                    Commands.runOnce(climber::stop, climber))
                 .withName("extend cage catcher"));
 
     oi.getExtendClimberButton()
@@ -32,7 +32,7 @@ public class ClimberCommandFactory {
                         Commands.runOnce(climber::extend, climber),
                         Commands.waitUntil(
                             () -> climber.getPosition() > ClimberConstants.MAX_HEIGHT_INCHES),
-                        Commands.runOnce(climber::stop)),
+                        Commands.runOnce(climber::stop, climber)),
                     Commands.none(),
                     climber::cageCatcherReleased)
                 .withName("extend climber"));
@@ -46,7 +46,7 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::retract, climber),
                     Commands.waitUntil(
                         () -> climber.getPosition() < ClimberConstants.MIN_HEIGHT_INCHES),
-                    Commands.runOnce(climber::stop))
+                    Commands.runOnce(climber::stop, climber))
                 .withName("retract climber"));
 
     // FIXME: is this still the case?

@@ -446,7 +446,7 @@ public class RobotContainer {
                 .withName("enable vision"));
     oi.getVisionIsEnabledTrigger()
         .onFalse(
-            Commands.runOnce(() -> vision.enable(false), vision)
+            Commands.runOnce(() -> vision.enable(false))
                 .ignoringDisable(true)
                 .withName("disable vision"));
   }
