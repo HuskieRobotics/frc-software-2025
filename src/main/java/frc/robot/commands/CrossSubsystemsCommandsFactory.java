@@ -34,39 +34,34 @@ public class CrossSubsystemsCommandsFactory {
             Commands.either(
                     Commands.sequence(
                         getScoreL1Command(manipulator, elevator),
-                        Commands.waitUntil(manipulator::isWaitingForCoral)),
+                        Commands.waitUntil(manipulator::isWaitingForCoral)), // FIXME: remove this?
                     Commands.sequence(
                         Commands.either(
-                            Commands.parallel(
-                                Commands.runOnce(manipulator::removeAlgae),
-                                Commands.sequence(
-                                    getScoreCoralCommand(manipulator, elevator),
-                                    Commands.runOnce(
-                                        elevator::goBelowSelectedAlgaePosition, elevator),
-                                    Commands.runOnce(
-                                        () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                                    Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
-                                    new DriveToReef(
-                                        drivetrain,
-                                        () ->
-                                            Field2d.getInstance()
-                                                .getNearestBranch(Side.REMOVE_ALGAE),
-                                        manipulator::setReadyToRemoveAlgae,
-                                        elevator::setDistanceFromReef,
-                                        new Transform2d(
-                                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                            Rotation2d.fromDegrees(
-                                                DrivetrainConstants
-                                                    .DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                        0.5),
-                                    Commands.runOnce(
-                                        elevator::goAboveSelectedAlgaePosition, elevator),
-                                    Commands.runOnce(
-                                        () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-                                    Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
-                                    Commands.waitSeconds(0.5),
-                                    Commands.runOnce(manipulator::algaeIsRemoved))),
+                            Commands.sequence(
+                                Commands.runOnce(manipulator::removeAlgae, manipulator),
+                                getScoreCoralCommand(manipulator, elevator),
+                                Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
+                                Commands.runOnce(
+                                    () -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+                                Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
+                                new DriveToReef(
+                                    drivetrain,
+                                    () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
+                                    manipulator::setReadyToRemoveAlgae,
+                                    elevator::setDistanceFromReef,
+                                    new Transform2d(
+                                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                                        Rotation2d.fromDegrees(
+                                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                                    0.5),
+                                Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
+                                Commands.runOnce(
+                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)),
+                                    vision),
+                                Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
+                                Commands.waitSeconds(0.5),
+                                Commands.runOnce(manipulator::algaeIsRemoved, manipulator)),
                             getScoreCoralCommand(manipulator, elevator),
                             elevator::isAlgaePositionSelected),
                         Commands.deadline(
@@ -106,7 +101,8 @@ public class CrossSubsystemsCommandsFactory {
                                         DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                 5.0),
                             Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)),
+                                vision)),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest left branch"));
 
@@ -130,7 +126,8 @@ public class CrossSubsystemsCommandsFactory {
                                         DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                 3.0),
                             Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)),
+                                vision)),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
@@ -146,7 +143,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.either(
                     Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
+                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2), elevator),
                         Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
                     Commands.none(),
                     () ->
@@ -159,7 +156,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.either(
                     Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
+                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3), elevator),
                         Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
                     Commands.none(),
                     () ->
@@ -180,13 +177,15 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1)),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1), elevator),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitSeconds(0.25),
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1), elevator),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP)));
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
 
   // interrupt all commands by running a command that requires every subsystem. This is used to
