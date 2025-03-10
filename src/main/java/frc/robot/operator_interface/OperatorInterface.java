@@ -8,7 +8,7 @@
 
 package frc.robot.operator_interface;
 
-import edu.wpi.first.wpilibj2.command.button.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Interface for all driver and operator controls. */
 public interface OperatorInterface {
@@ -137,11 +137,71 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getReefBranchATrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchBTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchCTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchDTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchETrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchFTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchGTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchHTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchITrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchJTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchKTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchLTrigger() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getRemoveHighAlgaeTrigger() {
     return new Trigger(() -> false);
   }
 
   public default Trigger getRemoveLowAlgaeTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlgaeBargeTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlgaeProcessorTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlgaeDropTrigger() {
     return new Trigger(() -> false);
   }
 

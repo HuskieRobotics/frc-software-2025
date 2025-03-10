@@ -25,6 +25,38 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean lowAlgaeRemoval =
       new LoggedTunableBoolean("operatorDashboard/Low Algae Removal", false, true);
 
+  private final LoggedTunableBoolean algaeBarge =
+      new LoggedTunableBoolean("operatorDashboard/Barge", false, true);
+  private final LoggedTunableBoolean algaeProcessor =
+      new LoggedTunableBoolean("operatorDashboard/Processor", false, true);
+  private final LoggedTunableBoolean algaeDrop =
+      new LoggedTunableBoolean("operatorDashboard/Drop", false, true);
+
+  private final LoggedTunableBoolean reefBranchA =
+      new LoggedTunableBoolean("operatorDashboard/A", false, true);
+  private final LoggedTunableBoolean reefBranchB =
+      new LoggedTunableBoolean("operatorDashboard/B", false, true);
+  private final LoggedTunableBoolean reefBranchC =
+      new LoggedTunableBoolean("operatorDashboard/C", false, true);
+  private final LoggedTunableBoolean reefBranchD =
+      new LoggedTunableBoolean("operatorDashboard/D", false, true);
+  private final LoggedTunableBoolean reefBranchE =
+      new LoggedTunableBoolean("operatorDashboard/E", false, true);
+  private final LoggedTunableBoolean reefBranchF =
+      new LoggedTunableBoolean("operatorDashboard/F", false, true);
+  private final LoggedTunableBoolean reefBranchG =
+      new LoggedTunableBoolean("operatorDashboard/G", false, true);
+  private final LoggedTunableBoolean reefBranchH =
+      new LoggedTunableBoolean("operatorDashboard/H", false, true);
+  private final LoggedTunableBoolean reefBranchI =
+      new LoggedTunableBoolean("operatorDashboard/I", false, true);
+  private final LoggedTunableBoolean reefBranchJ =
+      new LoggedTunableBoolean("operatorDashboard/J", false, true);
+  private final LoggedTunableBoolean reefBranchK =
+      new LoggedTunableBoolean("operatorDashboard/K", false, true);
+  private final LoggedTunableBoolean reefBranchL =
+      new LoggedTunableBoolean("operatorDashboard/L", false, true);
+
   public OperatorDashboard() {
 
     // The controls to select reef branch levels must be mutually exclusive; if one is selected
@@ -36,8 +68,6 @@ public class OperatorDashboard implements OperatorInterface {
                       level2.set(false);
                       level3.set(false);
                       level4.set(false);
-                      highAlgaeRemoval.set(false);
-                      lowAlgaeRemoval.set(false);
                     })
                 .ignoringDisable(true));
 
@@ -48,8 +78,6 @@ public class OperatorDashboard implements OperatorInterface {
                       level1.set(false);
                       level3.set(false);
                       level4.set(false);
-                      highAlgaeRemoval.set(false);
-                      lowAlgaeRemoval.set(false);
                     })
                 .ignoringDisable(true));
 
@@ -60,8 +88,6 @@ public class OperatorDashboard implements OperatorInterface {
                       level1.set(false);
                       level2.set(false);
                       level4.set(false);
-                      highAlgaeRemoval.set(false);
-                      lowAlgaeRemoval.set(false);
                     })
                 .ignoringDisable(true));
 
@@ -75,29 +101,260 @@ public class OperatorDashboard implements OperatorInterface {
                     })
                 .ignoringDisable(true));
 
-    getRemoveHighAlgaeTrigger()
+    getAlgaeBargeTrigger()
         .onTrue(
             Commands.sequence(
                     Commands.runOnce(
                         () -> {
-                          lowAlgaeRemoval.set(false);
-                        }),
-                    Commands.runOnce(
-                        () -> {
-                          level4.set(true);
+                          algaeProcessor.set(false);
+                          algaeDrop.set(false);
                         }))
                 .ignoringDisable(true));
 
-    getRemoveLowAlgaeTrigger()
+    getAlgaeDropTrigger()
         .onTrue(
             Commands.sequence(
                     Commands.runOnce(
                         () -> {
-                          highAlgaeRemoval.set(false);
-                        }),
+                          algaeProcessor.set(false);
+                          algaeBarge.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchATrigger()
+        .onTrue(
+            Commands.sequence(
                     Commands.runOnce(
                         () -> {
-                          level4.set(true);
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchBTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchA.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchCTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchA.set(false);
+                          reefBranchB.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchDTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchA.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchETrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchA.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchFTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchA.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchGTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchA.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchHTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchA.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchITrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchA.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+    getReefBranchJTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchA.set(false);
+                          reefBranchK.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchKTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchA.set(false);
+                          reefBranchL.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getReefBranchLTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          reefBranchB.set(false);
+                          reefBranchC.set(false);
+                          reefBranchD.set(false);
+                          reefBranchE.set(false);
+                          reefBranchF.set(false);
+                          reefBranchG.set(false);
+                          reefBranchH.set(false);
+                          reefBranchI.set(false);
+                          reefBranchJ.set(false);
+                          reefBranchK.set(false);
+                          reefBranchA.set(false);
+                        }))
+                .ignoringDisable(true));
+
+    getAlgaeProcessorTrigger()
+        .onTrue(
+            Commands.sequence(
+                    Commands.runOnce(
+                        () -> {
+                          algaeBarge.set(false);
+                          algaeDrop.set(false);
                         }))
                 .ignoringDisable(true));
   }
@@ -133,12 +390,86 @@ public class OperatorDashboard implements OperatorInterface {
   }
 
   @Override
-  public Trigger getRemoveHighAlgaeTrigger() {
-    return new Trigger(() -> highAlgaeRemoval.get());
+  public Trigger getAlgaeBargeTrigger() {
+    return new Trigger(() -> algaeBarge.get());
+  }
+
+  @Override
+  public Trigger getAlgaeProcessorTrigger() {
+    return new Trigger(() -> algaeProcessor.get());
+  }
+
+  @Override
+  public Trigger getAlgaeDropTrigger() {
+    return new Trigger(() -> algaeDrop.get());
+  }
+
+  @Override
+  public Trigger getReefBranchATrigger() {
+    return new Trigger(() -> reefBranchA.get());
+  }
+
+  @Override
+  public Trigger getReefBranchBTrigger() {
+    return new Trigger(() -> reefBranchB.get());
+  }
+
+  @Override
+  public Trigger getReefBranchCTrigger() {
+    return new Trigger(() -> reefBranchC.get());
+  }
+
+  @Override
+  public Trigger getReefBranchDTrigger() {
+    return new Trigger(() -> reefBranchD.get());
+  }
+
+  @Override
+  public Trigger getReefBranchETrigger() {
+    return new Trigger(() -> reefBranchE.get());
+  }
+
+  @Override
+  public Trigger getReefBranchFTrigger() {
+    return new Trigger(() -> reefBranchF.get());
+  }
+
+  @Override
+  public Trigger getReefBranchGTrigger() {
+    return new Trigger(() -> reefBranchG.get());
+  }
+
+  @Override
+  public Trigger getReefBranchHTrigger() {
+    return new Trigger(() -> reefBranchH.get());
+  }
+
+  @Override
+  public Trigger getReefBranchITrigger() {
+    return new Trigger(() -> reefBranchI.get());
+  }
+
+  @Override
+  public Trigger getReefBranchJTrigger() {
+    return new Trigger(() -> reefBranchJ.get());
+  }
+
+  @Override
+  public Trigger getReefBranchKTrigger() {
+    return new Trigger(() -> reefBranchK.get());
+  }
+
+  @Override
+  public Trigger getReefBranchLTrigger() {
+    return new Trigger(() -> reefBranchL.get());
   }
 
   @Override
   public Trigger getRemoveLowAlgaeTrigger() {
     return new Trigger(() -> lowAlgaeRemoval.get());
+  }
+
+  public Trigger getRemoveHighAlgaeTrigger() {
+    return new Trigger(() -> highAlgaeRemoval.get());
   }
 }
