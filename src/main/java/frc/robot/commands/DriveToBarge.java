@@ -23,8 +23,6 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
-import frc.robot.operator_interface.OperatorInterface;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
@@ -51,7 +49,6 @@ public class DriveToBarge extends Command {
   private final Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
   private Pose2d targetPose;
-  private Transform2d targetTolerance;
 
   private Timer timer;
 
@@ -123,9 +120,9 @@ public class DriveToBarge extends Command {
 
     drivetrain.enableAccelerationLimiting();
 
-    Logger.recordOutput("DriveToPose/targetPose", targetPose);
-    Logger.recordOutput("DriveToPose/isFinished", false);
-    Logger.recordOutput("DriveToPose/withinTolerance", false);
+    Logger.recordOutput("DriveToBarge/targetPose", targetPose);
+    Logger.recordOutput("DriveToBarge/isFinished", false);
+    Logger.recordOutput("DriveToBarge/withinTolerance", false);
 
     this.timer.restart();
   }
@@ -169,7 +166,11 @@ public class DriveToBarge extends Command {
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
     drivetrain.drive(
-        allianceMultiplier * xVelocity, translationYSupplier.getAsDouble(), thetaVelocity, true, true);
+        allianceMultiplier * xVelocity,
+        translationYSupplier.getAsDouble(),
+        thetaVelocity,
+        true,
+        true);
   }
 
   /**
@@ -212,6 +213,6 @@ public class DriveToBarge extends Command {
   public void end(boolean interrupted) {
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
-    Logger.recordOutput("DriveToPose/isFinished", true);
+    Logger.recordOutput("DriveToBarge/isFinished", true);
   }
 }
