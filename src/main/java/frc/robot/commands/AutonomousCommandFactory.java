@@ -328,13 +328,11 @@ public class AutonomousCommandFactory {
                         Rotation2d.fromDegrees(
                             DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                     3.0)),
-            Commands.runOnce(
-                /* possibly add a slight wait here before raising elevator */
-                () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L3), elevator)),
-        Commands.parallel(
-            Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
-            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
+            Commands.sequence(
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)
+            )),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoral, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
@@ -405,7 +403,17 @@ public class AutonomousCommandFactory {
         Commands.parallel(
             AutoBuilder.followPath(scoreCoralC), Commands.waitUntil(manipulator::hasIndexedCoral)),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
-        AutoBuilder.followPath(collectCoralAfterC));
+        AutoBuilder.followPath(collectCoralAfterC),
+        new DriveToReef(
+            drivetrain,
+            () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+            manipulator::setReadyToScore,
+            elevator::setDistanceFromReef,
+            new Transform2d(
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+            1.6));
   }
 
   public Command getOneCoralCenterCommand(
