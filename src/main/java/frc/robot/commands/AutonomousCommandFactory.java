@@ -261,17 +261,23 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-        new DriveToReef(
-            drivetrain,
-            () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            manipulator::setReadyToScore,
-            elevator::setDistanceFromReef,
-            new Transform2d(
-                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-            3.0),
+        Commands.parallel(
+            Commands.sequence(
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+                new DriveToReef(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    manipulator::setReadyToScore,
+                    elevator::setDistanceFromReef,
+                    new Transform2d(
+                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                        Rotation2d.fromDegrees(
+                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                    3.0)),
+            Commands.runOnce(
+                /* possibly add a slight wait here before going up to l3 */
+                () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L3), elevator)),
         Commands.parallel(
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
@@ -311,17 +317,23 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-        new DriveToReef(
-            drivetrain,
-            () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            manipulator::setReadyToScore,
-            elevator::setDistanceFromReef,
-            new Transform2d(
-                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-            3.0),
+        Commands.parallel(
+            Commands.sequence(
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+                new DriveToReef(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    manipulator::setReadyToScore,
+                    elevator::setDistanceFromReef,
+                    new Transform2d(
+                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                        Rotation2d.fromDegrees(
+                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                    3.0)),
+            Commands.runOnce(
+                /* possibly add a slight wait here before raising elevator */
+                () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L3), elevator)),
         Commands.parallel(
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
