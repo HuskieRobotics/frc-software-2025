@@ -32,9 +32,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreCoralButton()
         .onTrue(
             Commands.either(
-                    Commands.sequence(
-                        getScoreL1Command(manipulator, elevator),
-                        Commands.waitUntil(manipulator::isWaitingForCoral)), // FIXME: remove this?
+                    getScoreL1Command(manipulator, elevator),
                     Commands.sequence(
                         Commands.either(
                             Commands.sequence(
@@ -42,7 +40,7 @@ public class CrossSubsystemsCommandsFactory {
                                 getScoreCoralCommand(manipulator, elevator),
                                 Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
                                 Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+                                    () -> vision.specifyCamerasToConsider(List.of(0, 2))),
                                 Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
                                 new DriveToReef(
                                     drivetrain,
@@ -57,8 +55,7 @@ public class CrossSubsystemsCommandsFactory {
                                     0.5),
                                 Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
                                 Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)),
-                                    vision),
+                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
                                 Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
                                 Commands.waitSeconds(0.5),
                                 Commands.runOnce(manipulator::algaeIsRemoved, manipulator)),
@@ -101,8 +98,7 @@ public class CrossSubsystemsCommandsFactory {
                                         DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                 5.0),
                             Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)),
-                                vision)),
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest left branch"));
 
@@ -126,8 +122,7 @@ public class CrossSubsystemsCommandsFactory {
                                         DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                                 3.0),
                             Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)),
-                                vision)),
+                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
