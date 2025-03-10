@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
@@ -30,6 +31,7 @@ public class ClimberIOTalonFX implements ClimberIO {
   private StatusSignal<Current> supplyCurrentAmps;
   private StatusSignal<Temperature> tempCelcius;
   private StatusSignal<Angle> positionRotations;
+  private StatusSignal<AngularVelocity> velocityRotationsPerSecond;
 
   private final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/KP", ClimberConstants.KP);
   private final LoggedTunableNumber KI = new LoggedTunableNumber("Climber/KI", ClimberConstants.KI);
@@ -55,6 +57,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     supplyCurrentAmps = climberMotor.getSupplyCurrent();
     tempCelcius = climberMotor.getDeviceTemp();
     positionRotations = climberMotor.getPosition();
+    velocityRotationsPerSecond =
+        climberMotor.getVelocity(); // angular velocity, should be linear velocity
 
     climberVoltageRequest = new VoltageOut(0);
     // ask lauren for mass and max height
@@ -76,7 +80,12 @@ public class ClimberIOTalonFX implements ClimberIO {
     // Update loggable values here (using status signals)
     StatusCode status =
         BaseStatusSignal.refreshAll(
-            voltage, statorCurrentAmps, supplyCurrentAmps, tempCelcius, positionRotations);
+            voltage,
+            statorCurrentAmps,
+            supplyCurrentAmps,
+            tempCelcius,
+            positionRotations,
+            velocityRotationsPerSecond);
     Phoenix6Util.checkError(status, "Failed to refresh climber motor signals.", refreshAlert);
 
     inputs.voltage = voltage.getValueAsDouble();
@@ -85,6 +94,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelcius = tempCelcius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
+    inputs.velocityInchesPerSecond =
+        inputs.velocityRotationsPerSecond * 0.5 * ClimberConstants.DRUM_DIAMETER;
+    // check conversion of velocity 2/19/25
     elevatorSystemSim.updateSim();
   }
 
