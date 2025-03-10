@@ -4,8 +4,8 @@
   "holonomicMode": true,
   "pathFolders": [
     "1 Piece Center",
-    "3 Piece Blue Left",
-    "3 Piece Blue Right",
+    "3 Piece Left",
+    "3 Piece Right",
     "Tuning"
   ],
   "autoFolders": [

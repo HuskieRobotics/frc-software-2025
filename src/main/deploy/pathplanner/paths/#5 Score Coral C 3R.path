@@ -3,35 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9741742621527774,
-        "y": 2.76113136574074
+        "x": 1.473,
+        "y": 0.922
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.802335221056887,
-        "y": 1.6493034547818362
+        "x": 2.4215163934426225,
+        "y": 1.8012807377049183
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.3905737704918033,
-        "y": 0.7583504098360652
+        "x": 3.4764344262295084,
+        "y": 2.7602971311475404
       },
       "prevControl": {
-        "x": 2.2017347293959126,
-        "y": 1.3443521221648325
+        "x": 2.589344262295082,
+        "y": 1.9810963114754099
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Collect Right"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Raise Elevator",
+      "waypointRelativePos": 0.5,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "Raise Elevator"
+        }
+      }
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -41,14 +53,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 53.941
+    "velocity": 1.0,
+    "rotation": 59.42100000000001
   },
   "reversed": false,
-  "folder": "3 Piece Blue Right",
+  "folder": "3 Piece Right",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.42100000000001
+    "rotation": 53.941
   },
   "useDefaultConstraints": true
 }

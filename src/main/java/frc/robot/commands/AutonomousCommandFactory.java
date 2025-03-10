@@ -245,13 +245,13 @@ public class AutonomousCommandFactory {
   // FIXME: remove elevator setpoints in code since we have event markers now
   public Command getTwoCoralLeftAutoCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    PathPlannerPath collectCoralJ2BL;
-    PathPlannerPath scoreCoralL2BL;
-    PathPlannerPath collectCoralL2BL;
+    PathPlannerPath collectCoralJ2L;
+    PathPlannerPath scoreCoralL2L;
+    PathPlannerPath collectCoralL2L;
     try {
-      collectCoralJ2BL = PathPlannerPath.fromPathFile("#2 Collect Coral After J 2L");
-      scoreCoralL2BL = PathPlannerPath.fromPathFile("#3 Score Coral L 2L");
-      collectCoralL2BL = PathPlannerPath.fromPathFile("#4 Collect Coral After L 2L");
+      collectCoralJ2L = PathPlannerPath.fromPathFile("#2 Collect Coral After J 2L");
+      scoreCoralL2L = PathPlannerPath.fromPathFile("#3 Score Coral L 2L");
+      collectCoralL2L = PathPlannerPath.fromPathFile("#4 Collect Coral After L 2L");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
@@ -287,26 +287,26 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
-        AutoBuilder.followPath(collectCoralJ2BL),
+        AutoBuilder.followPath(collectCoralJ2L),
         getCollectCoralCommand(manipulator),
         Commands.parallel(
-            AutoBuilder.followPath(scoreCoralL2BL),
+            AutoBuilder.followPath(scoreCoralL2L),
             Commands.waitUntil(manipulator::hasIndexedCoral)),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-        AutoBuilder.followPath(collectCoralL2BL),
+        AutoBuilder.followPath(collectCoralL2L),
         getCollectCoralCommand(manipulator));
   }
 
   public Command getTwoCoralRightAutoCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    PathPlannerPath collectCoralE2BR;
-    PathPlannerPath scoreCoralD2BR;
-    PathPlannerPath collectCoralD2BR;
+    PathPlannerPath collectCoralE2R;
+    PathPlannerPath scoreCoralD2R;
+    PathPlannerPath collectCoralD2R;
 
     try {
-      collectCoralE2BR = PathPlannerPath.fromPathFile("#2 Collect Coral F 2BR");
-      scoreCoralD2BR = PathPlannerPath.fromPathFile("#3 Score Coral D 2BR");
-      collectCoralD2BR = PathPlannerPath.fromPathFile("#4 Collect Coral D 2BR");
+      collectCoralE2R = PathPlannerPath.fromPathFile("#2 Collect Coral After F 2R");
+      scoreCoralD2R = PathPlannerPath.fromPathFile("#3 Score Coral D 2R");
+      collectCoralD2R = PathPlannerPath.fromPathFile("#4 Collect Coral After D 2R");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getTwoCoralRightAutoCommand.");
@@ -342,13 +342,13 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
-        AutoBuilder.followPath(collectCoralE2BR),
+        AutoBuilder.followPath(collectCoralE2R),
         getCollectCoralCommand(manipulator),
         Commands.parallel(
-            AutoBuilder.followPath(scoreCoralD2BR),
+            AutoBuilder.followPath(scoreCoralD2R),
             Commands.waitUntil(manipulator::hasIndexedCoral)),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-        AutoBuilder.followPath(collectCoralD2BR),
+        AutoBuilder.followPath(collectCoralD2R),
         getCollectCoralCommand(manipulator));
   }
 
@@ -381,7 +381,7 @@ public class AutonomousCommandFactory {
     PathPlannerPath scoreCoralC;
 
     try {
-      scoreCoralC = PathPlannerPath.fromPathFile("#5 Score Coral C 3BR");
+      scoreCoralC = PathPlannerPath.fromPathFile("#5 Score Coral C 3R");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getThreeCoralRightAutoCommand.");
