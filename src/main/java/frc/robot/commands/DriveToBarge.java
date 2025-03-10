@@ -23,7 +23,11 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.operator_interface.OperatorInterface;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -49,8 +53,6 @@ public class DriveToBarge extends Command {
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
-  private double timeout;
-
   private Timer timer;
 
   private static final LoggedTunableNumber driveKp =
@@ -73,10 +75,11 @@ public class DriveToBarge extends Command {
 
   private final PIDController xController =
       new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
-  private final PIDController yController =
-      new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
   private final PIDController thetaController =
       new PIDController(thetaKp.get(), thetaKi.get(), thetaKd.get(), LOOP_PERIOD_SECS);
+
+  private DoubleSupplier translationYSupplier;
+  private BooleanSupplier interrupted;
 
   /**
    * Constructs a new DriveToBarge command that drives the robot in a straight line to the specified
@@ -94,14 +97,14 @@ public class DriveToBarge extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
-      Transform2d tolerance,
-      double timeout) {
+      BooleanSupplier interrupted,
+      DoubleSupplier translationYSupplier) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
+    this.interrupted = interrupted;
     this.onTarget = onTargetConsumer;
-    this.targetTolerance = tolerance;
     this.timer = new Timer();
-    this.timeout = timeout;
+    this.translationYSupplier = translationYSupplier;
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -142,7 +145,6 @@ public class DriveToBarge extends Command {
         hashCode(),
         pid -> {
           xController.setPID(pid[0], pid[1], pid[2]);
-          yController.setPID(pid[0], pid[1], pid[2]);
         },
         driveKp,
         driveKi,
@@ -158,18 +160,16 @@ public class DriveToBarge extends Command {
 
     // use last values of filter
     double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
-    double yVelocity = yController.calculate(currentPose.getY(), this.targetPose.getY());
     double thetaVelocity =
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
 
-    Logger.recordOutput("DriveToPose/x velocity (field relative)", xVelocity);
-    Logger.recordOutput("DriveToPose/y velocity (field relative)", yVelocity);
+    Logger.recordOutput("DriveToBarge/x velocity (field relative)", xVelocity);
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
     drivetrain.drive(
-        allianceMultiplier * xVelocity, allianceMultiplier * yVelocity, thetaVelocity, true, true);
+        allianceMultiplier * xVelocity, translationYSupplier.getAsDouble(), thetaVelocity, true, true);
   }
 
   /**
@@ -182,6 +182,7 @@ public class DriveToBarge extends Command {
    */
   @Override
   public boolean isFinished() {
+    // We will probably not need this target, but just logging for now just in case.
     Transform2d difference =
         new Transform2d(
             drivetrain.getPose().getX() - targetPose.getX(),
@@ -190,26 +191,15 @@ public class DriveToBarge extends Command {
                 drivetrain.getPose().getRotation().getRadians()
                     - targetPose.getRotation().getRadians()));
 
-    Logger.recordOutput("DriveToPose/difference", difference);
+    Logger.recordOutput("DriveToBarge/difference", difference);
 
     Transform2d robotRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
-    Logger.recordOutput("DriveToPose/difference (robot relative)", robotRelativeDifference);
+    Logger.recordOutput("DriveToBarge/difference (robot relative)", robotRelativeDifference);
 
-    boolean atGoal =
-        Math.abs(robotRelativeDifference.getX()) < targetTolerance.getX()
-            && Math.abs(robotRelativeDifference.getY()) < targetTolerance.getY()
-            && Math.abs(robotRelativeDifference.getRotation().getRadians())
-                < targetTolerance.getRotation().getRadians();
+    boolean atGoal = interrupted.getAsBoolean();
 
-    if (atGoal) {
-      onTarget.accept(true);
-      Logger.recordOutput("DriveToPose/withinTolerance", true);
-    } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout)) {
-      onTarget.accept(false);
-    }
-
-    // check each of the controllers is at their goal or if the timeout has elapsed
-    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
+    // check each of the controllers is at their goal
+    return !drivetrain.isMoveToPoseEnabled() || atGoal;
   }
 
   /**

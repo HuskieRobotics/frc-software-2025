@@ -124,6 +124,16 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.runOnce(elevator::goToSelectedPosition, elevator)))
                 .withName("drive to nearest right branch"));
 
+    oi.getDriveToBargeButton().onTrue(
+        new DriveToBarge(
+            drivetrain,
+            () -> Field2d.getInstance().getBargePose(),
+            manipulator::setReadyToScore,
+            manipulator::shotAlgae,
+            oi::getTranslateY
+        )
+    );
+
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
 
     oi.getDriveToPoseOverrideButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));

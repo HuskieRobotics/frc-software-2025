@@ -352,6 +352,14 @@ public class Field2d {
     return bumpersOnReefAlignedToBranch;
   }
 
+  public Pose2d getBargePose() {
+    // x arbitrary from 20 inches x from the middle cage
+    return new Pose2d(
+      new Translation2d(Units.inchesToMeters(325.428), Units.inchesToMeters(242.855)),
+      Rotation2d.fromDegrees(0.0)
+    );
+  }
+
   /*
    * These methods are for manually populating reef branch pose maps based on the measured robot pose in the correct scoring position.
    */

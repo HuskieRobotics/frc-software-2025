@@ -569,6 +569,11 @@ public class Manipulator extends SubsystemBase {
     this.readyToScore = readyToScore;
   }
 
+  // FIXME: implement functionality with state machine to have this get interrupted when we shoot algae
+  public boolean shotAlgae() {
+    return false;
+  }
+
   public void setReadyToRemoveAlgae(boolean readyToRemoveAlgae) {}
 
   public boolean isReadyToScore() {

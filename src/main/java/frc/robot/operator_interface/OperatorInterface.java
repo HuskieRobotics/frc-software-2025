@@ -117,6 +117,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getDriveToBargeButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
   }

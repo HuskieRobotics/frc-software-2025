@@ -73,6 +73,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getDriveToBargeButton() {
+    return translateJoystickButtons[7];
+  }
+
+  @Override
   public Trigger getResetGyroButton() {
     return translateJoystickButtons[8];
   }
