@@ -114,6 +114,7 @@ public class ElevatorConstants {
   public static final Distance L4_HEIGHT = Inches.of(71);
 
   public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);
+  public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
 
   public static final Distance ALGAE1_HEIGHT =
       Inches.of(13.0); // height under is 9 // height of impact is 13
