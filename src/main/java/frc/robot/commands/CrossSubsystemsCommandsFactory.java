@@ -82,61 +82,13 @@ public class CrossSubsystemsCommandsFactory {
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
         .onTrue(
-            Commands.sequence(
-                    Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.either(
-                        Commands.sequence(
-                            Commands.runOnce(() -> elevator.goToPosition(ReefBranch.L1)),
-                            Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.L1))),
-                        Commands.parallel(
-                            Commands.sequence(
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                                new DriveToReef(
-                                    drivetrain,
-                                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                                    manipulator::setReadyToScore,
-                                    elevator::setDistanceFromReef,
-                                    new Transform2d(
-                                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                        Rotation2d.fromDegrees(
-                                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                    5.0),
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                            Commands.runOnce(elevator::goToSelectedPosition, elevator)),
-                        () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()))
+            getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT)
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getPrepToScoreCoralRightButton()
         .onTrue(
-            Commands.sequence(
-                    Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.either(
-                        Commands.sequence(
-                            Commands.runOnce(() -> elevator.goToPosition(ReefBranch.L1)),
-                            Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.L1))),
-                        Commands.parallel(
-                            Commands.sequence(
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                                new DriveToReef(
-                                    drivetrain,
-                                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                                    manipulator::setReadyToScore,
-                                    elevator::setDistanceFromReef,
-                                    new Transform2d(
-                                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                        Rotation2d.fromDegrees(
-                                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                    3.0),
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                            Commands.runOnce(elevator::goToSelectedPosition, elevator)),
-                        () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()))
+            getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT)
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
@@ -195,9 +147,32 @@ public class CrossSubsystemsCommandsFactory {
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
 
-  // interrupt all commands by running a command that requires every subsystem. This is used to
-  // recover to a known state if the robot becomes "stuck" in a command.
-  // "run all wheels backwards and bring elevator and carriage back to initial configuration"
+  private static Command getPrepToScoreCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision, Side side) {
+    return Commands.sequence(
+        Commands.waitUntil(manipulator::hasIndexedCoral),
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.L1)),
+                Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.L1))),
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToReef(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(side),
+                        manipulator::setReadyToScore,
+                        elevator::setDistanceFromReef,
+                        new Transform2d(
+                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                            Rotation2d.fromDegrees(
+                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                        3.0),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+            () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
+  }
 
   /*
    * 1. Shoot coral
