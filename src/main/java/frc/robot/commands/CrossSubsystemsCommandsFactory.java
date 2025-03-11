@@ -160,29 +160,29 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.either(
                     Commands.sequence(
                         Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
-                    Commands.none(),
+                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2)),
+                        Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
+                    Commands.runOnce(manipulator::shootCoralFast, manipulator),
                     () ->
                         Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
                             && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.runOnce(manipulator::shootCoral, manipulator),
                 Commands.waitUntil(() -> !manipulator.hasCoral()),
                 Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
             Commands.sequence(
                 Commands.either(
                     Commands.sequence(
                         Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
-                    Commands.none(),
+                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3)),
+                        Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
+                    Commands.runOnce(manipulator::shootCoralFast, manipulator),
                     () ->
                         Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
                             && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.runOnce(manipulator::shootCoral, manipulator),
                 Commands.waitUntil(() -> !manipulator.hasCoral()),
                 Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
             () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
         Commands.sequence(
-            Commands.runOnce(manipulator::shootCoral, manipulator),
+            Commands.runOnce(manipulator::shootCoralFast, manipulator),
             Commands.waitUntil(() -> !manipulator.hasCoral()),
             Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
         () ->
@@ -194,7 +194,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1)),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
-        Commands.runOnce(manipulator::shootCoral, manipulator),
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitSeconds(0.25),
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
@@ -220,7 +220,7 @@ public class CrossSubsystemsCommandsFactory {
       Manipulator manipulator, Elevator elevator, Drivetrain drivetrain, OperatorInterface oi) {
     return Commands.parallel(
             Commands.sequence(
-                Commands.runOnce(manipulator::shootCoral, manipulator),
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
                 Commands.runOnce(manipulator::resetStateMachine, manipulator)),

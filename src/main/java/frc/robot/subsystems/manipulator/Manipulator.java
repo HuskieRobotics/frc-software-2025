@@ -54,13 +54,13 @@ public class Manipulator extends SubsystemBase {
       new LoggedTunableNumber(
           "Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
 
-  public final LoggedTunableNumber level1And4ShootingVoltage =
+  public final LoggedTunableNumber fastShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_MOTOR_VOLTAGE_L1_L4);
+          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_MOTOR_VOLTAGE_FAR_L1_L4);
 
-  public final LoggedTunableNumber level2And3ShootingVoltage =
+  public final LoggedTunableNumber slowShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_MOTOR_VOLTAGE_L2_L3);
+          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_MOTOR_VOLTAGE_CLOSE_L2_L3);
 
   public final LoggedTunableNumber indexerEjectingVoltage =
       new LoggedTunableNumber(
@@ -106,6 +106,8 @@ public class Manipulator extends SubsystemBase {
 
   private boolean readyToScore = false;
   private boolean algaeRemoved = false;
+
+  private boolean shootingFast = false;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -305,11 +307,15 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.readyToScore = false;
 
-        if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
-            || OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
-          subsystem.setIndexerMotorVoltage(subsystem.level2And3ShootingVoltage.get());
+        if (subsystem.shootingFast) {
+          if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
+              || OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+            subsystem.setIndexerMotorVoltage(subsystem.slowShootingVoltage.get());
+          } else {
+            subsystem.setIndexerMotorVoltage(subsystem.fastShootingVoltage.get());
+          }
         } else {
-          subsystem.setIndexerMotorVoltage(subsystem.level1And4ShootingVoltage.get());
+          subsystem.setIndexerMotorVoltage(subsystem.fastShootingVoltage.get());
         }
       }
 
@@ -540,9 +546,18 @@ public class Manipulator extends SubsystemBase {
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
-  // method to shoot coral which assigns coral  button pressed to true
-  public void shootCoral() {
+  private void shootCoral() {
     shootCoralButtonPressed = true;
+  }
+
+  public void shootCoralFast() {
+    shootingFast = true;
+    shootCoral();
+  }
+
+  public void shootCoralSlow() {
+    shootingFast = false;
+    shootCoral();
   }
 
   public void scoreCoralThroughFunnel() {
