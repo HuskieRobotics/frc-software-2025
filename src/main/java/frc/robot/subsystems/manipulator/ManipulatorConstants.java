@@ -28,12 +28,13 @@ public class ManipulatorConstants {
 
   public static final int INDEXER_IR_BACKUP_SENSOR_ID = 1;
 
-  public static final int PIVOT_MOTOR_ID = 0; //TBD -- created for pivot motor
+  public static final int PIVOT_MOTOR_ID = 57; //TBD -- created for pivot motor
 
-  public static final int ALGAE_IR_SENSOR_ID = 0; //new algae ir sensor --> id tbd
+  public static final int ALGAE_IR_SENSOR_ID = 4; //new algae ir sensor --> id tbd
+  public static final int ALGAE_IR_BACKUP_SENSOR_ID = 5;
 
   // not sure what this is???
-  public static final double GEAR_RATIO_FUNNEL = 1.0;
+  public static final double GEAR_RATIO_FUNNEL = 9.0;
 
   public static final double GEAR_RATIO_MANIPULATOR = 1.0;
 
@@ -67,7 +68,9 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL = 4.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 12.0;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 12.0; //get rid of
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE = 0.0; //new constant for indexer motor when holding algae\
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE = -1.0; //FIXME:update value
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
@@ -108,12 +111,16 @@ public class ManipulatorConstants {
 
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
+  public static final double INTAKE_ALGAE_TIMEOUT = 3.0; //FIXME:update value
+
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
-  public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 0; //tbd for new pivot motor
+  public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40; //tbd for new pivot motor
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
+
+  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; //FIXME:update value
 }

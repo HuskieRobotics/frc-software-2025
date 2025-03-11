@@ -2,6 +2,8 @@ package frc.robot.subsystems.manipulator;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import edu.wpi.first.units.measure.Angle;
+
 /** Generic subsystem hardware interface. */
 public interface ManipulatorIO {
   /** Contains all of the input data received from hardware. */
@@ -23,11 +25,10 @@ public interface ManipulatorIO {
 
     double funnelVelocityRPS = 0;
     double indexerVelocityRPS = 0;
-    double pivotVelocityRPS = 0; //new for pivot motor
 
     double funnelReferenceVelocityRPS = 0;
     double indexerReferenceVelocityRPS = 0;
-    double pivotReferenceVelocityRPS = 0; //new for pivot motor
+    double pivotReferencePositionRPS = 0; //new for pivot motor
 
     double funnelClosedLoopErrorRPS = 0.0;
     double indexerClosedLoopErrorRPS = 0.0;
@@ -41,7 +42,7 @@ public interface ManipulatorIO {
     double indexerMotorVoltage = 0;
     double pivotMotorVoltage = 0; //new for pivot motor
     
-    double pivotMotorAngle = 0; //tbd for pivot motor angle
+    double pivotMotorAngleDeg = 0; //tbd for pivot motor angle
   }
 
   /** Updates the set of loggable inputs. */
@@ -88,4 +89,10 @@ public interface ManipulatorIO {
    * @param current the current to set the motor to in amps.
    */
   public default void setIndexerMotorCurrent(double current) {}
+
+  public default void setPivotMotorVoltage(double volts) {}
+  
+  public default void setPivotPosition(Angle angle) {}
+
+
 }

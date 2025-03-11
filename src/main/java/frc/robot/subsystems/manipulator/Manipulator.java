@@ -1,23 +1,31 @@
 package frc.robot.subsystems.manipulator;
 
-import static edu.wpi.first.units.Units.*;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
+import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.SUBSYSTEM_NAME;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
-import frc.lib.team3061.leds.LEDs;
-import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import org.littletonrobotics.junction.Logger;
 
 /**
  * Models a generic subsystem for a rotational mechanism. The other subsystems defined in this
@@ -76,11 +84,15 @@ public class Manipulator extends SubsystemBase {
           "Manipulator/Funnel/ShootingOutFunnelVoltage",
           FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
 
+  private final LoggedTunableNumber pivotAngle = 
+    new LoggedTunableNumber("Manipulator/Pivot/angle", 0); // add angle
+
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
 
   Timer scoringFunnelTimer = new Timer();
   Timer ejectingCoralTimer = new Timer();
+  Timer intakingAlgaeTimer = new Timer();
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
@@ -95,6 +107,7 @@ public class Manipulator extends SubsystemBase {
 
   private boolean shootCoralButtonPressed = false;
   private boolean scoreCoralThroughFunnelButtonPressed = false;
+  private boolean intakeAlgaeButtonPressed = false; //may or may not need this button
   private boolean scoreAlgaeButtonPressed = false;
 
   private boolean readyToScore = false;
@@ -285,7 +298,6 @@ public class Manipulator extends SubsystemBase {
         } else if (!subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
-        // FIXME: add a transition back to WAITING_FOR_CORAL_IN_FUNNEL if the coral is dropped
       }
 
       @Override
@@ -366,16 +378,24 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         // set voltage of indexer/roller motor to the speed while collecting algae
+        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE); //change the constant as we are no longer removing algae but are instead intaking algae
       }
 
       @Override
       void execute(Manipulator subsystem) {
         //check for current spike or if algae IR has detected algae
+        if (subsystem.inputs.isAlgaeIRBlocked && subsystem.currentInAmps.lastValue() > ManipulatorConstants.THRESHOLD_CURRENT_SPIKE_ALGAE) {
+          subsystem.setState(State.ALGAE_IN_MANIPULATOR);
+        }
+        else if (subsystem.intakingAlgaeTimer.hasElapsed(ManipulatorConstants.INTAKE_ALGAE_TIMEOUT)) {
+          //transition to new state
+        }
       }
 
       @Override
       void onExit(Manipulator subsystem) {
         //set the boolean that controls if algae intake button has been pressed to false
+        subsystem.intakeAlgaeButtonPressed = false;
       }
       
     },
@@ -384,34 +404,58 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         //lessen the voltage of the indexer/roller motor so that it keeps the algae held in the claw thing
+        subsystem.setIndexerMotorVoltage(ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE); 
       }
+      
 
       @Override
       void execute(Manipulator subsystem) {
         //check if the shootAlgae button has been pressed, if so then switch to the SHOOT_ALGAE state
+        if (scoreAlgaeButtonPressed){
+          subsystem.setState(State.SHOOT_ALGAE);
+        }
       }
 
       @Override
       void onExit(Manipulator subsystem) {
         //set the shootAlgae button boolean to false
+
       }
     },
     SHOOT_ALGAE { //state robot is in while algae is being shot out of the manipulator
       @Override
       void onEnter(Manipulator subsystem) {
         //set the indexer/roller motor to a negative volatge in order for the rollers to move the opp direction and eject the algae out of the manipulator
+        subsystem.setIndexerMotorVoltage(ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE); 
+        
       }
 
       @Override
       void execute(Manipulator subsystem) {
         //check if the IR sensor for the algae is unblocked, if so, then switch to the either the WAITING_FOR_ALGAE_IN_MANIPULATOR or the WAITING_FOR_CORAL_IN_FUNNEL state
+        if (!subsystem.inputs.isAlgaeIRBlocked){ //add something to determine which state to switch to
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
       }
 
       @Override
       void onExit(Manipulator subsystem) {
         //set the voltage of the indexer/roller motor to 0
+        subsystem.setIndexerMotorVoltage(0);
       }
+
+
     },
+    
+    UNINITIALIZED {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setFunnelMotorVoltage(0);
+        subsystem.setIndexerMotorVoltage(0);
+        subsystem.setPivotMotorVoltage(0);
+      }
+
+    }
     };
 
     abstract void execute(Manipulator subsystem);
@@ -491,6 +535,10 @@ public class Manipulator extends SubsystemBase {
     io.setFunnelMotorCurrent(current);
   }
 
+  public void setFunnelMotorVelocity(double velocity) {
+    io.setFunnelMotorVelocity(velocity);
+  }
+
   public void setIndexerMotorVoltage(double volts) {
     io.setIndexerMotorVoltage(volts);
   }
@@ -499,13 +547,26 @@ public class Manipulator extends SubsystemBase {
     io.setIndexerMotorCurrent(current);
   }
 
-  public void setFunnelMotorVelocity(double velocity) {
-    io.setFunnelMotorVelocity(velocity);
-  }
-
   public void setIndexerMotorVelocity(double velocity) {
     io.setIndexerMotorVelocity(velocity);
   }
+
+  public void setPivotMotorVoltage(double volts) {
+    io.setPivotMotorVoltage(volts);
+  } 
+
+  public void setPivotMotorCurrent(double current) {
+    io.setPivotMotorCurrent(current);
+  }
+
+  public void setPivotMotorVelocity(double velocity){
+    io.setPivotMotorVelocity(velocity);
+  }
+  
+  public void setPivotPosition(Angle angle) {
+    io.setPivotPosition(angle);
+  }
+
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
   // same exact thing but for the funnel and indexer motor, unsure if this is correct

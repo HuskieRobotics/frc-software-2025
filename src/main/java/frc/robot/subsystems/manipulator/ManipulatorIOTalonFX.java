@@ -7,6 +7,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -43,6 +44,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private DigitalInput backupFunnelIRSensor;
   private DigitalInput backupIndexerIRSensor;
+  private DigitalInput backupAlgaeIRSensor;
 
   private VoltageOut funnelVoltageRequest;
   private VoltageOut indexerVoltageRequest;
@@ -50,11 +52,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private TorqueCurrentFOC funnelCurrentRequest;
   private TorqueCurrentFOC indexerCurrentRequest;
-  private TorqueCurrentFOC pivotCurrentRequest; //new for pivot motor
 
   private VelocityTorqueCurrentFOC funnelVelocityRequest;
   private VelocityTorqueCurrentFOC indexerVelocityRequest;
-  private VelocityTorqueCurrentFOC pivotVelocityRequest; //new for pivot motor
+
+  private MotionMagicExpoVoltage pivotPositionRequest; //new for pivot motor
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
@@ -88,18 +90,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new LoggedTunableNumber("Manipulator/Indexer/kA", INDEXER_MOTOR_KA);
     
       //new tunable values for pivot motor
-  private final LoggedTunableNumber pivotKp =
-      new LoggedTunableNumber("Manipulator/Indexer/kP", INDEXER_MOTOR_KP);
-  private final LoggedTunableNumber pivotKi =
-      new LoggedTunableNumber("Manipulator/Indexer/kI", INDEXER_MOTOR_KI);
-  private final LoggedTunableNumber pivotKd =
-      new LoggedTunableNumber("Manipulator/Indexer/kD", INDEXER_MOTOR_KD);
-  private final LoggedTunableNumber pivotKs =
-      new LoggedTunableNumber("Manipulator/Indexer/kS", INDEXER_MOTOR_KS);
-  private final LoggedTunableNumber pivotKv =
-      new LoggedTunableNumber("Manipulator/Indexer/kV", INDEXER_MOTOR_KV);
-  private final LoggedTunableNumber pivotKa =
-      new LoggedTunableNumber("Manipulator/Indexer/kA", INDEXER_MOTOR_KA);
+
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -111,7 +102,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private StatusSignal<AngularVelocity> funnelMotorVelocity;
   private StatusSignal<AngularVelocity> indexerMotorVelocity;
-  private StatusSignal<AngularVelocity> pivotMotorVelocity; //velocity for pivot motor
 
   private StatusSignal<Current> funnelMotorStatorCurrent;
   private StatusSignal<Current> indexerMotorStatorCurrent;
@@ -146,6 +136,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     backupFunnelIRSensor = new DigitalInput(FUNNEL_IR_BACKUP_SENSOR_ID);
     backupIndexerIRSensor = new DigitalInput(INDEXER_IR_BACKUP_SENSOR_ID);
+    backupAlgaeIRSensor = new DigitalInput(ALGAE_IR_BACKUP_SENSOR_ID);
 
     funnelMotorSim =
         new VelocitySystemSim(
@@ -161,10 +152,13 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
             INDEXER_MOTOR_KV,
             INDEXER_MOTOR_KA,
             GEAR_RATIO_MANIPULATOR);
-    //new system sim for pivot motor
-    //  pivotMotorSim =
-    //          new ArmSystemSim(
-    //              );
+
+
+    // Add sim for pivot motor
+    pivotMotorSim =
+      new ArmSystemSim(
+
+      );
 
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
@@ -172,15 +166,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelCurrentRequest = new TorqueCurrentFOC(0.0);
     indexerCurrentRequest = new TorqueCurrentFOC(0.0);
-    pivotCurrentRequest = new TorqueCurrentFOC(0.0); //new pivot motor current request 
 
     funnelVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
     indexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
-    pivotVelocityRequest = new VelocityTorqueCurrentFOC(0.0); //new pivot motor velocity request
+
+    pivotPositionRequest = new MotionMagicExpoVoltage(0);
 
     funnelMotorVelocity = funnelMotor.getVelocity();
     indexerMotorVelocity = indexerMotor.getVelocity();
-    pivotMotorVelocity = pivotMotor.getVelocity(); //new variable for pivot motor velocity
 
     funnelMotorVoltage = funnelMotor.getMotorVoltage();
     indexerMotorVoltage = indexerMotor.getMotorVoltage();
@@ -246,7 +239,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.funnelVelocityRPS = funnelMotorVelocity.getValue().in(RotationsPerSecond);
     inputs.indexerVelocityRPS = indexerMotorVelocity.getValue().in(RotationsPerSecond);
-    inputs.pivotVelocityRPS = pivotMotorVelocity.getValue().in(RotationsPerSecond);
 
     inputs.funnelStatorCurrentAmps = funnelMotorStatorCurrent.getValueAsDouble();
     inputs.indexerStatorCurrentAmps = indexerMotorStatorCurrent.getValueAsDouble();
@@ -266,7 +258,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
     inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
-    inputs.pivotReferenceVelocityRPS = pivotMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.pivotReferencePositionRPS = pivotMotor.getClosedLoopReference().getValueAsDouble();
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
@@ -277,10 +269,12 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     if (OISelector.getOperatorInterface().getEnablePrimaryIRSensorsTrigger().getAsBoolean()) {
       inputs.isFunnelIRBlocked = !funnelIRSensor.get();
       inputs.isIndexerIRBlocked = !indexerIRSensor.get();
+      inputs.isAlgaeIRBlocked = !algaeIRSensor.get(); //new for algae IR
     } else {
       inputs.isFunnelIRBlocked = !backupFunnelIRSensor.get();
       inputs.isIndexerIRBlocked = !backupIndexerIRSensor.get();
-    }
+      inputs.isAlgaeIRBlocked = !backupAlgaeIRSensor.get();
+    } 
 
     LoggedTunableNumber.ifChanged(
         hashCode(),
@@ -376,6 +370,16 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void setIndexerMotorVelocity(double velocity) {
     this.indexerMotor.setControl(indexerVelocityRequest.withVelocity(velocity));
+  }
+
+  @Override
+  public void setPivotMotorVoltage(double volts) {
+    this.pivotMotor.setControl(pivotVoltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void setPivotPosition(Angle angle) {
+    this.pivotMotor.setControl(pivotPositionRequest.withPosition(angle));
   }
 
   /*
