@@ -49,7 +49,6 @@ public class ManipulatorConstants {
 
   // FIXME: tune these values
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL = 4.0;
 
   public static final double INDEXER_MOTOR_VOLTAGE_L1_L4 = 4.0;
   public static final double INDEXER_MOTOR_VOLTAGE_L2_L3 = 3.0;
