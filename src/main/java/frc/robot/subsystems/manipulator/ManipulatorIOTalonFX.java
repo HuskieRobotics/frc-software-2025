@@ -91,6 +91,21 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     
       //new tunable values for pivot motor
 
+    private final LoggedTunableNumber pivotKp =
+      new LoggedTunableNumber("Manipulator/Indexer/kP", INDEXER_MOTOR_KP);
+  private final LoggedTunableNumber indexerKi =
+      new LoggedTunableNumber("Manipulator/Indexer/kI", INDEXER_MOTOR_KI);
+  private final LoggedTunableNumber indexerKd =
+      new LoggedTunableNumber("Manipulator/Indexer/kD", INDEXER_MOTOR_KD);
+  private final LoggedTunableNumber indexerKs =
+      new LoggedTunableNumber("Manipulator/Indexer/kS", INDEXER_MOTOR_KS);
+  private final LoggedTunableNumber indexerKv =
+      new LoggedTunableNumber("Manipulator/Indexer/kV", INDEXER_MOTOR_KV);
+  private final LoggedTunableNumber indexerKa =
+      new LoggedTunableNumber("Manipulator/Indexer/kA", INDEXER_MOTOR_KA);
+      
+    
+
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
