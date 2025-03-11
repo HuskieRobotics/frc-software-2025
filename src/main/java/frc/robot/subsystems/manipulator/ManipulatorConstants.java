@@ -50,8 +50,11 @@ public class ManipulatorConstants {
   // FIXME: tune these values
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
 
-  public static final double INDEXER_MOTOR_VOLTAGE_FAR_L1_L4 = 4.0;
-  public static final double INDEXER_MOTOR_VOLTAGE_CLOSE_L2_L3 = 3.0;
+  // Fast voltage: L1, L4, far L2, far L3
+  public static final double INDEXER_VOLTAGE_SHOOT_FAST = 4.0;
+
+  // Slow voltage: close L2, close L3
+  public static final double INDEXER_VOLTAGE_SHOOT_SLOW = 3.0;
 
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;

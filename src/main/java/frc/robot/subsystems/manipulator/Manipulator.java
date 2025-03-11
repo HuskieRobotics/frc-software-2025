@@ -56,11 +56,11 @@ public class Manipulator extends SubsystemBase {
 
   public final LoggedTunableNumber fastShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_MOTOR_VOLTAGE_FAR_L1_L4);
+          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_VOLTAGE_SHOOT_FAST);
 
   public final LoggedTunableNumber slowShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_MOTOR_VOLTAGE_CLOSE_L2_L3);
+          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_VOLTAGE_SHOOT_SLOW);
 
   public final LoggedTunableNumber indexerEjectingVoltage =
       new LoggedTunableNumber(
