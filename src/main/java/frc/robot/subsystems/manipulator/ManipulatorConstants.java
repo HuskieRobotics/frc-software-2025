@@ -63,9 +63,9 @@ public class ManipulatorConstants {
   public static final double PIVOT_MOTOR_KV = 0;
   public static final double PIVOT_MOTOR_KA = 0;
 
-  public static final double KV_EXPO = 0.0;
+  public static final double PIVOT_MOTOR_KV_EXPO = 0.0;
 
-  public static final double KA_EXPO = 0.0;
+  public static final double PRIVOT_MOTOR_KA_EXPO = 0.0;
 
   // FIXME: tune these values
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;

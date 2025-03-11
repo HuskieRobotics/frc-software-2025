@@ -6,7 +6,9 @@ import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -91,21 +93,25 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     
       //new tunable values for pivot motor
 
-    private final LoggedTunableNumber pivotKp =
-      new LoggedTunableNumber("Manipulator/Indexer/kP", INDEXER_MOTOR_KP);
-  private final LoggedTunableNumber indexerKi =
-      new LoggedTunableNumber("Manipulator/Indexer/kI", INDEXER_MOTOR_KI);
-  private final LoggedTunableNumber indexerKd =
-      new LoggedTunableNumber("Manipulator/Indexer/kD", INDEXER_MOTOR_KD);
-  private final LoggedTunableNumber indexerKs =
-      new LoggedTunableNumber("Manipulator/Indexer/kS", INDEXER_MOTOR_KS);
-  private final LoggedTunableNumber indexerKv =
-      new LoggedTunableNumber("Manipulator/Indexer/kV", INDEXER_MOTOR_KV);
-  private final LoggedTunableNumber indexerKa =
-      new LoggedTunableNumber("Manipulator/Indexer/kA", INDEXER_MOTOR_KA);
-      
-    
+  private final LoggedTunableNumber pivotKp =
+      new LoggedTunableNumber("Manipulator/Pivot/kP", PIVOT_MOTOR_KP);
+  private final LoggedTunableNumber pivotKi =
+      new LoggedTunableNumber("Manipulator/Pivot/kI", PIVOT_MOTOR_KI);
+  private final LoggedTunableNumber pivotKd =
+      new LoggedTunableNumber("Manipulator/Pivot/kD", PIVOT_MOTOR_KD);
+  private final LoggedTunableNumber pivotKs =
+      new LoggedTunableNumber("Manipulator/Pivot/kS", PIVOT_MOTOR_KS);
+  private final LoggedTunableNumber pivotKv =
+      new LoggedTunableNumber("Manipulator/Pivot/kV", PIVOT_MOTOR_KV);
+  private final LoggedTunableNumber pivotKa =
+      new LoggedTunableNumber("Manipulator/Pivot/kA", PIVOT_MOTOR_KA);
+  
+  private final LoggedTunableNumber pivotkAExpo =
+      new LoggedTunableNumber("Manipulator/Pivot/kAExpo", PIVOT_MOTOR_KV_EXPO);
 
+  private final LoggedTunableNumber pivotkVExpo = 
+      new LoggedTunableNumber("Manipulator/Pivot/kVExpo", PIVOT_MOTOR_KV_EXPO);
+   
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -244,7 +250,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // refresh all status signal objects for pivot motor
     status =
         BaseStatusSignal.refreshAll(
-            pivotMotorVelocity,
             pivotMotorStatorCurrent,
             pivotMotorTemp,
             pivotMotorSupplyCurrent,
@@ -279,7 +284,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
     inputs.pivotMotorVoltage = pivotMotorVoltage.getValueAsDouble();
 
-    inputs.pivotMotorAngle = pivotMotorAngle.getValueAsDouble();
+    inputs.pivotMotorAngleDeg = pivotMotorAngle.getValueAsDouble();
 
     if (OISelector.getOperatorInterface().getEnablePrimaryIRSensorsTrigger().getAsBoolean()) {
       inputs.isFunnelIRBlocked = !funnelIRSensor.get();
@@ -330,6 +335,33 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         indexerKs,
         indexerKv,
         indexerKa);
+
+    LoggedTunableNumber.ifChanged(
+      hashCode(),
+      pid -> {
+        TalonFXConfiguration config = new TalonFXConfiguration();
+        this.pivotMotor.getConfigurator().refresh(config);
+        config.Slot0.kP = pid[0];
+        config.Slot0.kI = pid[1];
+        config.Slot0.kD = pid[2];
+        config.Slot0.kS = pid[3];
+        config.Slot0.kV = pid[4];
+        config.Slot0.kA = pid[5];
+
+        config.MotionMagic.MotionMagicExpo_kA = pid[6];
+        config.MotionMagic.MotionMagicExpo_kV = pid[7];
+
+
+        this.pivotMotor.getConfigurator().apply(config);
+      },
+      pivotKp,
+      pivotKi,
+      pivotKd,
+      pivotKs,
+      pivotKv,
+      pivotKa,
+      pivotkAExpo,
+      pivotkVExpo);
 
     // update funnel and indexer motor sim
     funnelMotorSim.updateSim();
@@ -485,6 +517,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // PIVOT_motor_inverted, sets the motor to a specific
     // value based on if the motor is inverted (first
     // choice) or not inverted (second choice)
+
+    MotionMagicConfigs pivotMotorConfig = config.MotionMagic;
+
+    pivotMotorConfig.MotionMagicExpo_kA = pivotkAExpo.get();
+    pivotMotorConfig.MotionMagicExpo_kV = pivotkVExpo.get(); 
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
