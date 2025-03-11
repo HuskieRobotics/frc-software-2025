@@ -1,5 +1,9 @@
 package frc.robot.subsystems.manipulator;
 
+import static edu.wpi.first.units.Units.Degrees;
+
+import edu.wpi.first.units.measure.Angle;
+
 public class ManipulatorConstants {
 
   private static final String CONSTRUCTOR_EXCEPTION = "constant class";
@@ -100,10 +104,10 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
   //new setpoints for pivot motor for algae claw -- ALL TBD
-  public static final double PIVOT_MOTOR_STARTING_POS = 0;
-  public static final double PIVOT_MOTOR_AT_REEF_POS = 0;
-  public static final double PIVOT_MOTOR_SCORING_IN_PROCESSOR = 0;
-  public static final double PIVOT_MOTOR_SCORING_IN_BARGE = 0;
+  public static final Angle PIVOT_MOTOR_STARTING_POS = Degrees.of(0);
+  public static final Angle PIVOT_MOTOR_AT_REEF_POS =  Degrees.of(0);
+  public static final Angle PIVOT_MOTOR_SCORING_IN_PROCESSOR =  Degrees.of(0);
+  public static final Angle PIVOT_MOTOR_SCORING_IN_BARGE =  Degrees.of(0);
 
   // used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;

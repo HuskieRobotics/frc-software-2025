@@ -1,5 +1,6 @@
 package frc.robot.subsystems.manipulator;
 
+import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL;
@@ -158,8 +159,19 @@ public class Manipulator extends SubsystemBase {
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(
+            new SysIdRoutine.Mechanism(
               output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
+
+  private final SysIdRoutine sysIdPivot =
+      new SysIdRoutine( //FIXME: check values for ramp rate and step voltage
+          new SysIdRoutine.Config(
+              Volts.of(2).per(Seconds), // Use default ramp rate (1 V/s)
+              Volts.of(2), // Use default step voltage (7 V)
+              null, // Use default timeout (10 s) 
+              // Log state with SignalLogger class
+              sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
+              new SysIdRoutine.Mechanism(
+              output -> setPivotMotorCurrent(output.in(Volts)), null, this));
 
   /**
    * Few subsystems require the complexity of a state machine. A simpler command-based approach is
@@ -379,6 +391,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         // set voltage of indexer/roller motor to the speed while collecting algae
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE); //change the constant as we are no longer removing algae but are instead intaking algae
+        subsystem.intakingAlgaeTimer.restart();
       }
 
       @Override
@@ -388,7 +401,7 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.ALGAE_IN_MANIPULATOR);
         }
         else if (subsystem.intakingAlgaeTimer.hasElapsed(ManipulatorConstants.INTAKE_ALGAE_TIMEOUT)) {
-          //transition to new state
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
 
@@ -427,6 +440,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         //set the indexer/roller motor to a negative volatge in order for the rollers to move the opp direction and eject the algae out of the manipulator
         subsystem.setIndexerMotorVoltage(ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE); 
+        scoreAlgaeButtonPressed = false;
         
       }
 
