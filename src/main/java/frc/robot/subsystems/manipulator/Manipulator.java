@@ -17,6 +17,7 @@ import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -52,9 +53,15 @@ public class Manipulator extends SubsystemBase {
   public final LoggedTunableNumber indexerCollectionVoltage =
       new LoggedTunableNumber(
           "Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-  public final LoggedTunableNumber indexerShootingVoltage =
+
+  public final LoggedTunableNumber level1And4ShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/ShootingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL);
+          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_MOTOR_VOLTAGE_L1_L4);
+
+  public final LoggedTunableNumber level2And3ShootingVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_MOTOR_VOLTAGE_L2_L3);
+
   public final LoggedTunableNumber indexerEjectingVoltage =
       new LoggedTunableNumber(
           "Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
@@ -298,10 +305,12 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.readyToScore = false;
 
-        subsystem.setIndexerMotorVoltage(
-            subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
-        // shooting coral should be different
-        // compared to intaking, etc
+        if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
+            || OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+          subsystem.setIndexerMotorVoltage(subsystem.level2And3ShootingVoltage.get());
+        } else {
+          subsystem.setIndexerMotorVoltage(subsystem.level1And4ShootingVoltage.get());
+        }
       }
 
       @Override
