@@ -330,8 +330,8 @@ public class AutonomousCommandFactory {
                     3.0)),
             Commands.sequence(
                 Commands.waitSeconds(0.5),
-                Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator)
-            )),
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoral, manipulator),

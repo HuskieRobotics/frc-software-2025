@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
+import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -150,8 +151,7 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
                     Commands.none(),
                     () ->
-                        Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
+                        Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
                             && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
                 Commands.runOnce(manipulator::shootCoral, manipulator),
                 Commands.waitUntil(() -> !manipulator.hasCoral()),
@@ -163,8 +163,7 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
                     Commands.none(),
                     () ->
-                        Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
+                        Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
                             && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
                 Commands.runOnce(manipulator::shootCoral, manipulator),
                 Commands.waitUntil(() -> !manipulator.hasCoral()),
@@ -172,7 +171,8 @@ public class CrossSubsystemsCommandsFactory {
             () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
         Commands.sequence(
             Commands.runOnce(manipulator::shootCoral, manipulator),
-            Commands.waitUntil(() -> !manipulator.hasCoral())),
+            Commands.waitUntil(() -> !manipulator.hasCoral()),
+            Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
         () ->
             !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
                 || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()));
