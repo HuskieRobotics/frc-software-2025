@@ -98,37 +98,12 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
     return Commands.either(
-        /* FIXME: make this commands.either not insufferable */
+        /* FIXME: fix the overly complex Commands.either() logic */
         Commands.either(
-            Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2)),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2)),
-                        Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
-                    Commands.runOnce(manipulator::shootCoralFast, manipulator),
-                    () ->
-                        Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
-                            && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.waitUntil(() -> !manipulator.hasCoral()),
-                Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
-            Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3)),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3)),
-                        Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
-                    Commands.runOnce(manipulator::shootCoralFast, manipulator),
-                    () ->
-                        Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
-                            && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.waitUntil(() -> !manipulator.hasCoral()),
-                Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
+            getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L2),
+            getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L3),
             () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
-        Commands.sequence(
-            Commands.runOnce(manipulator::shootCoralFast, manipulator),
-            Commands.waitUntil(() -> !manipulator.hasCoral()),
-            Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
+        getScoreCoralCloseCommand(manipulator, elevator),
         () ->
             !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
                 || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()));
@@ -145,6 +120,29 @@ public class CrossSubsystemsCommandsFactory {
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
+  }
+
+  private static Command getScoreOneCoralAwayCommand(
+      Manipulator manipulator, Elevator elevator, ReefBranch branch) {
+    return Commands.sequence(
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(branch)),
+                Commands.waitUntil(() -> elevator.isAtPosition(branch)),
+                Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
+            Commands.runOnce(manipulator::shootCoralFast, manipulator),
+            () ->
+                Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
+                    && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
+        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.runOnce(() -> elevator.setDistanceFromReef(20.0)));
+  }
+
+  private static Command getScoreCoralCloseCommand(Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
+        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.runOnce(() -> elevator.setDistanceFromReef(20.0)));
   }
 
   private static Command getPrepToScoreCommand(
