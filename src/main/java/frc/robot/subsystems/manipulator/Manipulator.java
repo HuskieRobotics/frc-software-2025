@@ -392,6 +392,7 @@ public class Manipulator extends SubsystemBase {
         // set voltage of indexer/roller motor to the speed while collecting algae
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE); //change the constant as we are no longer removing algae but are instead intaking algae
         subsystem.intakingAlgaeTimer.restart();
+        subsystem.currentInAmps.reset();
       }
 
       @Override
