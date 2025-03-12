@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.team6328.util.LoggedTracer;
-import frc.robot.Constants;
 import frc.robot.Field2d;
 import java.util.List;
 import java.util.TreeSet;
@@ -345,10 +344,10 @@ public abstract class LEDs extends SubsystemBase {
       this.requestState(States.ESTOPPED);
     }
 
-    // update for demo mode
-    if (Constants.DEMO_MODE && DriverStation.isDisabled()) {
-      this.requestState(States.DISABLED_DEMO_MODE);
-    }
+    // // update for demo mode
+    // if (Constants.DEMO_MODE && DriverStation.isDisabled()) {
+    //   this.requestState(States.DISABLED_DEMO_MODE);
+    // }
   }
 
   protected abstract void updateLEDs();
