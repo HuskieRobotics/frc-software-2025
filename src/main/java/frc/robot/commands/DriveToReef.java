@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
+import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
@@ -45,11 +46,17 @@ import org.littletonrobotics.junction.Logger;
  */
 public class DriveToReef extends Command {
   private final Drivetrain drivetrain;
-  private final Supplier<Pose2d> poseSupplier;
+  // change the pose supplier to no longer be final since we will change it if we stall on a coral
+  private Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
   private final Consumer<Double> distanceFromReef;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
+
+  // the oneCoralAway boolean will be set to true one time, when we transform the target pose to be
+  // one coral away
+  // this will make sure we never transform the target pose more than once
+  private boolean oneCoralAway = false;
 
   private double timeout;
 
@@ -176,7 +183,30 @@ public class DriveToReef extends Command {
 
     // add 0.25 to the reef relative x velocity to make sure we run into it
     reefRelativeVelocities =
-        new Translation2d(reefRelativeVelocities.getX() + 0.25, reefRelativeVelocities.getY());
+        new Translation2d(
+            reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST,
+            reefRelativeVelocities.getY());
+
+    // get our current x chassis speeds, transform to reef relative
+    // we need to get chassis speeds because the pid is requesting an unreliable x velocity to get
+    // to the pose, even though there is a coral there.
+    // if we are below 0.25m/s (which should be impossible given our pid +0.25 boost), then we are
+    // stalling on a coral
+    // set our new target pose to be our one coral away pose (coral diameter is 4.5in)
+    // this target pose needs to be set as a one-coral-away offset in the reef-relative x direction
+    // FIXME: check logs to see if we ever naturally go below a 0.25 x velocity in DTR (we
+    // shouldn't)
+    double reefRelativeXVelocity = drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond;
+    if (reefRelativeXVelocity < DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST
+        && !oneCoralAway) {
+      targetPose =
+          targetPose.transformBy(
+              new Transform2d(
+                  -DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE,
+                  0,
+                  Rotation2d.fromDegrees(0)));
+      oneCoralAway = true;
+    }
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
