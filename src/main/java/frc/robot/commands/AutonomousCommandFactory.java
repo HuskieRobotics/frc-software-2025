@@ -299,12 +299,12 @@ public class AutonomousCommandFactory {
 
   public Command getTwoCoralRightAutoCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    PathPlannerPath collectCoralAfterF2R;
+    PathPlannerPath collectCoralAfterE2R;
     PathPlannerPath scoreCoralD2R;
     PathPlannerPath collectCoralAfterD2R;
 
     try {
-      collectCoralAfterF2R = PathPlannerPath.fromPathFile("#2 Collect Coral After F 2R");
+      collectCoralAfterE2R = PathPlannerPath.fromPathFile("#2 Collect Coral After E 2R");
       scoreCoralD2R = PathPlannerPath.fromPathFile("#3 Score Coral D 2R");
       collectCoralAfterD2R = PathPlannerPath.fromPathFile("#4 Collect Coral After D 2R");
     } catch (Exception e) {
@@ -321,7 +321,7 @@ public class AutonomousCommandFactory {
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
                 new DriveToReef(
                     drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
+                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
                     manipulator::setReadyToScore,
                     elevator::setXFromReef,
                     elevator::setYFromReef,
@@ -342,7 +342,7 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
-        AutoBuilder.followPath(collectCoralAfterF2R),
+        AutoBuilder.followPath(collectCoralAfterE2R),
         getCollectCoralCommand(manipulator),
         Commands.parallel(
             AutoBuilder.followPath(scoreCoralD2R),
