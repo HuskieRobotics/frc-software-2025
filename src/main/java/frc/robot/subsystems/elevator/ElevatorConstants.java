@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 
@@ -115,6 +116,9 @@ public class ElevatorConstants {
 
   public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
+
+  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(2.0);
 
   public static final Distance ALGAE1_HEIGHT =
       Inches.of(13.0); // height under is 9 // height of impact is 13

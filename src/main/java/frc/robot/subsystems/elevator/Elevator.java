@@ -5,6 +5,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -29,7 +30,9 @@ public class Elevator extends SubsystemBase {
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
 
   // arbitrary high value
-  private double distanceFromReef = 100.0;
+  private double xFromReef = 100.0;
+  private double yFromReef = 100.0;
+  private Rotation2d thetaFromReef = Rotation2d.fromDegrees(180);
 
   private Alert hardStopAlert =
       new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
@@ -108,13 +111,12 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", xFromReef);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
     // FIXME: consider y to be on target as well
-    if (Math.abs(distanceFromReef) < FAR_SCORING_DISTANCE
-        && Math.abs(distanceFromReef) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE) {
+    if (canScoreFartherAway()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     }
 
@@ -234,12 +236,27 @@ public class Elevator extends SubsystemBase {
     goToPosition(getSelectedPosition());
   }
 
-  public void setDistanceFromReef(double distance) {
-    distanceFromReef = distance;
+  public boolean canScoreFartherAway() {
+    return Math.abs(xFromReef) < FAR_SCORING_DISTANCE
+        && Math.abs(xFromReef) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
+        && Math.abs(yFromReef) < FAR_SCORING_Y_TOLERANCE
+        && Math.abs(thetaFromReef.getDegrees()) < FAR_SCORING_THETA_TOLERANCE.getDegrees();
   }
 
-  public double getDistanceFromReef() {
-    return Math.abs(distanceFromReef);
+  public void setXFromReef(double distance) {
+    xFromReef = distance;
+  }
+
+  public void setYFromReef(double distance) {
+    yFromReef = distance;
+  }
+
+  public void setThetaFromReef(Rotation2d angle) {
+    thetaFromReef = angle;
+  }
+
+  public double getXFromReef() {
+    return Math.abs(xFromReef);
   }
 
   public boolean isAtSelectedPosition() {

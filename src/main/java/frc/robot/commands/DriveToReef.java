@@ -49,7 +49,9 @@ public class DriveToReef extends Command {
   // change the pose supplier to no longer be final since we will change it if we stall on a coral
   private Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
-  private final Consumer<Double> distanceFromReef;
+  private final Consumer<Double> xFromReef;
+  private final Consumer<Double> yFromReef;
+  private final Consumer<Rotation2d> thetaFromReef;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
@@ -102,13 +104,17 @@ public class DriveToReef extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
-      Consumer<Double> distanceFromReef,
+      Consumer<Double> xFromReef,
+      Consumer<Double> yFromReef,
+      Consumer<Rotation2d> thetaFromReef,
       Transform2d tolerance,
       double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
     this.onTarget = onTargetConsumer;
-    this.distanceFromReef = distanceFromReef;
+    this.xFromReef = xFromReef;
+    this.yFromReef = yFromReef;
+    this.thetaFromReef = thetaFromReef;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
     this.timeout = timeout;
@@ -264,7 +270,9 @@ public class DriveToReef extends Command {
     Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
     Logger.recordOutput("DriveToReef/difference (reef frame)", reefRelativeDifference);
 
-    distanceFromReef.accept(reefRelativeDifference.getX());
+    xFromReef.accept(reefRelativeDifference.getX());
+    yFromReef.accept(reefRelativeDifference.getY());
+    thetaFromReef.accept(reefRelativeDifference.getRotation());
 
     boolean atGoal =
         Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()

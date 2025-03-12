@@ -47,7 +47,9 @@ public class CrossSubsystemsCommandsFactory {
                                     drivetrain,
                                     () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                                     manipulator::setReadyToRemoveAlgae,
-                                    elevator::setDistanceFromReef,
+                                    elevator::setXFromReef,
+                                    elevator::setYFromReef,
+                                    elevator::setThetaFromReef,
                                     new Transform2d(
                                         DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                                         DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
@@ -132,17 +134,17 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
             Commands.runOnce(manipulator::shootCoralFast, manipulator),
             () ->
-                Math.abs(elevator.getDistanceFromReef()) > MIN_FAR_SCORING_DISTANCE
-                    && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
+                Math.abs(elevator.getXFromReef()) > MIN_FAR_SCORING_DISTANCE
+                    && Math.abs(elevator.getXFromReef()) < FAR_SCORING_DISTANCE),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
-        Commands.runOnce(() -> elevator.setDistanceFromReef(20.0)));
+        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
   }
 
   private static Command getScoreCoralCloseCommand(Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
-        Commands.runOnce(() -> elevator.setDistanceFromReef(20.0)));
+        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
   }
 
   private static Command getPrepToScoreCommand(
@@ -160,7 +162,9 @@ public class CrossSubsystemsCommandsFactory {
                         drivetrain,
                         () -> Field2d.getInstance().getNearestBranch(side),
                         manipulator::setReadyToScore,
-                        elevator::setDistanceFromReef,
+                        elevator::setXFromReef,
+                        elevator::setYFromReef,
+                        elevator::setThetaFromReef,
                         new Transform2d(
                             DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                             DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
