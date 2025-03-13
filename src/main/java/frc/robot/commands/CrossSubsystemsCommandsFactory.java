@@ -29,7 +29,7 @@ public class CrossSubsystemsCommandsFactory {
       Elevator elevator,
       Manipulator manipulator,
       Vision vision) {
-    oi.getScoreCoralButton()
+    oi.getScoreButton()
         .onTrue(
             Commands.either(
                     getScoreL1Command(manipulator, elevator),
@@ -72,11 +72,6 @@ public class CrossSubsystemsCommandsFactory {
                                 OISelector.getOperatorInterface()::getRotate))),
                     () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
                 .withName("score coral"));
-
-    oi.getDescoreAlgaeAfterAutoButton()
-        .onTrue(
-            AutonomousCommandFactory.getInstance()
-                .getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator));
 
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
@@ -128,7 +123,7 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
 
-    oi.getDriveToPoseOverrideButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
+    oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {

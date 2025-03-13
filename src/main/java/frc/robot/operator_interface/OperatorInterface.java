@@ -77,31 +77,25 @@ public interface OperatorInterface {
 
   // drivetrain, game-specific
 
-  public default Trigger getDeployIntakeButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getExtendClimberButton() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getExtendCageCatcherButton() {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getPrepToScoreButton() {
+    return new Trigger(() -> false);
+  }
+
+  // DEPRECATE ONCE ALL-INCLUSIVE PREP TO SCORE IS MADE
   public default Trigger getPrepToScoreCoralLeftButton() {
     return new Trigger(() -> false);
   }
 
+  // DEPRECATE ONCE ALL-INCLUSIVE PREP TO SCORE IS MADE
   public default Trigger getPrepToScoreCoralRightButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getScoreCoralButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getScoreAlgaeButton() {
+  public default Trigger getScoreButton() {
     return new Trigger(() -> false);
   }
 
@@ -213,11 +207,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getDriveToPoseOverrideButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getDescoreAlgaeAfterAutoButton() {
+  public default Trigger getOverrideDriveToPoseButton() {
     return new Trigger(() -> false);
   }
 

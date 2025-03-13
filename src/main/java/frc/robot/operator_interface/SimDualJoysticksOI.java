@@ -69,7 +69,7 @@ public class SimDualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getScoreCoralButton() {
+  public Trigger getScoreButton() {
     return rotateJoystickButtons[3];
   }
 }

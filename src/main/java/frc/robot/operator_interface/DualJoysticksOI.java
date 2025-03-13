@@ -43,33 +43,23 @@ public class DualJoysticksOI extends OperatorDashboard {
   // Translation Joystick
 
   @Override
-  public Trigger getRaiseElevatorSlowButton() {
+  public Trigger getPrepToScoreButton() {
     return translateJoystickButtons[1];
   }
 
   @Override
   public Trigger getPrepToScoreCoralLeftButton() {
-    return translateJoystickButtons[2];
-  }
-
-  @Override
-  public Trigger getExtendClimberButton() {
-    return translateJoystickButtons[3];
+    return null;
   }
 
   @Override
   public Trigger getExtendCageCatcherButton() {
-    return translateJoystickButtons[4];
+    return translateJoystickButtons[3];
   }
 
   @Override
   public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
-  }
-
-  @Override
-  public Trigger getDescoreAlgaeAfterAutoButton() {
-    return translateJoystickButtons[6];
   }
 
   @Override
@@ -80,6 +70,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[9];
+  }
+
+  @Override
+  public Trigger getRaiseElevatorSlowButton() {
+    return translateJoystickButtons[10];
   }
 
   @Override
@@ -95,13 +90,13 @@ public class DualJoysticksOI extends OperatorDashboard {
 
   // Rotation Joystick
   @Override
-  public Trigger getScoreCoralButton() {
+  public Trigger getScoreButton() {
     return rotateJoystickButtons[1];
   }
 
   @Override
   public Trigger getPrepToScoreCoralRightButton() {
-    return rotateJoystickButtons[2];
+    return null;
   }
 
   @Override
@@ -110,7 +105,7 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToPoseOverrideButton() {
+  public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
 
