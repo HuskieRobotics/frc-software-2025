@@ -3,47 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.354610655737705,
-        "y": 7.23171106557377
+        "x": 3.7042008196721308,
+        "y": 5.025973360655737
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9781870238246717,
-        "y": 6.191124543534678
+        "x": 2.6821554015797435,
+        "y": 5.9646858352601
       },
       "isLocked": false,
-      "linkedName": "Collect Coral"
+      "linkedName": "At Branch L"
     },
     {
       "anchor": {
-        "x": 2.8570708471449957,
-        "y": 4.142111814317793
+        "x": 1.354610655737705,
+        "y": 7.23171106557377
       },
       "prevControl": {
-        "x": 2.3696816189050467,
-        "y": 5.156064377940547
+        "x": 2.473891781169803,
+        "y": 6.213354763686912
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Near Branch A"
+      "linkedName": "Collect Coral"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "Raise Elevator",
-      "waypointRelativePos": 0.5,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "Raise Elevator"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -53,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 1.332
-  },
-  "reversed": false,
-  "folder": "2 Piece Blue Left",
-  "idealStartingState": {
     "velocity": 0,
     "rotation": -53.13010235415599
+  },
+  "reversed": false,
+  "folder": "3 Piece Left",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": -57.99499999999999
   },
   "useDefaultConstraints": true
 }

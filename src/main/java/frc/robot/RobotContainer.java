@@ -471,7 +471,9 @@ public class RobotContainer {
     // less than 6
     // but outside of our normal tolerance, turn yellow until we are within tolerance
 
-    if (manipulator.isReadyToScore()) {
+    if (elevator.canScoreFartherAway()) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
+    } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
     }
   }

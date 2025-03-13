@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
+import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -46,7 +47,9 @@ public class CrossSubsystemsCommandsFactory {
                                     drivetrain,
                                     () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
                                     manipulator::setReadyToRemoveAlgae,
-                                    elevator::setDistanceFromReef,
+                                    elevator::setXFromReef,
+                                    elevator::setYFromReef,
+                                    elevator::setThetaFromReef,
                                     new Transform2d(
                                         DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                                         DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
@@ -81,49 +84,13 @@ public class CrossSubsystemsCommandsFactory {
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
         .onTrue(
-            Commands.sequence(
-                    Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.parallel(
-                        Commands.sequence(
-                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToReef(
-                                drivetrain,
-                                () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                                manipulator::setReadyToScore,
-                                elevator::setDistanceFromReef,
-                                new Transform2d(
-                                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                    Rotation2d.fromDegrees(
-                                        DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                5.0),
-                            Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
+            getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT)
                 .withName("drive to nearest left branch"));
 
     // drive to right branch of nearest reef face
     oi.getPrepToScoreCoralRightButton()
         .onTrue(
-            Commands.sequence(
-                    Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.parallel(
-                        Commands.sequence(
-                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToReef(
-                                drivetrain,
-                                () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                                manipulator::setReadyToScore,
-                                elevator::setDistanceFromReef,
-                                new Transform2d(
-                                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                    Rotation2d.fromDegrees(
-                                        DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                3.0),
-                            Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
+            getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT)
                 .withName("drive to nearest right branch"));
 
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
@@ -133,38 +100,12 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
     return Commands.either(
-        /* FIXME: make this commands.either not insufferable */
+        /* FIXME: fix the overly complex Commands.either() logic */
         Commands.either(
-            Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2), elevator),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
-                    Commands.none(),
-                    () ->
-                        Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
-                            && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.runOnce(manipulator::shootCoral, manipulator),
-                Commands.waitUntil(() -> !manipulator.hasCoral()),
-                Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
-            Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3), elevator),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
-                    Commands.none(),
-                    () ->
-                        Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
-                            && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.runOnce(manipulator::shootCoral, manipulator),
-                Commands.waitUntil(() -> !manipulator.hasCoral()),
-                Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
+            getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L2),
+            getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L3),
             () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
-        Commands.sequence(
-            Commands.runOnce(manipulator::shootCoral, manipulator),
-            Commands.waitUntil(() -> !manipulator.hasCoral())),
+        getScoreCoralCloseCommand(manipulator, elevator),
         () ->
             !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
                 || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()));
@@ -174,7 +115,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1), elevator),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
-        Commands.runOnce(manipulator::shootCoral, manipulator),
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitSeconds(0.25),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1), elevator),
@@ -183,9 +124,57 @@ public class CrossSubsystemsCommandsFactory {
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
 
-  // interrupt all commands by running a command that requires every subsystem. This is used to
-  // recover to a known state if the robot becomes "stuck" in a command.
-  // "run all wheels backwards and bring elevator and carriage back to initial configuration"
+  private static Command getScoreOneCoralAwayCommand(
+      Manipulator manipulator, Elevator elevator, ReefBranch branch) {
+    return Commands.sequence(
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(branch)),
+                Commands.waitUntil(() -> elevator.isAtPosition(branch)),
+                Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
+            Commands.runOnce(manipulator::shootCoralFast, manipulator),
+            () ->
+                Math.abs(elevator.getXFromReef()) > MIN_FAR_SCORING_DISTANCE
+                    && Math.abs(elevator.getXFromReef()) < FAR_SCORING_DISTANCE),
+        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
+  }
+
+  private static Command getScoreCoralCloseCommand(Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
+        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
+  }
+
+  private static Command getPrepToScoreCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision, Side side) {
+    return Commands.sequence(
+        Commands.waitUntil(manipulator::hasIndexedCoral),
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.L1)),
+                Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.L1))),
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToReef(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestBranch(side),
+                        manipulator::setReadyToScore,
+                        elevator::setXFromReef,
+                        elevator::setYFromReef,
+                        elevator::setThetaFromReef,
+                        new Transform2d(
+                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                            Rotation2d.fromDegrees(
+                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                        3.0),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+            () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
+  }
 
   /*
    * 1. Shoot coral
@@ -202,7 +191,7 @@ public class CrossSubsystemsCommandsFactory {
       Manipulator manipulator, Elevator elevator, Drivetrain drivetrain, OperatorInterface oi) {
     return Commands.parallel(
             Commands.sequence(
-                Commands.runOnce(manipulator::shootCoral, manipulator),
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
                 Commands.runOnce(manipulator::resetStateMachine, manipulator)),
