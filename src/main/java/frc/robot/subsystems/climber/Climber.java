@@ -34,13 +34,9 @@ public class Climber extends SubsystemBase {
     LoggedTracer.record("Climber");
   }
 
-  public void extend() {
-    this.extendingCageCatcher = false;
-    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
-  }
-
   public void extendCageCatcher() {
     this.extendingCageCatcher = true;
+    io.openServo();
     io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
@@ -59,6 +55,7 @@ public class Climber extends SubsystemBase {
 
   public void stop() {
     retractingSlow = false;
+    io.closeServo();
     io.setVoltage(0);
   }
 
