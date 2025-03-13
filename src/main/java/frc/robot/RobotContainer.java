@@ -451,6 +451,21 @@ public class RobotContainer {
                 .withName("disable vision"));
   }
 
+  private void configureCheckFaultsCommand() {
+    // enable/disable check faults
+
+    // TBD below
+    oi.getEnableCheckFaultsTrigger()
+        .onTrue(
+            Commands.runOnce(() -> vision.enable(true))
+                .ignoringDisable(true)
+                .withName("enable vision"));
+    oi.getEnableCheckFaultsTrigger()
+        .onFalse(
+            Commands.runOnce(() -> vision.enable(false))
+                .ignoringDisable(true)
+                .withName("disable vision"));
+  }
   /**
    * Check if the alliance color has changed; if so, update the vision subsystem and Field2d
    * singleton.
