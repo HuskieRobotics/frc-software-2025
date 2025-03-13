@@ -178,7 +178,15 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // Add sim for pivot motor
     pivotMotorSim =
       new ArmSystemSim(
-
+        pivotMotor,
+        PIVOT_MOTOR_INVERTED,
+        GEAR_RATIO_PIVOT,
+        MANIPULATOR_LENGTH,
+        MANIPULATOR_MASS,
+        0.0,
+        90.0,
+        0.0,
+        SUBSYSTEM_NAME
       );
 
     funnelVoltageRequest = new VoltageOut(0.0);

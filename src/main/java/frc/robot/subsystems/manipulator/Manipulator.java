@@ -2,15 +2,7 @@ package frc.robot.subsystems.manipulator;
 
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL;
-import static frc.robot.subsystems.manipulator.ManipulatorConstants.SUBSYSTEM_NAME;
+import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import org.littletonrobotics.junction.Logger;
 
@@ -73,7 +65,7 @@ public class Manipulator extends SubsystemBase {
           INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
   public final LoggedTunableNumber indexerRemovingAlgaeVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
+          "Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE);
   public final LoggedTunableNumber funnelCollectionVoltage =
       new LoggedTunableNumber(
           "Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
@@ -113,6 +105,7 @@ public class Manipulator extends SubsystemBase {
 
   private boolean readyToScore = false;
   private boolean algaeHasBeenScored = false;
+  private boolean algaeInManipulator = false;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -209,6 +202,8 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
         } else if (subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
+        } else if (subsystem.intakeAlgaeButtonPressed){
+          subsystem.setState(State.WAITING_FOR_ALGAE_IN_MANIPULATOR);
         }
       }
 
@@ -390,7 +385,6 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         // set voltage of indexer/roller motor to the speed while collecting algae
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE); //change the constant as we are no longer removing algae but are instead intaking algae
         subsystem.intakingAlgaeTimer.restart();
         subsystem.currentInAmps.reset();
       }
@@ -410,6 +404,8 @@ public class Manipulator extends SubsystemBase {
       void onExit(Manipulator subsystem) {
         //set the boolean that controls if algae intake button has been pressed to false
         subsystem.intakeAlgaeButtonPressed = false;
+        subsystem.setPivotPosition(ManipulatorConstants.PIVOT_MOTOR_STARTING_POS);
+        subsystem.setIndexerMotorVoltage(0);
       }
       
     },
@@ -425,23 +421,28 @@ public class Manipulator extends SubsystemBase {
       @Override
       void execute(Manipulator subsystem) {
         //check if the shootAlgae button has been pressed, if so then switch to the SHOOT_ALGAE state
-        if (scoreAlgaeButtonPressed){
-          subsystem.setState(State.SHOOT_ALGAE);
+        if (subsystem.scoreAlgaeButtonPressed){
+          subsystem.setState(State.SHOOT_ALGAE_IN_BARGE);
         }
+        if (!subsystem.inputs.isAlgaeIRBlocked){
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
+
       }
 
       @Override
       void onExit(Manipulator subsystem) {
         //set the shootAlgae button boolean to false
-
+        subsystem.setPivotPosition(ManipulatorConstants.PIVOT_MOTOR_STARTING_POS);
+        subsystem.setIndexerMotorVoltage(0);
       }
     },
-    SHOOT_ALGAE { //state robot is in while algae is being shot out of the manipulator
+    SHOOT_ALGAE_IN_BARGE { //state robot is in while algae is being shot out of the manipulator
       @Override
       void onEnter(Manipulator subsystem) {
         //set the indexer/roller motor to a negative volatge in order for the rollers to move the opp direction and eject the algae out of the manipulator
-        subsystem.setIndexerMotorVoltage(ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE); 
-        scoreAlgaeButtonPressed = false;
+        subsystem.setIndexerMotorVoltage(ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE); 
+        subsystem.scoreAlgaeButtonPressed = false;
         
       }
 
@@ -457,9 +458,30 @@ public class Manipulator extends SubsystemBase {
       void onExit(Manipulator subsystem) {
         //set the voltage of the indexer/roller motor to 0
         subsystem.setIndexerMotorVoltage(0);
+        subsystem.setPivotPosition(ManipulatorConstants.PIVOT_MOTOR_STARTING_POS);
       }
 
 
+    },
+    SHOOT_ALGAE_IN_PROCESSOR {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setIndexerMotorVoltage(ManipulatorConstants.INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR); 
+        subsystem.scoreAlgaeButtonPressed = false;
+      }
+
+      @Override
+      void execute(Manipulator subsystem) {
+        if (!subsystem.inputs.isAlgaeIRBlocked){ //add something to determine which state to switch to
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        subsystem.setIndexerMotorVoltage(0);
+        subsystem.setPivotPosition(ManipulatorConstants.PIVOT_MOTOR_STARTING_POS);
+      }
     },
     
     UNINITIALIZED {
@@ -468,6 +490,7 @@ public class Manipulator extends SubsystemBase {
         subsystem.setFunnelMotorVoltage(0);
         subsystem.setIndexerMotorVoltage(0);
         subsystem.setPivotMotorVoltage(0);
+        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS); //do we need this
       }
 
     }
@@ -570,14 +593,6 @@ public class Manipulator extends SubsystemBase {
     io.setPivotMotorVoltage(volts);
   } 
 
-  public void setPivotMotorCurrent(double current) {
-    io.setPivotMotorCurrent(current);
-  }
-
-  public void setPivotMotorVelocity(double velocity){
-    io.setPivotMotorVelocity(velocity);
-  }
-  
   public void setPivotPosition(Angle angle) {
     io.setPivotPosition(angle);
   }
@@ -633,9 +648,9 @@ public class Manipulator extends SubsystemBase {
     scoreAlgaeButtonPressed = true;
   }
 
-  public void algaeHasBeenScored() {
-    algaeScored = true;
-  }
+  // public void algaeHasBeenScored() {
+  //   algaeHasBeenScored = true;
+  // }
 
   public boolean hasCoral() {
     return inputs.isIndexerIRBlocked;
@@ -662,4 +677,17 @@ public class Manipulator extends SubsystemBase {
   public boolean isReadyToScore() {
     return readyToScore;
   }
+
+  public void intakeAlgaeButton() {
+    intakeAlgaeButtonPressed = true;
+  }
+
+  public boolean isPivotAtPosition(Angle reference) {
+    // abs of actual-ref <tolerance
+    return Math.abs(inputs.pivotMotorAngleDeg - reference) < PIVOT_POSITION_TOLERANCE;
+  } 
+
+  // public void hasIndexedAlgae() {
+  //   algaeInManipulator = true;
+  // }
 }
