@@ -374,6 +374,7 @@ public class AutonomousCommandFactory {
             AutoBuilder.followPath(scoreCoralK), Commands.waitUntil(manipulator::hasIndexedCoral)),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
         AutoBuilder.followPath(collectCoralAfterK),
+        getCollectCoralCommand(manipulator),
         new DriveToReef(
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
@@ -410,6 +411,7 @@ public class AutonomousCommandFactory {
             AutoBuilder.followPath(scoreCoralC), Commands.waitUntil(manipulator::hasIndexedCoral)),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
         AutoBuilder.followPath(collectCoralAfterC),
+        getCollectCoralCommand(manipulator),
         new DriveToReef(
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),

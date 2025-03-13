@@ -57,7 +57,7 @@ public class DriveToReef extends Command {
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
-  private Debouncer xDebouncer = new Debouncer(0.1);
+  private Debouncer xDebouncer = new Debouncer(0.2);
 
   // the oneCoralAway boolean will be set to true one time, when we transform the target pose to be
   // one coral away
@@ -220,7 +220,7 @@ public class DriveToReef extends Command {
             Math.abs(
                     Math.abs(reefRelativeXDifference)
                         - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
-                < Units.inchesToMeters(1.0))
+                < Units.inchesToMeters(0.5))
         && !oneCoralAway) {
       targetPose =
           targetPose.transformBy(
