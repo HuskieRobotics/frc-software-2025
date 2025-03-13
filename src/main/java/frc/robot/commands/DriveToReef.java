@@ -12,10 +12,12 @@ package frc.robot.commands;
 import static frc.robot.Constants.*;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,6 +56,8 @@ public class DriveToReef extends Command {
   private final Consumer<Rotation2d> thetaFromReef;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
+
+  private Debouncer xDebouncer = new Debouncer(0.1);
 
   // the oneCoralAway boolean will be set to true one time, when we transform the target pose to be
   // one coral away
@@ -134,9 +138,10 @@ public class DriveToReef extends Command {
     // Reset all controllers
     this.targetPose = poseSupplier.get();
 
+    oneCoralAway = false;
+
     drivetrain.enableAccelerationLimiting();
 
-    Logger.recordOutput("DriveToReef/targetPose", targetPose);
     Logger.recordOutput("DriveToReef/isFinished", false);
     Logger.recordOutput("DriveToReef/withinTolerance", false);
 
@@ -150,6 +155,7 @@ public class DriveToReef extends Command {
    */
   @Override
   public void execute() {
+
     LEDs.getInstance().requestState(LEDs.States.AUTO_DRIVING_TO_SCORE);
 
     // Update from tunable numbers
@@ -187,11 +193,19 @@ public class DriveToReef extends Command {
     var reefRelativeVelocities =
         new Translation2d(xVelocity, yVelocity).rotateBy(targetPose.getRotation().unaryMinus());
 
+    Logger.recordOutput("DriveToReef/one coral away", oneCoralAway);
+
     // add 0.25 to the reef relative x velocity to make sure we run into it
-    reefRelativeVelocities =
-        new Translation2d(
-            reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST,
-            reefRelativeVelocities.getY());
+    if (oneCoralAway) {
+      reefRelativeVelocities =
+          new Translation2d(reefRelativeVelocities.getX(), reefRelativeVelocities.getY());
+    } else {
+      reefRelativeVelocities =
+          new Translation2d(
+              reefRelativeVelocities.getX()
+                  + DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST,
+              reefRelativeVelocities.getY());
+    }
 
     // get our current x chassis speeds, transform to reef relative
     // we need to get chassis speeds because the pid is requesting an unreliable x velocity to get
@@ -200,10 +214,13 @@ public class DriveToReef extends Command {
     // stalling on a coral
     // set our new target pose to be our one coral away pose (coral diameter is 4.5in)
     // this target pose needs to be set as a one-coral-away offset in the reef-relative x direction
-    // FIXME: check logs to see if we ever naturally go below a 0.25 x velocity in DTR (we
     // shouldn't)
-    double reefRelativeXVelocity = drivetrain.getRobotRelativeSpeeds().vxMetersPerSecond;
-    if (reefRelativeXVelocity < DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST
+    double reefRelativeXDifference = reefRelativeDifference.getX();
+    if (xDebouncer.calculate(
+            Math.abs(
+                    Math.abs(reefRelativeXDifference)
+                        - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
+                < Units.inchesToMeters(1.0))
         && !oneCoralAway) {
       targetPose =
           targetPose.transformBy(
@@ -214,14 +231,16 @@ public class DriveToReef extends Command {
       oneCoralAway = true;
     }
 
-    if (Math.abs(reefRelativeDifference.getX()) < 0.0762) {
+    Logger.recordOutput("DriveToReef/targetPose", targetPose);
+
+    if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
       if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
                 reefRelativeVelocities.getX(),
                 reefRelativeVelocities.getY() - closeVelocityBoost.get());
-      } else if (reefRelativeDifference.getY() < 0) {
+      } else if (reefRelativeDifference.getY() < 0 && !oneCoralAway) {
         reefRelativeVelocities =
             new Translation2d(
                 reefRelativeVelocities.getX(),
@@ -270,7 +289,13 @@ public class DriveToReef extends Command {
     Transform2d reefRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
     Logger.recordOutput("DriveToReef/difference (reef frame)", reefRelativeDifference);
 
-    xFromReef.accept(reefRelativeDifference.getX());
+    if (oneCoralAway) {
+      xFromReef.accept(
+          reefRelativeDifference.getX()
+              + DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE);
+    } else {
+      xFromReef.accept(reefRelativeDifference.getX());
+    }
     yFromReef.accept(reefRelativeDifference.getY());
     thetaFromReef.accept(reefRelativeDifference.getRotation());
 

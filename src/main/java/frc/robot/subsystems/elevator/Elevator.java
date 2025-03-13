@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
-import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -114,11 +113,6 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", xFromReef);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
-
-    // FIXME: consider y to be on target as well
-    if (canScoreFartherAway()) {
-      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
-    }
 
     if (testingMode.get() == 1) {
 
