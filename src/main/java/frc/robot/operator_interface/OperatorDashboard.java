@@ -21,12 +21,16 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean level4 =
       new LoggedTunableBoolean("operatorDashboard/Level 4 ", true, true);
 
+  private final LoggedTunableBoolean[] levels = {level1, level2, level3, level4};
+
   private final LoggedTunableBoolean algaeBarge =
       new LoggedTunableBoolean("operatorDashboard/Barge", false, true);
   private final LoggedTunableBoolean algaeProcessor =
       new LoggedTunableBoolean("operatorDashboard/Processor", false, true);
   private final LoggedTunableBoolean algaeDrop =
       new LoggedTunableBoolean("operatorDashboard/Drop", false, true);
+
+  private final LoggedTunableBoolean[] algaes = {algaeBarge, algaeProcessor, algaeDrop};
 
   private final LoggedTunableBoolean reefBranchA =
       new LoggedTunableBoolean("operatorDashboard/A", false, true);
@@ -72,75 +76,14 @@ public class OperatorDashboard implements OperatorInterface {
 
     // The controls to select reef branch levels must be mutually exclusive; if one is selected
     // (true), the others must be set to false.
-    getLevel1Trigger()
-        .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      level2.set(false);
-                      level3.set(false);
-                      level4.set(false);
-                    })
-                .ignoringDisable(true));
+    getLevel1Trigger().onTrue(getToggleLevel(level1));
+    getLevel2Trigger().onTrue(getToggleLevel(level2));
+    getLevel3Trigger().onTrue(getToggleLevel(level3));
+    getLevel4Trigger().onTrue(getToggleLevel(level4));
 
-    getLevel2Trigger()
-        .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      level1.set(false);
-                      level3.set(false);
-                      level4.set(false);
-                    })
-                .ignoringDisable(true));
-
-    getLevel3Trigger()
-        .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      level1.set(false);
-                      level2.set(false);
-                      level4.set(false);
-                    })
-                .ignoringDisable(true));
-
-    getLevel4Trigger()
-        .onTrue(
-            Commands.runOnce(
-                    () -> {
-                      level1.set(false);
-                      level2.set(false);
-                      level3.set(false);
-                    })
-                .ignoringDisable(true));
-
-    getAlgaeBargeTrigger()
-        .onTrue(
-            Commands.sequence(
-                    Commands.runOnce(
-                        () -> {
-                          algaeProcessor.set(false);
-                          algaeDrop.set(false);
-                        }))
-                .ignoringDisable(true));
-
-    getAlgaeDropTrigger()
-        .onTrue(
-            Commands.sequence(
-                    Commands.runOnce(
-                        () -> {
-                          algaeProcessor.set(false);
-                          algaeBarge.set(false);
-                        }))
-                .ignoringDisable(true));
-
-    getAlgaeProcessorTrigger()
-        .onTrue(
-            Commands.sequence(
-                    Commands.runOnce(
-                        () -> {
-                          algaeBarge.set(false);
-                          algaeDrop.set(false);
-                        }))
-                .ignoringDisable(true));
+    getAlgaeBargeTrigger().onTrue(getToggleAlgae(algaeBarge));
+    getAlgaeProcessorTrigger().onTrue(getToggleAlgae(algaeProcessor));
+    getAlgaeDropTrigger().onTrue(getToggleAlgae(algaeDrop));
 
     getReefBranchATrigger().onTrue(getToggleReefBranch(reefBranchA));
     getReefBranchBTrigger().onTrue(getToggleReefBranch(reefBranchB));
@@ -267,6 +210,30 @@ public class OperatorDashboard implements OperatorInterface {
               for (LoggedTunableBoolean branch : reefBranches) {
                 if (branch != selectedReefBranch) {
                   branch.set(false);
+                }
+              }
+            })
+        .ignoringDisable(true);
+  }
+
+  private Command getToggleLevel(LoggedTunableBoolean selectedLevel) {
+    return Commands.runOnce(
+            () -> {
+              for (LoggedTunableBoolean level : levels) {
+                if (level != selectedLevel) {
+                  level.set(false);
+                }
+              }
+            })
+        .ignoringDisable(true);
+  }
+
+  private Command getToggleAlgae(LoggedTunableBoolean selectedAlgae) {
+    return Commands.runOnce(
+            () -> {
+              for (LoggedTunableBoolean algae : algaes) {
+                if (algae != selectedAlgae) {
+                  algae.set(false);
                 }
               }
             })
