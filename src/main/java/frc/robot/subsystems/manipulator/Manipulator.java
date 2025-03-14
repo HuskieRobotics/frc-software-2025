@@ -1,5 +1,6 @@
 package frc.robot.subsystems.manipulator;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
@@ -682,9 +683,13 @@ public class Manipulator extends SubsystemBase {
     intakeAlgaeButtonPressed = true;
   }
 
+  public Angle getPivotAngle(){
+    return Degrees.of(inputs.pivotMotorAngleDeg);
+  }
+
   public boolean isPivotAtPosition(Angle reference) {
-    // abs of actual-ref <tolerance
-    return Math.abs(inputs.pivotMotorAngleDeg - reference) < PIVOT_POSITION_TOLERANCE;
+    
+    return getPivotAngle().minus(reference).abs(Degrees) < PIVOT_POSITION_TOLERANCE.in(Degrees);
   } 
 
   // public void hasIndexedAlgae() {
