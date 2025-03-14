@@ -32,10 +32,10 @@ public class ManipulatorConstants {
 
   public static final int INDEXER_IR_BACKUP_SENSOR_ID = 1;
 
-  public static final int PIVOT_MOTOR_ID = 57; //TBD -- created for pivot motor
+  public static final int PIVOT_MOTOR_ID = 57; // TBD -- created for pivot motor
 
-  public static final int ALGAE_IR_SENSOR_ID = 4; //new algae ir sensor --> id tbd
-  
+  public static final int ALGAE_IR_SENSOR_ID = 4; // new algae ir sensor --> id tbd
+
   public static final int ALGAE_IR_BACKUP_SENSOR_ID = 5;
 
   // not sure what this is???
@@ -43,11 +43,11 @@ public class ManipulatorConstants {
 
   public static final double GEAR_RATIO_MANIPULATOR = 1.0;
 
-  public static final double GEAR_RATIO_PIVOT = 0; //new for pivot motor
+  public static final double GEAR_RATIO_PIVOT = 0; // new for pivot motor
 
-  public static final double MANIPULATOR_LENGTH = 5.0; //FIXME: update for sim
+  public static final double MANIPULATOR_LENGTH = 5.0; // FIXME: update for sim
 
-  public static final double MANIPULATOR_MASS = 0.0; //FIXME: update for sim
+  public static final double MANIPULATOR_MASS = 0.0; // FIXME: update for sim
 
   // tunable PID constants for both motors -- ALL ARE TBD
   public static final double FUNNEL_MOTOR_KP = 0;
@@ -64,7 +64,7 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_KV = 0.05;
   public static final double INDEXER_MOTOR_KA = 0.01;
 
-  //pid values for pivot motor -- ALL TBD
+  // pid values for pivot motor -- ALL TBD
   public static final double PIVOT_MOTOR_KP = 0;
   public static final double PIVOT_MOTOR_KI = 0;
   public static final double PIVOT_MOTOR_KD = 0;
@@ -81,10 +81,13 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL = 4.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE = 0.0; //new constant for indexer motor when holding algae\
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE = -1.0; //FIXME:update value
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR = -1.0; //FIXME:update value
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE = 0.0; //FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE =
+      0.0; // new constant for indexer motor when holding algae\
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE =
+      -1.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR =
+      -1.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE = 0.0; // FIXME:update value
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
@@ -101,20 +104,18 @@ public class ManipulatorConstants {
 
   public static final double FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; // tbd
 
-   // this will be the set value to which the indexer motor velocity should be when removing
+  // this will be the set value to which the indexer motor velocity should be when removing
   // algae
-
-   
 
   public static final double FUNNEL_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
-  //new setpoints for pivot motor for algae claw -- ALL TBD
+  // new setpoints for pivot motor for algae claw -- ALL TBD
   public static final Angle PIVOT_MOTOR_STARTING_POS = Degrees.of(90);
-  public static final Angle PIVOT_MOTOR_AT_REEF_POS =  Degrees.of(0);
-  public static final Angle PIVOT_MOTOR_SCORING_IN_PROCESSOR =  Degrees.of(0);
-  public static final Angle PIVOT_MOTOR_SCORING_IN_BARGE =  Degrees.of(0);
+  public static final Angle PIVOT_MOTOR_AT_REEF_POS = Degrees.of(0);
+  public static final Angle PIVOT_MOTOR_SCORING_IN_PROCESSOR = Degrees.of(0);
+  public static final Angle PIVOT_MOTOR_SCORING_IN_BARGE = Degrees.of(0);
 
   // used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;
@@ -126,20 +127,18 @@ public class ManipulatorConstants {
 
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
-  public static final double INTAKE_ALGAE_TIMEOUT = 3.0; //FIXME:update value
+  public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME:update value
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
-  public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40; //tbd for new pivot motor
+  public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40; // tbd for new pivot motor
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
 
-  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; //FIXME:update value
+  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME:update value
 
-
-  public static final Angle PIVOT_POSITION_TOLERANCE = Degrees.of(0.0); //FIXME:update value
-
+  public static final Angle PIVOT_POSITION_TOLERANCE = Degrees.of(0.0); // FIXME:update value
 }
