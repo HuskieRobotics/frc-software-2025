@@ -16,7 +16,7 @@ import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 
@@ -80,7 +80,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             Commands.either(
                     getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
-                    getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision),
+                    getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
                     manipulator::hasCoral)
                 .withName("prep to score"));
 
@@ -104,8 +104,8 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
     return Commands.either(
         Commands.either(
-            getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L2),
-            getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L3),
+            getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L2),
+            getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L3),
             () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
         getScoreCoralCloseCommand(manipulator, elevator),
         () ->
@@ -115,19 +115,19 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1), elevator),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L1), elevator),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L1)),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitSeconds(0.25),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1), elevator),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.ABOVE_L1), elevator),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.ABOVE_L1)),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
   private static Command getScoreOneCoralAwayCommand(
-      Manipulator manipulator, Elevator elevator, ReefBranch branch) {
+      Manipulator manipulator, Elevator elevator, ScoringHeight branch) {
     return Commands.sequence(
         Commands.either(
             Commands.sequence(
@@ -155,8 +155,8 @@ public class CrossSubsystemsCommandsFactory {
         Commands.waitUntil(manipulator::hasIndexedCoral),
         Commands.either(
             Commands.sequence(
-                Commands.runOnce(() -> elevator.goToPosition(ReefBranch.L1)),
-                Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.L1))),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L1)),
+                Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
             Commands.parallel(
                 Commands.sequence(
                     Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
@@ -195,7 +195,8 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.runOnce(manipulator::shootCoralFast, manipulator),
                 Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP),
+                    elevator),
                 Commands.runOnce(manipulator::resetStateMachine, manipulator)),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
         .withName("interrupt all");
@@ -236,19 +237,45 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getPrepAlgaeCommand(
-      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Elevator elevator,
+      Vision vision,
+      OperatorInterface oi) {
     return Commands.either(
-        getPrepToScoreAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        getPrepToScoreAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
         getPrepToCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
         manipulator::hasAlgae);
   }
 
   private static Command getPrepToScoreAlgaeCommand(
-      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Elevator elevator,
+      Vision vision,
+      OperatorInterface oi) {
     if (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()) {
-      return Commands.none();
+      return Commands.parallel(
+          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE)),
+          new DriveToBarge(
+              drivetrain,
+              () -> Field2d.getInstance().getBargePose(),
+              manipulator::setReadyToScore,
+              manipulator::shotAlgae,
+              oi::getTranslateY));
     } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
-      return Commands.none();
+      return Commands.parallel(
+          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR)),
+          new DriveToProcessor(
+              drivetrain,
+              () -> Field2d.getInstance().getNearestProcessor(),
+              manipulator::setReadyToScore,
+              new Transform2d(
+                  DrivetrainConstants.DRIVE_TO_PROCESSOR_X_TOLERANCE,
+                  DrivetrainConstants.DRIVE_TO_PROCESSOR_Y_TOLERANCE,
+                  Rotation2d.fromDegrees(
+                      DrivetrainConstants.DRIVE_TO_PROCESSOR_THETA_TOLERANCE_DEG)),
+              3.0));
     }
 
     return Commands.none();
@@ -256,6 +283,20 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getPrepToCollectAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
-    return Commands.none();
+    return Commands.parallel(
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.LOW_ALGAE), elevator),
+        new DriveToReef(
+            drivetrain,
+            () -> Field2d.getInstance().getNearestAlgae(),
+            manipulator::setReadyToScore,
+            elevator::setXFromReef,
+            elevator::setYFromReef,
+            elevator::setThetaFromReef,
+            new Transform2d(
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+            3.0));
   }
 }

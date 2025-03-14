@@ -384,6 +384,11 @@ public class Field2d {
     return null;
   }
 
+  // FIXME: implement
+  public Pose2d getNearestAlgae() {
+    return null;
+  }
+
   public Pose2d getBargePose() {
     // x arbitrary from 20 inches x from the middle cage
     return new Pose2d(

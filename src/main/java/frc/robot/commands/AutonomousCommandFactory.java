@@ -24,7 +24,7 @@ import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -84,7 +84,7 @@ public class AutonomousCommandFactory {
         Commands.sequence(
             Commands.print("Raising Elevator"),
             Commands.waitUntil(manipulator::hasIndexedCoral),
-            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4))));
+            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4))));
 
     /************ Two Piece Left ************
      *
@@ -280,13 +280,13 @@ public class AutonomousCommandFactory {
             Commands.sequence(
                 Commands.waitSeconds(0.5),
                 Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator),
         AutoBuilder.followPath(collectCoralAfterJ2L),
         getCollectCoralCommand(manipulator),
         Commands.parallel(
@@ -335,13 +335,13 @@ public class AutonomousCommandFactory {
             Commands.sequence(
                 Commands.waitSeconds(0.5),
                 Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator))),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator),
         AutoBuilder.followPath(collectCoralAfterE2R),
         getCollectCoralCommand(manipulator),
         Commands.parallel(
@@ -440,7 +440,7 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
         getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator),
         AutoBuilder.followPath(backUpH1C));
@@ -452,7 +452,7 @@ public class AutonomousCommandFactory {
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
         Commands.parallel(
             Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ReefBranch.L4), elevator),
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
             new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
@@ -465,13 +465,13 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 1.6),
-            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4))),
+            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4))),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
         Commands.waitSeconds(0.2), // ADD WAIT TO SEE IF NOT WAITING WAS IMPEDING PRECISION
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
   public Command getDescoreAlgaeCommand(
@@ -479,9 +479,9 @@ public class AutonomousCommandFactory {
     return Commands.parallel(
         Commands.runOnce(manipulator::removeAlgae),
         Commands.sequence(
-            Commands.runOnce(() -> elevator.goToPosition(ReefBranch.BELOW_ALGAE_1), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_ALGAE_1), elevator),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-            Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.BELOW_ALGAE_1)),
+            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_ALGAE_1)),
             new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
@@ -494,9 +494,9 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 0.5),
-            Commands.runOnce(() -> elevator.goToPosition(ReefBranch.ABOVE_ALGAE_1), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.ABOVE_ALGAE_1), elevator),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-            Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.ABOVE_ALGAE_1)),
+            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.ABOVE_ALGAE_1)),
             Commands.waitSeconds(0.5),
             Commands.runOnce(manipulator::algaeIsRemoved)));
   }

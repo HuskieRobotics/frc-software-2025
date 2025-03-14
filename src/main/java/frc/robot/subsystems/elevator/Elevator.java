@@ -20,13 +20,13 @@ import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.operator_interface.OISelector;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
   private ElevatorIO elevatorIO;
-  private ReefBranch targetPosition = ReefBranch.HARDSTOP;
+  private ScoringHeight targetPosition = ScoringHeight.HARDSTOP;
 
   // arbitrary high value
   private double xFromReef = 100.0;
@@ -127,7 +127,7 @@ public class Elevator extends SubsystemBase {
     LoggedTracer.record("Elevator");
   }
 
-  private Distance reefBranchToDistance(ReefBranch reefBranch) {
+  private Distance reefBranchToDistance(ScoringHeight reefBranch) {
 
     Distance height;
 
@@ -160,11 +160,11 @@ public class Elevator extends SubsystemBase {
         height = L4_HEIGHT;
         break;
 
-      case ALGAE_1:
+      case LOW_ALGAE:
         height = ALGAE1_HEIGHT;
         break;
 
-      case ALGAE_2:
+      case HIGH_ALGAE:
         height = ALGAE2_HEIGHT;
         break;
 
@@ -195,7 +195,7 @@ public class Elevator extends SubsystemBase {
     return height;
   }
 
-  public boolean isAtPosition(ReefBranch reefBranch) {
+  public boolean isAtPosition(ScoringHeight reefBranch) {
 
     return getPosition().minus(reefBranchToDistance(reefBranch)).abs(Inches) < TOLERANCE_INCHES;
   }
@@ -205,7 +205,7 @@ public class Elevator extends SubsystemBase {
     return null;
   }
 
-  public void goToPosition(ReefBranch reefBranch) {
+  public void goToPosition(ScoringHeight reefBranch) {
     targetPosition = reefBranch;
     elevatorIO.setPosition(reefBranchToDistance(reefBranch));
   }
@@ -214,15 +214,15 @@ public class Elevator extends SubsystemBase {
     return Inches.of(inputs.positionInches);
   }
 
-  private ReefBranch getSelectedPosition() {
+  private ScoringHeight getSelectedPosition() {
     if (OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()) {
-      return ReefBranch.L4;
+      return ScoringHeight.L4;
     } else if (OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
-      return ReefBranch.L3;
+      return ScoringHeight.L3;
     } else if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()) {
-      return ReefBranch.L2;
+      return ScoringHeight.L2;
     } else {
-      return ReefBranch.L1;
+      return ScoringHeight.L1;
     }
   }
 
@@ -257,51 +257,51 @@ public class Elevator extends SubsystemBase {
     return isAtPosition(getSelectedPosition());
   }
 
-  private ReefBranch getSelectedAlgaePosition() {
+  private ScoringHeight getSelectedAlgaePosition() {
     if (OISelector.getOperatorInterface().getRemoveLowAlgaeTrigger().getAsBoolean()) {
-      return ReefBranch.ALGAE_1;
+      return ScoringHeight.LOW_ALGAE;
     } else if (OISelector.getOperatorInterface().getRemoveHighAlgaeTrigger().getAsBoolean()) {
-      return ReefBranch.ALGAE_2;
+      return ScoringHeight.HIGH_ALGAE;
     } else {
-      return ReefBranch.HARDSTOP;
+      return ScoringHeight.HARDSTOP;
     }
   }
 
   public boolean isAlgaePositionSelected() {
-    return getSelectedAlgaePosition() != ReefBranch.HARDSTOP;
+    return getSelectedAlgaePosition() != ScoringHeight.HARDSTOP;
   }
 
   public void goBelowSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      goToPosition(ReefBranch.BELOW_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      goToPosition(ReefBranch.BELOW_ALGAE_2);
+    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
+      goToPosition(ScoringHeight.BELOW_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
+      goToPosition(ScoringHeight.BELOW_ALGAE_2);
     }
   }
 
   public void goAboveSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      goToPosition(ReefBranch.ABOVE_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      goToPosition(ReefBranch.ABOVE_ALGAE_2);
+    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
+      goToPosition(ScoringHeight.ABOVE_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
+      goToPosition(ScoringHeight.ABOVE_ALGAE_2);
     }
   }
 
   public boolean isBelowSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      return isAtPosition(ReefBranch.BELOW_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      return isAtPosition(ReefBranch.BELOW_ALGAE_2);
+    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
+      return isAtPosition(ScoringHeight.BELOW_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
+      return isAtPosition(ScoringHeight.BELOW_ALGAE_2);
     } else {
       return true;
     }
   }
 
   public boolean isAboveSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      return isAtPosition(ReefBranch.ABOVE_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      return isAtPosition(ReefBranch.ABOVE_ALGAE_2);
+    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
+      return isAtPosition(ScoringHeight.ABOVE_ALGAE_1);
+    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
+      return isAtPosition(ScoringHeight.ABOVE_ALGAE_2);
     } else {
       return true;
     }
@@ -325,7 +325,7 @@ public class Elevator extends SubsystemBase {
 
   public Command getElevatorLowerAndResetCommand() {
     return Commands.sequence(
-        Commands.runOnce(() -> goToPosition(ReefBranch.HARDSTOP)),
+        Commands.runOnce(() -> goToPosition(ScoringHeight.HARDSTOP)),
         Commands.waitUntil(
             () -> getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE)),

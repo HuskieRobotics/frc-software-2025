@@ -78,7 +78,7 @@ public class ElevatorConstants {
 
   public static final double STALL_CURRENT = 40.0;
 
-  public enum ReefBranch {
+  public enum ScoringHeight {
     HARDSTOP,
 
     L1,
@@ -90,14 +90,17 @@ public class ElevatorConstants {
     MAX_L2,
     MAX_L3,
 
-    ALGAE_1,
+    LOW_ALGAE,
     ALGAE_2,
 
     BELOW_ALGAE_1,
     ABOVE_ALGAE_1,
 
     BELOW_ALGAE_2,
-    ABOVE_ALGAE_2
+    ABOVE_ALGAE_2,
+
+    BARGE,
+    PROCESSOR
   }
 
   /*
@@ -107,12 +110,15 @@ public class ElevatorConstants {
   public static final Distance L1_HEIGHT = Inches.of(15.0);
   public static final Distance ABOVE_L1_HEIGHT = Inches.of(25.0);
 
-  public static final Distance L2_HEIGHT = Inches.of(30); // 1 coral away 35
-  public static final Distance FAR_L2_HEIGHT = Inches.of(36); // tune
+  public static final Distance L2_HEIGHT = Inches.of(30);
+  public static final Distance FAR_L2_HEIGHT = Inches.of(36);
 
-  public static final Distance L3_HEIGHT = Inches.of(45); // 1 coral away 51
-  public static final Distance FAR_L3_HEIGHT = Inches.of(51); // tune
+  public static final Distance L3_HEIGHT = Inches.of(45);
+  public static final Distance FAR_L3_HEIGHT = Inches.of(51);
   public static final Distance L4_HEIGHT = Inches.of(71);
+
+  public static final Distance BARGE_HEIGHT = Inches.of(70); // FIXME: tune
+  public static final Distance PROCESSOR_HEIGHT = Inches.of(10); // FIXME: tune
 
   public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
