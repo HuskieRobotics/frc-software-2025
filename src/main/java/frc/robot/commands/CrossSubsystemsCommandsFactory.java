@@ -238,6 +238,25 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getPrepAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
-    return null;
+    return Commands.either(
+        getPrepToScoreAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        getPrepToCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        manipulator::hasAlgae);
+  }
+
+  private static Command getPrepToScoreAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    if (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()) {
+      return Commands.none();
+    } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
+      return Commands.none();
+    }
+
+    return Commands.none();
+  }
+
+  private static Command getPrepToCollectAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.none();
   }
 }

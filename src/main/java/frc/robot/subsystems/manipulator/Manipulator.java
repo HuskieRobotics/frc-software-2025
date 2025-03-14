@@ -531,6 +531,11 @@ public class Manipulator extends SubsystemBase {
     return inputs.isIndexerIRBlocked;
   }
 
+  // FIXME: implement when algae manipulator code gets pulled in
+  public boolean hasAlgae() {
+    return true;
+  }
+
   public boolean indexingCoral() {
     return state == State.INDEXING_CORAL_IN_MANIPULATOR;
   }
