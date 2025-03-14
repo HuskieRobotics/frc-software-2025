@@ -96,15 +96,6 @@ public class CrossSubsystemsCommandsFactory {
             getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT)
                 .withName("drive to nearest right branch"));
 
-    oi.getDriveToBargeButton()
-        .onTrue(
-            new DriveToBarge(
-                drivetrain,
-                () -> Field2d.getInstance().getBargePose(),
-                manipulator::setReadyToScore,
-                manipulator::shotAlgae,
-                oi::getTranslateY));
-
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
@@ -112,7 +103,6 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
     return Commands.either(
-        /* FIXME: fix the overly complex Commands.either() logic */
         Commands.either(
             getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L2),
             getScoreOneCoralAwayCommand(manipulator, elevator, ReefBranch.MAX_L3),
