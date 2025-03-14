@@ -3,6 +3,7 @@ package frc.robot.commands;
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
 import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -283,20 +284,30 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getPrepToCollectAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    List<Object> nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    Pose2d nearestAlgaePose = (Pose2d) nearestAlgae.get(0);
+    boolean isHighAlgae = ((Boolean) nearestAlgae.get(1));
+    // if the nearest is high or low then decide our elevator position
+
     return Commands.parallel(
-        Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.LOW_ALGAE), elevator),
-        new DriveToReef(
-            drivetrain,
-            () -> Field2d.getInstance().getNearestAlgae(),
-            manipulator::setReadyToScore,
-            elevator::setXFromReef,
-            elevator::setYFromReef,
-            elevator::setThetaFromReef,
-            new Transform2d(
-                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-            3.0));
+        Commands.either(
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE)),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE)),
+            () -> isHighAlgae),
+        Commands.sequence(
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+            new DriveToReef(
+                drivetrain,
+                () -> nearestAlgaePose,
+                manipulator::setReadyToScore,
+                elevator::setXFromReef,
+                elevator::setYFromReef,
+                elevator::setThetaFromReef,
+                new Transform2d(
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                3.0),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))));
   }
 }

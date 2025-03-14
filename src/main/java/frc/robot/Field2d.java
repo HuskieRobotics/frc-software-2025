@@ -384,12 +384,29 @@ public class Field2d {
     return null;
   }
 
-  public Pose2d getNearestAlgae() {
+  public List<Object> getNearestAlgae() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    boolean isHighAlgae = false;
 
+    // high: A/B , E/F, I/J
+    // low: C/D, G/H, K/L
     Pose2d nearestCenterFace = pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+    if (nearestCenterFace == FieldConstants.Reef.centerFaces[0]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[2]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[4]) {
+      // high algae
+      isHighAlgae = true;
+    } else if (nearestCenterFace == FieldConstants.Reef.centerFaces[1]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[3]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[5]) {
+      // low algae
+      isHighAlgae = false;
+    }
 
-    return removeAlgaePoses.get(nearestCenterFace);
+    List<Object> nearestAlgae = new ArrayList<>();
+    nearestAlgae.add(removeAlgaePoses.get(nearestCenterFace));
+    nearestAlgae.add(isHighAlgae);
+    return nearestAlgae;
   }
 
   public Pose2d getBargePose() {

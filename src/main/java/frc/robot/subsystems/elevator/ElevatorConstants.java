@@ -91,7 +91,7 @@ public class ElevatorConstants {
     MAX_L3,
 
     LOW_ALGAE,
-    ALGAE_2,
+    HIGH_ALGAE,
 
     BELOW_ALGAE_1,
     ABOVE_ALGAE_1,
