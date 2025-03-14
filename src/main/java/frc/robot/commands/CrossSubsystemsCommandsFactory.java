@@ -3,7 +3,6 @@ package frc.robot.commands;
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
 import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -77,14 +76,13 @@ public class CrossSubsystemsCommandsFactory {
                     () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
                 .withName("score coral"));
 
-
-    oi.getPrepToScoreButton().onTrue(
-        Commands.either(
-            getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
-            getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision),
-            manipulator::hasCoral
-        ).withName("prep to score")
-    );
+    oi.getPrepToScoreButton()
+        .onTrue(
+            Commands.either(
+                    getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                    getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision),
+                    manipulator::hasCoral)
+                .withName("prep to score"));
 
     // drive to left branch of nearest reef face
     oi.getPrepToScoreCoralLeftButton()
@@ -213,31 +211,33 @@ public class CrossSubsystemsCommandsFactory {
   // go to selected reef spot or don't move (depending on sign of x difference)
   // this logic will get handled in drivetoreef
   // red flash for a second if we can't move
-  private static Command getPrepCoralCommand(Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+  private static Command getPrepCoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
         Commands.sequence(
-                    Commands.waitUntil(manipulator::hasIndexedCoral),
-                    Commands.parallel(
-                        Commands.sequence(
-                            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                            new DriveToReef(
-                                drivetrain,
-                                () -> Field2d.getInstance().getSelectedBranch(),
-                                manipulator::setReadyToScore,
-                                elevator::setDistanceFromReef,
-                                new Transform2d(
-                                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                    Rotation2d.fromDegrees(
-                                        DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                5.0),
-                            Commands.runOnce(
-                                () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                        Commands.runOnce(elevator::goToSelectedPosition, elevator)))
-    );
+            Commands.waitUntil(manipulator::hasIndexedCoral),
+            Commands.parallel(
+                Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToReef(
+                        drivetrain,
+                        () -> Field2d.getInstance().getSelectedBranch(),
+                        manipulator::setReadyToScore,
+                        elevator::setXFromReef,
+                        elevator::setYFromReef,
+                        elevator::setThetaFromReef,
+                        new Transform2d(
+                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                            Rotation2d.fromDegrees(
+                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                        5.0),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                Commands.runOnce(elevator::goToSelectedPosition, elevator))));
   }
 
-  private static Command getPrepAlgaeCommand(Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+  private static Command getPrepAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return null;
   }
 }
