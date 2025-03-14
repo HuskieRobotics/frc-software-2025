@@ -384,9 +384,12 @@ public class Field2d {
     return null;
   }
 
-  // FIXME: implement
   public Pose2d getNearestAlgae() {
-    return null;
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    Pose2d nearestCenterFace = pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+
+    return removeAlgaePoses.get(nearestCenterFace);
   }
 
   public Pose2d getBargePose() {
