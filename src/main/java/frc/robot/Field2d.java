@@ -359,6 +359,23 @@ public class Field2d {
         Rotation2d.fromDegrees(0.0));
   }
 
+  public Pose2d getNearestProcessor() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    Pose2d[] processors = new Pose2d[2];
+    processors[0] = FieldConstants.Processor.centerFace;
+    processors[1] = FlippingUtil.flipFieldPose(processors[0]);
+
+    Pose2d nearestProcessor = pose.nearest(Arrays.asList(processors));
+    nearestProcessor.transformBy(
+        new Transform2d(
+            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+            0,
+            Rotation2d.fromDegrees(180)));
+
+    return nearestProcessor;
+  }
+
   /*
    * These methods are for manually populating reef branch pose maps based on the measured robot pose in the correct scoring position.
    */

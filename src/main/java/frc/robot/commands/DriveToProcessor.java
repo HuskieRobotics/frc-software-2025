@@ -89,6 +89,7 @@ public class DriveToProcessor extends Command {
 
   /*
    * This command should be customized for driving to the processor. Should be similar a normal DriveToPose
+   * This will drive to the nearest processor
    */
   public DriveToProcessor(
       Drivetrain drivetrain,
@@ -120,9 +121,9 @@ public class DriveToProcessor extends Command {
 
     drivetrain.enableAccelerationLimiting();
 
-    Logger.recordOutput("DriveToPose/targetPose", targetPose);
-    Logger.recordOutput("DriveToPose/isFinished", false);
-    Logger.recordOutput("DriveToPose/withinTolerance", false);
+    Logger.recordOutput("DriveToProcessor/targetPose", targetPose);
+    Logger.recordOutput("DriveToProcessor/isFinished", false);
+    Logger.recordOutput("DriveToProcessor/withinTolerance", false);
 
     this.timer.restart();
   }
@@ -163,8 +164,8 @@ public class DriveToProcessor extends Command {
         thetaController.calculate(
             currentPose.getRotation().getRadians(), this.targetPose.getRotation().getRadians());
 
-    Logger.recordOutput("DriveToPose/x velocity (field relative)", xVelocity);
-    Logger.recordOutput("DriveToPose/y velocity (field relative)", yVelocity);
+    Logger.recordOutput("DriveToProcessor/x velocity (field relative)", xVelocity);
+    Logger.recordOutput("DriveToProcessor/y velocity (field relative)", yVelocity);
 
     int allianceMultiplier = Field2d.getInstance().getAlliance() == Alliance.Blue ? 1 : -1;
 
@@ -190,10 +191,10 @@ public class DriveToProcessor extends Command {
                 drivetrain.getPose().getRotation().getRadians()
                     - targetPose.getRotation().getRadians()));
 
-    Logger.recordOutput("DriveToPose/difference", difference);
+    Logger.recordOutput("DriveToProcessor/difference", difference);
 
     Transform2d robotRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
-    Logger.recordOutput("DriveToPose/difference (robot relative)", robotRelativeDifference);
+    Logger.recordOutput("DriveToProcessor/difference (robot relative)", robotRelativeDifference);
 
     boolean atGoal =
         Math.abs(robotRelativeDifference.getX()) < targetTolerance.getX()
@@ -203,7 +204,7 @@ public class DriveToProcessor extends Command {
 
     if (atGoal) {
       onTarget.accept(true);
-      Logger.recordOutput("DriveToPose/withinTolerance", true);
+      Logger.recordOutput("DriveToProcessor/withinTolerance", true);
     } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout)) {
       onTarget.accept(false);
     }
@@ -222,6 +223,6 @@ public class DriveToProcessor extends Command {
   public void end(boolean interrupted) {
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
-    Logger.recordOutput("DriveToPose/isFinished", true);
+    Logger.recordOutput("DriveToProcessor/isFinished", true);
   }
 }
