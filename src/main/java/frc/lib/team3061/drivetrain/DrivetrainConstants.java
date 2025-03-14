@@ -18,6 +18,11 @@ public class DrivetrainConstants {
   public static final double DRIVE_TO_REEF_X_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_Y_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_THETA_TOLERANCE_DEG = 2.0;
+  public static final double DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST = 0.25;
+
+  // the diameter of a coral is 4.5 inches, but setting it to exactly that would likely result in us
+  // stalling again
+  public static final double DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE = Units.inchesToMeters(4.5);
 
   public static final double DEMO_MODE_MAX_VELOCITY = 0.5;
 
