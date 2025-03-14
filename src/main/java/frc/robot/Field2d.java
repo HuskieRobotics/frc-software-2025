@@ -18,6 +18,10 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.FieldConstants;
+import frc.lib.team6328.util.LoggedTunableBoolean;
+import frc.robot.operator_interface.OISelector;
+import frc.robot.operator_interface.OperatorDashboard;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -350,6 +354,37 @@ public class Field2d {
     }
 
     return bumpersOnReefAlignedToBranch;
+  }
+
+  // FIXME: consolidate this in operator dashboard if possible?
+  public Pose2d getSelectedBranch() {
+    if (OISelector.getOperatorInterface().getReefBranchATrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[0]);
+    } else if (OISelector.getOperatorInterface().getReefBranchBTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[0]);
+    } else if (OISelector.getOperatorInterface().getReefBranchCTrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[5]);
+    } else if (OISelector.getOperatorInterface().getReefBranchDTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[5]);
+    } else if (OISelector.getOperatorInterface().getReefBranchETrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[4]);
+    } else if (OISelector.getOperatorInterface().getReefBranchFTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[4]);
+    } else if (OISelector.getOperatorInterface().getReefBranchGTrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[3]);
+    } else if (OISelector.getOperatorInterface().getReefBranchHTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[3]);
+    } else if (OISelector.getOperatorInterface().getReefBranchITrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[2]);
+    } else if (OISelector.getOperatorInterface().getReefBranchJTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[2]);
+    } else if (OISelector.getOperatorInterface().getReefBranchKTrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[1]);
+    } else if (OISelector.getOperatorInterface().getReefBranchLTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[1]);
+    }
+
+    return null;
   }
 
   /*
