@@ -8,7 +8,7 @@ public class ClimberConstants {
   public static final double CLIMBER_STATOR_CURRENT_LIMIT = 60.0;
   public static final double CLIMBER_PEAK_CURRENT_LIMIT = 60.0;
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 2.0;
-  public static final double GEAR_RATIO = 225.0;
+  public static final double GEAR_RATIO = 25.0;
 
   // change extend + reset voltage constants later
   public static final double EXTEND_VOLTAGE = 12.0;

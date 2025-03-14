@@ -14,11 +14,16 @@ public interface ClimberIO {
     double tempCelsius = 0.0;
     double positionRotations = 0.0;
     double positionInches = 0.0;
+    double servoPosition = 0.0;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}
 
   public default void setVoltage(double voltage) {}
+
+  public default void openServo() {}
+
+  public default void closeServo() {}
 
   public default void zeroPosition() {}
   // determined hardware methods
