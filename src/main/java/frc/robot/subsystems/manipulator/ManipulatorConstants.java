@@ -82,8 +82,8 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE = 0.0; //new constant for indexer motor when holding algae\
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_IN_BARGE = -1.0; //FIXME:update value
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_IN_PROCESSOR = -1.0; //FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE = -1.0; //FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR = -1.0; //FIXME:update value
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE = 0.0; //FIXME:update value
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
