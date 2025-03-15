@@ -391,8 +391,9 @@ public class Field2d {
       return rightReefPoses.get(FieldConstants.Reef.centerFaces[1]);
     }
 
-    // default pose to not break the code if the method fails
-    return FieldConstants.Reef.centerFaces[0];
+    // go to the nearest center face if nothing is selected
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    return pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
   }
 
   public AlgaePosition getNearestAlgae() {
