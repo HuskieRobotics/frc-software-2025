@@ -39,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.DrivetrainConstants.SysIDCharacterizationMode;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.CustomPoseEstimator;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.util.SysIdRoutineChooser;
@@ -979,6 +980,31 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> this.drive(0, 0, 0, true, false), this))
         .withName(SUBSYSTEM_NAME + "SystemCheck");
+  }
+
+  public boolean isTilted() {
+    boolean isTilted =
+        Math.abs(this.inputs.drivetrain.rollDeg) > TILT_THRESHOLD_DEG
+            || Math.abs(this.inputs.drivetrain.pitchDeg) > TILT_THRESHOLD_DEG;
+    if (isTilted) {
+      LEDs.getInstance().requestState(LEDs.States.UNTILTING_ROBOT);
+    }
+
+    return isTilted;
+  }
+
+  public void untilt() {
+    double roll = Units.degreesToRadians(this.inputs.drivetrain.rollDeg);
+    double pitch = Units.degreesToRadians(this.inputs.drivetrain.pitchDeg);
+
+    double gravityX = (9.8 * Math.cos(pitch) * Math.cos(roll) * Math.sin(pitch) * Math.cos(pitch));
+    double gravityY = (-9.8 * Math.cos(pitch) * Math.cos(roll) * Math.sin(roll));
+
+    double heading = Math.atan2(gravityY, gravityX);
+    double xVelocity = Math.cos(heading) * UNTILT_VELOCITY_MPS;
+    double yVelocity = Math.sin(heading) * UNTILT_VELOCITY_MPS;
+
+    this.drive(xVelocity, yVelocity, 0.0, false, false);
   }
 
   // method to convert swerve module number to location

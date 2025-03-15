@@ -120,6 +120,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getCurrentPoseButton() {
+    return rotateJoystickButtons[6];
+  }
+
+  @Override
   public Trigger getRetractClimberSlowButton() {
     return rotateJoystickButtons[10];
   }

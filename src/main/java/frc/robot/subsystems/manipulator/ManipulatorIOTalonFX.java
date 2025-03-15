@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -16,6 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -29,6 +29,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ArmSystemSim;
 import frc.lib.team3061.sim.VelocitySystemSim;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.operator_interface.OISelector;
 
 /** TalonFX implementation of the generic SubsystemIO */
@@ -60,8 +61,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
-
-  private Alert refreshAlert = new Alert("Failed to refresh all signals.", AlertType.kError);
 
   private final LoggedTunableNumber funnelKp =
       new LoggedTunableNumber("Manipulator/Funnel/kP", FUNNEL_MOTOR_KP);
@@ -146,6 +145,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private StatusSignal<Angle> pivotMotorAngle; // angle for pivot motor (of type angle)
 
+  private final Debouncer funnelConnectedDebouncer = new Debouncer(0.5);
+  private final Debouncer indexerConnectedDebouncer = new Debouncer(0.5);
+
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
 
@@ -224,6 +226,21 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     pivotMotorAngle = pivotMotor.getPosition(); // get the position of the pivot motor
 
+    Phoenix6Util.registerSignals(
+        true,
+        funnelMotorVelocity,
+        funnelMotorVoltage,
+        funnelMotorStatorCurrent,
+        funnelMotorTemp,
+        funnelMotorSupplyCurrent);
+    Phoenix6Util.registerSignals(
+        false,
+        indexerMotorVelocity,
+        indexerMotorVoltage,
+        indexerMotorStatorCurrent,
+        indexerMotorTemp,
+        indexerMotorSupplyCurrent);
+
     configFunnelMotor(funnelMotor);
     configIndexerMotor(indexerMotor);
     configPivotMotor(pivotMotor); // configure pivot motor by calling congfigPivotMotor method
@@ -237,25 +254,22 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void updateInputs(ManipulatorIOInputs inputs) {
 
-    // refresh all status signal objects for funnel motor
-    StatusCode status =
-        BaseStatusSignal.refreshAll(
-            funnelMotorVelocity,
-            funnelMotorStatorCurrent,
-            funnelMotorTemp,
-            funnelMotorSupplyCurrent,
-            funnelMotorVoltage);
-    Phoenix6Util.checkError(status, "Failed to refresh funnel motor signals.", refreshAlert);
-
-    // refresh all status signal objects for indexer motor
-    status =
-        BaseStatusSignal.refreshAll(
-            indexerMotorVelocity,
-            indexerMotorStatorCurrent,
-            indexerMotorTemp,
-            indexerMotorSupplyCurrent,
-            indexerMotorVoltage);
-    Phoenix6Util.checkError(status, "Failed to refresh indexer motor signals.", refreshAlert);
+    inputs.funnelConnected =
+        funnelConnectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                funnelMotorVelocity,
+                funnelMotorVoltage,
+                funnelMotorStatorCurrent,
+                funnelMotorTemp,
+                funnelMotorSupplyCurrent));
+    inputs.indexerConnected =
+        indexerConnectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                indexerMotorVelocity,
+                indexerMotorVoltage,
+                indexerMotorStatorCurrent,
+                indexerMotorTemp,
+                indexerMotorSupplyCurrent));
 
     // refresh all status signal objects for pivot motor
     status =
@@ -282,13 +296,19 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.indexerSupplyCurrentAmps = indexerMotorSupplyCurrent.getValueAsDouble();
     inputs.pivotSupplyCurrentAmps = pivotMotorSupplyCurrent.getValueAsDouble();
 
-    inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
-    inputs.indexerClosedLoopErrorRPS = indexerMotor.getClosedLoopError().getValueAsDouble();
-    inputs.pivotClosedLoopErrorRot = pivotMotor.getClosedLoopError().getValueAsDouble();
+    // Getting the signal from the TalonFX is more time consuming than having the signal already
+    // available. However, if we attempt to get the signal earlier, it won't be bound to the correct
+    // control type. So, we only take the hit when tuning which is when this information is needed
+    // more.
+    if (Constants.TUNING_MODE) {
+      inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
+      inputs.indexerClosedLoopErrorRPS = indexerMotor.getClosedLoopError().getValueAsDouble();
+      inputs.pivotClosedLoopErrorRot = pivotMotor.getClosedLoopError().getValueAsDouble();
 
-    inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
-    inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
-    inputs.pivotReferencePositionRot = pivotMotor.getClosedLoopReference().getValueAsDouble();
+      inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
+      inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
+      inputs.pivotReferencePositionRot = pivotMotor.getClosedLoopReference().getValueAsDouble();
+    }
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();

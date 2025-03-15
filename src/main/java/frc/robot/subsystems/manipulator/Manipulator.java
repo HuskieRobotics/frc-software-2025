@@ -18,6 +18,7 @@ import frc.lib.team3061.leds.LEDs.States;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.operator_interface.OISelector;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -53,9 +54,15 @@ public class Manipulator extends SubsystemBase {
   public final LoggedTunableNumber indexerCollectionVoltage =
       new LoggedTunableNumber(
           "Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
-  public final LoggedTunableNumber indexerShootingVoltage =
+
+  public final LoggedTunableNumber fastShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/ShootingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL);
+          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_VOLTAGE_SHOOT_FAST);
+
+  public final LoggedTunableNumber slowShootingVoltage =
+      new LoggedTunableNumber(
+          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_VOLTAGE_SHOOT_SLOW);
+
   public final LoggedTunableNumber indexerEjectingVoltage =
       new LoggedTunableNumber(
           "Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
@@ -111,6 +118,8 @@ public class Manipulator extends SubsystemBase {
   private boolean algaeHasBeenScored = false;
   private boolean algaeInManipulator = false;
   private boolean shotAlgae = false;
+
+  private boolean shootingFast = false;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -318,10 +327,16 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.readyToScore = false;
 
-        subsystem.setIndexerMotorVoltage(
-            subsystem.indexerShootingVoltage.get()); // speed of indexer motor velocity while
-        // shooting coral should be different
-        // compared to intaking, etc
+        if (subsystem.shootingFast) {
+          if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
+              || OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+            subsystem.setIndexerMotorVoltage(subsystem.slowShootingVoltage.get());
+          } else {
+            subsystem.setIndexerMotorVoltage(subsystem.fastShootingVoltage.get());
+          }
+        } else {
+          subsystem.setIndexerMotorVoltage(subsystem.fastShootingVoltage.get());
+        }
       }
 
       @Override
@@ -496,8 +511,6 @@ public class Manipulator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/State", this.state);
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/scoreThroughManipulatorPressed", shootCoralButtonPressed);
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/scoreThroughFunnelPressed", scoreCoralThroughFunnelButtonPressed);
     currentInAmps.calculate(inputs.indexerStatorCurrentAmps);
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if
@@ -622,13 +635,18 @@ public class Manipulator extends SubsystemBase {
         .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
   }
 
-  // method to shoot coral which assigns coral  button pressed to true
-  public void shootCoral() {
+  private void shootCoral() {
     shootCoralButtonPressed = true;
   }
 
-  public void scoreCoralThroughFunnel() {
-    scoreCoralThroughFunnelButtonPressed = true;
+  public void shootCoralFast() {
+    shootingFast = true;
+    shootCoral();
+  }
+
+  public void shootCoralSlow() {
+    shootingFast = false;
+    shootCoral();
   }
 
   // method to score algae which assigns the score algae button pressed to true

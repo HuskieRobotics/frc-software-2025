@@ -68,12 +68,14 @@ public abstract class LEDs extends SubsystemBase {
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
+    UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
 
     EJECTING_CORAL(
         (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),
     REMOVING_ALGAE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     SCORING_CORAL((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
     READY_TO_SCORE((leds, section) -> leds.solid(section, Color.kGreen)),
+    READY_TO_SCORE_FARTHER_AWAY((leds, section) -> leds.solid(section, Color.kPurple)),
     AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     HAS_CORAL((leds, section) -> leds.solid(section, Color.kBlue)),
     INDEXING_CORAL((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),

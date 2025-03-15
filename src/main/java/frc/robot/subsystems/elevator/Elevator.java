@@ -5,6 +5,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -26,7 +28,13 @@ public class Elevator extends SubsystemBase {
   private ElevatorIO elevatorIO;
   private ReefBranch targetPosition = ReefBranch.HARDSTOP;
 
-  private Alert hardStopAlert = new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
+  // arbitrary high value
+  private double xFromReef = 100.0;
+  private double yFromReef = 100.0;
+  private Rotation2d thetaFromReef = Rotation2d.fromDegrees(180);
+
+  private Alert hardStopAlert =
+      new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
 
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
@@ -102,6 +110,7 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", xFromReef);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
@@ -124,15 +133,27 @@ public class Elevator extends SubsystemBase {
 
     switch (reefBranch) {
       case L1:
-        height = MIN_HEIGHT;
+        height = L1_HEIGHT;
+        break;
+
+      case ABOVE_L1:
+        height = ABOVE_L1_HEIGHT;
         break;
 
       case L2:
         height = L2_HEIGHT;
         break;
 
+      case MAX_L2:
+        height = FAR_L2_HEIGHT;
+        break;
+
       case L3:
         height = L3_HEIGHT;
+        break;
+
+      case MAX_L3:
+        height = FAR_L3_HEIGHT;
         break;
 
       case L4:
@@ -207,6 +228,29 @@ public class Elevator extends SubsystemBase {
 
   public void goToSelectedPosition() {
     goToPosition(getSelectedPosition());
+  }
+
+  public boolean canScoreFartherAway() {
+    return Math.abs(xFromReef) < FAR_SCORING_DISTANCE
+        && Math.abs(xFromReef) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
+        && Math.abs(yFromReef) < FAR_SCORING_Y_TOLERANCE
+        && Math.abs(thetaFromReef.getDegrees()) < FAR_SCORING_THETA_TOLERANCE.getDegrees();
+  }
+
+  public void setXFromReef(double distance) {
+    xFromReef = distance;
+  }
+
+  public void setYFromReef(double distance) {
+    yFromReef = distance;
+  }
+
+  public void setThetaFromReef(Rotation2d angle) {
+    thetaFromReef = angle;
+  }
+
+  public double getXFromReef() {
+    return Math.abs(xFromReef);
   }
 
   public boolean isAtSelectedPosition() {
@@ -288,7 +332,8 @@ public class Elevator extends SubsystemBase {
         Commands.waitUntil(
             () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
-        Commands.runOnce(() -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
+        Commands.runOnce(
+            () -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
         Commands.runOnce(() -> elevatorIO.zeroPosition()));
   }
 }

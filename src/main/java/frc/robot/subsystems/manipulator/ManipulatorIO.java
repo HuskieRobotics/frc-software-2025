@@ -15,6 +15,9 @@ public interface ManipulatorIO {
     boolean isAlgaeIRBlocked =
         false; // boolean for new IR that will keep track of if algae is being held
 
+    boolean funnelConnected = false;
+    boolean indexerConnected = false;
+
     double funnelStatorCurrentAmps = 0;
     double indexerStatorCurrentAmps = 0;
     double pivotStatorCurrentAmps = 0; // new for pivot motor

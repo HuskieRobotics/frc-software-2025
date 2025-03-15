@@ -401,6 +401,30 @@ public class RobotContainer {
     oi.getXStanceButton()
         .whileTrue(Commands.run(drivetrain::holdXstance, drivetrain).withName("hold x-stance"));
 
+    // print pose to console for field calibration
+    // format the string so that it shows how to make the pose2d object given our current x
+    // (double), current y (double), and current rotation (Rotation2d)
+    oi.getCurrentPoseButton()
+        .onTrue(
+            Commands.runOnce(
+                    () ->
+                        System.out.println(
+                            "new Pose2d("
+                                + drivetrain.getPose().getTranslation().getX()
+                                + ", "
+                                + drivetrain.getPose().getTranslation().getY()
+                                + ", Rotation2d.fromDegrees("
+                                + drivetrain.getPose().getRotation().getDegrees()
+                                + "));"))
+                .ignoringDisable(true)
+                .withName("print current pose"));
+
+    new Trigger(
+            () -> {
+              return drivetrain.isTilted() && !climber.cageCatcherReleased();
+            })
+        .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
+
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
     oi.getSysIdQuasistaticForward()
@@ -422,7 +446,7 @@ public class RobotContainer {
                 .withName("enable vision"));
     oi.getVisionIsEnabledTrigger()
         .onFalse(
-            Commands.runOnce(() -> vision.enable(false), vision)
+            Commands.runOnce(() -> vision.enable(false))
                 .ignoringDisable(true)
                 .withName("disable vision"));
   }
@@ -443,7 +467,13 @@ public class RobotContainer {
   public void periodic() {
     // add robot-wide periodic code here
 
-    if (manipulator.isReadyToScore()) {
+    // update LEDs so that they turn yellow. maybe use our reef relative difference, and if it is
+    // less than 6
+    // but outside of our normal tolerance, turn yellow until we are within tolerance
+
+    if (elevator.canScoreFartherAway()) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
+    } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
     }
   }
