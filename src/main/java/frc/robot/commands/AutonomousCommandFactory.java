@@ -442,7 +442,7 @@ public class AutonomousCommandFactory {
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-        getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator),
+        getCollectAlgaeCommand(drivetrain, vision, manipulator, elevator),
         AutoBuilder.followPath(backUpH1C));
   }
 
@@ -474,10 +474,10 @@ public class AutonomousCommandFactory {
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
-  public Command getDescoreAlgaeCommand(
+  public Command getCollectAlgaeCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     return Commands.parallel(
-        Commands.runOnce(manipulator::removeAlgae),
+        Commands.runOnce(manipulator::collectAlgae),
         Commands.sequence(
             Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE), elevator),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
@@ -496,9 +496,7 @@ public class AutonomousCommandFactory {
                 0.5),
             Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE), elevator),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE)),
-            Commands.waitSeconds(0.5),
-            Commands.runOnce(manipulator::algaeIsRemoved)));
+            Commands.waitUntil(manipulator::doneCollectingAlgae)));
   }
 
   // when programmed, this will wait until a coral is fully detected within the robot (use

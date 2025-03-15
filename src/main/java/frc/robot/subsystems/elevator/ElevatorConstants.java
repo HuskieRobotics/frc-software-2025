@@ -90,6 +90,7 @@ public class ElevatorConstants {
     MAX_L2,
     MAX_L3,
 
+    // FIXME: why are there three sets when there should be two?
     LOW_ALGAE,
     HIGH_ALGAE,
 

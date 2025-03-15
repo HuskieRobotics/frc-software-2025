@@ -19,6 +19,7 @@
       "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/AdvantageKit/RealOutputs/Climber/ElevatorSim": "Mechanism2d",
       "/AdvantageKit/RealOutputs/Elevator/ElevatorSim": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Manipulator/ArmSim": "Mechanism2d",
       "/AdvantageKit/RealOutputs/PathPlanner": "Alerts",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",

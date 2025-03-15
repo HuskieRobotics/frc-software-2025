@@ -628,9 +628,6 @@ public class Manipulator extends SubsystemBase {
     shootCoralButtonPressed = true;
   }
 
-  // FIXME: implement
-  public void shootAlgae() {}
-
   public void shootCoralFast() {
     shootingFast = true;
     shootCoral();
@@ -646,13 +643,12 @@ public class Manipulator extends SubsystemBase {
     scoreAlgaeButtonPressed = true;
   }
 
-  // public void algaeHasBeenScored() {
-  //   algaeHasBeenScored = true;
-  // }
+  public void scoreAlgaeInProcessor() {
+    scoreAlgaeInProcessorButtonPressed = true;
+  }
 
-  // FIXME: implement when algae manipulator code gets pulled in
-  public boolean hasAlgae() {
-    return true;
+  public boolean doneCollectingAlgae() {
+    return state == State.ALGAE_IN_MANIPULATOR || state == State.WAITING_FOR_CORAL_IN_FUNNEL;
   }
 
   public boolean indexingCoral() {
@@ -663,6 +659,10 @@ public class Manipulator extends SubsystemBase {
     return state == State.CORAL_IN_MANIPULATOR;
   }
 
+  public boolean hasIndexedAlgae() {
+    return state == State.ALGAE_IN_MANIPULATOR;
+  }
+
   public boolean isWaitingForCoral() {
     return state == State.WAITING_FOR_CORAL_IN_FUNNEL;
   }
@@ -671,27 +671,12 @@ public class Manipulator extends SubsystemBase {
     this.readyToScore = readyToScore;
   }
 
-   // FIXME: implement or replace with whatever state machine functionality might already be in place
-  public void collectAlgae() {}
-
-
-  public void setReadyToScoreAlgae(boolean readyToScoreAlgae) {}
-
-  public boolean isReadyToScore() {
-    return readyToScore;
-  }
-
-  public void intakeAlgaeButton() {
+  public void collectAlgae() {
     intakeAlgaeButtonPressed = true;
   }
 
-  public boolean shootAlgae() {
-    // FIXME: this method needs to transition; not report state
-    return shotAlgae;
-  }
-
-  public void scoreAlgaeInProcessor() {
-    scoreAlgaeInProcessorButtonPressed = true;
+  public boolean isReadyToScore() {
+    return readyToScore;
   }
 
   public Angle getPivotAngle() {
@@ -699,11 +684,6 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean isPivotAtPosition(Angle reference) {
-
     return getPivotAngle().minus(reference).abs(Degrees) < PIVOT_POSITION_TOLERANCE.in(Degrees);
   }
-
-  // public void hasIndexedAlgae() {
-  //   algaeInManipulator = true;
-  // }
 }
