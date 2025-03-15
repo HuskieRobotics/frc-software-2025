@@ -12,6 +12,7 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.vision.Vision;
 import frc.robot.Field2d;
+import frc.robot.Field2d.AlgaePosition;
 import frc.robot.Field2d.Side;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
@@ -261,10 +262,9 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getCollectAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
-    List<Object> nearestAlgae = Field2d.getInstance().getNearestAlgae();
-    Pose2d nearestAlgaePose = (Pose2d) nearestAlgae.get(0);
-    boolean isHighAlgae = ((Boolean) nearestAlgae.get(1));
-    // if the nearest is high or low then decide our elevator position
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    Pose2d nearestAlgaePose = nearestAlgae.pose;
+    boolean isHighAlgae = nearestAlgae.isHigh;
 
     return Commands.parallel(
         Commands.either(

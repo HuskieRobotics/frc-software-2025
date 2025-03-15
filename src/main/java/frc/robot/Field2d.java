@@ -55,6 +55,16 @@ public class Field2d {
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
       6.469; // taken from FieldConstants adjustY for reef y offset
 
+  public class AlgaePosition {
+    public Pose2d pose;
+    public boolean isHigh;
+
+    public AlgaePosition(Pose2d pose, boolean isHigh) {
+      this.pose = pose;
+      this.isHigh = isHigh;
+    }
+  }
+
   /**
    * Get the singleton instance of the Field2d class.
    *
@@ -384,7 +394,7 @@ public class Field2d {
     return null;
   }
 
-  public List<Object> getNearestAlgae() {
+  public AlgaePosition getNearestAlgae() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
     boolean isHighAlgae = false;
 
@@ -403,10 +413,7 @@ public class Field2d {
       isHighAlgae = false;
     }
 
-    List<Object> nearestAlgae = new ArrayList<>();
-    nearestAlgae.add(removeAlgaePoses.get(nearestCenterFace));
-    nearestAlgae.add(isHighAlgae);
-    return nearestAlgae;
+    return new AlgaePosition(removeAlgaePoses.get(nearestCenterFace), isHighAlgae);
   }
 
   public Pose2d getBargePose() {
