@@ -284,7 +284,7 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
         AutoBuilder.followPath(collectCoralAfterJ2L),
@@ -339,7 +339,7 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
         AutoBuilder.followPath(collectCoralAfterE2R),
@@ -469,7 +469,7 @@ public class AutonomousCommandFactory {
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
         Commands.waitSeconds(0.2), // ADD WAIT TO SEE IF NOT WAITING WAS IMPEDING PRECISION
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasCoral()),
+        Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
   }
