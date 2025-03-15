@@ -396,7 +396,7 @@ public class FaultReporter {
   }
 
   // Method to check for faults while the robot is operating normally
-  private void checkForFaults() {
+  public void checkForFaults() {
     if (checkErrors && DriverStation.isDisabled()) {
       for (Map.Entry<String, SubsystemFaults> entry : subsystemsFaults.entrySet()) {
         String subsystemName = entry.getKey();

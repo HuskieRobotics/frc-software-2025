@@ -483,6 +483,19 @@
               "period": 0.06,
               "data_type": "boolean"
             }
+          },
+          {
+            "title": "Enable Check Faults",
+            "x": 736.0,
+            "y": 48.0,
+            "width": 272.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Enable Check Faults",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }

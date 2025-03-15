@@ -12,6 +12,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean enablePrimaryIRSensors =
       new LoggedTunableBoolean("operatorDashboard/Enable Primary IR Sensors", true, true);
 
+  public final LoggedTunableBoolean enableCheckFaults =
+      new LoggedTunableBoolean("operatorDashboard/Enable Check Faults", false, true);
+
   public final LoggedTunableBoolean level1 =
       new LoggedTunableBoolean("operatorDashboard/Level 1", false, true);
   public final LoggedTunableBoolean level2 =
@@ -107,6 +110,11 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> enablePrimaryIRSensors.get());
+  }
+
+  @Override
+  public Trigger getEnableCheckFaultsTrigger() {
+    return new Trigger(() -> enableCheckFaults.get());
   }
 
   @Override

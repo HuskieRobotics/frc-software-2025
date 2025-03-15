@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainIO;
@@ -37,6 +38,7 @@ import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
 import frc.robot.operator_interface.OISelector;
+import frc.robot.operator_interface.OperatorDashboard;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
@@ -60,6 +62,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
  */
 public class RobotContainer {
   private OperatorInterface oi = new OperatorInterface() {};
+  private OperatorDashboard od = new OperatorDashboard();
   private RobotConfig config;
   private Drivetrain drivetrain;
   private Alliance lastAlliance = Field2d.getInstance().getAlliance();
@@ -449,6 +452,20 @@ public class RobotContainer {
             Commands.runOnce(() -> vision.enable(false))
                 .ignoringDisable(true)
                 .withName("disable vision"));
+  }
+
+  private void configureCheckFaultsCommand() {
+    // enable/disable check faults
+    FaultReporter.getInstance().checkForFaults();
+
+    oi.getEnableCheckFaultsTrigger()
+        .onTrue(
+            Commands.runOnce(() -> FaultReporter.getInstance().checkForFaults())
+                .andThen(Commands.waitSeconds(1.0))
+                .andThen(
+                    Commands.runOnce(() -> od.enableCheckFaults.set(false))) // unsure about this
+                .ignoringDisable(true)
+                .withName("check for faults"));
   }
 
   /**
