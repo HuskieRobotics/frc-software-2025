@@ -169,19 +169,19 @@ public class Elevator extends SubsystemBase {
         break;
 
       case BELOW_HIGH_ALGAE:
-        height = ABOVE_ALGAE_1_HEIGHT;
+        height = ABOVE_LOW_ALGAE_HEIGHT;
         break;
 
       case BELOW_LOW_ALGAE:
-        height = BELOW_ALGAE_1_HEIGHT;
+        height = BELOW_LOW_ALGAE_HEIGHT;
         break;
 
       case ABOVE_ALGAE_2:
-        height = ABOVE_ALGAE_2_HEIGHT;
+        height = ABOVE_HIGH_ALGAE_HEIGHT;
         break;
 
       case BELOW_ALGAE_2:
-        height = BELOW_ALGAE_2_HEIGHT;
+        height = BELOW_HIGH_ALGAE_HEIGHT;
         break;
 
       case HARDSTOP:

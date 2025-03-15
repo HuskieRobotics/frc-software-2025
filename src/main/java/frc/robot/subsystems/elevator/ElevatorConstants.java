@@ -131,11 +131,11 @@ public class ElevatorConstants {
   public static final Distance ALGAE2_HEIGHT =
       Inches.of(28.0); // height under is 24 // height of impact is 28
 
-  public static final Distance ABOVE_ALGAE_2_HEIGHT = Inches.of(34.0);
-  public static final Distance BELOW_ALGAE_2_HEIGHT = Inches.of(20.0);
+  public static final Distance BELOW_HIGH_ALGAE_HEIGHT = Inches.of(20.0);
+  public static final Distance ABOVE_HIGH_ALGAE_HEIGHT = Inches.of(34.0);
 
-  public static final Distance BELOW_ALGAE_1_HEIGHT = Inches.of(7.0);
-  public static final Distance ABOVE_ALGAE_1_HEIGHT = Inches.of(16.0);
+  public static final Distance BELOW_LOW_ALGAE_HEIGHT = Inches.of(7.0);
+  public static final Distance ABOVE_LOW_ALGAE_HEIGHT = Inches.of(16.0);
 
   public static final double ELEVATOR_PEAK_CURRENT_LIMIT = 60.0;
 }
