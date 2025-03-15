@@ -32,6 +32,20 @@ public class CrossSubsystemsCommandsFactory {
       Manipulator manipulator,
       Vision vision) {
 
+    oi.getScoreButton()
+        .onTrue(
+            Commands.either(
+                getScoreCoralCommand(manipulator, elevator),
+                getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
+                () ->
+                    (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                        || OISelector.getOperatorInterface()
+                            .getAlgaeProcessorTrigger()
+                            .getAsBoolean()
+                        || OISelector.getOperatorInterface()
+                            .getAlgaeDropTrigger()
+                            .getAsBoolean())));
+
     // FIXME: refactor this to have algae and coral options like prep button
     oi.getScoreButton()
         .onTrue(
@@ -275,5 +289,47 @@ public class CrossSubsystemsCommandsFactory {
         Commands.sequence(
             Commands.runOnce(manipulator::collectAlgae, manipulator),
             Commands.waitUntil(manipulator::hasAlgae)));
+  }
+
+  private static Command getScoreWithAlgaeSelectedCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.either(
+        getScoreAlgaeCommand(manipulator, elevator),
+        getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        manipulator::hasAlgae);
+  }
+
+  private static Command getScoreAlgaeCommand(Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(manipulator::shootAlgae, manipulator),
+        Commands.waitUntil(() -> !manipulator.hasAlgae()));
+  }
+
+  private static Command getScoreCoralAndCollectAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    // FIXME: adapt for new algae height system, use from prep to score commands?
+    return Commands.sequence(
+        Commands.runOnce(manipulator::removeAlgae, manipulator),
+        getScoreCoralCommand(manipulator, elevator),
+        Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+        Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
+        new DriveToReef(
+            drivetrain,
+            () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
+            manipulator::setReadyToRemoveAlgae,
+            elevator::setXFromReef,
+            elevator::setYFromReef,
+            elevator::setThetaFromReef,
+            new Transform2d(
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+            0.5),
+        Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
+        Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
+        Commands.waitSeconds(0.5),
+        Commands.runOnce(manipulator::algaeIsRemoved, manipulator));
   }
 }

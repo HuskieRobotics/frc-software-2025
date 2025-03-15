@@ -508,6 +508,9 @@ public class Manipulator extends SubsystemBase {
     shootCoralButtonPressed = true;
   }
 
+  // FIXME: implement
+  public void shootAlgae() {}
+
   public void shootCoralFast() {
     shootingFast = true;
     shootCoral();
