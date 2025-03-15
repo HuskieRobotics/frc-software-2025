@@ -178,37 +178,11 @@
         "layouts": [],
         "containers": [
           {
-            "title": "High Algae Removal",
-            "x": 672.0,
-            "y": 208.0,
-            "width": 432.0,
-            "height": 144.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/High Algae Removal",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
-            "title": "Low Algae Removal",
-            "x": 672.0,
-            "y": 368.0,
-            "width": 432.0,
-            "height": 144.0,
-            "type": "Toggle Button",
-            "properties": {
-              "topic": "/Tuning/operatorDashboard/Low Algae Removal",
-              "period": 0.06,
-              "data_type": "boolean"
-            }
-          },
-          {
             "title": "Level 1",
-            "x": 64.0,
-            "y": 528.0,
+            "x": 0.0,
+            "y": 512.0,
             "width": 544.0,
-            "height": 144.0,
+            "height": 160.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Level 1",
@@ -218,10 +192,10 @@
           },
           {
             "title": "Level 2",
-            "x": 64.0,
-            "y": 368.0,
+            "x": 0.0,
+            "y": 336.0,
             "width": 544.0,
-            "height": 144.0,
+            "height": 160.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Level 2",
@@ -231,8 +205,8 @@
           },
           {
             "title": "Level 3 ",
-            "x": 64.0,
-            "y": 208.0,
+            "x": 0.0,
+            "y": 176.0,
             "width": 544.0,
             "height": 144.0,
             "type": "Toggle Button",
@@ -244,13 +218,208 @@
           },
           {
             "title": "Level 4 ",
-            "x": 64.0,
-            "y": 48.0,
+            "x": 0.0,
+            "y": 0.0,
             "width": 544.0,
-            "height": 144.0,
+            "height": 160.0,
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/Level 4 ",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "A",
+            "x": 736.0,
+            "y": 336.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/A",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "B",
+            "x": 896.0,
+            "y": 336.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/B",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Barge",
+            "x": 736.0,
+            "y": 0.0,
+            "width": 656.0,
+            "height": 112.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Barge",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "C",
+            "x": 1072.0,
+            "y": 336.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/C",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "D",
+            "x": 1232.0,
+            "y": 336.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/D",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "E",
+            "x": 736.0,
+            "y": 464.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/E",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Drop",
+            "x": 736.0,
+            "y": 224.0,
+            "width": 656.0,
+            "height": 112.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Drop",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "F",
+            "x": 896.0,
+            "y": 464.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/F",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "G",
+            "x": 1072.0,
+            "y": 464.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/G",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "H",
+            "x": 1232.0,
+            "y": 464.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/H",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "I",
+            "x": 736.0,
+            "y": 592.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/I",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "J",
+            "x": 896.0,
+            "y": 592.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/J",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Processor",
+            "x": 736.0,
+            "y": 112.0,
+            "width": 656.0,
+            "height": 112.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Processor",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "K",
+            "x": 1072.0,
+            "y": 592.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/K",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "L",
+            "x": 1232.0,
+            "y": 592.0,
+            "width": 160.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/L",
               "period": 0.06,
               "data_type": "boolean"
             }

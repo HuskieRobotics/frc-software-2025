@@ -1,5 +1,6 @@
 package frc.robot.subsystems.manipulator;
 
+import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Generic subsystem hardware interface. */
@@ -11,30 +12,41 @@ public interface ManipulatorIO {
     // booleans to keep track of the state of each IR sensor
     boolean isFunnelIRBlocked = false;
     boolean isIndexerIRBlocked = false;
+    boolean isAlgaeIRBlocked =
+        false; // boolean for new IR that will keep track of if algae is being held
 
     boolean funnelConnected = false;
     boolean indexerConnected = false;
+    boolean pivotConnected = false;
 
     double funnelStatorCurrentAmps = 0;
     double indexerStatorCurrentAmps = 0;
+    double pivotStatorCurrentAmps = 0; // new for pivot motor
 
     double funnelSupplyCurrentAmps = 0;
     double indexerSupplyCurrentAmps = 0;
+    double pivotSupplyCurrentAmps = 0;
 
     double funnelVelocityRPS = 0;
     double indexerVelocityRPS = 0;
 
     double funnelReferenceVelocityRPS = 0;
     double indexerReferenceVelocityRPS = 0;
+    double pivotReferencePositionRot = 0; // new for pivot motor
 
     double funnelClosedLoopErrorRPS = 0.0;
     double indexerClosedLoopErrorRPS = 0.0;
+    double pivotClosedLoopErrorRot = 0.0; // new for pivot motor
 
     double funnelTempCelsius = 0;
     double indexerTempCelsius = 0;
+    double pivotTempCelsius = 0; // new for pivot motor
 
     double funnelMotorVoltage = 0;
     double indexerMotorVoltage = 0;
+    double pivotMotorVoltage = 0; // new for pivot motor
+
+    double pivotMotorAngleDeg = 0; // tbd for pivot motor angle
   }
 
   /** Updates the set of loggable inputs. */
@@ -81,4 +93,8 @@ public interface ManipulatorIO {
    * @param current the current to set the motor to in amps.
    */
   public default void setIndexerMotorCurrent(double current) {}
+
+  public default void setPivotMotorVoltage(double volts) {}
+
+  public default void setPivotPosition(Angle angle) {}
 }

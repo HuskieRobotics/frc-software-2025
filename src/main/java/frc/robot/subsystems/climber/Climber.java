@@ -15,6 +15,8 @@ public class Climber extends SubsystemBase {
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
   private final LoggedTunableNumber minHeight =
       new LoggedTunableNumber("Climber/MinHeight", ClimberConstants.MIN_HEIGHT_INCHES);
+  private final LoggedTunableNumber maxHeight =
+      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_HEIGHT_INCHES);
   private final LoggedTunableNumber climberVoltage =
       new LoggedTunableNumber("Climber/Voltage", 0.0);
 
