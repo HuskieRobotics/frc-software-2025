@@ -57,7 +57,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     climberMotor =
         new TalonFX(
             ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
-    
+
     servo = new Servo(2);
 
     configMotor();

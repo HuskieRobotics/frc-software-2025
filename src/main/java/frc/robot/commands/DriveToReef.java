@@ -29,7 +29,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -225,7 +224,8 @@ public class DriveToReef extends Command {
                         - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
                 < Units.inchesToMeters(0.5))
         && !oneCoralAway
-        && !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean() || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
+        && !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+            || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
         && !DriverStation.isAutonomous()) {
       targetPose =
           targetPose.transformBy(
