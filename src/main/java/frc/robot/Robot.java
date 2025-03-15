@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.TUNING_MODE;
+
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -205,7 +207,9 @@ public class Robot extends LoggedRobot {
     // DO THIS AFTER CONFIGURATION OF YOUR DESIRED PATHFINDER
     PathfindingCommand.warmupCommand().schedule();
 
-    Threads.setCurrentThreadPriority(true, 10);
+    if (!TUNING_MODE) {
+      Threads.setCurrentThreadPriority(true, 10);
+    }
   }
 
   /**
