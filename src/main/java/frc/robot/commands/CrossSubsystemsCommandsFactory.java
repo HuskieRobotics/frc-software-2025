@@ -132,7 +132,7 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreCoralCommand(Manipulator manipulator) {
     return Commands.sequence(
         Commands.runOnce(manipulator::shootCoral, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasCoral()));
+        Commands.waitUntil(() -> !manipulator.hasIndexedCoral()));
   }
 
   // interrupt all commands by running a command that requires every subsystem. This is used to

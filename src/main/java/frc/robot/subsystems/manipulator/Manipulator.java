@@ -105,6 +105,7 @@ public class Manipulator extends SubsystemBase {
   private boolean scoreCoralThroughFunnelButtonPressed = false;
   private boolean intakeAlgaeButtonPressed = false; // may or may not need this button
   private boolean scoreAlgaeButtonPressed = false;
+  private boolean scoreAlgaeInProcessorButtonPressed = false;
 
   private boolean readyToScore = false;
   private boolean algaeHasBeenScored = false;
@@ -388,8 +389,9 @@ public class Manipulator extends SubsystemBase {
         // state
         if (subsystem.scoreAlgaeButtonPressed) {
           subsystem.setState(State.SHOOT_ALGAE_IN_BARGE);
-        }
-        if (!subsystem.inputs.isAlgaeIRBlocked) {
+        } else if (subsystem.scoreAlgaeInProcessorButtonPressed) {
+          subsystem.setState(State.SHOOT_ALGAE_IN_PROCESSOR);
+        } else if (!subsystem.inputs.isAlgaeIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
@@ -434,6 +436,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR);
         subsystem.scoreAlgaeButtonPressed = false;
+        subsystem.scoreAlgaeInProcessorButtonPressed = false;
       }
 
       @Override
@@ -637,10 +640,6 @@ public class Manipulator extends SubsystemBase {
   //   algaeHasBeenScored = true;
   // }
 
-  public boolean hasCoral() {
-    return inputs.isIndexerIRBlocked;
-  }
-
   public boolean indexingCoral() {
     return state == State.INDEXING_CORAL_IN_MANIPULATOR;
   }
@@ -669,6 +668,10 @@ public class Manipulator extends SubsystemBase {
 
   public boolean shootAlgae() {
     return shotAlgae;
+  }
+
+  public void scoreAlgaeInProcessor() {
+    scoreAlgaeInProcessorButtonPressed = true;
   }
 
   public Angle getPivotAngle() {
