@@ -485,16 +485,16 @@
             }
           },
           {
-            "title": "Enable Check Faults",
-            "x": 736.0,
+            "title": "CheckForFaults",
+            "x": 752.0,
             "y": 48.0,
-            "width": 272.0,
+            "width": 256.0,
             "height": 128.0,
-            "type": "Toggle Button",
+            "type": "Command",
             "properties": {
-              "topic": "/Tuning/operatorDashboard/Enable Check Faults",
+              "topic": "/SmartDashboard/SystemStatus/CheckForFaults",
               "period": 0.06,
-              "data_type": "boolean"
+              "show_type": true
             }
           }
         ]

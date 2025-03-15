@@ -105,10 +105,6 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getEnableCheckFaultsTrigger() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getLevel1Trigger() {
     return new Trigger(() -> false);
   }

@@ -66,7 +66,7 @@ public class FaultReporter {
   private FaultReporter() {
     this.checkErrors = RobotBase.isReal();
     setupCallbacks();
-    registerClearAllFaultsCommand();
+    registerDashboardCommands();
   }
 
   /**
@@ -112,7 +112,7 @@ public class FaultReporter {
    * FaultReporter. The command is located at "SystemStatus/ClearAllFaults" in Network Tables. This
    * command is registered with the FaultReporter is instantiated.
    */
-  private void registerClearAllFaultsCommand() {
+  private void registerDashboardCommands() {
     SmartDashboard.putData(
         SYSTEM_STATUS + "ClearAllFaults",
         Commands.runOnce(
@@ -132,6 +132,10 @@ public class FaultReporter {
                 })
             .ignoringDisable(true)
             .withName("ClearAllFaults"));
+
+    SmartDashboard.putData(
+        SYSTEM_STATUS + "CheckForFaults",
+        Commands.runOnce(this::checkForFaults).ignoringDisable(true).withName("check for faults"));
   }
 
   private Command wrapSystemCheckCommand(String subsystemName, Command systemCheckCommand) {
@@ -155,9 +159,9 @@ public class FaultReporter {
     CommandScheduler.getInstance()
         .schedule(
             Commands.repeatingSequence(
-                    Commands.runOnce(this::checkForFaults), Commands.waitSeconds(1.0))
+                    Commands.runOnce(this::checkForFaultsWhenDisabled), Commands.waitSeconds(1.0))
                 .ignoringDisable(true)
-                .withName("check for faults"));
+                .withName("check for faults when disabled"));
 
     CommandScheduler.getInstance()
         .schedule(
@@ -395,16 +399,20 @@ public class FaultReporter {
     subsystemsFaults.put(subsystemName, subsystemFaults);
   }
 
+  private void checkForFaultsWhenDisabled() {
+    if (DriverStation.isDisabled()) {
+      checkForFaults();
+    }
+  }
+
   // Method to check for faults while the robot is operating normally
   public void checkForFaults() {
-    if (checkErrors && DriverStation.isDisabled()) {
-      for (Map.Entry<String, SubsystemFaults> entry : subsystemsFaults.entrySet()) {
-        String subsystemName = entry.getKey();
-        SubsystemFaults subsystemFaults = entry.getValue();
-        for (SelfChecking device : subsystemFaults.hardware) {
-          for (SubsystemFault fault : device.checkForFaults()) {
-            addFault(subsystemName, fault);
-          }
+    for (Map.Entry<String, SubsystemFaults> entry : subsystemsFaults.entrySet()) {
+      String subsystemName = entry.getKey();
+      SubsystemFaults subsystemFaults = entry.getValue();
+      for (SelfChecking device : subsystemFaults.hardware) {
+        for (SubsystemFault fault : device.checkForFaults()) {
+          addFault(subsystemName, fault);
         }
       }
     }
