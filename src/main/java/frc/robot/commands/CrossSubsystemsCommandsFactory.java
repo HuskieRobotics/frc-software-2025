@@ -257,7 +257,8 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi) {
     if (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()) {
       return Commands.parallel(
-          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+          Commands.runOnce(
+              () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
           new DriveToBarge(
               drivetrain,
               () -> Field2d.getInstance().getBargePose(),
@@ -266,7 +267,8 @@ public class CrossSubsystemsCommandsFactory {
               oi::getTranslateY));
     } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
       return Commands.parallel(
-          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator),
+          Commands.runOnce(
+              () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator),
           new DriveToProcessor(
               drivetrain,
               () -> Field2d.getInstance().getNearestProcessor(),
@@ -311,7 +313,6 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
         Commands.sequence(
             Commands.runOnce(manipulator::collectAlgae, manipulator),
-            Commands.waitUntil(manipulator::hasAlgae)
-        ));
+            Commands.waitUntil(manipulator::hasAlgae)));
   }
 }
