@@ -239,7 +239,7 @@ public class CrossSubsystemsCommandsFactory {
               drivetrain,
               () -> Field2d.getInstance().getBargePose(),
               manipulator::setReadyToScore,
-              manipulator::shotAlgae,
+              new Transform2d(1.0, 20.0, Rotation2d.fromDegrees(2.0)),
               oi::getTranslateY));
     } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
       return Commands.parallel(

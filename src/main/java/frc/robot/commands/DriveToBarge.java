@@ -77,6 +77,7 @@ public class DriveToBarge extends Command {
 
   private DoubleSupplier translationYSupplier;
   private BooleanSupplier interrupted;
+  private Transform2d tolerance;
 
   /**
    * Constructs a new DriveToBarge command that drives the robot in a straight line to the specified
@@ -94,12 +95,12 @@ public class DriveToBarge extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
-      BooleanSupplier interrupted,
+      Transform2d tolerance,
       DoubleSupplier translationYSupplier) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
-    this.interrupted = interrupted;
     this.onTarget = onTargetConsumer;
+    this.tolerance = tolerance;
     this.timer = new Timer();
     this.translationYSupplier = translationYSupplier;
     addRequirements(drivetrain);
@@ -197,10 +198,17 @@ public class DriveToBarge extends Command {
     Transform2d robotRelativeDifference = new Transform2d(targetPose, drivetrain.getPose());
     Logger.recordOutput("DriveToBarge/difference (robot relative)", robotRelativeDifference);
 
-    boolean atGoal = interrupted.getAsBoolean();
+    boolean atGoal =
+        Math.abs(robotRelativeDifference.getX()) < tolerance.getX()
+            && Math.abs(robotRelativeDifference.getRotation().getRadians())
+                < tolerance.getRotation().getRadians();
+    
+    if (atGoal) {
+        LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
+    }
 
     // check each of the controllers is at their goal
-    return !drivetrain.isMoveToPoseEnabled() || atGoal;
+    return !drivetrain.isMoveToPoseEnabled();
   }
 
   /**
