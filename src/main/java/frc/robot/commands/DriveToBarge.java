@@ -202,10 +202,8 @@ public class DriveToBarge extends Command {
         Math.abs(robotRelativeDifference.getX()) < tolerance.getX()
             && Math.abs(robotRelativeDifference.getRotation().getRadians())
                 < tolerance.getRotation().getRadians();
-    
-    if (atGoal) {
-        LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
-    }
+
+    onTarget.accept(atGoal);
 
     // check each of the controllers is at their goal
     return !drivetrain.isMoveToPoseEnabled();

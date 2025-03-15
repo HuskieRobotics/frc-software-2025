@@ -194,24 +194,30 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.sequence(
             Commands.waitUntil(manipulator::hasIndexedCoral),
-            Commands.parallel(
+            Commands.either(
                 Commands.sequence(
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                    new DriveToReef(
-                        drivetrain,
-                        () -> Field2d.getInstance().getSelectedBranch(),
-                        manipulator::setReadyToScore,
-                        elevator::setXFromReef,
-                        elevator::setYFromReef,
-                        elevator::setThetaFromReef,
-                        new Transform2d(
-                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                            Rotation2d.fromDegrees(
-                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                        5.0),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                Commands.runOnce(elevator::goToSelectedPosition, elevator))));
+                    Commands.runOnce(elevator::goToSelectedPosition, elevator),
+                    Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
+                Commands.parallel(
+                    Commands.sequence(
+                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                        new DriveToReef(
+                            drivetrain,
+                            () -> Field2d.getInstance().getSelectedBranch(),
+                            manipulator::setReadyToScore,
+                            elevator::setXFromReef,
+                            elevator::setYFromReef,
+                            elevator::setThetaFromReef,
+                            new Transform2d(
+                                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                                Rotation2d.fromDegrees(
+                                    DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                            5.0),
+                        Commands.runOnce(
+                            () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                    Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+                () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())));
   }
 
   private static Command getPrepAlgaeCommand(
@@ -296,12 +302,13 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreWithAlgaeSelectedCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.either(
-        getScoreAlgaeCommand(manipulator, elevator),
+        getScoreAlgaeCommand(drivetrain, manipulator, elevator),
         getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
         manipulator::hasAlgae);
   }
 
-  private static Command getScoreAlgaeCommand(Manipulator manipulator, Elevator elevator) {
+  private static Command getScoreAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
         Commands.runOnce(manipulator::shootAlgae, manipulator),
         Commands.waitUntil(() -> !manipulator.hasAlgae()));
