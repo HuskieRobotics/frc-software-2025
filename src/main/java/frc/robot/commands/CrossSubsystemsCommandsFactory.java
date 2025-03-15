@@ -312,10 +312,10 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
         Commands.sequence(
             Commands.either(
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator), 
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator), 
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator),
                 () -> isHighAlgae)),
-            Commands.waitUntil(manipulator::hasAlgae));
+        Commands.waitUntil(manipulator::hasAlgae));
   }
 
   private static Command getScoreWithAlgaeSelectedCommand(
@@ -336,12 +336,21 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreCoralAndCollectAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     // FIXME: adapt for new algae height system, use from prep to score commands?
+    AlgaePosition nearestAlgaePosition = Field2d.getInstance().getNearestAlgae();
+    boolean isHighAlgae = nearestAlgaePosition.isHigh;
+
     return Commands.sequence(
         Commands.runOnce(manipulator::removeAlgae, manipulator),
         getScoreCoralCommand(manipulator, elevator),
-        Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
+        Commands.either(
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE)),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE)),
+            () -> isHighAlgae),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-        Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
+        Commands.either(
+            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE)),
+            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_LOW_ALGAE)),
+            () -> isHighAlgae),
         new DriveToReef(
             drivetrain,
             () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
@@ -354,10 +363,11 @@ public class CrossSubsystemsCommandsFactory {
                 DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                 Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
             0.5),
-        Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-        Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
-        Commands.waitSeconds(0.5),
-        Commands.runOnce(manipulator::algaeIsRemoved, manipulator));
+        Commands.either(
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE)),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE)),
+            () -> isHighAlgae),
+        Commands.waitUntil(manipulator::hasAlgae));
   }
 }
