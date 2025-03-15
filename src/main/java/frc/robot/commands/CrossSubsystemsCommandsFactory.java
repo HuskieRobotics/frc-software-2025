@@ -312,10 +312,10 @@ public class CrossSubsystemsCommandsFactory {
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
         Commands.sequence(
             Commands.either(
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator), 
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator), 
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator),
                 () -> isHighAlgae)),
-            Commands.waitUntil(manipulator::hasAlgae));
+        Commands.waitUntil(manipulator::hasAlgae));
   }
 
   private static Command getScoreWithAlgaeSelectedCommand(
@@ -343,8 +343,8 @@ public class CrossSubsystemsCommandsFactory {
         Commands.runOnce(manipulator::removeAlgae, manipulator),
         getScoreCoralCommand(manipulator, elevator),
         Commands.either(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE)), 
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE)), 
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE)),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE)),
             () -> isHighAlgae),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
         Commands.either(
@@ -365,8 +365,8 @@ public class CrossSubsystemsCommandsFactory {
             0.5),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
         Commands.either(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE)), 
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE)), 
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE)),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE)),
             () -> isHighAlgae),
         Commands.waitUntil(manipulator::hasAlgae));
   }
