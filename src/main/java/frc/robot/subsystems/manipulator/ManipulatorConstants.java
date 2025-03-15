@@ -47,7 +47,6 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_KV = 0.05;
   public static final double INDEXER_MOTOR_KA = 0.01;
 
-  // FIXME: tune these values
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
 
   // Fast voltage: L1, L4, far L2, far L3
@@ -57,31 +56,9 @@ public class ManipulatorConstants {
   public static final double INDEXER_VOLTAGE_SHOOT_SLOW = 3.0;
 
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE = 12.0;
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
-  public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
-
-  public static final double INDEXER_MOTOR_VELOCITY_WHILE_SHOOTING_CORAL = 0.0; // tbd
-
-  public static final double INDEXER_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; // tbd
-
-  // the regular velocity for the indexer is while the coral is getting indexed, this variable is to
-  // control the velocity while ejecting the coral out of the manipulator
-  // the funnel should only have one velocity when it is intaking coral, but if the coral is jammed
-  // and needs to be ejected out thru the funnel it should have a different velocity then
-
-  public static final double FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; // tbd
-
-  public static final double INDEXER_MOTOR_VELOCITY_WHILE_REMOVING_ALGAE =
-      0.0; // this will be the set value to which the indexer motor velocity should be when removing
-  // algae
-
-  public static final double FUNNEL_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
-
-  public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
 
   // used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;

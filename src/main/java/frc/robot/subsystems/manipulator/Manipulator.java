@@ -65,23 +65,12 @@ public class Manipulator extends SubsystemBase {
   public final LoggedTunableNumber indexerEjectingVoltage =
       new LoggedTunableNumber(
           "Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
-  public final LoggedTunableNumber indexerShootingOutFunnelVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Indexer/ShootingOutFunnelVoltage",
-          INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
-  public final LoggedTunableNumber indexerRemovingAlgaeVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_REMOVING_ALGAE);
   public final LoggedTunableNumber funnelCollectionVoltage =
       new LoggedTunableNumber(
           "Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
   public final LoggedTunableNumber funnelEjectingVoltage =
       new LoggedTunableNumber(
           "Manipulator/Funnel/EjectingVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
-  public final LoggedTunableNumber funnelShootingOutFunnelVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Funnel/ShootingOutFunnelVoltage",
-          FUNNEL_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
 
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
@@ -334,26 +323,6 @@ public class Manipulator extends SubsystemBase {
         // set speed of indexer motor to 0
         subsystem.setIndexerMotorVoltage(0);
         subsystem.setFunnelMotorVoltage(0.0);
-      }
-    },
-    REMOVE_ALGAE {
-      @Override
-      void onEnter(Manipulator subsystem) {
-        subsystem.setIndexerMotorVoltage(subsystem.indexerRemovingAlgaeVoltage.get());
-      }
-
-      @Override
-      void execute(Manipulator subsystem) {
-        LEDs.getInstance().requestState(States.REMOVING_ALGAE);
-        if (subsystem.algaeRemoved) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
-          subsystem.algaeRemoved = false;
-        }
-      }
-
-      @Override
-      void onExit(Manipulator subsystem) {
-        subsystem.setIndexerMotorVoltage(0);
       }
     },
     UNINITIALIZED { // state that the robot should be in when its  turned off
