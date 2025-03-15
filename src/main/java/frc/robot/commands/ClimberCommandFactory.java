@@ -36,6 +36,10 @@ public class ClimberCommandFactory {
 
     oi.getRetractClimberSlowButton()
         .onTrue(Commands.runOnce(climber::retractSlow, climber).withName("retract climber slow"));
+
+    oi.getExtendClimberSlowButton()
+        .onTrue(Commands.runOnce(climber::extendSlow, climber).withName("extend climber slow"));
+    oi.getExtendClimberSlowButton().onFalse(Commands.runOnce(climber::stop));
     oi.getRetractClimberSlowButton()
         .onFalse(
             Commands.sequence(

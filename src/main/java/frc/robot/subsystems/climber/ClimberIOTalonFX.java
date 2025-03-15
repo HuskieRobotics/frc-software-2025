@@ -100,6 +100,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
     elevatorSystemSim.updateSim();
+    inputs.servoPosition = servo.get();
   }
 
   @Override
@@ -113,12 +114,12 @@ public class ClimberIOTalonFX implements ClimberIO {
   }
 
   @Override
-  public void openServo() {
-    servo.set(1);
+  public void unlockServo() {
+    servo.set(0.75);
   }
 
   @Override
-  public void closeServo() {
+  public void lockServo() {
     servo.set(0);
   }
 

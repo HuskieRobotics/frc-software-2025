@@ -42,17 +42,24 @@ public class Climber extends SubsystemBase {
 
   public void extendCageCatcher() {
     this.extendingCageCatcher = true;
-    io.openServo();
-    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
+    io.unlockServo();
+    io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
   }
 
   public void climb() {
+    io.unlockServo();
     io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
   }
 
   public void retractSlow() {
     retractingSlow = true;
+    io.unlockServo();
     io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
+  }
+
+  public void extendSlow() {
+    io.unlockServo();
+    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
   public void reset() {
@@ -61,7 +68,7 @@ public class Climber extends SubsystemBase {
 
   public void stop() {
     retractingSlow = false;
-    io.closeServo();
+    io.lockServo();
     io.setVoltage(0);
   }
 

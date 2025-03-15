@@ -157,6 +157,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getExtendClimberSlowButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getDescoreAlgaeAfterAutoButton() {
     return new Trigger(() -> false);
   }

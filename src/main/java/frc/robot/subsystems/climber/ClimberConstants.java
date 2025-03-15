@@ -10,12 +10,12 @@ public class ClimberConstants {
   public static final double CLIMBER_PEAK_CURRENT_DURATION = 2.0;
   public static final double GEAR_RATIO = 25.0;
 
-  public static final double EXTEND_VOLTAGE = 3.0;
+  public static final double EXTEND_VOLTAGE = -3.0;
 
   // was negative, now positive new climber moves same direction for cage catcher and climb
   public static final double CLIMB_VOLTAGE = 3.0;
 
-  public static final double RETRACT_VOLTAGE_SLOW = -3.0;
+  public static final double RETRACT_VOLTAGE_SLOW = 3.0;
   public static final double RESET_VOLTAGE = 20.0;
 
   public static final double DRUM_DIAMETER = 1.0;
