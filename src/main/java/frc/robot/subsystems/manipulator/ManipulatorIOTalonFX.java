@@ -230,19 +230,19 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         funnelMotorVoltage,
         funnelMotorStatorCurrent,
         funnelMotorTemp,
-        funnelMotorSupplyCurrent,
-        pivotMotorVoltage,
-        pivotMotorSupplyCurrent,
-        pivotMotorTemp,
-        pivotMotorStatorCurrent,
-        pivotMotorAngle);
+        funnelMotorSupplyCurrent);
     Phoenix6Util.registerSignals(
         false,
         indexerMotorVelocity,
         indexerMotorVoltage,
         indexerMotorStatorCurrent,
         indexerMotorTemp,
-        indexerMotorSupplyCurrent);
+        indexerMotorSupplyCurrent,
+        pivotMotorVoltage,
+        pivotMotorSupplyCurrent,
+        pivotMotorTemp,
+        pivotMotorStatorCurrent,
+        pivotMotorAngle);
 
     configFunnelMotor(funnelMotor);
     configIndexerMotor(indexerMotor);
