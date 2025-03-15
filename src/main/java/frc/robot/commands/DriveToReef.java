@@ -313,7 +313,8 @@ public class DriveToReef extends Command {
     }
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
-    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
+    // check if it is physically possible for us to drive to the selected position without going through the reef (sign of our x difference)
+    return reefRelativeDifference.getX() > 0 || !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
   }
 
   /**
