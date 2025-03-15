@@ -98,14 +98,11 @@ public class Manipulator extends SubsystemBase {
   // the calculate() method will be called
 
   private boolean shootCoralButtonPressed = false;
-  private boolean scoreCoralThroughFunnelButtonPressed = false;
-  private boolean intakeAlgaeButtonPressed = false; // may or may not need this button
+  private boolean intakeAlgaeButtonPressed = false;
   private boolean scoreAlgaeButtonPressed = false;
   private boolean scoreAlgaeInProcessorButtonPressed = false;
 
   private boolean readyToScore = false;
-  private boolean algaeHasBeenScored = false;
-  private boolean algaeInManipulator = false;
 
   private boolean shootingFast = false;
 
@@ -125,6 +122,7 @@ public class Manipulator extends SubsystemBase {
     // Current" and sysIDFunnel
 
     SysIdRoutineChooser.getInstance().addOption("Indexer Current", sysIDIndexer);
+    SysIdRoutineChooser.getInstance().addOption("Pivot Voltage", sysIdPivot);
 
     FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
@@ -398,7 +396,7 @@ public class Manipulator extends SubsystemBase {
     SHOOT_ALGAE_IN_BARGE { // state robot is in while algae is being shot out of the manipulator
       @Override
       void onEnter(Manipulator subsystem) {
-        // set the indexer/roller motor to a negative volatge in order for the rollers to move the
+        // set the indexer/roller motor to a negative voltage in order for the rollers to move the
         // opp direction and eject the algae out of the manipulator
 
         subsystem.setFunnelMotorVoltage(0.0);

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
@@ -110,10 +111,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private final LoggedTunableNumber pivotkVExpo =
       new LoggedTunableNumber("Manipulator/Pivot/kVExpo", PIVOT_MOTOR_KV_EXPO);
-
-  private final LoggedTunableNumber pivotMotorKG =
-      new LoggedTunableNumber(
-          "Manipulator/Pivot/kG", MANIPULATOR_MASS_KG); // FIXME: implement this, unsure of its use
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -559,10 +556,27 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // value based on if the motor is inverted (first
     // choice) or not inverted (second choice)
 
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.Slot0.kP = pivotKp.get();
+    config.Slot0.kI = pivotKi.get();
+    config.Slot0.kD = pivotKd.get();
+    config.Slot0.kS = pivotKs.get();
+    config.Slot0.kV = pivotKv.get();
+    config.Slot0.kA = pivotKa.get();
+    config.Slot0.kG = pivotKg.get();
+    config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+
     MotionMagicConfigs pivotMotorConfig = config.MotionMagic;
 
     pivotMotorConfig.MotionMagicExpo_kA = pivotkAExpo.get();
     pivotMotorConfig.MotionMagicExpo_kV = pivotkVExpo.get();
+
+    // configure softlimits while testing
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+        PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = PIVOT_MOTOR_STARTING_POS.in(Rotations);
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
