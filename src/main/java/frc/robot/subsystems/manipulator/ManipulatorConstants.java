@@ -96,7 +96,8 @@ public class ManipulatorConstants {
       -1.0; // FIXME:update value
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_DROPPING_ALGAE = 0.0; // FIXME:update value
 
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE = 4.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE =
+      4.0; // FIXME:update value
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;

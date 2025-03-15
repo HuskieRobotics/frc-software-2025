@@ -17,6 +17,7 @@ public interface ManipulatorIO {
 
     boolean funnelConnected = false;
     boolean indexerConnected = false;
+    boolean pivotConnected = false;
 
     double funnelStatorCurrentAmps = 0;
     double indexerStatorCurrentAmps = 0;

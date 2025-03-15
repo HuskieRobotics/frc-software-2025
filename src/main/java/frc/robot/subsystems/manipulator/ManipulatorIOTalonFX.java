@@ -14,8 +14,8 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Temperature;
@@ -102,7 +102,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new LoggedTunableNumber("Manipulator/Pivot/kV", PIVOT_MOTOR_KV);
   private final LoggedTunableNumber pivotKa =
       new LoggedTunableNumber("Manipulator/Pivot/kA", PIVOT_MOTOR_KA);
-  private final LoggedTunableNumber pivotKg = 
+  private final LoggedTunableNumber pivotKg =
       new LoggedTunableNumber("Manipulator/Pivot/kG", PIVOT_MOTOR_KG);
 
   private final LoggedTunableNumber pivotkAExpo =
@@ -112,8 +112,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new LoggedTunableNumber("Manipulator/Pivot/kVExpo", PIVOT_MOTOR_KV_EXPO);
 
   private final LoggedTunableNumber pivotMotorKG =
-      new LoggedTunableNumber("Manipulator/Pivot/kG", MANIPULATOR_MASS_KG); // FIXME: implement this, unsure of its use
-
+      new LoggedTunableNumber(
+          "Manipulator/Pivot/kG", MANIPULATOR_MASS_KG); // FIXME: implement this, unsure of its use
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -147,6 +147,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private final Debouncer funnelConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer indexerConnectedDebouncer = new Debouncer(0.5);
+  private final Debouncer pivotConnectedDebouncer = new Debouncer(0.5);
 
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
@@ -232,7 +233,12 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         funnelMotorVoltage,
         funnelMotorStatorCurrent,
         funnelMotorTemp,
-        funnelMotorSupplyCurrent);
+        funnelMotorSupplyCurrent,
+        pivotMotorVoltage,
+        pivotMotorSupplyCurrent,
+        pivotMotorTemp,
+        pivotMotorStatorCurrent,
+        pivotMotorAngle);
     Phoenix6Util.registerSignals(
         false,
         indexerMotorVelocity,
@@ -270,16 +276,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
                 indexerMotorStatorCurrent,
                 indexerMotorTemp,
                 indexerMotorSupplyCurrent));
-
-    // refresh all status signal objects for pivot motor
-    status =
-        BaseStatusSignal.refreshAll(
-            pivotMotorStatorCurrent,
-            pivotMotorTemp,
-            pivotMotorSupplyCurrent,
-            pivotMotorVoltage,
-            pivotMotorAngle);
-    Phoenix6Util.checkError(status, "Failed to refresh pivot motor signals.", refreshAlert);
+    inputs.pivotConnected =
+        pivotConnectedDebouncer.calculate(
+            BaseStatusSignal.isAllGood(
+                pivotMotorVoltage,
+                pivotMotorSupplyCurrent,
+                pivotMotorTemp,
+                pivotMotorStatorCurrent,
+                pivotMotorAngle)); // check if pivot motor is connected
 
     inputs.funnelVelocityRPS = funnelMotorVelocity.getValue().in(RotationsPerSecond);
     inputs.indexerVelocityRPS = indexerMotorVelocity.getValue().in(RotationsPerSecond);
