@@ -478,6 +478,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimit = FUNNEL_MOTOR_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    config.Feedback.SensorToMechanismRatio = GEAR_RATIO_FUNNEL;
+
     config.MotorOutput.Inverted =
         FUNNEL_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
@@ -513,6 +515,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimit = INDEXER_MOTOR_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    config.Feedback.SensorToMechanismRatio = GEAR_RATIO_MANIPULATOR;
+
     config.MotorOutput.Inverted =
         INDEXER_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
@@ -544,6 +548,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimit = PIVOT_MOTOR_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
+    config.Feedback.SensorToMechanismRatio = GEAR_RATIO_PIVOT;
+
     config.MotorOutput.Inverted =
         PIVOT_MOTOR_INVERTED
             ? InvertedValue.Clockwise_Positive
@@ -558,9 +564,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     pivotMotorConfig.MotionMagicExpo_kA = pivotkAExpo.get();
     pivotMotorConfig.MotionMagicExpo_kV = pivotkVExpo.get();
 
-    this.pivotMotor.setControl(pivotPositionRequest.withPosition(0.25));
-
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+
+    this.pivotMotor.setControl(pivotPositionRequest.withPosition(0.25));
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "pivot motor", motor);
   }
