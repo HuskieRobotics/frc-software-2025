@@ -391,7 +391,8 @@ public class Field2d {
       return rightReefPoses.get(FieldConstants.Reef.centerFaces[1]);
     }
 
-    return null;
+    // default pose to not break the code if the method fails
+    return FieldConstants.Reef.centerFaces[0];
   }
 
   public AlgaePosition getNearestAlgae() {
