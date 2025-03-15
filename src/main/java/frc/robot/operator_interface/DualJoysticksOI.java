@@ -48,11 +48,6 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getPrepToScoreCoralLeftButton() {
-    return null;
-  }
-
-  @Override
   public Trigger getExtendCageCatcherButton() {
     return translateJoystickButtons[3];
   }
@@ -92,11 +87,6 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getScoreButton() {
     return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getPrepToScoreCoralRightButton() {
-    return null;
   }
 
   @Override

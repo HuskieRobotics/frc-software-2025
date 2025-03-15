@@ -85,16 +85,6 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  // DEPRECATE ONCE ALL-INCLUSIVE PREP TO SCORE IS MADE
-  public default Trigger getPrepToScoreCoralLeftButton() {
-    return new Trigger(() -> false);
-  }
-
-  // DEPRECATE ONCE ALL-INCLUSIVE PREP TO SCORE IS MADE
-  public default Trigger getPrepToScoreCoralRightButton() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getScoreButton() {
     return new Trigger(() -> false);
   }

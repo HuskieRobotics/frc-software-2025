@@ -31,6 +31,8 @@ public class CrossSubsystemsCommandsFactory {
       Elevator elevator,
       Manipulator manipulator,
       Vision vision) {
+
+    // FIXME: refactor this to have algae and coral options like prep button
     oi.getScoreButton()
         .onTrue(
             Commands.either(
@@ -85,18 +87,6 @@ public class CrossSubsystemsCommandsFactory {
                     manipulator::hasCoral)
                 .withName("prep to score"));
 
-    // drive to left branch of nearest reef face
-    oi.getPrepToScoreCoralLeftButton()
-        .onTrue(
-            getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT)
-                .withName("drive to nearest left branch"));
-
-    // drive to right branch of nearest reef face
-    oi.getPrepToScoreCoralRightButton()
-        .onTrue(
-            getPrepToScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT)
-                .withName("drive to nearest right branch"));
-
     oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
@@ -148,35 +138,6 @@ public class CrossSubsystemsCommandsFactory {
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.hasCoral()),
         Commands.runOnce(() -> elevator.setXFromReef(100.0)));
-  }
-
-  private static Command getPrepToScoreCommand(
-      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision, Side side) {
-    return Commands.sequence(
-        Commands.waitUntil(manipulator::hasIndexedCoral),
-        Commands.either(
-            Commands.sequence(
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L1)),
-                Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
-            Commands.parallel(
-                Commands.sequence(
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                    new DriveToReef(
-                        drivetrain,
-                        () -> Field2d.getInstance().getNearestBranch(side),
-                        manipulator::setReadyToScore,
-                        elevator::setXFromReef,
-                        elevator::setYFromReef,
-                        elevator::setThetaFromReef,
-                        new Transform2d(
-                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                            Rotation2d.fromDegrees(
-                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                        3.0),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                Commands.runOnce(elevator::goToSelectedPosition, elevator)),
-            () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
   }
 
   /*
