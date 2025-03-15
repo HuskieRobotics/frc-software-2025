@@ -245,7 +245,7 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi) {
     return Commands.either(
         getPrepToScoreAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
-        getPrepToCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
         manipulator::hasAlgae);
   }
 
@@ -257,7 +257,7 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi) {
     if (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()) {
       return Commands.parallel(
-          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE)),
+          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
           new DriveToBarge(
               drivetrain,
               () -> Field2d.getInstance().getBargePose(),
@@ -266,7 +266,7 @@ public class CrossSubsystemsCommandsFactory {
               oi::getTranslateY));
     } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
       return Commands.parallel(
-          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR)),
+          Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator),
           new DriveToProcessor(
               drivetrain,
               () -> Field2d.getInstance().getNearestProcessor(),
@@ -282,7 +282,7 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.none();
   }
 
-  private static Command getPrepToCollectAlgaeCommand(
+  private static Command getCollectAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     List<Object> nearestAlgae = Field2d.getInstance().getNearestAlgae();
     Pose2d nearestAlgaePose = (Pose2d) nearestAlgae.get(0);
@@ -291,8 +291,8 @@ public class CrossSubsystemsCommandsFactory {
 
     return Commands.parallel(
         Commands.either(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE)),
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE)),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator),
             () -> isHighAlgae),
         Commands.sequence(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
@@ -308,6 +308,10 @@ public class CrossSubsystemsCommandsFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 3.0),
-            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))));
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+        Commands.sequence(
+            Commands.runOnce(manipulator::collectAlgae, manipulator),
+            Commands.waitUntil(manipulator::hasAlgae)
+        ));
   }
 }

@@ -558,6 +558,9 @@ public class Manipulator extends SubsystemBase {
     return false;
   }
 
+  // FIXME: implement or replace with whatever state machine functionality might already be in place
+  public void collectAlgae() {}
+
   public void setReadyToRemoveAlgae(boolean readyToRemoveAlgae) {}
 
   public boolean isReadyToScore() {
