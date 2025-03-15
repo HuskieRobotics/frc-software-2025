@@ -28,11 +28,11 @@ public interface ManipulatorIO {
 
     double funnelReferenceVelocityRPS = 0;
     double indexerReferenceVelocityRPS = 0;
-    double pivotReferencePositionRPS = 0; // new for pivot motor
+    double pivotReferencePositionRot = 0; // new for pivot motor
 
     double funnelClosedLoopErrorRPS = 0.0;
     double indexerClosedLoopErrorRPS = 0.0;
-    double pivotClosedLoopErrorRPS = 0.0; // new for pivot motor
+    double pivotClosedLoopErrorRot = 0.0; // new for pivot motor
 
     double funnelTempCelsius = 0;
     double indexerTempCelsius = 0;

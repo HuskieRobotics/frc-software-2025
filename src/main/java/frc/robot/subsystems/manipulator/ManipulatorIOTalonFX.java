@@ -103,12 +103,18 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new LoggedTunableNumber("Manipulator/Pivot/kV", PIVOT_MOTOR_KV);
   private final LoggedTunableNumber pivotKa =
       new LoggedTunableNumber("Manipulator/Pivot/kA", PIVOT_MOTOR_KA);
+  private final LoggedTunableNumber pivotKg = 
+      new LoggedTunableNumber("Manipulator/Pivot/kG", PIVOT_MOTOR_KG);
 
   private final LoggedTunableNumber pivotkAExpo =
-      new LoggedTunableNumber("Manipulator/Pivot/kAExpo", PIVOT_MOTOR_KV_EXPO);
+      new LoggedTunableNumber("Manipulator/Pivot/kAExpo", PIVOT_MOTOR_KA_EXPO);
 
   private final LoggedTunableNumber pivotkVExpo =
       new LoggedTunableNumber("Manipulator/Pivot/kVExpo", PIVOT_MOTOR_KV_EXPO);
+
+  private final LoggedTunableNumber pivotMotorKG =
+      new LoggedTunableNumber("Manipulator/Pivot/kG", MANIPULATOR_MASS_KG); // FIXME: implement this, unsure of its use
+
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -176,8 +182,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
             pivotMotor,
             PIVOT_MOTOR_INVERTED,
             GEAR_RATIO_PIVOT,
-            MANIPULATOR_LENGTH,
-            MANIPULATOR_MASS,
+            MANIPULATOR_LENGTH_METERS,
+            MANIPULATOR_MASS_KG,
             0.0,
             90.0,
             0.0,
@@ -193,7 +199,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     funnelVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
     indexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
 
-    pivotPositionRequest = new MotionMagicExpoVoltage(0);
+    pivotPositionRequest = new MotionMagicExpoVoltage(Rotations.of(0.25));
 
     funnelMotorVelocity = funnelMotor.getVelocity();
     indexerMotorVelocity = indexerMotor.getVelocity();
@@ -278,11 +284,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     inputs.funnelClosedLoopErrorRPS = funnelMotor.getClosedLoopError().getValueAsDouble();
     inputs.indexerClosedLoopErrorRPS = indexerMotor.getClosedLoopError().getValueAsDouble();
-    inputs.pivotClosedLoopErrorRPS = pivotMotor.getClosedLoopError().getValueAsDouble();
+    inputs.pivotClosedLoopErrorRot = pivotMotor.getClosedLoopError().getValueAsDouble();
 
     inputs.funnelReferenceVelocityRPS = funnelMotor.getClosedLoopReference().getValueAsDouble();
     inputs.indexerReferenceVelocityRPS = indexerMotor.getClosedLoopReference().getValueAsDouble();
-    inputs.pivotReferencePositionRPS = pivotMotor.getClosedLoopReference().getValueAsDouble();
+    inputs.pivotReferencePositionRot = pivotMotor.getClosedLoopReference().getValueAsDouble();
 
     inputs.funnelMotorVoltage = funnelMotorVoltage.getValueAsDouble();
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
@@ -351,6 +357,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
           config.Slot0.kS = pid[3];
           config.Slot0.kV = pid[4];
           config.Slot0.kA = pid[5];
+          config.Slot0.kG = pid[6];
 
           config.MotionMagic.MotionMagicExpo_kA = pid[6];
           config.MotionMagic.MotionMagicExpo_kV = pid[7];
@@ -363,6 +370,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         pivotKs,
         pivotKv,
         pivotKa,
+        pivotKg,
         pivotkAExpo,
         pivotkVExpo);
 
@@ -525,6 +533,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     pivotMotorConfig.MotionMagicExpo_kA = pivotkAExpo.get();
     pivotMotorConfig.MotionMagicExpo_kV = pivotkVExpo.get();
+
+    this.pivotMotor.setControl(pivotPositionRequest.withPosition(0.25));
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 

@@ -65,7 +65,7 @@ public class Manipulator extends SubsystemBase {
           INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL);
   public final LoggedTunableNumber indexerRemovingAlgaeVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE);
+          "Manipulator/Indexer/RemovingAlgaeVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_DROPPING_ALGAE);
   public final LoggedTunableNumber funnelCollectionVoltage =
       new LoggedTunableNumber(
           "Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
@@ -459,7 +459,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0);
         subsystem.setIndexerMotorVoltage(0);
-        subsystem.setPivotMotorVoltage(0);
         subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
       }
 
@@ -668,7 +667,7 @@ public class Manipulator extends SubsystemBase {
     intakeAlgaeButtonPressed = true;
   }
 
-  public boolean shotAlgae() {
+  public boolean shootAlgae() {
     return shotAlgae;
   }
 

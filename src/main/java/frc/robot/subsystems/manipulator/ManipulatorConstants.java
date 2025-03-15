@@ -32,7 +32,7 @@ public class ManipulatorConstants {
 
   public static final int INDEXER_IR_BACKUP_SENSOR_ID = 1;
 
-  public static final int PIVOT_MOTOR_ID = 57; // TBD -- created for pivot motor
+  public static final int PIVOT_MOTOR_ID = 56;
 
   public static final int ALGAE_IR_SENSOR_ID = 4; // new algae ir sensor --> id tbd
 
@@ -43,11 +43,11 @@ public class ManipulatorConstants {
 
   public static final double GEAR_RATIO_MANIPULATOR = 1.0;
 
-  public static final double GEAR_RATIO_PIVOT = 0; // new for pivot motor
+  public static final double GEAR_RATIO_PIVOT = 3.0;
 
-  public static final double MANIPULATOR_LENGTH = 5.0; // FIXME: update for sim
+  public static final double MANIPULATOR_LENGTH_METERS = 0.264;
 
-  public static final double MANIPULATOR_MASS = 0.0; // FIXME: update for sim
+  public static final double MANIPULATOR_MASS_KG = 0.9789;
 
   // tunable PID constants for both motors -- ALL ARE TBD
   public static final double FUNNEL_MOTOR_KP = 0;
@@ -71,6 +71,7 @@ public class ManipulatorConstants {
   public static final double PIVOT_MOTOR_KS = 0;
   public static final double PIVOT_MOTOR_KV = 0;
   public static final double PIVOT_MOTOR_KA = 0;
+  public static final double PIVOT_MOTOR_KG = 0.0;
 
   public static final double PIVOT_MOTOR_KV_EXPO = 0.0;
 
@@ -87,7 +88,9 @@ public class ManipulatorConstants {
       -1.0; // FIXME:update value
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR =
       -1.0; // FIXME:update value
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE = 0.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_DROPPING_ALGAE = 0.0; // FIXME:update value
+
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE = 4.0; // FIXME:update value
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
@@ -140,5 +143,5 @@ public class ManipulatorConstants {
 
   public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME:update value
 
-  public static final Angle PIVOT_POSITION_TOLERANCE = Degrees.of(0.0); // FIXME:update value
+  public static final Angle PIVOT_POSITION_TOLERANCE = Degrees.of(2.0);
 }
