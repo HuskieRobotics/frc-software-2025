@@ -6,6 +6,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DI
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.drivetrain.Drivetrain;
@@ -239,7 +240,7 @@ public class CrossSubsystemsCommandsFactory {
               drivetrain,
               () -> Field2d.getInstance().getBargePose(),
               manipulator::setReadyToScore,
-              new Transform2d(1.0, 20.0, Rotation2d.fromDegrees(2.0)),
+              new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
               oi::getTranslateY));
     } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
       return Commands.parallel(
@@ -265,6 +266,7 @@ public class CrossSubsystemsCommandsFactory {
     AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
     Pose2d nearestAlgaePose = nearestAlgae.pose;
     boolean isHighAlgae = nearestAlgae.isHigh;
+    // if the nearest is high or low then decide our elevator position
 
     return Commands.parallel(
         Commands.either(
