@@ -156,8 +156,8 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.runOnce(() -> elevator.goToPosition(branch)),
                 Commands.waitUntil(() -> elevator.isAtPosition(branch)),
-                Commands.runOnce(manipulator::shootCoralSlow, manipulator)),
-            Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.runOnce(manipulator::shootCoralFast, manipulator)),
+            Commands.runOnce(manipulator::shootCoralSlow, manipulator),
             () ->
                 Math.abs(elevator.getXFromReef()) > MIN_FAR_SCORING_DISTANCE
                     && Math.abs(elevator.getXFromReef()) < FAR_SCORING_DISTANCE),
@@ -292,8 +292,8 @@ public class CrossSubsystemsCommandsFactory {
 
     return Commands.parallel(
         Commands.either(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator),
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE), elevator),
             () -> isHighAlgae),
         Commands.sequence(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
@@ -311,8 +311,11 @@ public class CrossSubsystemsCommandsFactory {
                 3.0),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
         Commands.sequence(
-            Commands.runOnce(manipulator::collectAlgae, manipulator),
-            Commands.waitUntil(manipulator::hasAlgae)));
+            Commands.either(
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HIGH_ALGAE), elevator), 
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.LOW_ALGAE), elevator), 
+                () -> isHighAlgae)),
+            Commands.waitUntil(manipulator::hasAlgae));
   }
 
   private static Command getScoreWithAlgaeSelectedCommand(

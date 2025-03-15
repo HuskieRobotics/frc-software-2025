@@ -479,9 +479,9 @@ public class AutonomousCommandFactory {
     return Commands.parallel(
         Commands.runOnce(manipulator::removeAlgae),
         Commands.sequence(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_ALGAE_1), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE), elevator),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_ALGAE_1)),
+            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_LOW_ALGAE)),
             new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
@@ -494,9 +494,9 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 0.5),
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.ABOVE_ALGAE_1), elevator),
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE), elevator),
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.ABOVE_ALGAE_1)),
+            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE)),
             Commands.waitSeconds(0.5),
             Commands.runOnce(manipulator::algaeIsRemoved)));
   }

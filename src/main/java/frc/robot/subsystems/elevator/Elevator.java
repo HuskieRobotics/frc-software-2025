@@ -168,11 +168,11 @@ public class Elevator extends SubsystemBase {
         height = ALGAE2_HEIGHT;
         break;
 
-      case ABOVE_ALGAE_1:
+      case BELOW_HIGH_ALGAE:
         height = ABOVE_ALGAE_1_HEIGHT;
         break;
 
-      case BELOW_ALGAE_1:
+      case BELOW_LOW_ALGAE:
         height = BELOW_ALGAE_1_HEIGHT;
         break;
 
@@ -273,7 +273,7 @@ public class Elevator extends SubsystemBase {
 
   public void goBelowSelectedAlgaePosition() {
     if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      goToPosition(ScoringHeight.BELOW_ALGAE_1);
+      goToPosition(ScoringHeight.BELOW_LOW_ALGAE);
     } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
       goToPosition(ScoringHeight.BELOW_ALGAE_2);
     }
@@ -281,7 +281,7 @@ public class Elevator extends SubsystemBase {
 
   public void goAboveSelectedAlgaePosition() {
     if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      goToPosition(ScoringHeight.ABOVE_ALGAE_1);
+      goToPosition(ScoringHeight.BELOW_HIGH_ALGAE);
     } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
       goToPosition(ScoringHeight.ABOVE_ALGAE_2);
     }
@@ -289,7 +289,7 @@ public class Elevator extends SubsystemBase {
 
   public boolean isBelowSelectedAlgaePosition() {
     if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      return isAtPosition(ScoringHeight.BELOW_ALGAE_1);
+      return isAtPosition(ScoringHeight.BELOW_LOW_ALGAE);
     } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
       return isAtPosition(ScoringHeight.BELOW_ALGAE_2);
     } else {
@@ -299,7 +299,7 @@ public class Elevator extends SubsystemBase {
 
   public boolean isAboveSelectedAlgaePosition() {
     if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      return isAtPosition(ScoringHeight.ABOVE_ALGAE_1);
+      return isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE);
     } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
       return isAtPosition(ScoringHeight.ABOVE_ALGAE_2);
     } else {
