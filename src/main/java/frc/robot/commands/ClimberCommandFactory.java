@@ -25,12 +25,10 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::stop, climber))
                 .withName("extend cage catcher"));
 
-
-    
     oi.getInitiateClimbButton()
         .onTrue(
             Commands.sequence(
-                    Commands.runOnce(climber::retract, climber),
+                    Commands.runOnce(climber::climb, climber),
                     Commands.waitUntil(
                         () -> climber.getPosition() < ClimberConstants.MIN_HEIGHT_INCHES),
                     Commands.runOnce(climber::stop, climber))

@@ -40,8 +40,8 @@ public class Climber extends SubsystemBase {
     io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
-  public void retract() {
-    io.setVoltage(ClimberConstants.RETRACT_VOLTAGE);
+  public void climb() {
+    io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
   }
 
   public void retractSlow() {
