@@ -37,77 +37,33 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreButton()
         .onTrue(
             Commands.either(
-                Commands.sequence(
-                    getScoreCoralCommand(manipulator, elevator),
-                    Commands.deadline(
-                        elevator.getElevatorLowerAndResetCommand(),
-                        new TeleopSwerve(
-                            drivetrain,
-                            OISelector.getOperatorInterface()::getTranslateX,
-                            OISelector.getOperatorInterface()::getTranslateY,
-                            OISelector.getOperatorInterface()::getRotate))),
-                Commands.sequence(
-                    getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
-                    Commands.deadline(
-                        elevator.getElevatorLowerAndResetCommand(),
-                        new TeleopSwerve(
-                            drivetrain,
-                            OISelector.getOperatorInterface()::getTranslateX,
-                            OISelector.getOperatorInterface()::getTranslateY,
-                            OISelector.getOperatorInterface()::getRotate))),
-                () ->
-                    (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
-                        || OISelector.getOperatorInterface()
-                            .getAlgaeProcessorTrigger()
-                            .getAsBoolean()
-                        || OISelector.getOperatorInterface()
-                            .getAlgaeDropTrigger()
-                            .getAsBoolean())));
-
-    // FIXME: refactor this to have algae and coral options like prep button
-    oi.getScoreButton()
-        .onTrue(
-            Commands.either(
-                    getScoreL1Command(manipulator, elevator),
                     Commands.sequence(
-                        Commands.either(
-                            Commands.sequence(
-                                getScoreCoralCommand(manipulator, elevator),
-                                Commands.runOnce(manipulator::collectAlgae, manipulator),
-                                Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                                Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
-                                new DriveToReef(
-                                    drivetrain,
-                                    () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
-                                    manipulator::setReadyToScore,
-                                    elevator::setXFromReef,
-                                    elevator::setYFromReef,
-                                    elevator::setThetaFromReef,
-                                    new Transform2d(
-                                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                        Rotation2d.fromDegrees(
-                                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                    0.5),
-                                Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-                                Commands.waitUntil(manipulator::doneCollectingAlgae)),
-                            getScoreCoralCommand(manipulator, elevator),
-                            elevator::isAlgaePositionSelected),
+                        getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
                         Commands.deadline(
-                            // run TeleopSwerve to allow driver to move away from reef while
-                            // elevator is lowering
                             elevator.getElevatorLowerAndResetCommand(),
                             new TeleopSwerve(
                                 drivetrain,
                                 OISelector.getOperatorInterface()::getTranslateX,
                                 OISelector.getOperatorInterface()::getTranslateY,
                                 OISelector.getOperatorInterface()::getRotate))),
-                    () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
-                .withName("score coral"));
+                    Commands.sequence(
+                        getScoreCoralCommand(manipulator, elevator),
+                        Commands.deadline(
+                            elevator.getElevatorLowerAndResetCommand(),
+                            new TeleopSwerve(
+                                drivetrain,
+                                OISelector.getOperatorInterface()::getTranslateX,
+                                OISelector.getOperatorInterface()::getTranslateY,
+                                OISelector.getOperatorInterface()::getRotate))),
+                    () ->
+                        (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                            || OISelector.getOperatorInterface()
+                                .getAlgaeProcessorTrigger()
+                                .getAsBoolean()
+                            || OISelector.getOperatorInterface()
+                                .getAlgaeDropTrigger()
+                                .getAsBoolean()))
+                .withName("score"));
 
     oi.getPrepToScoreButton()
         .onTrue(
@@ -164,10 +120,13 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getScoreCoralCloseCommand(Manipulator manipulator, Elevator elevator) {
-    return Commands.sequence(
-        Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
-        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
+    return Commands.either(
+        getScoreL1Command(manipulator, elevator),
+        Commands.sequence(
+            Commands.runOnce(manipulator::shootCoralFast, manipulator),
+            Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
+            Commands.runOnce(() -> elevator.setXFromReef(100.0))),
+        () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
   }
 
   /*
@@ -201,7 +160,7 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   // go to selected reef spot or don't move (depending on sign of x difference)
-  // this logic will get handled in drivetoreef
+  // this logic will get handled in DriveToReef
   // red flash for a second if we can't move
   private static Command getPrepCoralCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
