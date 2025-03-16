@@ -48,6 +48,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getRaiseElevatorSlowButton() {
+    return translateJoystickButtons[2];
+  }
+
+  @Override
   public Trigger getExtendCageCatcherButton() {
     return translateJoystickButtons[3];
   }
@@ -65,11 +70,6 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getFieldRelativeButton() {
     return translateJoystickButtons[9];
-  }
-
-  @Override
-  public Trigger getRaiseElevatorSlowButton() {
-    return translateJoystickButtons[10];
   }
 
   @Override
