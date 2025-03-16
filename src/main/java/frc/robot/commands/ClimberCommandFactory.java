@@ -18,10 +18,7 @@ public class ClimberCommandFactory {
         .onTrue(
             Commands.sequence(
                     Commands.runOnce(climber::extendCageCatcher, climber),
-                    Commands.waitUntil(
-                        () ->
-                            climber.getPosition()
-                                > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES),
+                    Commands.waitUntil(climber::cageCatcherReleased),
                     Commands.runOnce(climber::stopExtension, climber))
                 .withName("extend cage catcher"));
 
@@ -36,10 +33,6 @@ public class ClimberCommandFactory {
 
     oi.getRetractClimberSlowButton()
         .onTrue(Commands.runOnce(climber::retractSlow, climber).withName("retract climber slow"));
-
-    oi.getExtendClimberSlowButton()
-        .onTrue(Commands.runOnce(climber::extendSlow, climber).withName("extend climber slow"));
-    oi.getExtendClimberSlowButton().onFalse(Commands.runOnce(climber::stop));
     oi.getRetractClimberSlowButton()
         .onFalse(
             Commands.sequence(
@@ -47,9 +40,8 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::zero, climber))
                 .withName("stop and zero climber"));
 
-    // FIXME: didn't we get rid of this button???
-    // consistent, zero button (single press)
-    oi.getZeroClimberButton()
-        .onTrue(Commands.runOnce(climber::zero, climber).withName("zero climber"));
+    oi.getExtendClimberSlowButton()
+        .onTrue(Commands.runOnce(climber::extendSlow, climber).withName("extend climber slow"));
+    oi.getExtendClimberSlowButton().onFalse(Commands.runOnce(climber::stop));
   }
 }
