@@ -12,11 +12,10 @@ public class ClimberConstants {
 
   public static final double EXTEND_VOLTAGE = -3.0;
 
-  // was negative, now positive new climber moves same direction for cage catcher and climb
+  // FIXME: tune
   public static final double CLIMB_VOLTAGE = 3.0;
 
   public static final double RETRACT_VOLTAGE_SLOW = 3.0;
-  public static final double RESET_VOLTAGE = 20.0;
 
   public static final double DRUM_DIAMETER = 1.0;
   public static final double CAGE_CATCHER_EXTEND_POS_INCHES = 5.0; // FIXME: arbitrary for now
@@ -28,9 +27,5 @@ public class ClimberConstants {
   public static final double KD = 0.0;
   public static final double KS = 1.0;
   public static final double KV = 0.0;
-  // potentially will be removed later
   public static final double KA = 0.0;
-  public static final double KVEXP = 0.0;
-  public static final double KAEXP = 0.0;
-  public static final double KG = 0.0;
 }

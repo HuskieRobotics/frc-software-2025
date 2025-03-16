@@ -62,10 +62,6 @@ public class Climber extends SubsystemBase {
     io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
-  public void reset() {
-    io.setVoltage(ClimberConstants.RESET_VOLTAGE);
-  }
-
   public void stop() {
     retractingSlow = false;
     io.lockServo();
