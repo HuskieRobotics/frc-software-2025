@@ -16,6 +16,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -161,37 +162,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     backupIndexerIRSensor = new DigitalInput(INDEXER_IR_BACKUP_SENSOR_ID);
     backupAlgaeIRSensor = new DigitalInput(ALGAE_IR_BACKUP_SENSOR_ID);
 
-    funnelMotorSim =
-        new VelocitySystemSim(
-            funnelMotor,
-            FUNNEL_MOTOR_INVERTED,
-            FUNNEL_MOTOR_KV,
-            FUNNEL_MOTOR_KA,
-            GEAR_RATIO_FUNNEL);
-    indexerMotorSim =
-        new VelocitySystemSim(
-            indexerMotor,
-            INDEXER_MOTOR_INVERTED,
-            INDEXER_MOTOR_KV,
-            INDEXER_MOTOR_KA,
-            GEAR_RATIO_MANIPULATOR);
-
-    // Add sim for pivot motor
-    pivotMotorSim =
-        new ArmSystemSim(
-            pivotMotor,
-            PIVOT_MOTOR_INVERTED,
-            GEAR_RATIO_PIVOT,
-            MANIPULATOR_LENGTH_METERS,
-            MANIPULATOR_MASS_KG,
-            0.0,
-            90.0,
-            0.0,
-            SUBSYSTEM_NAME);
-
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
-    pivotVoltageRequest = new VoltageOut(0.0); // new volatge request for pivot motor
+    pivotVoltageRequest = new VoltageOut(0.0); // new voltage request for pivot motor
 
     funnelCurrentRequest = new TorqueCurrentFOC(0.0);
     indexerCurrentRequest = new TorqueCurrentFOC(0.0);
@@ -246,7 +219,35 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     configFunnelMotor(funnelMotor);
     configIndexerMotor(indexerMotor);
-    configPivotMotor(pivotMotor); // configure pivot motor by calling congfigPivotMotor method
+    configPivotMotor(pivotMotor);
+
+    funnelMotorSim =
+        new VelocitySystemSim(
+            funnelMotor,
+            FUNNEL_MOTOR_INVERTED,
+            FUNNEL_MOTOR_KV,
+            FUNNEL_MOTOR_KA,
+            GEAR_RATIO_FUNNEL);
+    indexerMotorSim =
+        new VelocitySystemSim(
+            indexerMotor,
+            INDEXER_MOTOR_INVERTED,
+            INDEXER_MOTOR_KV,
+            INDEXER_MOTOR_KA,
+            GEAR_RATIO_MANIPULATOR);
+
+    // Add sim for pivot motor
+    pivotMotorSim =
+        new ArmSystemSim(
+            pivotMotor,
+            PIVOT_MOTOR_INVERTED,
+            GEAR_RATIO_PIVOT,
+            MANIPULATOR_LENGTH_METERS,
+            MANIPULATOR_MASS_KG,
+            Units.degreesToRadians(0.0),
+            Units.degreesToRadians(90.0),
+            Units.degreesToRadians(90.0),
+            SUBSYSTEM_NAME);
   }
 
   /**
@@ -315,7 +316,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.indexerMotorVoltage = indexerMotorVoltage.getValueAsDouble();
     inputs.pivotMotorVoltage = pivotMotorVoltage.getValueAsDouble();
 
-    inputs.pivotMotorAngleDeg = pivotMotorAngle.getValueAsDouble();
+    inputs.pivotMotorAngleDeg = pivotMotorAngle.getValue().in(Degrees);
 
     if (OISelector.getOperatorInterface().getEnablePrimaryIRSensorsTrigger().getAsBoolean()) {
       inputs.isFunnelIRBlocked = !funnelIRSensor.get();
@@ -571,16 +572,16 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     pivotMotorConfig.MotionMagicExpo_kA = pivotkAExpo.get();
     pivotMotorConfig.MotionMagicExpo_kV = pivotkVExpo.get();
 
-    // configure softlimits while testing
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
-        PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
+    // configure soft limits while testing
+    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = PIVOT_MOTOR_STARTING_POS.in(Rotations);
     config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = PIVOT_MOTOR_STARTING_POS.in(Rotations);
+    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+        PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
     config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
-    this.pivotMotor.setControl(pivotPositionRequest.withPosition(0.25));
+    this.pivotMotor.setPosition(PIVOT_MOTOR_STARTING_POS);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "pivot motor", motor);
   }

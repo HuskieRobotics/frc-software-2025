@@ -65,7 +65,7 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_KA = 0.01;
 
   // pid values for pivot motor -- ALL TBD
-  public static final double PIVOT_MOTOR_KP = 0;
+  public static final double PIVOT_MOTOR_KP = 10.0;
   public static final double PIVOT_MOTOR_KI = 0;
   public static final double PIVOT_MOTOR_KD = 0;
   public static final double PIVOT_MOTOR_KS = 0;

@@ -23,6 +23,7 @@ public class ArmSystemSim {
   private TalonFXSimState motorSimState;
   private SingleJointedArmSim systemSim;
   private double sensorToMechanismRatio;
+  private double startingAngleRad;
   private String subsystemName;
 
   private boolean hasExternalEncoder;
@@ -79,6 +80,7 @@ public class ArmSystemSim {
 
     this.motor = motor;
     this.sensorToMechanismRatio = sensorToMechanismRatio;
+    this.startingAngleRad = startingAngle;
     this.motorSimState = this.motor.getSimState();
     this.motorSimState.Orientation =
         motorInverted
@@ -90,11 +92,13 @@ public class ArmSystemSim {
       this.encoder = encoder;
       this.rotorToSensorRatio = rotorToSensorRatio;
       this.encoderSimState = this.encoder.getSimState();
+    } else {
+      this.rotorToSensorRatio = 1;
     }
 
     this.systemSim =
         new SingleJointedArmSim(
-            DCMotor.getFalcon500Foc(1),
+            DCMotor.getKrakenX60(1),
             sensorToMechanismRatio * rotorToSensorRatio,
             SingleJointedArmSim.estimateMOI(length, mass),
             length,
@@ -142,7 +146,9 @@ public class ArmSystemSim {
     double mechanismRPS = mechanismRadiansPerSec / (2 * Math.PI);
     double encoderRPS = mechanismRPS * this.sensorToMechanismRatio;
     double motorRPS = encoderRPS * this.rotorToSensorRatio;
-    this.motorSimState.setRawRotorPosition(motorRotations);
+    this.motorSimState.setRawRotorPosition(
+        motorRotations
+            - (Units.radiansToRotations(startingAngleRad) * this.sensorToMechanismRatio));
     this.motorSimState.setRotorVelocity(motorRPS);
 
     if (this.hasExternalEncoder) {
