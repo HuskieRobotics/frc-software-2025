@@ -79,6 +79,8 @@ public class Robot extends LoggedRobot {
   private final Alert gitAlert =
       new Alert("Please wait to enable, JITing in progress.", AlertType.kWarning);
 
+  private final Alert noAutoSelectedAlert =
+      new Alert("No auto selected: please select an auto", AlertType.kWarning);
   /** Create a new Robot. */
   public Robot() {
     // start code loading LED animation
@@ -311,6 +313,15 @@ public class Robot extends LoggedRobot {
 
     if (AutonomousCommandFactory.getInstance().alignedToStartingPose()) {
       LEDs.getInstance().requestState(LEDs.States.ALIGNED_FOR_AUTO);
+    }
+
+    // get the autochooser auto selected and if the default is selected then do solid red leds
+    if (AutonomousCommandFactory.getInstance()
+        .getAutonomousCommand()
+        .getName()
+        .equals("Do Nothing")) {
+      LEDs.getInstance().requestState(LEDs.States.NO_AUTO_SELECTED);
+      noAutoSelectedAlert.set(true);
     }
   }
 

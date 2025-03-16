@@ -65,6 +65,7 @@ public abstract class LEDs extends SubsystemBase {
     LOW_BATTERY((leds, section) -> leds.solid(section, new Color(255, 20, 0))),
     DISABLED_DEMO_MODE((leds, section) -> leds.updateToPridePattern()),
     ALIGNED_FOR_AUTO((leds, section) -> leds.solid(section, Color.kGreen)),
+    NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),

@@ -76,7 +76,7 @@ public class AutonomousCommandFactory {
   public void configureAutoCommands(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     // add commands to the auto chooser
-    autoChooser.addDefaultOption("Do Nothing", new InstantCommand());
+    autoChooser.addDefaultOption("Do Nothing", new InstantCommand().withName("Do Nothing"));
 
     NamedCommands.registerCommand(
         "Raise Elevator",
