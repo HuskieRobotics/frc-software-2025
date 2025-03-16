@@ -24,7 +24,6 @@ import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -85,23 +84,6 @@ public class AutonomousCommandFactory {
             Commands.print("Raising Elevator"),
             Commands.waitUntil(manipulator::hasIndexedCoral),
             Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4))));
-
-    /************ Two Piece Left ************
-     *
-     * 2 corals scored J L4; L L4
-     *
-     */
-
-    Command twoPieceLeft = getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("2 Piece Left", twoPieceLeft);
-
-    /************ Two Piece Right ************
-     *
-     * 2 corals scored E L4; D L4
-     *
-     */
-    Command twoPieceRight = getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("2 Piece Right", twoPieceRight);
 
     /************ One Piece Center ************
      *
@@ -442,7 +424,8 @@ public class AutonomousCommandFactory {
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-        getCollectAlgaeCommand(drivetrain, vision, manipulator, elevator),
+        CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
+            drivetrain, manipulator, elevator, vision),
         AutoBuilder.followPath(backUpH1C));
   }
 
@@ -472,31 +455,6 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
-  }
-
-  public Command getCollectAlgaeCommand(
-      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    return Commands.parallel(
-        Commands.runOnce(manipulator::collectAlgae),
-        Commands.sequence(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_LOW_ALGAE), elevator),
-            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-            Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BELOW_LOW_ALGAE)),
-            new DriveToReef(
-                drivetrain,
-                () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
-                manipulator::setReadyToScore,
-                elevator::setXFromReef,
-                elevator::setYFromReef,
-                elevator::setThetaFromReef,
-                new Transform2d(
-                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                0.5),
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BELOW_HIGH_ALGAE), elevator),
-            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-            Commands.waitUntil(manipulator::doneCollectingAlgae)));
   }
 
   // when programmed, this will wait until a coral is fully detected within the robot (use
