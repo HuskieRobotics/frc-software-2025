@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Servo;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
@@ -27,6 +28,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private VoltageOut climberVoltageRequest;
   private ElevatorSystemSim elevatorSystemSim;
+  private Servo servo;
 
   private StatusSignal<Voltage> voltage;
   private StatusSignal<Current> statorCurrentAmps;
@@ -40,6 +42,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     climberMotor =
         new TalonFX(
             ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
+
+    servo = new Servo(2);
 
     configMotor();
 
@@ -81,6 +85,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
     elevatorSystemSim.updateSim();
+    inputs.servoPosition = servo.get();
   }
 
   @Override
@@ -91,6 +96,16 @@ public class ClimberIOTalonFX implements ClimberIO {
   @Override
   public void zeroPosition() {
     climberMotor.setPosition(0);
+  }
+
+  @Override
+  public void unlockServo() {
+    servo.set(0.75);
+  }
+
+  @Override
+  public void lockServo() {
+    servo.set(0);
   }
 
   private void configMotor() {

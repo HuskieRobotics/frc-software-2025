@@ -18,19 +18,17 @@ public class ClimberCommandFactory {
     oi.getExtendCageCatcherButton()
         .onTrue(
             Commands.sequence(
-                    Commands.runOnce(climber::extend, climber),
-                    Commands.waitUntil(
-                        () ->
-                            climber.getPosition()
-                                > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES),
-                    Commands.runOnce(climber::stop, climber))
+                    Commands.runOnce(climber::extendCageCatcher, climber),
+                    Commands.waitUntil(climber::cageCatcherReleased),
+                    Commands.runOnce(climber::stopExtension, climber))
                 .withName("extend cage catcher"));
 
     oi.getInitiateClimbButton()
         .onTrue(
             Commands.sequence(
-                    Commands.runOnce(climber::retract, climber),
-                    Commands.waitUntil(() -> climber.getPosition() < minHeight.get()),
+                    Commands.runOnce(climber::climb, climber),
+                    Commands.waitUntil(
+                        () -> climber.getPosition() > ClimberConstants.MAX_HEIGHT_INCHES),
                     Commands.runOnce(climber::stop, climber))
                 .withName("retract climber"));
 
@@ -43,7 +41,8 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::zero, climber))
                 .withName("stop and zero climber"));
 
-    oi.getZeroClimberButton()
-        .onTrue(Commands.runOnce(climber::zero, climber).withName("zero climber"));
+    oi.getExtendClimberSlowButton()
+        .onTrue(Commands.runOnce(climber::extendSlow, climber).withName("extend climber slow"));
+    oi.getExtendClimberSlowButton().onFalse(Commands.runOnce(climber::stop));
   }
 }
