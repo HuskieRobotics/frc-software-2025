@@ -53,9 +53,7 @@ public class DriveToReef extends Command {
   // change the pose supplier to no longer be final since we will change it if we stall on a coral
   private Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
-  private final Consumer<Double> xFromReef;
-  private final Consumer<Double> yFromReef;
-  private final Consumer<Rotation2d> thetaFromReef;
+  private final Consumer<Transform2d> distanceFromReefConsumer;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
@@ -111,17 +109,13 @@ public class DriveToReef extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
-      Consumer<Double> xFromReef,
-      Consumer<Double> yFromReef,
-      Consumer<Rotation2d> thetaFromReef,
+      Consumer<Transform2d> distanceConsumer,
       Transform2d tolerance,
       double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
     this.onTarget = onTargetConsumer;
-    this.xFromReef = xFromReef;
-    this.yFromReef = yFromReef;
-    this.thetaFromReef = thetaFromReef;
+    this.distanceFromReefConsumer = distanceConsumer;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
     this.timeout = timeout;
@@ -297,14 +291,14 @@ public class DriveToReef extends Command {
     Logger.recordOutput("DriveToReef/difference (reef frame)", reefRelativeDifference);
 
     if (oneCoralAway) {
-      xFromReef.accept(
-          reefRelativeDifference.getX()
-              + DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE);
-    } else {
-      xFromReef.accept(reefRelativeDifference.getX());
+      distanceFromReefConsumer.accept(
+          new Transform2d(
+              reefRelativeDifference.getX()
+                  + DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE,
+              reefRelativeDifference.getY(),
+              reefRelativeDifference.getRotation()));
+      distanceFromReefConsumer.accept(reefRelativeDifference);
     }
-    yFromReef.accept(reefRelativeDifference.getY());
-    thetaFromReef.accept(reefRelativeDifference.getRotation());
 
     boolean atGoal =
         Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
