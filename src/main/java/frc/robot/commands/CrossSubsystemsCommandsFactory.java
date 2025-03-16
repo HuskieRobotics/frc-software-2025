@@ -79,15 +79,17 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
-    return Commands.either(
+    return Commands.sequence(
         Commands.either(
-            getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L2),
-            getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L3),
-            () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
-        getScoreCoralCloseCommand(manipulator, elevator),
-        () ->
-            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
-                || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()));
+            Commands.either(
+                getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L2),
+                getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L3),
+                () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
+            getScoreCoralCloseCommand(manipulator, elevator),
+            () ->
+                !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())),
+        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
   }
 
   private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {
@@ -115,8 +117,7 @@ public class CrossSubsystemsCommandsFactory {
             () ->
                 Math.abs(elevator.getXFromReef()) > MIN_FAR_SCORING_DISTANCE
                     && Math.abs(elevator.getXFromReef()) < FAR_SCORING_DISTANCE),
-        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
+        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()));
   }
 
   private static Command getScoreCoralCloseCommand(Manipulator manipulator, Elevator elevator) {
@@ -124,8 +125,7 @@ public class CrossSubsystemsCommandsFactory {
         getScoreL1Command(manipulator, elevator),
         Commands.sequence(
             Commands.runOnce(manipulator::shootCoralFast, manipulator),
-            Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-            Commands.runOnce(() -> elevator.setXFromReef(100.0))),
+            Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
         () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
   }
 
@@ -165,32 +165,30 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getPrepCoralCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
-        Commands.sequence(
-            Commands.waitUntil(manipulator::hasIndexedCoral),
-            Commands.either(
+        Commands.waitUntil(manipulator::hasIndexedCoral),
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(elevator::goToSelectedPosition, elevator),
+                Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
+            Commands.parallel(
                 Commands.sequence(
-                    Commands.runOnce(elevator::goToSelectedPosition, elevator),
-                    Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
-                Commands.parallel(
-                    Commands.sequence(
-                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                        new DriveToReef(
-                            drivetrain,
-                            () -> Field2d.getInstance().getSelectedBranch(),
-                            manipulator::setReadyToScore,
-                            elevator::setXFromReef,
-                            elevator::setYFromReef,
-                            elevator::setThetaFromReef,
-                            new Transform2d(
-                                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                Rotation2d.fromDegrees(
-                                    DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                            5.0),
-                        Commands.runOnce(
-                            () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                    Commands.runOnce(elevator::goToSelectedPosition, elevator)),
-                () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())));
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToReef(
+                        drivetrain,
+                        () -> Field2d.getInstance().getSelectedBranch(),
+                        manipulator::setReadyToScore,
+                        elevator::setXFromReef,
+                        elevator::setYFromReef,
+                        elevator::setThetaFromReef,
+                        new Transform2d(
+                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                            Rotation2d.fromDegrees(
+                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                        5.0),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+            () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
   }
 
   private static Command getPrepAlgaeCommand(
