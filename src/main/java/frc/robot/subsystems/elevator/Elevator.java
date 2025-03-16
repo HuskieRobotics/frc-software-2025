@@ -19,6 +19,8 @@ import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.Field2d;
+import frc.robot.Field2d.AlgaePosition;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import org.littletonrobotics.junction.Logger;
@@ -247,6 +249,33 @@ public class Elevator extends SubsystemBase {
 
   public boolean isAtSelectedPosition() {
     return isAtPosition(getSelectedPosition());
+  }
+
+  public void goBelowNearestAlgae() {
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    if (nearestAlgae.isHigh) {
+      goToPosition(ScoringHeight.BELOW_HIGH_ALGAE);
+    } else {
+      goToPosition(ScoringHeight.BELOW_LOW_ALGAE);
+    }
+  }
+
+  public boolean isBelowNearestAlgae() {
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    if (nearestAlgae.isHigh) {
+      return isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE);
+    } else {
+      return isAtPosition(ScoringHeight.BELOW_LOW_ALGAE);
+    }
+  }
+
+  public void goToNearestAlgae() {
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    if (nearestAlgae.isHigh) {
+      goToPosition(ScoringHeight.HIGH_ALGAE);
+    } else {
+      goToPosition(ScoringHeight.LOW_ALGAE);
+    }
   }
 
   public void raiseElevatorSlow() {
