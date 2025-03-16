@@ -311,10 +311,6 @@ public class Robot extends LoggedRobot {
     // check if the alliance color has changed based on the FMS data
     robotContainer.checkAllianceColor();
 
-    if (AutonomousCommandFactory.getInstance().alignedToStartingPose()) {
-      LEDs.getInstance().requestState(LEDs.States.ALIGNED_FOR_AUTO);
-    }
-
     // get the autochooser auto selected and if the default is selected then do solid red leds
     if (AutonomousCommandFactory.getInstance()
         .getAutonomousCommand()

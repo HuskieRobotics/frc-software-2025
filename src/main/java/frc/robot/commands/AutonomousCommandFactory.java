@@ -11,22 +11,18 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
-import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.Vision;
-import frc.lib.team6328.util.FieldConstants;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class AutonomousCommandFactory {
@@ -459,37 +455,5 @@ public class AutonomousCommandFactory {
         Commands.runOnce(drivetrain::captureInitialConditions),
         new PathPlannerAuto(autoName),
         Commands.runOnce(() -> drivetrain.captureFinalConditions(autoName, measureDistance)));
-  }
-
-  public boolean alignedToStartingPose() {
-
-    // find the target position
-    Transform2d difference;
-
-    if (Field2d.getInstance().getAlliance() == Alliance.Blue) {
-      difference =
-          RobotOdometry.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2.0)
-              ? RobotOdometry.getInstance().getEstimatedPose().minus(blueLeftStartingAutoPose)
-              : RobotOdometry.getInstance().getEstimatedPose().minus(blueRightStartingAutoPose);
-    } else {
-      difference =
-          RobotOdometry.getInstance().getEstimatedPose().getY() > (FieldConstants.fieldWidth / 2.0)
-              ? RobotOdometry.getInstance().getEstimatedPose().minus(redRightStartingAutoPose)
-              : RobotOdometry.getInstance().getEstimatedPose().minus(redLeftStartingAutoPose);
-    }
-
-    boolean isAligned =
-        Math.abs(difference.getX()) < autoStartTolerance.getX()
-            && Math.abs(difference.getY()) < autoStartTolerance.getY()
-            && Math.abs(difference.getRotation().getRadians())
-                < autoStartTolerance.getRotation().getRadians();
-
-    // this method will be invoked in something like our disabledPeriodic method
-    Logger.recordOutput("PathFinding/alignedForAuto", isAligned);
-    Logger.recordOutput("PathFinding/xDiff", difference.getX());
-    Logger.recordOutput("PathFinding/yDiff", difference.getY());
-    Logger.recordOutput("PathFinding/rotDiff", difference.getRotation().getDegrees());
-
-    return isAligned;
   }
 }
