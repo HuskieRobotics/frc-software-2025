@@ -8,6 +8,8 @@ import org.littletonrobotics.junction.Logger;
 public class Climber extends SubsystemBase {
   private ClimberIO io;
 
+  private boolean isClimbing = false;
+
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
   private final LoggedTunableNumber minHeight =
@@ -40,6 +42,7 @@ public class Climber extends SubsystemBase {
   public void extendCageCatcher() {
     io.unlockServo();
     io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
+    this.isClimbing = true;
   }
 
   public void climb() {
@@ -68,6 +71,11 @@ public class Climber extends SubsystemBase {
 
   public void zero() {
     io.zeroPosition();
+    this.isClimbing = false;
+  }
+
+  public boolean isClimbing() {
+    return this.isClimbing;
   }
 
   // should we add a tolerance here for if the position slips a little bit?

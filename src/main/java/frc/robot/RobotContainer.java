@@ -421,7 +421,7 @@ public class RobotContainer {
 
     new Trigger(
             () -> {
-              return drivetrain.isTilted() && !climber.cageCatcherReleased();
+              return drivetrain.isTilted() && !climber.isClimbing();
             })
         .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
 
