@@ -60,9 +60,10 @@ public class DriveToReef extends Command {
   private Debouncer xDebouncer = new Debouncer(0.2);
 
   // the oneCoralAway boolean will be set to true one time, when we transform the target pose to be
-  // one coral away
-  // this will make sure we never transform the target pose more than once
+  // one coral away this will make sure we never transform the target pose more than once
   private boolean oneCoralAway = false;
+
+  private boolean firstRun = true;
 
   private double timeout;
 
@@ -139,6 +140,7 @@ public class DriveToReef extends Command {
     this.targetPose = poseSupplier.get();
 
     oneCoralAway = false;
+    firstRun = true;
 
     drivetrain.enableAccelerationLimiting();
 
@@ -312,10 +314,16 @@ public class DriveToReef extends Command {
       onTarget.accept(false);
     }
 
+    boolean cannotReachTargetPose = false;
+    if (firstRun) {
+      firstRun = false;
+      cannotReachTargetPose = reefRelativeDifference.getX() > 0;
+    }
+
     // check that each of the controllers is at their goal or if the timeout is elapsed
     // check if it is physically possible for us to drive to the selected position without going
     // through the reef (sign of our x difference)
-    return reefRelativeDifference.getX() > 0
+    return cannotReachTargetPose
         || !drivetrain.isMoveToPoseEnabled()
         || this.timer.hasElapsed(timeout)
         || atGoal;
