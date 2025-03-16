@@ -88,15 +88,11 @@ public class ElevatorConstants {
     MAX_L2,
     MAX_L3,
 
-    // FIXME: why are there three sets when there should be two?
     LOW_ALGAE,
     HIGH_ALGAE,
 
     BELOW_LOW_ALGAE,
     BELOW_HIGH_ALGAE,
-
-    BELOW_ALGAE_2,
-    ABOVE_ALGAE_2,
 
     BARGE,
     PROCESSOR
@@ -125,16 +121,13 @@ public class ElevatorConstants {
   public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(0.5);
   public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(2.0);
 
-  public static final Distance ALGAE1_HEIGHT =
-      Inches.of(13.0); // height under is 9 // height of impact is 13
-  public static final Distance ALGAE2_HEIGHT =
-      Inches.of(28.0); // height under is 24 // height of impact is 28
-
+  // height under is 24 // height of impact is 28
   public static final Distance BELOW_HIGH_ALGAE_HEIGHT = Inches.of(20.0);
-  public static final Distance ABOVE_HIGH_ALGAE_HEIGHT = Inches.of(34.0);
+  public static final Distance HIGH_ALGAE_HEIGHT = Inches.of(30.0);
 
-  public static final Distance BELOW_LOW_ALGAE_HEIGHT = Inches.of(7.0);
-  public static final Distance ABOVE_LOW_ALGAE_HEIGHT = Inches.of(16.0);
+  // height under is 9 // height of impact is 13
+  public static final Distance BELOW_LOW_ALGAE_HEIGHT = Inches.of(5.0);
+  public static final Distance LOW_ALGAE_HEIGHT = Inches.of(15.0);
 
   public static final double ELEVATOR_PEAK_CURRENT_LIMIT = 60.0;
 }

@@ -161,27 +161,19 @@ public class Elevator extends SubsystemBase {
         break;
 
       case LOW_ALGAE:
-        height = ALGAE1_HEIGHT;
+        height = LOW_ALGAE_HEIGHT;
         break;
 
       case HIGH_ALGAE:
-        height = ALGAE2_HEIGHT;
+        height = HIGH_ALGAE_HEIGHT;
         break;
 
       case BELOW_HIGH_ALGAE:
-        height = ABOVE_LOW_ALGAE_HEIGHT;
+        height = BELOW_HIGH_ALGAE_HEIGHT;
         break;
 
       case BELOW_LOW_ALGAE:
         height = BELOW_LOW_ALGAE_HEIGHT;
-        break;
-
-      case ABOVE_ALGAE_2:
-        height = ABOVE_HIGH_ALGAE_HEIGHT;
-        break;
-
-      case BELOW_ALGAE_2:
-        height = BELOW_HIGH_ALGAE_HEIGHT;
         break;
 
       case HARDSTOP:
@@ -255,56 +247,6 @@ public class Elevator extends SubsystemBase {
 
   public boolean isAtSelectedPosition() {
     return isAtPosition(getSelectedPosition());
-  }
-
-  private ScoringHeight getSelectedAlgaePosition() {
-    if (OISelector.getOperatorInterface().getRemoveLowAlgaeTrigger().getAsBoolean()) {
-      return ScoringHeight.LOW_ALGAE;
-    } else if (OISelector.getOperatorInterface().getRemoveHighAlgaeTrigger().getAsBoolean()) {
-      return ScoringHeight.HIGH_ALGAE;
-    } else {
-      return ScoringHeight.HARDSTOP;
-    }
-  }
-
-  public boolean isAlgaePositionSelected() {
-    return getSelectedAlgaePosition() != ScoringHeight.HARDSTOP;
-  }
-
-  public void goBelowSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      goToPosition(ScoringHeight.BELOW_LOW_ALGAE);
-    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
-      goToPosition(ScoringHeight.BELOW_ALGAE_2);
-    }
-  }
-
-  public void goAboveSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      goToPosition(ScoringHeight.BELOW_HIGH_ALGAE);
-    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
-      goToPosition(ScoringHeight.ABOVE_ALGAE_2);
-    }
-  }
-
-  public boolean isBelowSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      return isAtPosition(ScoringHeight.BELOW_LOW_ALGAE);
-    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
-      return isAtPosition(ScoringHeight.BELOW_ALGAE_2);
-    } else {
-      return true;
-    }
-  }
-
-  public boolean isAboveSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ScoringHeight.LOW_ALGAE) {
-      return isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE);
-    } else if (getSelectedAlgaePosition() == ScoringHeight.HIGH_ALGAE) {
-      return isAtPosition(ScoringHeight.ABOVE_ALGAE_2);
-    } else {
-      return true;
-    }
   }
 
   public void raiseElevatorSlow() {
