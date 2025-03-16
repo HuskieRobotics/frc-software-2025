@@ -1,7 +1,5 @@
 package frc.robot.subsystems.climber;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -20,7 +18,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
-import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private TalonFX climberMotor;
@@ -38,18 +35,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   private StatusSignal<Angle> positionRotations;
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
-
-  private final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/KP", ClimberConstants.KP);
-  private final LoggedTunableNumber KI = new LoggedTunableNumber("Climber/KI", ClimberConstants.KI);
-  private final LoggedTunableNumber KD = new LoggedTunableNumber("Climber/KD", ClimberConstants.KD);
-  private final LoggedTunableNumber KS = new LoggedTunableNumber("Climber/KS", ClimberConstants.KS);
-  private final LoggedTunableNumber KV = new LoggedTunableNumber("Climber/KV", ClimberConstants.KV);
-  private final LoggedTunableNumber KA = new LoggedTunableNumber("Climber/KA", ClimberConstants.KA);
-  private final LoggedTunableNumber KVEXP =
-      new LoggedTunableNumber("Climber/KVEXP", ClimberConstants.KVEXP);
-  private final LoggedTunableNumber KAEXP =
-      new LoggedTunableNumber("Climber/KAEXP", ClimberConstants.KAEXP);
-  private final LoggedTunableNumber KG = new LoggedTunableNumber("Climber/KG", ClimberConstants.KG);
 
   public ClimberIOTalonFX() {
     climberMotor =

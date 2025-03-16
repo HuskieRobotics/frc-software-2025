@@ -23,7 +23,6 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -76,7 +75,6 @@ public class DriveToBarge extends Command {
       new PIDController(thetaKp.get(), thetaKi.get(), thetaKd.get(), LOOP_PERIOD_SECS);
 
   private DoubleSupplier translationYSupplier;
-  private BooleanSupplier interrupted;
   private Transform2d tolerance;
 
   /**

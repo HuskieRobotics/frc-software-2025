@@ -9,14 +9,9 @@ public class Climber extends SubsystemBase {
   private ClimberIO io;
 
   private boolean extendingCageCatcher = false;
-  private boolean retractingSlow = false;
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
-  private final LoggedTunableNumber minHeight =
-      new LoggedTunableNumber("Climber/MinHeight", ClimberConstants.MIN_HEIGHT_INCHES);
-  private final LoggedTunableNumber maxHeight =
-      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_HEIGHT_INCHES);
   private final LoggedTunableNumber climberVoltage =
       new LoggedTunableNumber("Climber/Voltage", 0.0);
 
@@ -51,7 +46,6 @@ public class Climber extends SubsystemBase {
   }
 
   public void retractSlow() {
-    retractingSlow = true;
     io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
   }
 
@@ -60,7 +54,6 @@ public class Climber extends SubsystemBase {
   }
 
   public void stop() {
-    retractingSlow = false;
     io.setVoltage(0);
   }
 

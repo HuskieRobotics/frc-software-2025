@@ -75,8 +75,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double DRIVE_KA = 0.43636;
 
   private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.67);
-  private static final LinearVelocity MAX_COAST_VELOCITY =
-      MetersPerSecond.of(0.04); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.04);
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
   private static final String CAN_BUS_NAME = "canbus1";

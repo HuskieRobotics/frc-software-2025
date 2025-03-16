@@ -262,7 +262,7 @@ public class Field2d {
 
       // right
       // HARDCODE REMOVE ALGAE POSES TO THE MIDDLE FOR NOW:
-      // FIXME: unhardcode remove algae poses
+      // FIXME: stop hardcoding remove algae poses
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i], blueReefRightBranches[i]);
         Pose2d removeAlgaePose =

@@ -23,10 +23,10 @@ public class ElevatorConstants {
   public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
   public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
 
-  public static final double PULLY_CIRCUMFERANCE_INCHES = 5.9055;
+  public static final double PULLEY_CIRCUMFERENCE_INCHES = 5.9055;
   public static final int GEAR_RATIO = 5;
 
-  public static final double ELEVATOR_MASS_KG = 4.5; // FIXEME: Update this value
+  public static final double ELEVATOR_MASS_KG = 4.5;
 
   public static final int LEAD_MOTOR_ID = 10;
   public static final int FOLLOWER_MOTOR_ID = 11;
@@ -36,13 +36,11 @@ public class ElevatorConstants {
 
   public static final String SUBSYSTEM_NAME = "Elevator";
 
-  public static final double ELEVATOR_LOWERING_VOLTAGE = -2.0; // FIXME: Update this value
+  public static final double ELEVATOR_LOWERING_VOLTAGE = -2.0;
 
-  public static final double ELEVATOR_RAISE_SLOW_VOLTAGE = 2.0; // FIXME: Update this value
+  public static final double ELEVATOR_RAISE_SLOW_VOLTAGE = 2.0;
 
-  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -2.0; // FIXME: Update this value
-
-  // FIXME: Update all K values
+  public static final double ELEVATOR_LOWERING_SLOW_VOLTAGE = -2.0;
 
   public static final double KP_SLOT0 = 40.0;
   public static final double KI_SLOT0 = 0;

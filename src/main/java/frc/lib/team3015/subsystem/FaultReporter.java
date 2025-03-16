@@ -9,7 +9,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.PWMMotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -59,12 +58,10 @@ public class FaultReporter {
   private static final String SYSTEM_STATUS = "SystemStatus/";
 
   private final Map<String, SubsystemFaults> subsystemsFaults = new HashMap<>();
-  private final boolean checkErrors;
 
   private boolean startedCTRESignalLogger = false;
 
   private FaultReporter() {
-    this.checkErrors = RobotBase.isReal();
     setupCallbacks();
     registerDashboardCommands();
   }

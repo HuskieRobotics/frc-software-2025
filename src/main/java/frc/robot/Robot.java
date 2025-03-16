@@ -132,7 +132,6 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // start Elastic Dashboard server
-    // FIXME: disable this and check loop times
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // DO THIS FIRST

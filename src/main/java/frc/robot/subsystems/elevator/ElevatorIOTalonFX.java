@@ -172,7 +172,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             ElevatorConstants.IS_INVERTED,
             ElevatorConstants.GEAR_RATIO,
             ElevatorConstants.ELEVATOR_MASS_KG,
-            Units.inchesToMeters(ElevatorConstants.PULLY_CIRCUMFERANCE_INCHES / (Math.PI * 2)),
+            Units.inchesToMeters(ElevatorConstants.PULLEY_CIRCUMFERENCE_INCHES / (Math.PI * 2)),
             ElevatorConstants.MIN_HEIGHT.in(Meters),
             ElevatorConstants.MAX_HEIGHT.in(Meters),
             0.0,
@@ -302,7 +302,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.positionRotations = elevatorPositionStatusSignal.getValueAsDouble();
 
-    inputs.positionInches = inputs.positionRotations * PULLY_CIRCUMFERANCE_INCHES;
+    inputs.positionInches = inputs.positionRotations * PULLEY_CIRCUMFERENCE_INCHES;
 
     localPosition = inputs.positionInches;
 
@@ -391,12 +391,12 @@ public class ElevatorIOTalonFX implements ElevatorIO {
       // set the elevator to slot 0
       elevatorMotorLead.setControl(
           leadPositionRequest
-              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
+              .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0));
     } else {
       elevatorMotorLead.setControl(
           leadPositionRequestDown
-              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
+              .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0));
     }
   }
