@@ -182,6 +182,14 @@ public class Elevator extends SubsystemBase {
         height = MIN_HEIGHT;
         break;
 
+      case BARGE:
+        height = BARGE_HEIGHT;
+        break;
+
+      case PROCESSOR:
+        height = PROCESSOR_HEIGHT;
+        break;
+
       default:
         height = MIN_HEIGHT;
         break;
