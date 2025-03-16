@@ -34,9 +34,9 @@ public class ManipulatorConstants {
 
   public static final int PIVOT_MOTOR_ID = 56;
 
-  public static final int ALGAE_IR_SENSOR_ID = 4; // new algae ir sensor --> id tbd
+  public static final int ALGAE_IR_SENSOR_ID = 6;
 
-  public static final int ALGAE_IR_BACKUP_SENSOR_ID = 5;
+  public static final int ALGAE_IR_BACKUP_SENSOR_ID = 7;
 
   // not sure what this is???
   public static final double GEAR_RATIO_FUNNEL = 9.0;
