@@ -645,8 +645,12 @@ public class Manipulator extends SubsystemBase {
     return state == State.ALGAE_IN_MANIPULATOR;
   }
 
-  public boolean isWaitingForCoral() {
-    return state == State.WAITING_FOR_CORAL_IN_FUNNEL;
+  public boolean coralIsInManipulator() {
+    return inputs.isIndexerIRBlocked;
+  }
+
+  public boolean algaeIsInManipulator() {
+    return inputs.isAlgaeIRBlocked;
   }
 
   public void setReadyToScore(boolean readyToScore) {

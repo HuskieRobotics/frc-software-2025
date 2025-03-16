@@ -27,6 +27,7 @@
       "/SmartDashboard/Elevator/Zero Elevator": "Command",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/SysId Chooser": "String Chooser",
+      "/SmartDashboard/SystemStatus/CheckForFaults": "Command",
       "/SmartDashboard/SystemStatus/ClearAllFaults": "Command",
       "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/Manipulator/SystemCheck": "Command",

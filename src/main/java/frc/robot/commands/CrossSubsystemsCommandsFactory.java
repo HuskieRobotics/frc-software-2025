@@ -115,7 +115,7 @@ public class CrossSubsystemsCommandsFactory {
             () ->
                 Math.abs(elevator.getXFromReef()) > MIN_FAR_SCORING_DISTANCE
                     && Math.abs(elevator.getXFromReef()) < FAR_SCORING_DISTANCE),
-        Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
+        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(() -> elevator.setXFromReef(100.0)));
   }
 
@@ -124,7 +124,7 @@ public class CrossSubsystemsCommandsFactory {
         getScoreL1Command(manipulator, elevator),
         Commands.sequence(
             Commands.runOnce(manipulator::shootCoralFast, manipulator),
-            Commands.waitUntil(() -> !manipulator.hasIndexedCoral()),
+            Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
             Commands.runOnce(() -> elevator.setXFromReef(100.0))),
         () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
   }
@@ -291,7 +291,7 @@ public class CrossSubsystemsCommandsFactory {
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
         Commands.runOnce(manipulator::scoreAlgae, manipulator),
-        Commands.waitUntil(() -> !manipulator.hasIndexedAlgae()));
+        Commands.waitUntil(() -> !manipulator.algaeIsInManipulator()));
   }
 
   private static Command getScoreCoralAndCollectAlgaeCommand(
