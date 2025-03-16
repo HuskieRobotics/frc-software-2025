@@ -47,10 +47,6 @@ public class ClimberIOTalonFX implements ClimberIO {
   private final LoggedTunableNumber KS = new LoggedTunableNumber("Climber/KS", ClimberConstants.KS);
   private final LoggedTunableNumber KV = new LoggedTunableNumber("Climber/KV", ClimberConstants.KV);
   private final LoggedTunableNumber KA = new LoggedTunableNumber("Climber/KA", ClimberConstants.KA);
-  private final LoggedTunableNumber KVEXP =
-      new LoggedTunableNumber("Climber/KVEXP", ClimberConstants.KVEXP);
-  private final LoggedTunableNumber KAEXP =
-      new LoggedTunableNumber("Climber/KAEXP", ClimberConstants.KAEXP);
   private final LoggedTunableNumber KG = new LoggedTunableNumber("Climber/KG", ClimberConstants.KG);
 
   public ClimberIOTalonFX() {
