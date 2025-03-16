@@ -75,8 +75,7 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  // drivetrain, game-specific
-
+  // DRIVER TRIGGERS
   public default Trigger getExtendCageCatcherButton() {
     return new Trigger(() -> false);
   }
@@ -101,6 +100,27 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getRaiseElevatorSlowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getLowerElevatorSlowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getOverrideDriveToPoseButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getCurrentPoseButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getInterruptAll() {
+    return new Trigger(() -> false);
+  }
+
+  // OPERATOR TRIGGERS
   public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
   }
@@ -169,14 +189,6 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getRemoveHighAlgaeTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getRemoveLowAlgaeTrigger() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getAlgaeBargeTrigger() {
     return new Trigger(() -> false);
   }
@@ -186,27 +198,6 @@ public interface OperatorInterface {
   }
 
   public default Trigger getAlgaeDropTrigger() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getRaiseElevatorSlowButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getLowerElevatorSlowButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getOverrideDriveToPoseButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getCurrentPoseButton() {
-    return new Trigger(() -> false);
-  }
-
-  // miscellaneous
-  public default Trigger getInterruptAll() {
     return new Trigger(() -> false);
   }
 }
