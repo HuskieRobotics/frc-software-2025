@@ -53,23 +53,13 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getExtendClimberButton() {
-    return translateJoystickButtons[3];
-  }
-
-  @Override
   public Trigger getExtendCageCatcherButton() {
-    return translateJoystickButtons[4];
+    return translateJoystickButtons[3];
   }
 
   @Override
   public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
-  }
-
-  @Override
-  public Trigger getDescoreAlgaeAfterAutoButton() {
-    return translateJoystickButtons[6];
   }
 
   @Override
@@ -125,12 +115,12 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getRetractClimberSlowButton() {
-    return rotateJoystickButtons[10];
+  public Trigger getExtendClimberSlowButton() {
+    return rotateJoystickButtons[7];
   }
 
   @Override
-  public Trigger getZeroClimberButton() {
-    return rotateJoystickButtons[11];
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[10];
   }
 }

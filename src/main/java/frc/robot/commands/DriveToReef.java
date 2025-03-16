@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +28,7 @@ import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.operator_interface.OISelector;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -221,7 +223,10 @@ public class DriveToReef extends Command {
                     Math.abs(reefRelativeXDifference)
                         - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
                 < Units.inchesToMeters(0.5))
-        && !oneCoralAway) {
+        && !oneCoralAway
+        && !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+            || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
+        && !DriverStation.isAutonomous()) {
       targetPose =
           targetPose.transformBy(
               new Transform2d(

@@ -8,13 +8,18 @@ import org.littletonrobotics.junction.Logger;
 public class Climber extends SubsystemBase {
   private ClimberIO io;
 
-  private boolean extendingCageCatcher = false;
-  private boolean retractingSlow = false;
+  private boolean isClimbing = false;
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
   private final LoggedTunableNumber minHeight =
       new LoggedTunableNumber("Climber/MinHeight", ClimberConstants.MIN_HEIGHT_INCHES);
+  private final LoggedTunableNumber maxHeight =
+      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_HEIGHT_INCHES);
+  private final LoggedTunableNumber cageCatcherExtendPos =
+      new LoggedTunableNumber(
+          "Climber/CageCatcherExtendPos", ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES);
+
   private final LoggedTunableNumber climberVoltage =
       new LoggedTunableNumber("Climber/Voltage", 0.0);
 
@@ -34,42 +39,48 @@ public class Climber extends SubsystemBase {
     LoggedTracer.record("Climber");
   }
 
-  public void extend() {
-    this.extendingCageCatcher = false;
-    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
-  }
-
   public void extendCageCatcher() {
-    this.extendingCageCatcher = true;
-    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
+    io.unlockServo();
+    io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
+    this.isClimbing = true;
   }
 
-  public void retract() {
-    io.setVoltage(ClimberConstants.RETRACT_VOLTAGE);
+  public void climb() {
+    io.unlockServo();
+    io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
   }
 
   public void retractSlow() {
-    retractingSlow = true;
+    io.unlockServo();
     io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
   }
 
-  public void reset() {
-    io.setVoltage(ClimberConstants.RESET_VOLTAGE);
+  public void extendSlow() {
+    io.unlockServo();
+    io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
   public void stop() {
-    retractingSlow = false;
+    io.lockServo();
+    io.setVoltage(0);
+  }
+
+  public void stopExtension() {
     io.setVoltage(0);
   }
 
   public void zero() {
     io.zeroPosition();
+    this.isClimbing = false;
+  }
+
+  public boolean isClimbing() {
+    return this.isClimbing;
   }
 
   // should we add a tolerance here for if the position slips a little bit?
   public boolean cageCatcherReleased() {
-    return !this.extendingCageCatcher
-        && inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES - 0.0;
+    return inputs.positionInches > (ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES - 0.5);
   }
 
   public double getPosition() {
