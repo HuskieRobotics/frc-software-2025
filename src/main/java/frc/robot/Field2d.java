@@ -433,11 +433,12 @@ public class Field2d {
     processors[1] = FlippingUtil.flipFieldPose(processors[0]);
 
     Pose2d nearestProcessor = pose.nearest(Arrays.asList(processors));
-    nearestProcessor.transformBy(
-        new Transform2d(
-            RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-            0,
-            Rotation2d.fromDegrees(180)));
+    nearestProcessor =
+        nearestProcessor.transformBy(
+            new Transform2d(
+                RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                0,
+                Rotation2d.fromDegrees(180)));
 
     return nearestProcessor;
   }
