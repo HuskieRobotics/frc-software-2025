@@ -318,6 +318,8 @@ public class Robot extends LoggedRobot {
         .equals("Do Nothing")) {
       LEDs.getInstance().requestState(LEDs.States.NO_AUTO_SELECTED);
       noAutoSelectedAlert.set(true);
+    } else {
+      noAutoSelectedAlert.set(false);
     }
   }
 

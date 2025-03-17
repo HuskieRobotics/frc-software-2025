@@ -22,9 +22,9 @@ public class ManipulatorConstants {
   // to confirm the can id's for the motors and sensors, go to the robot software feature sheet 2025
   public static final int FUNNEL_MOTOR_ID = 14;
 
-  public static final int FUNNEL_IR_SENSOR_ID = 2;
+  public static final int FUNNEL_IR_SENSOR_ID = 3;
 
-  public static final int FUNNEL_IR_BACKUP_SENSOR_ID = 3;
+  public static final int FUNNEL_IR_BACKUP_SENSOR_ID = 2;
 
   public static final int INDEXER_MOTOR_ID = 56;
 
