@@ -48,7 +48,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.985073979);
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
-  private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.050115);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.34925, 0.34925);
