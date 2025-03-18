@@ -220,118 +220,18 @@ public class AutonomousCommandFactory {
     return CharacterizationCommands.wheelRadiusCharacterization(drivetrain);
   }
 
-  // FIXME: remove elevator setpoints in code since we have event markers now
-  public Command getTwoCoralLeftAutoCommand(
+  public Command getThreeCoralLeftCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     PathPlannerPath collectCoralAfterJ2L;
     PathPlannerPath scoreCoralL2L;
     PathPlannerPath collectCoralAfterL2L;
-    try {
-      collectCoralAfterJ2L = PathPlannerPath.fromPathFile("#2 Collect Coral After J 2L");
-      scoreCoralL2L = PathPlannerPath.fromPathFile("#3 Score Coral L 2L");
-      collectCoralAfterL2L = PathPlannerPath.fromPathFile("#4 Collect Coral After L 2L");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText(
-          "Could not find the specified path file in getTwoCoralLeftAutoCommand.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    return Commands.sequence(
-        Commands.parallel(
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    3.0)),
-            Commands.sequence(
-                Commands.waitSeconds(0.5),
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-        Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-        Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator),
-        AutoBuilder.followPath(collectCoralAfterJ2L),
-        getCollectCoralCommand(manipulator),
-        Commands.parallel(
-            AutoBuilder.followPath(scoreCoralL2L),
-            Commands.waitUntil(manipulator::hasIndexedCoral)),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-        AutoBuilder.followPath(collectCoralAfterL2L),
-        getCollectCoralCommand(manipulator));
-  }
-
-  public Command getTwoCoralRightAutoCommand(
-      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    PathPlannerPath collectCoralAfterE2R;
-    PathPlannerPath scoreCoralD2R;
-    PathPlannerPath collectCoralAfterD2R;
-
-    try {
-      collectCoralAfterE2R = PathPlannerPath.fromPathFile("#2 Collect Coral After E 2R");
-      scoreCoralD2R = PathPlannerPath.fromPathFile("#3 Score Coral D 2R");
-      collectCoralAfterD2R = PathPlannerPath.fromPathFile("#4 Collect Coral After D 2R");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText(
-          "Could not find the specified path file in getTwoCoralRightAutoCommand.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
-
-    return Commands.sequence(
-        Commands.parallel(
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    3.0)),
-            Commands.sequence(
-                Commands.waitSeconds(0.5),
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-        Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-        Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator),
-        AutoBuilder.followPath(collectCoralAfterE2R),
-        getCollectCoralCommand(manipulator),
-        Commands.parallel(
-            AutoBuilder.followPath(scoreCoralD2R),
-            Commands.waitUntil(manipulator::hasIndexedCoral)),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
-        AutoBuilder.followPath(collectCoralAfterD2R),
-        getCollectCoralCommand(manipulator));
-  }
-
-  public Command getThreeCoralLeftCommand(
-      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     PathPlannerPath scoreCoralK;
     PathPlannerPath collectCoralAfterK;
 
     try {
+      collectCoralAfterJ2L = PathPlannerPath.fromPathFile("#2 Collect Coral After J 2L");
+      scoreCoralL2L = PathPlannerPath.fromPathFile("#3 Score Coral L 2L");
+      collectCoralAfterL2L = PathPlannerPath.fromPathFile("#4 Collect Coral After L 2L");
       scoreCoralK = PathPlannerPath.fromPathFile("#5 Score Coral K 3L");
       collectCoralAfterK = PathPlannerPath.fromPathFile("#6 Collect Coral After K 3L");
     } catch (Exception e) {
@@ -343,30 +243,39 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        getTwoCoralLeftAutoCommand(drivetrain, vision, manipulator, elevator),
-        Commands.parallel(
-            AutoBuilder.followPath(scoreCoralK), Commands.waitUntil(manipulator::hasIndexedCoral)),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
-        AutoBuilder.followPath(collectCoralAfterK),
-        getCollectCoralCommand(manipulator),
-        new DriveToReef(
+        getScoreFirstAutoCoralCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT),
+        getCollectAndScoreCommand(
             drivetrain,
-            () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            manipulator::setReadyToScore,
-            elevator::setDistanceFromReef,
-            new Transform2d(
-                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-            1.6));
+            manipulator,
+            elevator,
+            vision,
+            Side.RIGHT,
+            collectCoralAfterJ2L,
+            scoreCoralL2L),
+        getCollectAndScoreCommand(
+            drivetrain,
+            manipulator,
+            elevator,
+            vision,
+            Side.LEFT,
+            collectCoralAfterL2L,
+            scoreCoralK),
+        getCollectAndCoastCommand(
+            drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
   }
 
   public Command getThreeCoralRightCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    PathPlannerPath collectCoralAfterE2R;
+    PathPlannerPath scoreCoralD2R;
+    PathPlannerPath collectCoralAfterD2R;
     PathPlannerPath scoreCoralC;
     PathPlannerPath collectCoralAfterC;
 
     try {
+      collectCoralAfterE2R = PathPlannerPath.fromPathFile("#2 Collect Coral After E 2R");
+      scoreCoralD2R = PathPlannerPath.fromPathFile("#3 Score Coral D 2R");
+      collectCoralAfterD2R = PathPlannerPath.fromPathFile("#4 Collect Coral After D 2R");
       scoreCoralC = PathPlannerPath.fromPathFile("#5 Score Coral C 3R");
       collectCoralAfterC = PathPlannerPath.fromPathFile("#6 Collect Coral After C 3R");
     } catch (Exception e) {
@@ -378,22 +287,25 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        getTwoCoralRightAutoCommand(drivetrain, vision, manipulator, elevator),
-        Commands.parallel(
-            AutoBuilder.followPath(scoreCoralC), Commands.waitUntil(manipulator::hasIndexedCoral)),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
-        AutoBuilder.followPath(collectCoralAfterC),
-        getCollectCoralCommand(manipulator),
-        new DriveToReef(
+        getScoreFirstAutoCoralCommand(drivetrain, manipulator, elevator, vision, Side.LEFT),
+        getCollectAndScoreCommand(
             drivetrain,
-            () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            manipulator::setReadyToScore,
-            elevator::setDistanceFromReef,
-            new Transform2d(
-                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-            1.6));
+            manipulator,
+            elevator,
+            vision,
+            Side.RIGHT,
+            collectCoralAfterE2R,
+            scoreCoralD2R),
+        getCollectAndScoreCommand(
+            drivetrain,
+            manipulator,
+            elevator,
+            vision,
+            Side.LEFT,
+            collectCoralAfterD2R,
+            scoreCoralC),
+        getCollectAndCoastCommand(
+            drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterC));
   }
 
   public Command getOneCoralCenterCommand(
@@ -443,8 +355,73 @@ public class AutonomousCommandFactory {
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
-  // when programmed, this will wait until a coral is fully detected within the robot (use
-  // manipulator state machine)
+  private Command getScoreFirstAutoCoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision, Side side) {
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.sequence(
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+                new DriveToReef(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestBranch(side),
+                    manipulator::setReadyToScore,
+                    elevator::setDistanceFromReef,
+                    new Transform2d(
+                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                        Rotation2d.fromDegrees(
+                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                    3.0)),
+            Commands.sequence(
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
+        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
+  }
+
+  private Command getCollectAndScoreCommand(
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Elevator elevator,
+      Vision vision,
+      Side side,
+      PathPlannerPath collect,
+      PathPlannerPath score) {
+    return Commands.sequence(
+        AutoBuilder.followPath(collect),
+        getCollectCoralCommand(manipulator),
+        Commands.parallel(
+            AutoBuilder.followPath(score), Commands.waitUntil(manipulator::hasIndexedCoral)),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, side));
+  }
+
+  private Command getCollectAndCoastCommand(
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Elevator elevator,
+      Vision vision,
+      Side side,
+      PathPlannerPath collect) {
+    return Commands.sequence(
+        AutoBuilder.followPath(collect),
+        getCollectCoralCommand(manipulator),
+        new DriveToReef(
+            drivetrain,
+            () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
+            manipulator::setReadyToScore,
+            elevator::setDistanceFromReef,
+            new Transform2d(
+                DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+            1.6));
+  }
+
   private Command getCollectCoralCommand(Manipulator manipulator) {
     return Commands.waitUntil(manipulator::indexingCoral);
   }
