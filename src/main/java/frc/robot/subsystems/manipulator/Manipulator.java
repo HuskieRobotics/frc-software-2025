@@ -158,8 +158,8 @@ public class Manipulator extends SubsystemBase {
   private final SysIdRoutine sysIdPivot =
       new SysIdRoutine( // FIXME: check values for ramp rate and step voltage
           new SysIdRoutine.Config(
-              Volts.of(2).per(Seconds), // Use default ramp rate (1 V/s)
-              Volts.of(2), // Use default step voltage (7 V)
+              Volts.of(0.1).per(Seconds), // Use default ramp rate (1 V/s)
+              Volts.of(0.6), // Use default step voltage (7 V)
               null, // Use default timeout (10 s)
               // Log state with SignalLogger class
               sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
@@ -204,6 +204,8 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (subsystem.intakeAlgaeButtonPressed) {
           subsystem.setState(State.WAITING_FOR_ALGAE_IN_MANIPULATOR);
+        } else if (subsystem.inputs.isAlgaeIRBlocked) {
+          subsystem.setState(State.ALGAE_IN_MANIPULATOR);
         }
       }
 

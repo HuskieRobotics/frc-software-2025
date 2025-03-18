@@ -112,7 +112,7 @@ public class ElevatorConstants {
   public static final Distance FAR_L3_HEIGHT = Inches.of(51);
   public static final Distance L4_HEIGHT = Inches.of(71);
 
-  public static final Distance BARGE_HEIGHT = Inches.of(70); // FIXME: tune
+  public static final Distance BARGE_HEIGHT = Inches.of(72); // FIXME: tune
   public static final Distance PROCESSOR_HEIGHT = Inches.of(10); // FIXME: tune
 
   public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);

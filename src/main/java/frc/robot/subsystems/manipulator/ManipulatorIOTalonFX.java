@@ -574,10 +574,10 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     // configure soft limits while testing
     config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = PIVOT_MOTOR_STARTING_POS.in(Rotations);
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
     config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
         PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 

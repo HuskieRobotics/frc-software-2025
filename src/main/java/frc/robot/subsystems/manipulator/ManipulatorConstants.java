@@ -32,7 +32,7 @@ public class ManipulatorConstants {
 
   public static final int INDEXER_IR_BACKUP_SENSOR_ID = 1;
 
-  public static final int PIVOT_MOTOR_ID = 57;
+  public static final int PIVOT_MOTOR_ID = 62; // SHOULD BE 57
 
   public static final int ALGAE_IR_SENSOR_ID = 6;
 

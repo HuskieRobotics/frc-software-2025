@@ -269,7 +269,7 @@ public class Field2d {
             allReefCenterFaces[i].transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Units.inchesToMeters(-5),
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i], removeAlgaePose);
       }
@@ -421,7 +421,7 @@ public class Field2d {
   public Pose2d getBargePose() {
     // x arbitrary from 20 inches x from the middle cage
     return new Pose2d(
-        new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
+        new Translation2d(Units.inchesToMeters(295), Units.inchesToMeters(242.855)),
         Rotation2d.fromDegrees(0.0));
   }
 
