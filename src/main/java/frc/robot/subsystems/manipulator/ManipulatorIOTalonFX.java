@@ -368,9 +368,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
           config.Slot0.kA = pid[5];
           config.Slot0.kG = pid[6];
 
-          config.MotionMagic.MotionMagicExpo_kA = pid[6];
-          config.MotionMagic.MotionMagicExpo_kV = pid[7];
-
           this.pivotMotor.getConfigurator().apply(config);
         },
         pivotKp,
