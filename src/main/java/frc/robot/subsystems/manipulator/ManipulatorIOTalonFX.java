@@ -38,12 +38,12 @@ import frc.robot.operator_interface.OISelector;
 public class ManipulatorIOTalonFX implements ManipulatorIO {
   private TalonFX funnelMotor;
   private TalonFX indexerMotor;
-  private TalonFX pivotMotor; // new pivot motor for algae claw
+  private TalonFX pivotMotor;
 
   // ir sensors
   private DigitalInput funnelIRSensor;
   private DigitalInput indexerIRSensor;
-  private DigitalInput algaeIRSensor; // new algae IR sensor
+  private DigitalInput algaeIRSensor;
 
   private DigitalInput backupFunnelIRSensor;
   private DigitalInput backupIndexerIRSensor;
@@ -51,7 +51,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private VoltageOut funnelVoltageRequest;
   private VoltageOut indexerVoltageRequest;
-  private VoltageOut pivotVoltageRequest; // new for pivot motor
+  private VoltageOut pivotVoltageRequest;
 
   private TorqueCurrentFOC funnelCurrentRequest;
   private TorqueCurrentFOC indexerCurrentRequest;
@@ -59,7 +59,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private VelocityTorqueCurrentFOC funnelVelocityRequest;
   private VelocityTorqueCurrentFOC indexerVelocityRequest;
 
-  private MotionMagicExpoVoltage pivotPositionRequest; // new for pivot motor
+  private MotionMagicExpoVoltage pivotPositionRequest;
 
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
@@ -127,21 +127,21 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private StatusSignal<Current> funnelMotorStatorCurrent;
   private StatusSignal<Current> indexerMotorStatorCurrent;
-  private StatusSignal<Current> pivotMotorStatorCurrent; // stator current for pivot motor
+  private StatusSignal<Current> pivotMotorStatorCurrent;
 
   private StatusSignal<Temperature> funnelMotorTemp;
   private StatusSignal<Temperature> indexerMotorTemp;
-  private StatusSignal<Temperature> pivotMotorTemp; // temp for pivot motor
+  private StatusSignal<Temperature> pivotMotorTemp;
 
   private StatusSignal<Current> funnelMotorSupplyCurrent;
   private StatusSignal<Current> indexerMotorSupplyCurrent;
-  private StatusSignal<Current> pivotMotorSupplyCurrent; // supply current for pivot motor
+  private StatusSignal<Current> pivotMotorSupplyCurrent;
 
   private StatusSignal<Voltage> funnelMotorVoltage;
   private StatusSignal<Voltage> indexerMotorVoltage;
-  private StatusSignal<Voltage> pivotMotorVoltage; // voltage for pivot motor
+  private StatusSignal<Voltage> pivotMotorVoltage;
 
-  private StatusSignal<Angle> pivotMotorAngle; // angle for pivot motor (of type angle)
+  private StatusSignal<Angle> pivotMotorAngle;
 
   private final Debouncer funnelConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer indexerConnectedDebouncer = new Debouncer(0.5);
@@ -164,7 +164,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
-    pivotVoltageRequest = new VoltageOut(0.0); // new voltage request for pivot motor
+    pivotVoltageRequest = new VoltageOut(0.0);
 
     funnelCurrentRequest = new TorqueCurrentFOC(0.0);
     indexerCurrentRequest = new TorqueCurrentFOC(0.0);
@@ -179,23 +179,21 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelMotorVoltage = funnelMotor.getMotorVoltage();
     indexerMotorVoltage = indexerMotor.getMotorVoltage();
-    pivotMotorVoltage = pivotMotor.getMotorVoltage(); // new variable for pivot motor voltage
+    pivotMotorVoltage = pivotMotor.getMotorVoltage();
 
     funnelMotorSupplyCurrent = funnelMotor.getSupplyCurrent();
     indexerMotorSupplyCurrent = indexerMotor.getSupplyCurrent();
-    pivotMotorSupplyCurrent =
-        pivotMotor.getSupplyCurrent(); // new variable for pivot motor supply current
+    pivotMotorSupplyCurrent = pivotMotor.getSupplyCurrent();
 
     funnelMotorTemp = funnelMotor.getDeviceTemp();
     indexerMotorTemp = indexerMotor.getDeviceTemp();
-    pivotMotorTemp = pivotMotor.getDeviceTemp(); // new variable for temparture of pivot motor
+    pivotMotorTemp = pivotMotor.getDeviceTemp();
 
     funnelMotorStatorCurrent = funnelMotor.getStatorCurrent();
     indexerMotorStatorCurrent = indexerMotor.getStatorCurrent();
-    pivotMotorStatorCurrent =
-        pivotMotor.getStatorCurrent(); // new variable for stator current of pivot motor
+    pivotMotorStatorCurrent = pivotMotor.getStatorCurrent();
 
-    pivotMotorAngle = pivotMotor.getPosition(); // get the position of the pivot motor
+    pivotMotorAngle = pivotMotor.getPosition();
 
     Phoenix6Util.registerSignals(
         true,
@@ -281,7 +279,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
                 pivotMotorSupplyCurrent,
                 pivotMotorTemp,
                 pivotMotorStatorCurrent,
-                pivotMotorAngle)); // check if pivot motor is connected
+                pivotMotorAngle));
 
     inputs.funnelVelocityRPS = funnelMotorVelocity.getValue().in(RotationsPerSecond);
     inputs.indexerVelocityRPS = indexerMotorVelocity.getValue().in(RotationsPerSecond);
@@ -321,7 +319,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     if (OISelector.getOperatorInterface().getEnablePrimaryIRSensorsTrigger().getAsBoolean()) {
       inputs.isFunnelIRBlocked = !funnelIRSensor.get();
       inputs.isIndexerIRBlocked = !indexerIRSensor.get();
-      inputs.isAlgaeIRBlocked = !algaeIRSensor.get(); // new for algae IR
+      inputs.isAlgaeIRBlocked = !algaeIRSensor.get();
     } else {
       inputs.isFunnelIRBlocked = !backupFunnelIRSensor.get();
       inputs.isIndexerIRBlocked = !backupIndexerIRSensor.get();
