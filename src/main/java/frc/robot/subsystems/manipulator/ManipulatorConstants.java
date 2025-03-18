@@ -107,39 +107,24 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; // tbd
 
-  // the regular velocity for the indexer is while the coral is getting indexed, this variable is to
-  // control the velocity while ejecting the coral out of the manipulator
-  // the funnel should only have one velocity when it is intaking coral, but if the coral is jammed
-  // and needs to be ejected out thru the funnel it should have a different velocity then
-
-  public static final double FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0; // tbd
-
-  // this will be the set value to which the indexer motor velocity should be when removing
-  // algae
-
+  // use velocity control on funnel later
   public static final double FUNNEL_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
-
-  public static final double INDEXER_MOTOR_VELOCITY_WHILE_COLLECTING_CORAL = 0.0;
+  public static final double FUNNEL_MOTOR_VELOCITY_WHILE_EJECTING_CORAL = 0.0;
 
   // new setpoints for pivot motor for algae claw -- ALL TBD
   public static final Angle PIVOT_MOTOR_STARTING_POS = Degrees.of(90);
   public static final Angle PIVOT_MOTOR_AT_REEF_POS = Degrees.of(0);
-  public static final Angle PIVOT_MOTOR_SCORING_IN_PROCESSOR = Degrees.of(0);
-  public static final Angle PIVOT_MOTOR_SCORING_IN_BARGE = Degrees.of(0);
 
   // used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;
-
-  // timeout for letting funnel ramp up and whole funnel scoring timeout
-  // *TEMPORARY: we might make a "reverse state machine" for scoring the funnel
-  public static final double FUNNEL_RAMP_UP_TIMEOUT = 0.15;
-  public static final double FUNNEL_SCORING_TIMEOUT = 2.0;
 
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
   public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME: update value
   public static final double BARGE_ALGAE_TIMEOUT = 0.5; // FIXME: tune
   public static final double PROCESSOR_ALGAE_TIMEOUT = 1.0; // FIXME: tune
+
+  public static final double PIVOT_ALGAE_COLLECTION_VOLTAGE = 1.0; // FIXME: tune
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
@@ -150,7 +135,5 @@ public class ManipulatorConstants {
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
 
-  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME: update value
-
-  public static final Angle PIVOT_POSITION_TOLERANCE = Degrees.of(2.0);
+  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME: tune
 }

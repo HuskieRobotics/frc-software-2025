@@ -187,7 +187,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
         subsystem.readyToScore = false;
       }
 
@@ -217,7 +216,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
         subsystem.coralInIndexingState.restart(); // start timer
         subsystem.currentInAmps
             .reset(); // reset the linear filter thats used to detect a current spike
@@ -257,7 +255,6 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVoltage(
             subsystem.indexerEjectingVoltage.get()); // set negative velocity to indexer motor
         // to invert it
-        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
         subsystem.ejectingCoralTimer.restart();
       }
 
@@ -282,7 +279,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(0.0);
-        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
         subsystem.shootCoralButtonPressed = false;
       }
 
@@ -318,7 +314,6 @@ public class Manipulator extends SubsystemBase {
         } else {
           subsystem.setIndexerMotorVoltage(subsystem.fastShootingVoltage.get());
         }
-        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
       }
 
       @Override
@@ -345,7 +340,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE);
-        subsystem.setPivotPosition(PIVOT_MOTOR_AT_REEF_POS);
+        subsystem.setPivotMotorVoltage(PIVOT_ALGAE_COLLECTION_VOLTAGE);
         // set voltage of indexer/roller motor to the speed while collecting algae
         subsystem.intakingAlgaeTimer.restart();
         subsystem.currentInAmps.reset();
@@ -376,7 +371,7 @@ public class Manipulator extends SubsystemBase {
         // claw thing
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE);
-        subsystem.setPivotPosition(PIVOT_MOTOR_AT_REEF_POS);
+        subsystem.setPivotMotorVoltage(0.0);
       }
 
       @Override
@@ -403,7 +398,6 @@ public class Manipulator extends SubsystemBase {
 
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE);
-        subsystem.setPivotPosition(PIVOT_MOTOR_AT_REEF_POS);
         subsystem.scoreAlgaeButtonPressed = false;
 
         subsystem.scoringAlgaeTimer.restart();
@@ -427,7 +421,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR);
-        subsystem.setPivotPosition(PIVOT_MOTOR_AT_REEF_POS);
         subsystem.scoreAlgaeButtonPressed = false;
         subsystem.scoreAlgaeInProcessorButtonPressed = false;
 
@@ -452,7 +445,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0);
         subsystem.setIndexerMotorVoltage(0);
-        subsystem.setPivotPosition(PIVOT_MOTOR_STARTING_POS);
       }
 
       @Override
@@ -510,11 +502,11 @@ public class Manipulator extends SubsystemBase {
         setIndexerMotorCurrent(indexerMotorCurrent.get());
       }
 
-      if (pivotAngle.get() != 0) {
-        setPivotPosition(Degrees.of(pivotAngle.get()));
-      } else if (pivotMotorVoltage.get() != 0) {
-        setPivotMotorVoltage(pivotMotorVoltage.get());
-      }
+      // if (pivotAngle.get() != 0) {
+      //   setPivotPosition(Degrees.of(pivotAngle.get()));
+      // } else if (pivotMotorVoltage.get() != 0) {
+      //   setPivotMotorVoltage(pivotMotorVoltage.get());
+      // }
 
     } else {
       runStateMachine();
@@ -568,10 +560,6 @@ public class Manipulator extends SubsystemBase {
 
   public void setPivotMotorVoltage(double volts) {
     io.setPivotMotorVoltage(volts);
-  }
-
-  public void setPivotPosition(Angle angle) {
-    io.setPivotPosition(angle);
   }
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
@@ -671,9 +659,5 @@ public class Manipulator extends SubsystemBase {
 
   public Angle getPivotAngle() {
     return Degrees.of(inputs.pivotMotorAngleDeg);
-  }
-
-  public boolean isPivotAtPosition(Angle reference) {
-    return getPivotAngle().minus(reference).abs(Degrees) < PIVOT_POSITION_TOLERANCE.in(Degrees);
   }
 }

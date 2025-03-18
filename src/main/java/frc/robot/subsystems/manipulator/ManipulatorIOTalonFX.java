@@ -7,7 +7,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -59,8 +58,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private VelocityTorqueCurrentFOC funnelVelocityRequest;
   private VelocityTorqueCurrentFOC indexerVelocityRequest;
 
-  private MotionMagicExpoVoltage pivotPositionRequest;
-
   private Alert configAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
 
@@ -106,12 +103,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new LoggedTunableNumber("Manipulator/Pivot/kA", PIVOT_MOTOR_KA);
   private final LoggedTunableNumber pivotKg =
       new LoggedTunableNumber("Manipulator/Pivot/kG", PIVOT_MOTOR_KG);
-
-  private final LoggedTunableNumber pivotkAExpo =
-      new LoggedTunableNumber("Manipulator/Pivot/kAExpo", PIVOT_MOTOR_KA_EXPO);
-
-  private final LoggedTunableNumber pivotkVExpo =
-      new LoggedTunableNumber("Manipulator/Pivot/kVExpo", PIVOT_MOTOR_KV_EXPO);
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -171,8 +162,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
     indexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
-
-    pivotPositionRequest = new MotionMagicExpoVoltage(Rotations.of(0.25));
 
     funnelMotorVelocity = funnelMotor.getVelocity();
     indexerMotorVelocity = indexerMotor.getVelocity();
@@ -390,9 +379,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         pivotKs,
         pivotKv,
         pivotKa,
-        pivotKg,
-        pivotkAExpo,
-        pivotkVExpo);
+        pivotKg);
 
     // update funnel and indexer motor sim
     funnelMotorSim.updateSim();
@@ -453,11 +440,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void setPivotMotorVoltage(double volts) {
     this.pivotMotor.setControl(pivotVoltageRequest.withOutput(volts));
-  }
-
-  @Override
-  public void setPivotPosition(Angle angle) {
-    this.pivotMotor.setControl(pivotPositionRequest.withPosition(angle));
   }
 
   /*
@@ -567,15 +549,13 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     MotionMagicConfigs pivotMotorConfig = config.MotionMagic;
 
-    pivotMotorConfig.MotionMagicExpo_kA = pivotkAExpo.get();
-    pivotMotorConfig.MotionMagicExpo_kV = pivotkVExpo.get();
-
-    // configure soft limits while testing
-    config.SoftwareLimitSwitch.ForwardSoftLimitThreshold = PIVOT_MOTOR_STARTING_POS.in(Rotations);
-    config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-    config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
-        PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
-    config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+    // // configure soft limits while testing
+    // config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
+    // PIVOT_MOTOR_STARTING_POS.in(Rotations);
+    // config.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+    // config.SoftwareLimitSwitch.ReverseSoftLimitThreshold =
+    //     PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
+    // config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
     Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
 
