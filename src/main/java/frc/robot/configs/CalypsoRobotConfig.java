@@ -127,6 +127,9 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_I_CONTROLLER = 0.0;
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
+  // Drive To Barge constants
+  private static final double DRIVE_TO_BARGE_DRIVE_KP = 1.0;
+
   // Drive to Pose constants
   private static final double DRIVE_TO_POSE_DRIVE_KP = 2.0;
   private static final double DRIVE_TO_POSE_DRIVE_KD = 0.0;
@@ -376,6 +379,11 @@ public class CalypsoRobotConfig extends RobotConfig {
   @Override
   public double getDriveToPoseDriveKP() {
     return DRIVE_TO_POSE_DRIVE_KP;
+  }
+
+  @Override
+  public double getDriveToBargeDriveKP() {
+    return DRIVE_TO_BARGE_DRIVE_KP;
   }
 
   @Override

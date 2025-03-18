@@ -53,7 +53,7 @@ public class DriveToBarge extends Command {
 
   private static final LoggedTunableNumber driveKp =
       new LoggedTunableNumber(
-          "DriveToPose/DriveKp", RobotConfig.getInstance().getDriveToPoseDriveKP());
+          "DriveToPose/DriveKp", RobotConfig.getInstance().getDriveToBargeDriveKP());
   private static final LoggedTunableNumber driveKd =
       new LoggedTunableNumber(
           "DriveToPose/DriveKd", RobotConfig.getInstance().getDriveToPoseDriveKD());
