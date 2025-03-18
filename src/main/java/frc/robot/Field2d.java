@@ -55,6 +55,8 @@ public class Field2d {
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
       6.469; // taken from FieldConstants adjustY for reef y offset
 
+  private static final double REMOVE_ALGAE_Y_TRANSFORMATION_INCHES = -5;
+
   public class AlgaePosition {
     public Pose2d pose;
     public boolean isHigh;
@@ -261,15 +263,14 @@ public class Field2d {
       // put all the right and left poses into their maps, corresponded by approximate center poses
 
       // right
-      // HARDCODE REMOVE ALGAE POSES TO THE MIDDLE FOR NOW:
-      // FIXME: stop hardcoding remove algae poses
+      // remove algae poses are hardcoded to a set transformation from the reef center face
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i], blueReefRightBranches[i]);
         Pose2d removeAlgaePose =
             allReefCenterFaces[i].transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    Units.inchesToMeters(-5),
+                    Units.inchesToMeters(REMOVE_ALGAE_Y_TRANSFORMATION_INCHES),
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i], removeAlgaePose);
       }
@@ -279,7 +280,7 @@ public class Field2d {
             allReefCenterFaces[i + 6].transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Units.inchesToMeters(REMOVE_ALGAE_Y_TRANSFORMATION_INCHES),
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i + 6], removeAlgaePose);
       }
