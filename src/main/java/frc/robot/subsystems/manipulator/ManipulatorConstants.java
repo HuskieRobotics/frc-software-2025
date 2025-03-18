@@ -137,7 +137,9 @@ public class ManipulatorConstants {
 
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
-  public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME:update value
+  public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME: update value
+  public static final double BARGE_ALGAE_TIMEOUT = 0.5; // FIXME: tune
+  public static final double PROCESSOR_ALGAE_TIMEOUT = 1.0; // FIXME: tune
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
@@ -148,7 +150,7 @@ public class ManipulatorConstants {
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
 
-  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME:update value
+  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME: update value
 
   public static final Angle PIVOT_POSITION_TOLERANCE = Degrees.of(2.0);
 }

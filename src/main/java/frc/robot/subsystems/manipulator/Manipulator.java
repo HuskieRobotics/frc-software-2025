@@ -82,9 +82,9 @@ public class Manipulator extends SubsystemBase {
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
 
-  Timer scoringFunnelTimer = new Timer();
   Timer ejectingCoralTimer = new Timer();
   Timer intakingAlgaeTimer = new Timer();
+  Timer scoringAlgaeTimer = new Timer();
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
@@ -405,15 +405,16 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE);
         subsystem.setPivotPosition(PIVOT_MOTOR_AT_REEF_POS);
         subsystem.scoreAlgaeButtonPressed = false;
+
+        subsystem.scoringAlgaeTimer.restart();
       }
 
       @Override
       void execute(Manipulator subsystem) {
         // check if the IR sensor for the algae is unblocked, if so, then switch to the either the
         // WAITING_FOR_ALGAE_IN_MANIPULATOR or the WAITING_FOR_CORAL_IN_FUNNEL state
-        if (!subsystem
-            .inputs
-            .isAlgaeIRBlocked) { // add something to determine which state to switch to
+        if (!subsystem.inputs.isAlgaeIRBlocked
+            && subsystem.scoringAlgaeTimer.hasElapsed(BARGE_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
@@ -429,13 +430,14 @@ public class Manipulator extends SubsystemBase {
         subsystem.setPivotPosition(PIVOT_MOTOR_AT_REEF_POS);
         subsystem.scoreAlgaeButtonPressed = false;
         subsystem.scoreAlgaeInProcessorButtonPressed = false;
+
+        subsystem.scoringAlgaeTimer.restart();
       }
 
       @Override
       void execute(Manipulator subsystem) {
-        if (!subsystem
-            .inputs
-            .isAlgaeIRBlocked) { // add something to determine which state to switch to
+        if (!subsystem.inputs.isAlgaeIRBlocked
+            && subsystem.scoringAlgaeTimer.hasElapsed(PROCESSOR_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
