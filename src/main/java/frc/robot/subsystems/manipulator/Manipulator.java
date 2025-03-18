@@ -318,16 +318,14 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
-        LEDs.getInstance().requestState(States.SCORING_CORAL);
+        LEDs.getInstance().requestState(States.SCORING);
 
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
             && subsystem.scoreAlgaeButtonPressed) {
           subsystem.setState(State.WAITING_FOR_ALGAE_IN_MANIPULATOR);
           subsystem.scoreAlgaeButtonPressed = false;
         } else if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
-          subsystem.setState(
-              State.WAITING_FOR_CORAL_IN_FUNNEL); // if the coral has been shot out and the
-          // manipulator is empty
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
 
@@ -348,6 +346,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.COLLECTING_ALGAE);
+
         // check for current spike or if algae IR has detected algae
         if (subsystem.inputs.isAlgaeIRBlocked
             && subsystem.currentInAmps.lastValue() > THRESHOLD_CURRENT_SPIKE_ALGAE) {
@@ -376,6 +376,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.HAS_ALGAE);
+
         // check if the shootAlgae button has been pressed, if so then switch to the SHOOT_ALGAE
         // state
         if (subsystem.scoreAlgaeButtonPressed) {
@@ -405,6 +407,8 @@ public class Manipulator extends SubsystemBase {
 
       @Override
       void execute(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.SCORING);
+
         // check if the IR sensor for the algae is unblocked, if so, then switch to the either the
         // WAITING_FOR_ALGAE_IN_MANIPULATOR or the WAITING_FOR_CORAL_IN_FUNNEL state
         if (!subsystem.inputs.isAlgaeIRBlocked
@@ -419,6 +423,8 @@ public class Manipulator extends SubsystemBase {
     SHOOT_ALGAE_IN_PROCESSOR {
       @Override
       void onEnter(Manipulator subsystem) {
+        LEDs.getInstance().requestState(States.SCORING);
+
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR);
         subsystem.scoreAlgaeButtonPressed = false;
