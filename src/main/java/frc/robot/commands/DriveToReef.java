@@ -297,6 +297,7 @@ public class DriveToReef extends Command {
                   + DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE,
               reefRelativeDifference.getY(),
               reefRelativeDifference.getRotation()));
+    } else {
       distanceFromReefConsumer.accept(reefRelativeDifference);
     }
 
