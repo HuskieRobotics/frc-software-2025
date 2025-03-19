@@ -15,7 +15,8 @@ public class ElevatorCommandsFactory {
             Commands.runOnce(elevator::raiseElevatorSlow, elevator)
                 .withName("raise elevator slow"));
 
-    oi.getRaiseElevatorSlowButton().onFalse(Commands.runOnce(elevator::stop, elevator));
+    oi.getRaiseElevatorSlowButton()
+        .onFalse(Commands.runOnce(elevator::stop, elevator).withName("stop elevator"));
 
     oi.getLowerElevatorSlowButton()
         .onTrue(

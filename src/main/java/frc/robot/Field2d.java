@@ -18,6 +18,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team6328.util.FieldConstants;
+import frc.robot.operator_interface.OISelector;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -53,6 +54,18 @@ public class Field2d {
 
   private static final double PIPE_FROM_REEF_CENTER_INCHES =
       6.469; // taken from FieldConstants adjustY for reef y offset
+
+  private static final double REMOVE_ALGAE_Y_TRANSFORMATION_INCHES = -5;
+
+  public class AlgaePosition {
+    public Pose2d pose;
+    public boolean isHigh;
+
+    public AlgaePosition(Pose2d pose, boolean isHigh) {
+      this.pose = pose;
+      this.isHigh = isHigh;
+    }
+  }
 
   /**
    * Get the singleton instance of the Field2d class.
@@ -250,15 +263,14 @@ public class Field2d {
       // put all the right and left poses into their maps, corresponded by approximate center poses
 
       // right
-      // HARDCODE REMOVE ALGAE POSES TO THE MIDDLE FOR NOW:
-      // FIXME: unhardcode remove algae poses
+      // remove algae poses are hardcoded to a set transformation from the reef center face
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i], blueReefRightBranches[i]);
         Pose2d removeAlgaePose =
             allReefCenterFaces[i].transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Units.inchesToMeters(REMOVE_ALGAE_Y_TRANSFORMATION_INCHES),
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i], removeAlgaePose);
       }
@@ -268,7 +280,7 @@ public class Field2d {
             allReefCenterFaces[i + 6].transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    Units.inchesToMeters(REMOVE_ALGAE_Y_TRANSFORMATION_INCHES),
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i + 6], removeAlgaePose);
       }
@@ -350,6 +362,86 @@ public class Field2d {
     }
 
     return bumpersOnReefAlignedToBranch;
+  }
+
+  // FIXME: consolidate this in operator dashboard if possible?
+  public Pose2d getSelectedBranch() {
+    if (OISelector.getOperatorInterface().getReefBranchATrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[0]);
+    } else if (OISelector.getOperatorInterface().getReefBranchBTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[0]);
+    } else if (OISelector.getOperatorInterface().getReefBranchCTrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[5]);
+    } else if (OISelector.getOperatorInterface().getReefBranchDTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[5]);
+    } else if (OISelector.getOperatorInterface().getReefBranchETrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[4]);
+    } else if (OISelector.getOperatorInterface().getReefBranchFTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[4]);
+    } else if (OISelector.getOperatorInterface().getReefBranchGTrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[3]);
+    } else if (OISelector.getOperatorInterface().getReefBranchHTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[3]);
+    } else if (OISelector.getOperatorInterface().getReefBranchITrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[2]);
+    } else if (OISelector.getOperatorInterface().getReefBranchJTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[2]);
+    } else if (OISelector.getOperatorInterface().getReefBranchKTrigger().getAsBoolean()) {
+      return leftReefPoses.get(FieldConstants.Reef.centerFaces[1]);
+    } else if (OISelector.getOperatorInterface().getReefBranchLTrigger().getAsBoolean()) {
+      return rightReefPoses.get(FieldConstants.Reef.centerFaces[1]);
+    }
+
+    // go to the nearest center face if nothing is selected
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    return pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+  }
+
+  public AlgaePosition getNearestAlgae() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    boolean isHighAlgae = false;
+
+    // high: A/B , E/F, I/J
+    // low: C/D, G/H, K/L
+    Pose2d nearestCenterFace = pose.nearest(Arrays.asList(FieldConstants.Reef.centerFaces));
+    if (nearestCenterFace == FieldConstants.Reef.centerFaces[0]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[2]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[4]) {
+      // high algae
+      isHighAlgae = true;
+    } else if (nearestCenterFace == FieldConstants.Reef.centerFaces[1]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[3]
+        || nearestCenterFace == FieldConstants.Reef.centerFaces[5]) {
+      // low algae
+      isHighAlgae = false;
+    }
+
+    return new AlgaePosition(removeAlgaePoses.get(nearestCenterFace), isHighAlgae);
+  }
+
+  public Pose2d getBargePose() {
+    // x arbitrary from 20 inches x from the middle cage
+    return new Pose2d(
+        new Translation2d(Units.inchesToMeters(295), Units.inchesToMeters(242.855)),
+        Rotation2d.fromDegrees(0.0));
+  }
+
+  public Pose2d getNearestProcessor() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    Pose2d[] processors = new Pose2d[2];
+    processors[0] = FieldConstants.Processor.centerFace;
+    processors[1] = FlippingUtil.flipFieldPose(processors[0]);
+
+    Pose2d nearestProcessor = pose.nearest(Arrays.asList(processors));
+    nearestProcessor =
+        nearestProcessor.transformBy(
+            new Transform2d(
+                RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                0,
+                Rotation2d.fromDegrees(180)));
+
+    return nearestProcessor;
   }
 
   /*

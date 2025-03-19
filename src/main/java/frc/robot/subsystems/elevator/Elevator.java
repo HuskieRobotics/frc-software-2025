@@ -6,6 +6,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -19,19 +20,19 @@ import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.Field2d;
+import frc.robot.Field2d.AlgaePosition;
 import frc.robot.operator_interface.OISelector;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import org.littletonrobotics.junction.Logger;
 
 public class Elevator extends SubsystemBase {
 
   private ElevatorIO elevatorIO;
-  private ReefBranch targetPosition = ReefBranch.HARDSTOP;
+  private ScoringHeight targetPosition = ScoringHeight.HARDSTOP;
 
-  // arbitrary high value
-  private double xFromReef = 100.0;
-  private double yFromReef = 100.0;
-  private Rotation2d thetaFromReef = Rotation2d.fromDegrees(180);
+  // instantiate distanceFromReef with arbitrary far values
+  private Transform2d distanceFromReef = new Transform2d(100.0, 100.0, Rotation2d.fromDegrees(180));
 
   private Alert hardStopAlert =
       new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
@@ -110,7 +111,7 @@ public class Elevator extends SubsystemBase {
     Logger.processInputs(SUBSYSTEM_NAME, inputs);
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
-    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", xFromReef);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
@@ -127,7 +128,7 @@ public class Elevator extends SubsystemBase {
     LoggedTracer.record("Elevator");
   }
 
-  private Distance reefBranchToDistance(ReefBranch reefBranch) {
+  private Distance reefBranchToDistance(ScoringHeight reefBranch) {
 
     Distance height;
 
@@ -160,32 +161,32 @@ public class Elevator extends SubsystemBase {
         height = L4_HEIGHT;
         break;
 
-      case ALGAE_1:
-        height = ALGAE1_HEIGHT;
+      case LOW_ALGAE:
+        height = LOW_ALGAE_HEIGHT;
         break;
 
-      case ALGAE_2:
-        height = ALGAE2_HEIGHT;
+      case HIGH_ALGAE:
+        height = HIGH_ALGAE_HEIGHT;
         break;
 
-      case ABOVE_ALGAE_1:
-        height = ABOVE_ALGAE_1_HEIGHT;
+      case BELOW_HIGH_ALGAE:
+        height = BELOW_HIGH_ALGAE_HEIGHT;
         break;
 
-      case BELOW_ALGAE_1:
-        height = BELOW_ALGAE_1_HEIGHT;
-        break;
-
-      case ABOVE_ALGAE_2:
-        height = ABOVE_ALGAE_2_HEIGHT;
-        break;
-
-      case BELOW_ALGAE_2:
-        height = BELOW_ALGAE_2_HEIGHT;
+      case BELOW_LOW_ALGAE:
+        height = BELOW_LOW_ALGAE_HEIGHT;
         break;
 
       case HARDSTOP:
         height = MIN_HEIGHT;
+        break;
+
+      case BARGE:
+        height = BARGE_HEIGHT;
+        break;
+
+      case PROCESSOR:
+        height = PROCESSOR_HEIGHT;
         break;
 
       default:
@@ -195,7 +196,7 @@ public class Elevator extends SubsystemBase {
     return height;
   }
 
-  public boolean isAtPosition(ReefBranch reefBranch) {
+  public boolean isAtPosition(ScoringHeight reefBranch) {
 
     return getPosition().minus(reefBranchToDistance(reefBranch)).abs(Inches) < TOLERANCE_INCHES;
   }
@@ -205,7 +206,7 @@ public class Elevator extends SubsystemBase {
     return null;
   }
 
-  public void goToPosition(ReefBranch reefBranch) {
+  public void goToPosition(ScoringHeight reefBranch) {
     targetPosition = reefBranch;
     elevatorIO.setPosition(reefBranchToDistance(reefBranch));
   }
@@ -214,15 +215,15 @@ public class Elevator extends SubsystemBase {
     return Inches.of(inputs.positionInches);
   }
 
-  private ReefBranch getSelectedPosition() {
+  private ScoringHeight getSelectedPosition() {
     if (OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()) {
-      return ReefBranch.L4;
+      return ScoringHeight.L4;
     } else if (OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
-      return ReefBranch.L3;
+      return ScoringHeight.L3;
     } else if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()) {
-      return ReefBranch.L2;
+      return ScoringHeight.L2;
     } else {
-      return ReefBranch.L1;
+      return ScoringHeight.L1;
     }
   }
 
@@ -231,79 +232,53 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean canScoreFartherAway() {
-    return Math.abs(xFromReef) < FAR_SCORING_DISTANCE
-        && Math.abs(xFromReef) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
-        && Math.abs(yFromReef) < FAR_SCORING_Y_TOLERANCE
-        && Math.abs(thetaFromReef.getDegrees()) < FAR_SCORING_THETA_TOLERANCE.getDegrees();
+    return Math.abs(distanceFromReef.getX()) < FAR_SCORING_DISTANCE
+        && Math.abs(distanceFromReef.getX()) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
+        && Math.abs(distanceFromReef.getY()) < FAR_SCORING_Y_TOLERANCE
+        && Math.abs(distanceFromReef.getRotation().getDegrees())
+            < FAR_SCORING_THETA_TOLERANCE.getDegrees();
   }
 
-  public void setXFromReef(double distance) {
-    xFromReef = distance;
-  }
-
-  public void setYFromReef(double distance) {
-    yFromReef = distance;
-  }
-
-  public void setThetaFromReef(Rotation2d angle) {
-    thetaFromReef = angle;
+  public void setDistanceFromReef(Transform2d distance) {
+    distanceFromReef = distance;
   }
 
   public double getXFromReef() {
-    return Math.abs(xFromReef);
+    return distanceFromReef.getX();
+  }
+
+  public void setXFromReef(double x) {
+    distanceFromReef = new Transform2d(x, distanceFromReef.getY(), distanceFromReef.getRotation());
   }
 
   public boolean isAtSelectedPosition() {
     return isAtPosition(getSelectedPosition());
   }
 
-  private ReefBranch getSelectedAlgaePosition() {
-    if (OISelector.getOperatorInterface().getRemoveLowAlgaeTrigger().getAsBoolean()) {
-      return ReefBranch.ALGAE_1;
-    } else if (OISelector.getOperatorInterface().getRemoveHighAlgaeTrigger().getAsBoolean()) {
-      return ReefBranch.ALGAE_2;
+  public void goBelowNearestAlgae() {
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    if (nearestAlgae.isHigh) {
+      goToPosition(ScoringHeight.BELOW_HIGH_ALGAE);
     } else {
-      return ReefBranch.HARDSTOP;
+      goToPosition(ScoringHeight.BELOW_LOW_ALGAE);
     }
   }
 
-  public boolean isAlgaePositionSelected() {
-    return getSelectedAlgaePosition() != ReefBranch.HARDSTOP;
-  }
-
-  public void goBelowSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      goToPosition(ReefBranch.BELOW_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      goToPosition(ReefBranch.BELOW_ALGAE_2);
-    }
-  }
-
-  public void goAboveSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      goToPosition(ReefBranch.ABOVE_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      goToPosition(ReefBranch.ABOVE_ALGAE_2);
-    }
-  }
-
-  public boolean isBelowSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      return isAtPosition(ReefBranch.BELOW_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      return isAtPosition(ReefBranch.BELOW_ALGAE_2);
+  public boolean isBelowNearestAlgae() {
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    if (nearestAlgae.isHigh) {
+      return isAtPosition(ScoringHeight.BELOW_HIGH_ALGAE);
     } else {
-      return true;
+      return isAtPosition(ScoringHeight.BELOW_LOW_ALGAE);
     }
   }
 
-  public boolean isAboveSelectedAlgaePosition() {
-    if (getSelectedAlgaePosition() == ReefBranch.ALGAE_1) {
-      return isAtPosition(ReefBranch.ABOVE_ALGAE_1);
-    } else if (getSelectedAlgaePosition() == ReefBranch.ALGAE_2) {
-      return isAtPosition(ReefBranch.ABOVE_ALGAE_2);
+  public void goToNearestAlgae() {
+    AlgaePosition nearestAlgae = Field2d.getInstance().getNearestAlgae();
+    if (nearestAlgae.isHigh) {
+      goToPosition(ScoringHeight.HIGH_ALGAE);
     } else {
-      return true;
+      goToPosition(ScoringHeight.LOW_ALGAE);
     }
   }
 
@@ -325,7 +300,7 @@ public class Elevator extends SubsystemBase {
 
   public Command getElevatorLowerAndResetCommand() {
     return Commands.sequence(
-        Commands.runOnce(() -> goToPosition(ReefBranch.HARDSTOP)),
+        Commands.runOnce(() -> goToPosition(ScoringHeight.HARDSTOP)),
         Commands.waitUntil(
             () -> getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES),
         Commands.runOnce(() -> elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE)),

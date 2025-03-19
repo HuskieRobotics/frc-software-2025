@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.TUNING_MODE;
+
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -77,6 +79,8 @@ public class Robot extends LoggedRobot {
   private final Alert gitAlert =
       new Alert("Please wait to enable, JITing in progress.", AlertType.kWarning);
 
+  private final Alert noAutoSelectedAlert =
+      new Alert("No auto selected: please select an auto", AlertType.kWarning);
   /** Create a new Robot. */
   public Robot() {
     // start code loading LED animation
@@ -130,7 +134,6 @@ public class Robot extends LoggedRobot {
     Logger.start();
 
     // start Elastic Dashboard server
-    // FIXME: disable this and check loop times
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     // DO THIS FIRST
@@ -205,7 +208,9 @@ public class Robot extends LoggedRobot {
     // DO THIS AFTER CONFIGURATION OF YOUR DESIRED PATHFINDER
     PathfindingCommand.warmupCommand().schedule();
 
-    Threads.setCurrentThreadPriority(true, 10);
+    if (!TUNING_MODE) {
+      Threads.setCurrentThreadPriority(true, 10);
+    }
   }
 
   /**
@@ -306,8 +311,15 @@ public class Robot extends LoggedRobot {
     // check if the alliance color has changed based on the FMS data
     robotContainer.checkAllianceColor();
 
-    if (AutonomousCommandFactory.getInstance().alignedToStartingPose()) {
-      LEDs.getInstance().requestState(LEDs.States.ALIGNED_FOR_AUTO);
+    // get the autochooser auto selected and if the default is selected then do solid red leds
+    if (AutonomousCommandFactory.getInstance()
+        .getAutonomousCommand()
+        .getName()
+        .equals("Do Nothing")) {
+      LEDs.getInstance().requestState(LEDs.States.NO_AUTO_SELECTED);
+      noAutoSelectedAlert.set(true);
+    } else {
+      noAutoSelectedAlert.set(false);
     }
   }
 

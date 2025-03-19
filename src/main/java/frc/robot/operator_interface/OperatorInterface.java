@@ -8,7 +8,7 @@
 
 package frc.robot.operator_interface;
 
-import edu.wpi.first.wpilibj2.command.button.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /** Interface for all driver and operator controls. */
 public interface OperatorInterface {
@@ -75,25 +75,16 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  // drivetrain, game-specific
-
+  // DRIVER TRIGGERS
   public default Trigger getExtendCageCatcherButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getPrepToScoreCoralLeftButton() {
+  public default Trigger getPrepToScoreButton() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getPrepToScoreCoralRightButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getScoreCoralButton() {
-    return new Trigger(() -> false);
-  }
-
-  public default Trigger getScoreAlgaeButton() {
+  public default Trigger getScoreButton() {
     return new Trigger(() -> false);
   }
 
@@ -109,6 +100,27 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getRaiseElevatorSlowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getLowerElevatorSlowButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getOverrideDriveToPoseButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getCurrentPoseButton() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getInterruptAll() {
+    return new Trigger(() -> false);
+  }
+
+  // OPERATOR TRIGGERS
   public default Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> false);
   }
@@ -129,32 +141,63 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getRemoveHighAlgaeTrigger() {
+  public default Trigger getReefBranchATrigger() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getRemoveLowAlgaeTrigger() {
+  public default Trigger getReefBranchBTrigger() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getRaiseElevatorSlowButton() {
+  public default Trigger getReefBranchCTrigger() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getLowerElevatorSlowButton() {
+  public default Trigger getReefBranchDTrigger() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getDriveToPoseOverrideButton() {
+  public default Trigger getReefBranchETrigger() {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getCurrentPoseButton() {
+  public default Trigger getReefBranchFTrigger() {
     return new Trigger(() -> false);
   }
 
-  // miscellaneous
-  public default Trigger getInterruptAll() {
+  public default Trigger getReefBranchGTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchHTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchITrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchJTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchKTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getReefBranchLTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlgaeBargeTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlgaeProcessorTrigger() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getAlgaeDropTrigger() {
     return new Trigger(() -> false);
   }
 }

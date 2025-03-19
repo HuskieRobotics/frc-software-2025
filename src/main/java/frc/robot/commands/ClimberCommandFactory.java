@@ -1,17 +1,18 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants;
 
 public class ClimberCommandFactory {
 
+  private static final LoggedTunableNumber minHeight =
+      new LoggedTunableNumber("Climber/MinHeight", ClimberConstants.MIN_HEIGHT_INCHES);
+
   private ClimberCommandFactory() {}
 
-  // 2/8/2025 NOTE:
-  // in AdvantageScope, position is constantly slowly decreasing
-  // should be addressed eventually
   public static void registerCommands(OperatorInterface oi, Climber climber) {
 
     oi.getExtendCageCatcherButton()

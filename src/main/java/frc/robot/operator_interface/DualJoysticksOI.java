@@ -43,12 +43,12 @@ public class DualJoysticksOI extends OperatorDashboard {
   // Translation Joystick
 
   @Override
-  public Trigger getRaiseElevatorSlowButton() {
+  public Trigger getPrepToScoreButton() {
     return translateJoystickButtons[1];
   }
 
   @Override
-  public Trigger getPrepToScoreCoralLeftButton() {
+  public Trigger getRaiseElevatorSlowButton() {
     return translateJoystickButtons[2];
   }
 
@@ -85,13 +85,8 @@ public class DualJoysticksOI extends OperatorDashboard {
 
   // Rotation Joystick
   @Override
-  public Trigger getScoreCoralButton() {
+  public Trigger getScoreButton() {
     return rotateJoystickButtons[1];
-  }
-
-  @Override
-  public Trigger getPrepToScoreCoralRightButton() {
-    return rotateJoystickButtons[2];
   }
 
   @Override
@@ -100,7 +95,7 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getDriveToPoseOverrideButton() {
+  public Trigger getOverrideDriveToPoseButton() {
     return rotateJoystickButtons[4];
   }
 
@@ -115,12 +110,12 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getExtendClimberSlowButton() {
-    return rotateJoystickButtons[7];
+  public Trigger getRetractClimberSlowButton() {
+    return rotateJoystickButtons[10];
   }
 
   @Override
-  public Trigger getRetractClimberSlowButton() {
-    return rotateJoystickButtons[10];
+  public Trigger getExtendClimberSlowButton() {
+    return rotateJoystickButtons[11];
   }
 }

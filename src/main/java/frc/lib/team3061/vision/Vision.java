@@ -3,7 +3,6 @@ package frc.lib.team3061.vision;
 import static edu.wpi.first.units.Units.*;
 import static frc.lib.team3061.vision.VisionConstants.*;
 
-import com.ctre.phoenix6.Utils;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -199,10 +198,6 @@ public class Vision extends SubsystemBase {
       robotPosesRejected.get(cameraIndex).clear();
 
       for (PoseObservation observation : inputs[cameraIndex].poseObservations) {
-        double observationTimestamp = observation.timestamp();
-        double timestamp = Timer.getTimestamp();
-        double convertedTime = Utils.fpgaToCurrentTime(observation.timestamp());
-
         // only process the vision data if the timestamp is newer than the last one
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()) {
 

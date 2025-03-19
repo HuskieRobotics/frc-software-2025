@@ -64,7 +64,7 @@ public abstract class LEDs extends SubsystemBase {
                 Color.kGreen)),
     LOW_BATTERY((leds, section) -> leds.solid(section, new Color(255, 20, 0))),
     DISABLED_DEMO_MODE((leds, section) -> leds.updateToPridePattern()),
-    ALIGNED_FOR_AUTO((leds, section) -> leds.solid(section, Color.kGreen)),
+    NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
@@ -72,12 +72,16 @@ public abstract class LEDs extends SubsystemBase {
 
     EJECTING_CORAL(
         (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),
-    REMOVING_ALGAE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
-    SCORING_CORAL((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
+    SCORING((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
     READY_TO_SCORE((leds, section) -> leds.solid(section, Color.kGreen)),
     READY_TO_SCORE_FARTHER_AWAY((leds, section) -> leds.solid(section, Color.kPurple)),
+    COLLECTING_ALGAE(
+        (leds, section) ->
+            leds.wave(
+                section, Color.kBlue, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
     HAS_CORAL((leds, section) -> leds.solid(section, Color.kBlue)),
+    HAS_ALGAE((leds, section) -> leds.solid(section, Color.kBlue)),
     INDEXING_CORAL((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
     WAITING_FOR_CORAL(
         (leds, section) ->
@@ -136,7 +140,7 @@ public abstract class LEDs extends SubsystemBase {
   private static final double WAVE_FAST_CYCLE_LENGTH = 25.0;
 
   @SuppressWarnings("unused")
-  private static final double WAVE_FAST_DURATION = 0.25;
+  private static final double WAVE_FAST_DURATION = 0.5;
 
   @SuppressWarnings("unused")
   private static final double WAVE_MEDIUM_DURATION = 0.75;

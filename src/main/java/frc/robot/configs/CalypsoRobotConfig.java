@@ -48,7 +48,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.985073979);
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
-  private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.050115);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.34925, 0.34925);
@@ -75,8 +75,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double DRIVE_KA = 0.43636;
 
   private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.67);
-  private static final LinearVelocity MAX_COAST_VELOCITY =
-      MetersPerSecond.of(0.04); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.04);
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
   private static final String CAN_BUS_NAME = "canbus1";
@@ -127,6 +126,9 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_P_CONTROLLER = 5.0;
   private static final double AUTO_TURN_I_CONTROLLER = 0.0;
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
+
+  // Drive To Barge constants
+  private static final double DRIVE_TO_BARGE_DRIVE_KP = 1.0;
 
   // Drive to Pose constants
   private static final double DRIVE_TO_POSE_DRIVE_KP = 2.0;
@@ -377,6 +379,11 @@ public class CalypsoRobotConfig extends RobotConfig {
   @Override
   public double getDriveToPoseDriveKP() {
     return DRIVE_TO_POSE_DRIVE_KP;
+  }
+
+  @Override
+  public double getDriveToBargeDriveKP() {
+    return DRIVE_TO_BARGE_DRIVE_KP;
   }
 
   @Override

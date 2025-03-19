@@ -53,18 +53,17 @@ public class DriveToReef extends Command {
   // change the pose supplier to no longer be final since we will change it if we stall on a coral
   private Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
-  private final Consumer<Double> xFromReef;
-  private final Consumer<Double> yFromReef;
-  private final Consumer<Rotation2d> thetaFromReef;
+  private final Consumer<Transform2d> distanceFromReefConsumer;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
   private Debouncer xDebouncer = new Debouncer(0.2);
 
   // the oneCoralAway boolean will be set to true one time, when we transform the target pose to be
-  // one coral away
-  // this will make sure we never transform the target pose more than once
+  // one coral away this will make sure we never transform the target pose more than once
   private boolean oneCoralAway = false;
+
+  private boolean firstRun = true;
 
   private double timeout;
 
@@ -110,17 +109,13 @@ public class DriveToReef extends Command {
       Drivetrain drivetrain,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
-      Consumer<Double> xFromReef,
-      Consumer<Double> yFromReef,
-      Consumer<Rotation2d> thetaFromReef,
+      Consumer<Transform2d> distanceConsumer,
       Transform2d tolerance,
       double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
     this.onTarget = onTargetConsumer;
-    this.xFromReef = xFromReef;
-    this.yFromReef = yFromReef;
-    this.thetaFromReef = thetaFromReef;
+    this.distanceFromReefConsumer = distanceConsumer;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
     this.timeout = timeout;
@@ -141,6 +136,7 @@ public class DriveToReef extends Command {
     this.targetPose = poseSupplier.get();
 
     oneCoralAway = false;
+    firstRun = true;
 
     drivetrain.enableAccelerationLimiting();
 
@@ -295,14 +291,15 @@ public class DriveToReef extends Command {
     Logger.recordOutput("DriveToReef/difference (reef frame)", reefRelativeDifference);
 
     if (oneCoralAway) {
-      xFromReef.accept(
-          reefRelativeDifference.getX()
-              + DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE);
+      distanceFromReefConsumer.accept(
+          new Transform2d(
+              reefRelativeDifference.getX()
+                  + DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE,
+              reefRelativeDifference.getY(),
+              reefRelativeDifference.getRotation()));
     } else {
-      xFromReef.accept(reefRelativeDifference.getX());
+      distanceFromReefConsumer.accept(reefRelativeDifference);
     }
-    yFromReef.accept(reefRelativeDifference.getY());
-    thetaFromReef.accept(reefRelativeDifference.getRotation());
 
     boolean atGoal =
         Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
@@ -317,8 +314,19 @@ public class DriveToReef extends Command {
       onTarget.accept(false);
     }
 
+    boolean cannotReachTargetPose = false;
+    if (firstRun) {
+      firstRun = false;
+      cannotReachTargetPose = reefRelativeDifference.getX() > 0;
+    }
+
     // check that each of the controllers is at their goal or if the timeout is elapsed
-    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
+    // check if it is physically possible for us to drive to the selected position without going
+    // through the reef (sign of our x difference)
+    return cannotReachTargetPose
+        || !drivetrain.isMoveToPoseEnabled()
+        || this.timer.hasElapsed(timeout)
+        || atGoal;
   }
 
   /**

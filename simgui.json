@@ -19,6 +19,7 @@
       "/AdvantageKit/RealOutputs/Alerts": "Alerts",
       "/AdvantageKit/RealOutputs/Climber/ElevatorSim": "Mechanism2d",
       "/AdvantageKit/RealOutputs/Elevator/ElevatorSim": "Mechanism2d",
+      "/AdvantageKit/RealOutputs/Manipulator/ArmSim": "Mechanism2d",
       "/AdvantageKit/RealOutputs/PathPlanner": "Alerts",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
@@ -26,6 +27,7 @@
       "/SmartDashboard/Elevator/Zero Elevator": "Command",
       "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/SysId Chooser": "String Chooser",
+      "/SmartDashboard/SystemStatus/CheckForFaults": "Command",
       "/SmartDashboard/SystemStatus/ClearAllFaults": "Command",
       "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck": "Command",
       "/SmartDashboard/SystemStatus/Manipulator/SystemCheck": "Command",
@@ -39,6 +41,16 @@
       "/SmartDashboard/VisionSystemSim-OV2311FL/Sim Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-OV2311FR/Sim Field": "Field2d",
       "/SmartDashboard/VisionSystemSim-simCamera/Sim Field": "Field2d"
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Tuning": {
+        "open": true,
+        "operatorDashboard": {
+          "open": true
+        }
+      }
     }
   },
   "NetworkTables Info": {
