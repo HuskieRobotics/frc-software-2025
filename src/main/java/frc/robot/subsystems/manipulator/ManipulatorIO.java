@@ -94,5 +94,7 @@ public interface ManipulatorIO {
 
   public default void setPivotMotorVoltage(double volts) {}
 
+  public default void setPivotMotorCurrent(double current) {}
+
   public default void setPivotPosition(Angle angle) {}
 }

@@ -54,6 +54,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private TorqueCurrentFOC funnelCurrentRequest;
   private TorqueCurrentFOC indexerCurrentRequest;
+  private TorqueCurrentFOC pivotCurrentRequest;
 
   private VelocityTorqueCurrentFOC funnelVelocityRequest;
   private VelocityTorqueCurrentFOC indexerVelocityRequest;
@@ -159,6 +160,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelCurrentRequest = new TorqueCurrentFOC(0.0);
     indexerCurrentRequest = new TorqueCurrentFOC(0.0);
+    pivotCurrentRequest = new TorqueCurrentFOC(0.0);
 
     funnelVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
     indexerVelocityRequest = new VelocityTorqueCurrentFOC(0.0);
@@ -437,6 +439,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void setPivotMotorVoltage(double volts) {
     this.pivotMotor.setControl(pivotVoltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void setPivotMotorCurrent(double current) {
+    this.pivotMotor.setControl(pivotCurrentRequest.withOutput(current));
   }
 
   /*

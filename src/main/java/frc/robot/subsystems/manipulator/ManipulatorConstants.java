@@ -126,6 +126,9 @@ public class ManipulatorConstants {
 
   public static final double PIVOT_ALGAE_COLLECTION_VOLTAGE = 1.0; // FIXME: tune
 
+  public static final double PIVOT_CURRENT_RETRACTED = 0.0; // FIXME: tune
+  public static final double PIVOT_CURRENT_EXTENDED = 0.0; // FIXME: tune
+
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
