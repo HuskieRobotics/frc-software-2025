@@ -468,6 +468,14 @@ public class RobotContainer {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
+    } else if (drivetrain.getDriveToPoseCanceled()) {
+      Commands.sequence(
+              Commands.run(
+                      () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
+                      drivetrain)
+                  .withTimeout(0.5),
+              Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false)))
+          .schedule();
     }
   }
 

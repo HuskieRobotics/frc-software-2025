@@ -107,6 +107,7 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
   private SlewRateLimiter thetaFilter = new SlewRateLimiter(Units.degreesToRadians(360));
 
   private boolean accelerationLimiting = false;
+  private boolean driveToPoseCanceled = false;
 
   private Alert noPoseAlert =
       new Alert("Attempted to reset pose from vision, but no pose was found.", AlertType.kWarning);
@@ -980,6 +981,14 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> this.drive(0, 0, 0, true, false), this))
         .withName(SUBSYSTEM_NAME + "SystemCheck");
+  }
+
+  public void setDriveToPoseCanceled(boolean canceled) {
+    this.driveToPoseCanceled = canceled;
+  }
+
+  public boolean getDriveToPoseCanceled() {
+    return this.driveToPoseCanceled;
   }
 
   public boolean isTilted() {
