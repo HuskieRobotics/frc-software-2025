@@ -79,6 +79,9 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber pivotMotorVoltage =
       new LoggedTunableNumber("Manipulator/Pivot/MotorVoltage", 0);
 
+  private final LoggedTunableNumber pivotMotorCurrent =
+      new LoggedTunableNumber("Manipulator/Pivot/Current", 0);
+
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
 
