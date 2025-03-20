@@ -50,7 +50,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private VoltageOut funnelVoltageRequest;
   private VoltageOut indexerVoltageRequest;
-  private VoltageOut pivotVoltageRequest;
 
   private TorqueCurrentFOC funnelCurrentRequest;
   private TorqueCurrentFOC indexerCurrentRequest;
@@ -156,7 +155,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
-    pivotVoltageRequest = new VoltageOut(0.0);
 
     funnelCurrentRequest = new TorqueCurrentFOC(0.0);
     indexerCurrentRequest = new TorqueCurrentFOC(0.0);
