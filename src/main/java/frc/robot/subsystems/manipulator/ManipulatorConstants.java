@@ -120,7 +120,7 @@ public class ManipulatorConstants {
 
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
-  public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME: update value
+  public static final double INTAKE_ALGAE_TIMEOUT = 3.0;
   public static final double BARGE_ALGAE_TIMEOUT = 1.0; // FIXME: tune to be lower if we need
   public static final double PROCESSOR_ALGAE_TIMEOUT = 1.0; // FIXME: tune to be lower if we need
 
