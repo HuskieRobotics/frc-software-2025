@@ -52,26 +52,22 @@ public class Manipulator extends SubsystemBase {
       new LoggedTunableNumber("Manipulator/Indexer/MotorCurrent", 0);
 
   public final LoggedTunableNumber indexerCollectionVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Indexer/CollectionVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+      new LoggedTunableNumber("Manipulator/Indexer/CollectionVoltage", INDEXER_COLLECTION_VOLTAGE);
 
   public final LoggedTunableNumber fastShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_VOLTAGE_SHOOT_FAST);
+          "Manipulator/Indexer/Level1And4ShootingVoltage", INDEXER_SHOOT_FAST_VOLTAGE);
 
   public final LoggedTunableNumber slowShootingVoltage =
       new LoggedTunableNumber(
-          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_VOLTAGE_SHOOT_SLOW);
+          "Manipulator/Indexer/Level2And3ShootingVoltage", INDEXER_SHOOT_SLOW_VOLTAGE);
 
   public final LoggedTunableNumber indexerEjectingVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Indexer/EjectingVoltage", INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+      new LoggedTunableNumber("Manipulator/Indexer/EjectingVoltage", INDEXER_EJECT_VOLTAGE);
   public final LoggedTunableNumber funnelCollectionVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Funnel/CollectionVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL);
+      new LoggedTunableNumber("Manipulator/Funnel/CollectionVoltage", FUNNEL_COLLECTION_VOLTAGE);
   public final LoggedTunableNumber funnelEjectingVoltage =
-      new LoggedTunableNumber(
-          "Manipulator/Funnel/EjectingVoltage", FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL);
+      new LoggedTunableNumber("Manipulator/Funnel/EjectingVoltage", FUNNEL_EJECT_VOLTAGE);
 
   private final LoggedTunableNumber pivotAngle =
       new LoggedTunableNumber("Manipulator/Pivot/angle", 0); // add angle
@@ -102,8 +98,9 @@ public class Manipulator extends SubsystemBase {
 
   private boolean shootCoralButtonPressed = false;
   private boolean intakeAlgaeButtonPressed = false;
-  private boolean scoreAlgaeButtonPressed = false;
+  private boolean scoreAlgaeInBargeButtonPressed = false;
   private boolean scoreAlgaeInProcessorButtonPressed = false;
+  private boolean dropAlgaeButtonPressed = false;
 
   private boolean readyToScore = false;
 
@@ -235,7 +232,8 @@ public class Manipulator extends SubsystemBase {
 
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
-                > THRESHOLD_FOR_CURRENT_SPIKE) // the currentInAmps filters out the current in the
+                > THRESHOLD_FOR_CORAL_CURRENT_SPIKE) // the currentInAmps filters out the current in
+        // the
         // noise and getting the lastValue gets the last value
         // of the current, and if that last value is greater
         // than some constant, then current spike has been
@@ -300,7 +298,6 @@ public class Manipulator extends SubsystemBase {
         } else if (!subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
-        // FIXME: add a transition back to WAITING_FOR_CORAL_IN_FUNNEL if the coral is dropped
       }
 
       @Override
@@ -331,9 +328,9 @@ public class Manipulator extends SubsystemBase {
         LEDs.getInstance().requestState(States.SCORING);
 
         if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
-            && subsystem.scoreAlgaeButtonPressed) {
+            && subsystem.scoreAlgaeInBargeButtonPressed) {
           subsystem.setState(State.WAITING_FOR_ALGAE_IN_MANIPULATOR);
-          subsystem.scoreAlgaeButtonPressed = false;
+          subsystem.scoreAlgaeInBargeButtonPressed = false;
         } else if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
@@ -348,8 +345,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setPivotMotorCurrent(PIVOT_EXTEND_CURRENT);
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE);
-        // set voltage of indexer/roller motor to the speed while collecting algae
+        subsystem.setIndexerMotorVoltage(INDEXER_COLLECT_ALGAE_VOLTAGE);
         subsystem.intakingAlgaeTimer.restart();
         subsystem.currentInAmps.reset();
       }
@@ -381,7 +377,7 @@ public class Manipulator extends SubsystemBase {
         // claw thing
         subsystem.setPivotMotorCurrent(0.0);
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE);
+        subsystem.setIndexerMotorCurrent(INDEXER_HOLD_ALGAE_CURRENT);
       }
 
       @Override
@@ -390,10 +386,12 @@ public class Manipulator extends SubsystemBase {
 
         // check if the shootAlgae button has been pressed, if so then switch to the SHOOT_ALGAE
         // state
-        if (subsystem.scoreAlgaeButtonPressed) {
+        if (subsystem.scoreAlgaeInBargeButtonPressed) {
           subsystem.setState(State.SHOOT_ALGAE_IN_BARGE);
         } else if (subsystem.scoreAlgaeInProcessorButtonPressed) {
           subsystem.setState(State.SHOOT_ALGAE_IN_PROCESSOR);
+        } else if (subsystem.dropAlgaeButtonPressed) {
+          subsystem.setState(State.DROP_ALGAE);
         } else if (!subsystem.inputs.isAlgaeIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
@@ -409,8 +407,8 @@ public class Manipulator extends SubsystemBase {
         // opp direction and eject the algae out of the manipulator
 
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE);
-        subsystem.scoreAlgaeButtonPressed = false;
+        subsystem.setIndexerMotorCurrent(INDEXER_SHOOT_ALGAE_BARGE_CURRENT);
+        subsystem.scoreAlgaeInBargeButtonPressed = false;
         subsystem.setPivotMotorCurrent(0.0);
 
         subsystem.scoringAlgaeTimer.restart();
@@ -437,8 +435,8 @@ public class Manipulator extends SubsystemBase {
         LEDs.getInstance().requestState(States.SCORING);
 
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR);
-        subsystem.scoreAlgaeButtonPressed = false;
+        subsystem.setIndexerMotorCurrent(INDEXER_SHOOT_ALGAE_PROCESSOR_CURRENT);
+        subsystem.scoreAlgaeInBargeButtonPressed = false;
         subsystem.scoreAlgaeInProcessorButtonPressed = false;
         subsystem.setPivotMotorCurrent(0.0);
 
@@ -449,6 +447,28 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(PROCESSOR_ALGAE_TIMEOUT)) {
+          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+        }
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {}
+    },
+    DROP_ALGAE {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setFunnelMotorVoltage(0.0);
+        subsystem.setIndexerMotorCurrent(INDEXER_DROP_ALGAE_CURRENT);
+        subsystem.dropAlgaeButtonPressed = false;
+        subsystem.setPivotMotorCurrent(0.0);
+
+        subsystem.scoringAlgaeTimer.restart();
+      }
+
+      @Override
+      void execute(Manipulator subsystem) {
+        if (!subsystem.inputs.isAlgaeIRBlocked
+            && subsystem.scoringAlgaeTimer.hasElapsed(DROP_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
@@ -639,13 +659,16 @@ public class Manipulator extends SubsystemBase {
     }
   }
 
-  // method to score algae which assigns the score algae button pressed to true
   public void scoreAlgaeInBarge() {
-    scoreAlgaeButtonPressed = true;
+    scoreAlgaeInBargeButtonPressed = true;
   }
 
   public void scoreAlgaeInProcessor() {
     scoreAlgaeInProcessorButtonPressed = true;
+  }
+
+  public void dropAlgae() {
+    dropAlgaeButtonPressed = true;
   }
 
   public boolean doneCollectingAlgae() {
