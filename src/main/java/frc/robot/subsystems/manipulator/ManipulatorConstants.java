@@ -81,7 +81,6 @@ public class ManipulatorConstants {
   public static final double PIVOT_RETRACT_UP_CURRENT = 20;
   public static final double PIVOT_RETRACT_HOLD_CURRENT = 10;
 
-  // FIXME: tune these values
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
 
   // Fast voltage: L1, L4, far L2, far L3
@@ -93,15 +92,12 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE = 2.0;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE =
-      -10.0; // FIXME:update value
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR =
-      -4.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE = -10.0;
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR = -10.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_DROPPING_ALGAE =
       -6.0; // FIXME:update value
 
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE =
-      4.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE = 4.0;
 
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
   public static final double FUNNEL_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -10.0;
@@ -125,20 +121,15 @@ public class ManipulatorConstants {
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
   public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME: update value
-  public static final double BARGE_ALGAE_TIMEOUT = 1.0; // FIXME: tune
-  public static final double PROCESSOR_ALGAE_TIMEOUT = 1.0; // FIXME: tune
-
-  public static final double PIVOT_ALGAE_COLLECTION_VOLTAGE = 1.0; // FIXME: tune
-
-  public static final double PIVOT_CURRENT_RETRACTED = 0.0; // FIXME: tune
-  public static final double PIVOT_CURRENT_EXTENDED = 0.0; // FIXME: tune
+  public static final double BARGE_ALGAE_TIMEOUT = 1.0; // FIXME: tune to be lower if we need
+  public static final double PROCESSOR_ALGAE_TIMEOUT = 1.0; // FIXME: tune to be lower if we need
 
   // current limits -- all are set to default values
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
-  public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40; // tbd for new pivot motor
+  public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40;
 
   public static final double THRESHOLD_FOR_CURRENT_SPIKE = 35.0;
 
