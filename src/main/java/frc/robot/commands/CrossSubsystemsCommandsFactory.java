@@ -271,19 +271,15 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
-        getAlgaeScoringLocation(manipulator),
+        Commands.either(
+            Commands.runOnce(manipulator::scoreAlgaeInBarge),
+            Commands.either(
+                Commands.runOnce(manipulator::scoreAlgaeInProcessor),
+                Commands.runOnce(manipulator::dropAlgae),
+                () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
+            () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()),
         Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
         Commands.waitUntil(() -> manipulator.scoredAlgae()));
-  }
-
-  private static Command getAlgaeScoringLocation(Manipulator manipulator) {
-    if (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()) {
-      return Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator);
-    } else if (OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()) {
-      return Commands.runOnce(manipulator::scoreAlgaeInProcessor, manipulator);
-    } else {
-      return Commands.runOnce(manipulator::dropAlgae, manipulator);
-    }
   }
 
   private static Command getScoreCoralAndCollectAlgaeCommand(
