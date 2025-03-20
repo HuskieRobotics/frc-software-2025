@@ -68,6 +68,8 @@ public class RobotContainer {
   private Climber climber;
   private Elevator elevator;
 
+  private Trigger driveToPoseCanceledTrigger;
+
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
   private final LoggedNetworkNumber endgameAlert2 =
@@ -338,6 +340,15 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
         new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate));
 
+    driveToPoseCanceledTrigger = new Trigger(drivetrain::getDriveToPoseCanceled);
+    driveToPoseCanceledTrigger.onTrue(
+        Commands.sequence(
+            Commands.run(
+                    () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
+                    drivetrain)
+                .withTimeout(0.5),
+            Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false))));
+
     // lock rotation to the nearest 180° while driving
     oi.getLock180Button()
         .whileTrue(
@@ -468,14 +479,6 @@ public class RobotContainer {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
-    } else if (drivetrain.getDriveToPoseCanceled()) {
-      Commands.sequence(
-              Commands.run(
-                      () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
-                      drivetrain)
-                  .withTimeout(0.5),
-              Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false)))
-          .schedule();
     }
   }
 

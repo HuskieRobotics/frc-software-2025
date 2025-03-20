@@ -558,7 +558,7 @@ public abstract class RobotConfig {
     return 1;
   }
 
-  public double getDriveToBargeDriveKP() {
+  public double getDriveToBargeAndProcessorDriveKP() {
     return 0.0;
   }
 

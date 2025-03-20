@@ -437,11 +437,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   }
 
   @Override
-  public void setPivotMotorVoltage(double volts) {
-    this.pivotMotor.setControl(pivotVoltageRequest.withOutput(volts));
-  }
-
-  @Override
   public void setPivotMotorCurrent(double current) {
     this.pivotMotor.setControl(pivotCurrentRequest.withOutput(current));
   }

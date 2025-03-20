@@ -125,7 +125,7 @@ public class Manipulator extends SubsystemBase {
     // Current" and sysIDFunnel
 
     SysIdRoutineChooser.getInstance().addOption("Indexer Current", sysIDIndexer);
-    SysIdRoutineChooser.getInstance().addOption("Pivot Voltage", sysIdPivot);
+    // SysIdRoutineChooser.getInstance().addOption("Pivot Voltage", sysIdPivot);
 
     FaultReporter.getInstance().registerSystemCheck(SUBSYSTEM_NAME, getSystemCheckCommand());
   }
@@ -158,15 +158,16 @@ public class Manipulator extends SubsystemBase {
           new SysIdRoutine.Mechanism(
               output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
 
-  private final SysIdRoutine sysIdPivot =
-      new SysIdRoutine( // FIXME: check values for ramp rate and step voltage
-          new SysIdRoutine.Config(
-              Volts.of(0.1).per(Seconds), // Use default ramp rate (1 V/s)
-              Volts.of(0.6), // Use default step voltage (7 V)
-              null, // Use default timeout (10 s)
-              // Log state with SignalLogger class
-              sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
-          new SysIdRoutine.Mechanism(output -> setPivotMotorVoltage(output.in(Volts)), null, this));
+  // private final SysIdRoutine sysIdPivot =
+  //     new SysIdRoutine( // FIXME: check values for ramp rate and step voltage
+  //         new SysIdRoutine.Config(
+  //             Volts.of(0.1).per(Seconds), // Use default ramp rate (1 V/s)
+  //             Volts.of(0.6), // Use default step voltage (7 V)
+  //             null, // Use default timeout (10 s)
+  //             // Log state with SignalLogger class
+  //             sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
+  //         new SysIdRoutine.Mechanism(output -> setPivotMotorVoltage(output.in(Volts)), null,
+  // this));
 
   /**
    * Few subsystems require the complexity of a state machine. A simpler command-based approach is
@@ -190,6 +191,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
+        subsystem.retractPivot();
         // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
         subsystem.readyToScore = false;
       }
@@ -218,7 +220,7 @@ public class Manipulator extends SubsystemBase {
     INDEXING_CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
+        subsystem.retractPivot();
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         subsystem.coralInIndexingState.restart(); // start timer
@@ -254,7 +256,7 @@ public class Manipulator extends SubsystemBase {
     CORAL_STUCK {
       @Override
       void onEnter(Manipulator subsystem) {
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
+        subsystem.retractPivot();
         subsystem.setFunnelMotorVoltage(
             subsystem.funnelEjectingVoltage.get()); // set negative velocity to funnel motor to
         // invert it
@@ -283,7 +285,7 @@ public class Manipulator extends SubsystemBase {
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
+        subsystem.retractPivot();
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(0.0);
         subsystem.shootCoralButtonPressed = false;
@@ -310,7 +312,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.readyToScore = false;
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
+        subsystem.retractPivot();
 
         if (subsystem.shootingFast) {
           if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
@@ -344,10 +346,9 @@ public class Manipulator extends SubsystemBase {
       // button is pressed in the SHOOT_CORAL state
       @Override
       void onEnter(Manipulator subsystem) {
+        subsystem.setPivotMotorCurrent(PIVOT_EXTEND_CURRENT);
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE);
-        subsystem.setPivotMotorVoltage(PIVOT_ALGAE_COLLECTION_VOLTAGE);
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_EXTENDED);
         // set voltage of indexer/roller motor to the speed while collecting algae
         subsystem.intakingAlgaeTimer.restart();
         subsystem.currentInAmps.reset();
@@ -378,10 +379,9 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         // lessen the voltage of the indexer/roller motor so that it keeps the algae held in the
         // claw thing
+        subsystem.setPivotMotorCurrent(0.0);
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE);
-        subsystem.setPivotMotorVoltage(0.0);
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_EXTENDED);
       }
 
       @Override
@@ -411,7 +411,7 @@ public class Manipulator extends SubsystemBase {
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE);
         subsystem.scoreAlgaeButtonPressed = false;
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_EXTENDED);
+        subsystem.setPivotMotorCurrent(0.0);
 
         subsystem.scoringAlgaeTimer.restart();
       }
@@ -440,7 +440,7 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVoltage(INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR);
         subsystem.scoreAlgaeButtonPressed = false;
         subsystem.scoreAlgaeInProcessorButtonPressed = false;
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_EXTENDED);
+        subsystem.setPivotMotorCurrent(0.0);
 
         subsystem.scoringAlgaeTimer.restart();
       }
@@ -463,6 +463,7 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0);
         subsystem.setIndexerMotorVoltage(0);
+        subsystem.setPivotMotorCurrent(0);
       }
 
       @Override
@@ -576,10 +577,6 @@ public class Manipulator extends SubsystemBase {
     io.setIndexerMotorVelocity(velocity);
   }
 
-  public void setPivotMotorVoltage(double volts) {
-    io.setPivotMotorVoltage(volts);
-  }
-
   public void setPivotMotorCurrent(double current) {
     io.setPivotMotorCurrent(current);
   }
@@ -634,6 +631,14 @@ public class Manipulator extends SubsystemBase {
     shootCoral();
   }
 
+  public void retractPivot() {
+    if (inputs.pivotMotorAngleDeg > 85.0) {
+      setPivotMotorCurrent(PIVOT_RETRACT_HOLD_CURRENT);
+    } else {
+      setPivotMotorCurrent(PIVOT_RETRACT_UP_CURRENT);
+    }
+  }
+
   // method to score algae which assigns the score algae button pressed to true
   public void scoreAlgae() {
     scoreAlgaeButtonPressed = true;
@@ -665,6 +670,10 @@ public class Manipulator extends SubsystemBase {
 
   public boolean algaeIsInManipulator() {
     return inputs.isAlgaeIRBlocked;
+  }
+
+  public boolean scoredAlgae() {
+    return state == State.WAITING_FOR_CORAL_IN_FUNNEL;
   }
 
   public void setReadyToScore(boolean readyToScore) {

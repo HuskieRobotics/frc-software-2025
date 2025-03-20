@@ -77,6 +77,10 @@ public class ManipulatorConstants {
 
   public static final double PIVOT_MOTOR_KA_EXPO = 2.0;
 
+  public static final double PIVOT_EXTEND_CURRENT = -15.0;
+  public static final double PIVOT_RETRACT_UP_CURRENT = 20;
+  public static final double PIVOT_RETRACT_HOLD_CURRENT = 10;
+
   // FIXME: tune these values
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_CORAL = 4.0;
 
@@ -88,13 +92,13 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_EJECTING_CORAL = -12.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_CORAL_OUT_FUNNEL = -12;
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE =
-      0.0; // new constant for indexer motor when holding algae\
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_HOLDING_ALGAE = 2.0;
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_BARGE =
-      -1.0; // FIXME:update value
+      -10.0; // FIXME:update value
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_SHOOTING_ALGAE_PROCESSOR =
-      -1.0; // FIXME:update value
-  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_DROPPING_ALGAE = 0.0; // FIXME:update value
+      -4.0; // FIXME:update value
+  public static final double INDEXER_MOTOR_VOLTAGE_WHILE_DROPPING_ALGAE =
+      -6.0; // FIXME:update value
 
   public static final double INDEXER_MOTOR_VOLTAGE_WHILE_COLLECTING_ALGAE =
       4.0; // FIXME:update value
@@ -121,7 +125,7 @@ public class ManipulatorConstants {
   public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
 
   public static final double INTAKE_ALGAE_TIMEOUT = 3.0; // FIXME: update value
-  public static final double BARGE_ALGAE_TIMEOUT = 0.5; // FIXME: tune
+  public static final double BARGE_ALGAE_TIMEOUT = 1.0; // FIXME: tune
   public static final double PROCESSOR_ALGAE_TIMEOUT = 1.0; // FIXME: tune
 
   public static final double PIVOT_ALGAE_COLLECTION_VOLTAGE = 1.0; // FIXME: tune

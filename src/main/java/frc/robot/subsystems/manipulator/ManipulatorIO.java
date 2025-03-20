@@ -1,6 +1,5 @@
 package frc.robot.subsystems.manipulator;
 
-import edu.wpi.first.units.measure.Angle;
 import org.littletonrobotics.junction.AutoLog;
 
 /** Generic subsystem hardware interface. */
@@ -92,9 +91,5 @@ public interface ManipulatorIO {
    */
   public default void setIndexerMotorCurrent(double current) {}
 
-  public default void setPivotMotorVoltage(double volts) {}
-
   public default void setPivotMotorCurrent(double current) {}
-
-  public default void setPivotPosition(Angle angle) {}
 }

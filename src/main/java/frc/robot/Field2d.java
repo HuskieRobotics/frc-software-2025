@@ -414,7 +414,7 @@ public class Field2d {
   public Pose2d getBargePose() {
     // x arbitrary from 20 inches x from the middle cage
     return new Pose2d(
-        new Translation2d(Units.inchesToMeters(295), Units.inchesToMeters(242.855)),
+        new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
         Rotation2d.fromDegrees(0.0));
   }
 
@@ -429,7 +429,8 @@ public class Field2d {
     nearestProcessor =
         nearestProcessor.transformBy(
             new Transform2d(
-                RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0)
+                    + Units.inchesToMeters(12.0),
                 0,
                 Rotation2d.fromDegrees(180)));
 
