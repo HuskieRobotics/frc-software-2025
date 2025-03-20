@@ -271,7 +271,11 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
-        Commands.runOnce(manipulator::scoreAlgae, manipulator),
+        Commands.either(
+            Commands.runOnce(manipulator::scoreAlgaeInBarge),
+            Commands.runOnce(manipulator::scoreAlgaeInProcessor),
+            () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()),
+        Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
         Commands.waitUntil(() -> manipulator.scoredAlgae()));
   }
 

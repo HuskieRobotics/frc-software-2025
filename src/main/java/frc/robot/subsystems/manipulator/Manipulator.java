@@ -640,7 +640,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   // method to score algae which assigns the score algae button pressed to true
-  public void scoreAlgae() {
+  public void scoreAlgaeInBarge() {
     scoreAlgaeButtonPressed = true;
   }
 
