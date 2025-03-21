@@ -315,6 +315,7 @@ public class DriveToReef extends Command {
     }
 
     boolean cannotReachTargetPose = false;
+    Logger.recordOutput("DriveToReef/cannotReachTargetPose", cannotReachTargetPose);
     if (firstRun) {
       firstRun = false;
       cannotReachTargetPose = reefRelativeDifference.getX() > 0;
