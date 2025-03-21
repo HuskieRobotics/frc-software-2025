@@ -78,7 +78,7 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_COLLECTION_VOLTAGE = 4.0;
 
-  public static final double INDEXER_HOLD_ALGAE_CURRENT = 20.0;
+  public static final double INDEXER_HOLD_ALGAE_CURRENT = 30.0;
   public static final double INDEXER_SHOOT_ALGAE_BARGE_CURRENT = -35.0;
   public static final double INDEXER_SHOOT_ALGAE_PROCESSOR_CURRENT = -35.0;
   public static final double INDEXER_DROP_ALGAE_CURRENT = -35.0;

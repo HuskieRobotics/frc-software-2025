@@ -48,8 +48,8 @@ public class Manipulator extends SubsystemBase {
   private final LoggedTunableNumber funnelMotorCurrent =
       new LoggedTunableNumber("Manipulator/Funnel/MotorCurrent", 0);
 
-  private final LoggedTunableNumber indexerMotorCurrent =
-      new LoggedTunableNumber("Manipulator/Indexer/MotorCurrent", 0);
+  private final LoggedTunableNumber indexerHoldAlgaeCurrent =
+      new LoggedTunableNumber("Manipulator/Indexer/MotorCurrent", INDEXER_HOLD_ALGAE_CURRENT);
 
   public final LoggedTunableNumber indexerCollectionVoltage =
       new LoggedTunableNumber("Manipulator/Indexer/CollectionVoltage", INDEXER_COLLECTION_VOLTAGE);
@@ -377,7 +377,7 @@ public class Manipulator extends SubsystemBase {
         // claw thing
         subsystem.setPivotMotorCurrent(0.0);
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorCurrent(INDEXER_HOLD_ALGAE_CURRENT);
+        subsystem.setIndexerMotorCurrent(subsystem.indexerHoldAlgaeCurrent.get());
       }
 
       @Override
@@ -537,8 +537,8 @@ public class Manipulator extends SubsystemBase {
         setIndexerMotorVoltage(indexerMotorVoltage.get());
       } else if (indexerMotorVelocity.get() != 0) {
         setIndexerMotorVelocity(indexerMotorVelocity.get());
-      } else if (indexerMotorCurrent.get() != 0) {
-        setIndexerMotorCurrent(indexerMotorCurrent.get());
+      } else if (indexerHoldAlgaeCurrent.get() != 0) {
+        setIndexerMotorCurrent(indexerHoldAlgaeCurrent.get());
       }
 
       // if (pivotAngle.get() != 0) {
