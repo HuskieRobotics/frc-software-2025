@@ -71,8 +71,8 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.either(
             Commands.either(
-                getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L2),
-                getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L3),
+                getScoreL2L3Command(manipulator, elevator, ScoringHeight.MAX_L2),
+                getScoreL2L3Command(manipulator, elevator, ScoringHeight.MAX_L3),
                 () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
             getScoreCoralCloseCommand(manipulator, elevator),
             () ->
@@ -94,7 +94,7 @@ public class CrossSubsystemsCommandsFactory {
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
-  private static Command getScoreOneCoralAwayCommand(
+  private static Command getScoreL2L3Command(
       Manipulator manipulator, Elevator elevator, ScoringHeight branch) {
     return Commands.sequence(
         Commands.either(
