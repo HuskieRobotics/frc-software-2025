@@ -34,15 +34,7 @@ public class CrossSubsystemsCommandsFactory {
     oi.getScoreButton()
         .onTrue(
             Commands.either(
-                    Commands.sequence(
-                        getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
-                        Commands.deadline(
-                            elevator.getElevatorLowerAndResetCommand(),
-                            new TeleopSwerve(
-                                drivetrain,
-                                OISelector.getOperatorInterface()::getTranslateX,
-                                OISelector.getOperatorInterface()::getTranslateY,
-                                OISelector.getOperatorInterface()::getRotate))),
+                    getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
                     Commands.sequence(
                         getScoreCoralCommand(manipulator, elevator),
                         Commands.deadline(
@@ -263,7 +255,15 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreWithAlgaeSelectedCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.either(
-        getScoreAlgaeCommand(drivetrain, manipulator, elevator),
+        Commands.sequence(
+            getScoreAlgaeCommand(drivetrain, manipulator, elevator),
+            Commands.deadline(
+                elevator.getElevatorLowerAndResetCommand(),
+                new TeleopSwerve(
+                    drivetrain,
+                    OISelector.getOperatorInterface()::getTranslateX,
+                    OISelector.getOperatorInterface()::getTranslateY,
+                    OISelector.getOperatorInterface()::getRotate))),
         getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
         manipulator::hasIndexedAlgae);
   }
