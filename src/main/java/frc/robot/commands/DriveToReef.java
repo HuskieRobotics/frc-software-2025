@@ -319,6 +319,9 @@ public class DriveToReef extends Command {
     if (firstRun) {
       firstRun = false;
       cannotReachTargetPose = reefRelativeDifference.getX() > 0;
+      if (cannotReachTargetPose) {
+        drivetrain.setDriveToPoseCanceled(true);
+      }
     }
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
@@ -340,11 +343,6 @@ public class DriveToReef extends Command {
   public void end(boolean interrupted) {
     drivetrain.disableAccelerationLimiting();
     drivetrain.stop();
-    // multiply this by 2 for now to guarantee it shows up (lower back to one loop period when
-    // confirmed)
-    if (!this.timer.hasElapsed(2 * LOOP_PERIOD_SECS)) {
-      drivetrain.setDriveToPoseCanceled(true);
-    }
     Logger.recordOutput("DriveToReef/isFinished", true);
   }
 }
