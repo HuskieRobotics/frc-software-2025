@@ -26,13 +26,13 @@ public class ManipulatorConstants {
 
   public static final int FUNNEL_IR_BACKUP_SENSOR_ID = 2;
 
-  public static final int INDEXER_MOTOR_ID = 56;
+  public static final int INDEXER_MOTOR_ID = 18; // 56
 
   public static final int INDEXER_IR_SENSOR_ID = 0;
 
   public static final int INDEXER_IR_BACKUP_SENSOR_ID = 1;
 
-  public static final int PIVOT_MOTOR_ID = 57;
+  public static final int PIVOT_MOTOR_ID = 19;
 
   public static final int ALGAE_IR_SENSOR_ID = 6;
 
