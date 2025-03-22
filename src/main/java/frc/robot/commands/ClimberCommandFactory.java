@@ -15,6 +15,8 @@ public class ClimberCommandFactory {
 
   public static void registerCommands(OperatorInterface oi, Climber climber) {
 
+    // take in the manipulator subsystem here as well and call the openFunnelFlap method along with
+    // cage catcher extension
     oi.getExtendCageCatcherButton()
         .onTrue(
             Commands.sequence(

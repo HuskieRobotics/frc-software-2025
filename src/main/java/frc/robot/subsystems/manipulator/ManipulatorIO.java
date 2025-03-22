@@ -44,52 +44,28 @@ public interface ManipulatorIO {
     double pivotMotorVoltage = 0;
 
     double pivotMotorAngleDeg = 0;
+
+    double rightServoPosition = 0.0;
+    double leftServoPosition = 0.0;
   }
 
-  /** Updates the set of loggable inputs. */
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
-  /**
-   * Set the funnel motor voltage to the specified number of volts.
-   *
-   * @param volts the number of volts to set the motor voltage to.
-   */
   public default void setFunnelMotorVoltage(double volts) {}
 
-  /**
-   * Set the funnel motor velocity to the specified velocity.
-   *
-   * @param velocity the specified velocity to set the motor to.
-   */
   public default void setFunnelMotorVelocity(double velocity) {}
 
-  /**
-   * Set the indexer motor voltage to the specified number of volts.
-   *
-   * @param volts the number of volts to set the motor voltage to.
-   */
   public default void setIndexerMotorVoltage(double volts) {}
 
-  /**
-   * Set the indexer motor velocity to the specified velocity.
-   *
-   * @param velocity the specified velocity to set the motor to.
-   */
   public default void setIndexerMotorVelocity(double velocity) {}
 
-  /**
-   * Set the funnel motor current to the specified value in amps.
-   *
-   * @param current the current to set the motor to in amps.
-   */
   public default void setFunnelMotorCurrent(double current) {}
 
-  /**
-   * Set the indexer motor current to the specified value in amps.
-   *
-   * @param current the current to set the motor to in amps.
-   */
   public default void setIndexerMotorCurrent(double current) {}
 
   public default void setPivotMotorCurrent(double current) {}
+
+  public default void unlockServos() {}
+
+  public default void lockServos() {}
 }

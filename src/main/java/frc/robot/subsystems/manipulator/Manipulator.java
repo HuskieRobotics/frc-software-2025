@@ -596,6 +596,11 @@ public class Manipulator extends SubsystemBase {
     io.setPivotMotorCurrent(current);
   }
 
+  // this will get called in the climb sequence, most likely with the extend cage catcher button
+  public void openFunnelFlap() {
+    io.unlockServos();
+  }
+
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
   // same exact thing but for the funnel and indexer motor, unsure if this is correct
   private Command getSystemCheckCommand() {
