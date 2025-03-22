@@ -71,8 +71,8 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.either(
             Commands.either(
-                getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L2),
-                getScoreOneCoralAwayCommand(manipulator, elevator, ScoringHeight.MAX_L3),
+                getScoreL2L3Command(manipulator, elevator, ScoringHeight.MAX_L2),
+                getScoreL2L3Command(manipulator, elevator, ScoringHeight.MAX_L3),
                 () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
             getScoreCoralCloseCommand(manipulator, elevator),
             () ->
@@ -94,7 +94,7 @@ public class CrossSubsystemsCommandsFactory {
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
-  private static Command getScoreOneCoralAwayCommand(
+  private static Command getScoreL2L3Command(
       Manipulator manipulator, Elevator elevator, ScoringHeight branch) {
     return Commands.sequence(
         Commands.either(
@@ -255,7 +255,15 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreWithAlgaeSelectedCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.either(
-        getScoreAlgaeCommand(drivetrain, manipulator, elevator),
+        Commands.sequence(
+            getScoreAlgaeCommand(drivetrain, manipulator, elevator),
+            Commands.deadline(
+                elevator.getElevatorLowerAndResetCommand(),
+                new TeleopSwerve(
+                    drivetrain,
+                    OISelector.getOperatorInterface()::getTranslateX,
+                    OISelector.getOperatorInterface()::getTranslateY,
+                    OISelector.getOperatorInterface()::getRotate))),
         getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
         manipulator::hasIndexedAlgae);
   }
@@ -263,8 +271,15 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getScoreAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
-        Commands.runOnce(manipulator::scoreAlgae, manipulator),
-        Commands.waitUntil(() -> !manipulator.algaeIsInManipulator()));
+        Commands.either(
+            Commands.runOnce(manipulator::scoreAlgaeInBarge),
+            Commands.either(
+                Commands.runOnce(manipulator::scoreAlgaeInProcessor),
+                Commands.runOnce(manipulator::dropAlgae),
+                () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
+            () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()),
+        Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
+        Commands.waitUntil(() -> manipulator.scoredAlgae()));
   }
 
   private static Command getScoreCoralAndCollectAlgaeCommand(

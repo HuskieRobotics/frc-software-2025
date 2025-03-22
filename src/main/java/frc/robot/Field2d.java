@@ -259,13 +259,11 @@ public class Field2d {
         allReefCenterFaces[i + 6] = FlippingUtil.flipFieldPose(blueCenterFaces[i]);
       }
 
-      // FIXME: make this more efficient / coherent
-      // put all the right and left poses into their maps, corresponded by approximate center poses
-
-      // right
-      // remove algae poses are hardcoded to a set transformation from the reef center face
+      // remove algae poses are hardcoded to slightly off the center
+      // blue alliance poses
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i], blueReefRightBranches[i]);
+        leftReefPoses.put(allReefCenterFaces[i], blueReefLeftBranches[i]);
         Pose2d removeAlgaePose =
             allReefCenterFaces[i].transformBy(
                 new Transform2d(
@@ -274,8 +272,11 @@ public class Field2d {
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i], removeAlgaePose);
       }
+
+      // red alliance poses
       for (int i = 0; i < 6; i++) {
         rightReefPoses.put(allReefCenterFaces[i + 6], redReefRightBranches[i]);
+        leftReefPoses.put(allReefCenterFaces[i + 6], redReefLeftBranches[i]);
         Pose2d removeAlgaePose =
             allReefCenterFaces[i + 6].transformBy(
                 new Transform2d(
@@ -283,14 +284,6 @@ public class Field2d {
                     Units.inchesToMeters(REMOVE_ALGAE_Y_TRANSFORMATION_INCHES),
                     Rotation2d.fromDegrees(180)));
         removeAlgaePoses.put(allReefCenterFaces[i + 6], removeAlgaePose);
-      }
-
-      // left
-      for (int i = 0; i < 6; i++) {
-        leftReefPoses.put(allReefCenterFaces[i], blueReefLeftBranches[i]);
-      }
-      for (int i = 0; i < 6; i++) {
-        leftReefPoses.put(allReefCenterFaces[i + 6], redReefLeftBranches[i]);
       }
 
     } else {
@@ -317,7 +310,7 @@ public class Field2d {
             reefCenterFace.transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    -Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES - 3.0),
+                    -Units.inchesToMeters(REMOVE_ALGAE_Y_TRANSFORMATION_INCHES),
                     Rotation2d.fromDegrees(180)));
 
         leftReefPoses.put(reefCenterFace, leftPose);
@@ -364,7 +357,6 @@ public class Field2d {
     return bumpersOnReefAlignedToBranch;
   }
 
-  // FIXME: consolidate this in operator dashboard if possible?
   public Pose2d getSelectedBranch() {
     if (OISelector.getOperatorInterface().getReefBranchATrigger().getAsBoolean()) {
       return leftReefPoses.get(FieldConstants.Reef.centerFaces[0]);
@@ -422,7 +414,7 @@ public class Field2d {
   public Pose2d getBargePose() {
     // x arbitrary from 20 inches x from the middle cage
     return new Pose2d(
-        new Translation2d(Units.inchesToMeters(295), Units.inchesToMeters(242.855)),
+        new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
         Rotation2d.fromDegrees(0.0));
   }
 
@@ -437,7 +429,8 @@ public class Field2d {
     nearestProcessor =
         nearestProcessor.transformBy(
             new Transform2d(
-                RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0)
+                    + Units.inchesToMeters(12.0),
                 0,
                 Rotation2d.fromDegrees(180)));
 

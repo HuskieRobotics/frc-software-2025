@@ -315,9 +315,13 @@ public class DriveToReef extends Command {
     }
 
     boolean cannotReachTargetPose = false;
+    Logger.recordOutput("DriveToReef/cannotReachTargetPose", cannotReachTargetPose);
     if (firstRun) {
       firstRun = false;
       cannotReachTargetPose = reefRelativeDifference.getX() > 0;
+      if (cannotReachTargetPose) {
+        drivetrain.setDriveToPoseCanceled(true);
+      }
     }
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
