@@ -327,11 +327,7 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.SCORING);
 
-        if ((!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked)
-            && subsystem.scoreAlgaeInBargeButtonPressed) {
-          subsystem.setState(State.WAITING_FOR_ALGAE_IN_MANIPULATOR);
-          subsystem.scoreAlgaeInBargeButtonPressed = false;
-        } else if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
+        if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
         }
       }
