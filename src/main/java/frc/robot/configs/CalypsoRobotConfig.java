@@ -91,8 +91,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
-          new Translation3d(0.180, -0.267, 0.240),
-          new Rotation3d(new Quaternion(-0.978, -0.032, 0.107, -0.176)));
+          new Translation3d(0.1790, -0.267, 0.237),
+          new Rotation3d(new Quaternion(-0.976, -0.030, 0.112, -0.182)));
   // pitch 45 degrees
 
   // Back right camera
@@ -107,8 +107,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
-          new Translation3d(0.181, 0.267, 0.242),
-          new Rotation3d(new Quaternion(-0.978, 0.011, 0.103, 0.183)));
+          new Translation3d(0.178, 0.269, 0.240),
+          new Rotation3d(new Quaternion(-0.977, 0.008, 0.111, 0.181)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
@@ -128,7 +128,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
 
   // Drive To Barge constants
-  private static final double DRIVE_TO_BARGE_AND_PROCESSOR_DRIVE_KP = 1.0;
+  private static final double DRIVE_TO_BARGE_AND_PROCESSOR_DRIVE_KP = 1.5;
 
   // Drive to Pose constants
   private static final double DRIVE_TO_POSE_DRIVE_KP = 2.0;
