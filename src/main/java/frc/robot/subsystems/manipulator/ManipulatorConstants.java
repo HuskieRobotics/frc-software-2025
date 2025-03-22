@@ -122,5 +122,7 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
   public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40;
   public static final double THRESHOLD_FOR_CORAL_CURRENT_SPIKE = 35.0;
-  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0; // FIXME: tune
+  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0;
+
+  public static final double PIVOT_CURRENT_TOLERANCE_AMPS = 1.0;
 }
