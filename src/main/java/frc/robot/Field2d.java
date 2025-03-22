@@ -445,16 +445,20 @@ public class Field2d {
     // ORDER (clockwise): B, L, J, H, F, D
     blueReefRightBranches[0] =
         new Pose2d(
-            3.228048879993923, 3.8643000772630605, Rotation2d.fromDegrees(0.7999547222254184));
+            3.2297402335147383, 3.8536669362597844, Rotation2d.fromDegrees(0.09841323474273349));
+
     blueReefRightBranches[1] =
         new Pose2d(
-            3.737009433677461, 5.047898467596413, Rotation2d.fromDegrees(-60.21431492159178));
+            3.725592350433539, 5.036519855034012, Rotation2d.fromDegrees(-59.37011637456746));
+
     blueReefRightBranches[2] =
         new Pose2d(
-            4.98060636803378, 5.200582300272024, Rotation2d.fromDegrees(-118.93184924091054));
+            4.967192219760977, 5.204947178816335, Rotation2d.fromDegrees(-120.00071817534271));
+
     blueReefRightBranches[3] =
         new Pose2d(
             5.752773078265522, 4.184127098853673, Rotation2d.fromDegrees(-178.6494262725325));
+
     blueReefRightBranches[4] =
         new Pose2d(
             5.25999564889462, 3.0174300531873444, Rotation2d.fromDegrees(122.21138149309358));
@@ -470,16 +474,20 @@ public class Field2d {
     // ORDER (clockwise): A, K, I, G, E, C
     blueReefLeftBranches[0] =
         new Pose2d(
-            3.2246574302099544, 4.2028565860716265, Rotation2d.fromDegrees(-0.21597423869477203));
+            3.2299947937097664, 4.185286326078665, Rotation2d.fromDegrees(0.415094344192135));
+
     blueReefLeftBranches[1] =
         new Pose2d(
-            4.029247001342495, 5.222526388520616, Rotation2d.fromDegrees(-60.74455044893526));
+            4.003636527227158, 5.198255868863797, Rotation2d.fromDegrees(-60.10053198394155));
+
     blueReefLeftBranches[2] =
         new Pose2d(
-            5.261139946496552, 5.035092764563711, Rotation2d.fromDegrees(-119.40435420966065));
+            5.260342497072796, 5.0314651896348055, Rotation2d.fromDegrees(-119.52833633158033));
+
     blueReefLeftBranches[3] =
         new Pose2d(
             5.751222634546609, 3.876354231340153, Rotation2d.fromDegrees(-178.9844811787821));
+
     blueReefLeftBranches[4] =
         new Pose2d(
             4.971456188992748, 2.8261406625586996, Rotation2d.fromDegrees(121.2141054970013));
