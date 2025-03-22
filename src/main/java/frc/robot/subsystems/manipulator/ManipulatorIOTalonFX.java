@@ -62,7 +62,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private Servo rightServo;
   private Servo leftServo;
 
-  private Alert configAlert =
+  private Alert funnelConfigAlert =
+      new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
+  private Alert indexerConfigAlert =
+      new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
+  private Alert pivotConfigAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
 
   private final LoggedTunableNumber funnelKp =
@@ -470,7 +474,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kV = funnelKv.get();
     config.Slot0.kA = funnelKa.get();
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, funnelConfigAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "funnel motor", motor);
   }
@@ -503,7 +507,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kV = indexerKv.get();
     config.Slot0.kA = indexerKa.get();
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, indexerConfigAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "indexer motor", motor);
   }
@@ -553,7 +557,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     //     PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
     // config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, pivotConfigAlert);
 
     this.pivotMotor.setPosition(PIVOT_MOTOR_STARTING_POS);
 
