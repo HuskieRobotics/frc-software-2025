@@ -436,7 +436,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   @Override
   public void setPivotMotorCurrent(double current) {
-    this.pivotMotor.setControl(pivotCurrentRequest.withOutput(current));
+    if (current != this.pivotCurrentRequest.Output) {
+      this.pivotMotor.setControl(pivotCurrentRequest.withOutput(current));
+    }
   }
 
   /*

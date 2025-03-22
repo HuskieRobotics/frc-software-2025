@@ -188,7 +188,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-        subsystem.retractPivot();
         // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
         subsystem.readyToScore = false;
       }
@@ -197,6 +196,7 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
 
         LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
+        subsystem.retractPivot();
 
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
@@ -217,7 +217,6 @@ public class Manipulator extends SubsystemBase {
     INDEXING_CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.retractPivot();
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         subsystem.coralInIndexingState.restart(); // start timer
@@ -229,6 +228,7 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
 
         LEDs.getInstance().requestState(States.INDEXING_CORAL);
+        subsystem.retractPivot();
 
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
@@ -254,7 +254,6 @@ public class Manipulator extends SubsystemBase {
     CORAL_STUCK {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.retractPivot();
         subsystem.setFunnelMotorVoltage(
             subsystem.funnelEjectingVoltage.get()); // set negative velocity to funnel motor to
         // invert it
@@ -267,6 +266,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.EJECTING_CORAL);
+        subsystem.retractPivot();
 
         if (!subsystem.inputs.isFunnelIRBlocked
             && !subsystem.inputs.isIndexerIRBlocked
@@ -283,7 +283,6 @@ public class Manipulator extends SubsystemBase {
     CORAL_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        subsystem.retractPivot();
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(0.0);
         subsystem.shootCoralButtonPressed = false;
@@ -292,6 +291,8 @@ public class Manipulator extends SubsystemBase {
       @Override
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.HAS_CORAL);
+        subsystem.retractPivot();
+
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
           subsystem.shootCoralButtonPressed = false;
@@ -309,7 +310,6 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.readyToScore = false;
-        subsystem.retractPivot();
 
         if (subsystem.shootingFast) {
           if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
@@ -326,6 +326,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.SCORING);
+        subsystem.retractPivot();
 
         if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.WAITING_FOR_CORAL);
