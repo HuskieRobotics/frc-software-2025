@@ -87,7 +87,7 @@ public class Manipulator extends SubsystemBase {
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
-  private State state = State.WAITING_FOR_CORAL_IN_FUNNEL;
+  private State state = State.WAITING_FOR_CORAL;
   private State lastState = State.UNINITIALIZED;
 
   private LinearFilter currentInAmps =
@@ -183,7 +183,7 @@ public class Manipulator extends SubsystemBase {
    * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
    */
   private enum State {
-    WAITING_FOR_CORAL_IN_FUNNEL {
+    WAITING_FOR_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
@@ -205,7 +205,7 @@ public class Manipulator extends SubsystemBase {
         } else if (subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
         } else if (subsystem.intakeAlgaeButtonPressed) {
-          subsystem.setState(State.WAITING_FOR_ALGAE_IN_MANIPULATOR);
+          subsystem.setState(State.WAITING_FOR_ALGAE);
         } else if (subsystem.inputs.isAlgaeIRBlocked) {
           subsystem.setState(State.ALGAE_IN_MANIPULATOR);
         }
@@ -271,7 +271,7 @@ public class Manipulator extends SubsystemBase {
         if (!subsystem.inputs.isFunnelIRBlocked
             && !subsystem.inputs.isIndexerIRBlocked
             && subsystem.ejectingCoralTimer.hasElapsed(EJECT_CORAL_DURATION_SECONDS)) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         } else if (subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
         }
@@ -296,7 +296,7 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.SHOOT_CORAL);
           subsystem.shootCoralButtonPressed = false;
         } else if (!subsystem.inputs.isIndexerIRBlocked) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
@@ -328,15 +328,14 @@ public class Manipulator extends SubsystemBase {
         LEDs.getInstance().requestState(States.SCORING);
 
         if (!subsystem.inputs.isFunnelIRBlocked && !subsystem.inputs.isIndexerIRBlocked) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
       @Override
       void onExit(Manipulator subsystem) {}
     },
-    WAITING_FOR_ALGAE_IN_MANIPULATOR { // state that the robot should be in if the INTAKE_ALGAE
-      // button is pressed in the SHOOT_CORAL state
+    WAITING_FOR_ALGAE {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setPivotMotorCurrent(PIVOT_EXTEND_CURRENT);
@@ -355,7 +354,7 @@ public class Manipulator extends SubsystemBase {
             && subsystem.currentInAmps.lastValue() > THRESHOLD_CURRENT_SPIKE_ALGAE) {
           subsystem.setState(State.ALGAE_IN_MANIPULATOR);
         } else if (subsystem.intakingAlgaeTimer.hasElapsed(INTAKE_ALGAE_TIMEOUT)) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
@@ -389,7 +388,7 @@ public class Manipulator extends SubsystemBase {
         } else if (subsystem.dropAlgaeButtonPressed) {
           subsystem.setState(State.DROP_ALGAE);
         } else if (!subsystem.inputs.isAlgaeIRBlocked) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
@@ -418,7 +417,7 @@ public class Manipulator extends SubsystemBase {
         // WAITING_FOR_ALGAE_IN_MANIPULATOR or the WAITING_FOR_CORAL_IN_FUNNEL state
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(BARGE_ALGAE_TIMEOUT)) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
@@ -443,7 +442,7 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(PROCESSOR_ALGAE_TIMEOUT)) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
@@ -465,7 +464,7 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(DROP_ALGAE_TIMEOUT)) {
-          subsystem.setState(State.WAITING_FOR_CORAL_IN_FUNNEL);
+          subsystem.setState(State.WAITING_FOR_CORAL);
         }
       }
 
@@ -485,8 +484,7 @@ public class Manipulator extends SubsystemBase {
       @Override
       void execute(Manipulator subsystem) {
         subsystem.setState(
-            State
-                .WAITING_FOR_CORAL_IN_FUNNEL); // default state to WAITING_FOR_CORAL_IN_FUNNEL state
+            State.WAITING_FOR_CORAL); // default state to WAITING_FOR_CORAL_IN_FUNNEL state
       }
 
       @Override
@@ -556,7 +554,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public void resetStateMachine() {
-    this.state = State.WAITING_FOR_CORAL_IN_FUNNEL;
+    this.state = State.WAITING_FOR_CORAL;
   }
 
   private void runStateMachine() {
@@ -668,7 +666,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean doneCollectingAlgae() {
-    return state == State.ALGAE_IN_MANIPULATOR || state == State.WAITING_FOR_CORAL_IN_FUNNEL;
+    return state == State.ALGAE_IN_MANIPULATOR || state == State.WAITING_FOR_CORAL;
   }
 
   public boolean indexingCoral() {
@@ -692,7 +690,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public boolean scoredAlgae() {
-    return state == State.WAITING_FOR_CORAL_IN_FUNNEL;
+    return state == State.WAITING_FOR_CORAL;
   }
 
   public void setReadyToScore(boolean readyToScore) {
