@@ -229,6 +229,7 @@ public class CrossSubsystemsCommandsFactory {
 
   public static Command getCollectAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    // separate collecting algae after scoring or just going to collect algae
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goBelowNearestAlgae(), elevator),
         Commands.waitUntil(elevator::isBelowNearestAlgae),
