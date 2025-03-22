@@ -249,6 +249,7 @@ public class CrossSubsystemsCommandsFactory {
                             DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                     3.0),
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
+        Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
         Commands.runOnce(() -> elevator.goToNearestAlgae(), elevator),
         Commands.waitUntil(manipulator::doneCollectingAlgae));
   }
