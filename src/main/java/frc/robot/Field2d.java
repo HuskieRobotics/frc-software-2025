@@ -434,13 +434,17 @@ public class Field2d {
     return bargePose;
   }
 
-  public Pose2d getBranchAPose() {
+  public Pose2d getFourthAutoCoralPose(Side side) {
     int offset = 0;
     if (getAlliance() == Alliance.Red) {
       offset = 6;
     }
 
-    return leftReefPoses.get(allReefCenterFaces[offset]);
+    if (side == Side.LEFT) {
+      return leftReefPoses.get(allReefCenterFaces[offset]);
+    } else {
+      return rightReefPoses.get(allReefCenterFaces[offset]);
+    }
   }
 
   public Pose2d getNearestProcessor() {

@@ -90,11 +90,11 @@ public class AutonomousCommandFactory {
     autoChooser.addOption("1 Piece Center", onePieceCenter);
 
     /** Three Piece Left 3 Coral Scored J, K, L L4 */
-    Command threePieceLeft = getThreeCoralLeftCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("3 Piece Left", threePieceLeft);
+    Command fourPieceLeft = getFourCoralLeftCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("4 Piece Left", fourPieceLeft);
 
-    Command threePieceRight = getThreeCoralRightCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("3 Piece Right", threePieceRight);
+    Command fourPieceRight = getFourCoralRightCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("4 Piece Right", fourPieceRight);
 
     /************ Start Point ************
      *
@@ -220,7 +220,7 @@ public class AutonomousCommandFactory {
     return CharacterizationCommands.wheelRadiusCharacterization(drivetrain);
   }
 
-  public Command getThreeCoralLeftCommand(
+  public Command getFourCoralLeftCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     PathPlannerPath collectCoralAfterJ2L;
     PathPlannerPath scoreCoralL2L;
@@ -236,7 +236,7 @@ public class AutonomousCommandFactory {
       collectCoralAfterK = PathPlannerPath.fromPathFile("#6 Collect Coral After K 3L");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
-          "Could not find the specified path file in getThreeCoralLeftAutoCommand.");
+          "Could not find the specified path file in getFourCoralLeftAutoCommand.");
       pathFileMissingAlert.set(true);
 
       return Commands.none();
@@ -264,7 +264,7 @@ public class AutonomousCommandFactory {
             drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
   }
 
-  public Command getThreeCoralRightCommand(
+  public Command getFourCoralRightCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     PathPlannerPath collectCoralAfterE2R;
     PathPlannerPath scoreCoralD2R;
@@ -280,7 +280,7 @@ public class AutonomousCommandFactory {
       collectCoralAfterC = PathPlannerPath.fromPathFile("#6 Collect Coral After C 3R");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
-          "Could not find the specified path file in getThreeCoralRightAutoCommand.");
+          "Could not find the specified path file in getFourCoralRightAutoCommand.");
       pathFileMissingAlert.set(true);
 
       return Commands.none();
@@ -305,7 +305,7 @@ public class AutonomousCommandFactory {
             collectCoralAfterD2R,
             scoreCoralC),
         getCollectAndScoreFourthCommand(
-            drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterC));
+            drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC));
   }
 
   public Command getOneCoralCenterCommand(
@@ -437,7 +437,7 @@ public class AutonomousCommandFactory {
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
                 new DriveToReef(
                     drivetrain,
-                    () -> Field2d.getInstance().getBranchAPose(),
+                    () -> Field2d.getInstance().getFourthAutoCoralPose(side),
                     manipulator::setReadyToScore,
                     elevator::setDistanceFromReef,
                     new Transform2d(
