@@ -434,6 +434,15 @@ public class Field2d {
     return bargePose;
   }
 
+  public Pose2d getBranchAPose() {
+    int offset = 0;
+    if (getAlliance() == Alliance.Red) {
+      offset = 6;
+    }
+
+    return leftReefPoses.get(allReefCenterFaces[offset]);
+  }
+
   public Pose2d getNearestProcessor() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
