@@ -15,7 +15,7 @@ public class ClimberConstants {
   // FIXME: tune
   public static final double CLIMB_VOLTAGE = 3.0;
 
-  public static final double RETRACT_VOLTAGE_SLOW = 8.0;
+  public static final double RETRACT_VOLTAGE_SLOW = 3.0;
 
   public static final double DRUM_DIAMETER = 1.0;
   public static final double CAGE_CATCHER_EXTEND_POS_INCHES = 5.0; // FIXME: arbitrary for now
