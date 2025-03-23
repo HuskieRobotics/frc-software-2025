@@ -280,7 +280,6 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.runOnce(manipulator::dropAlgae),
                 () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
             () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()),
-        Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
         Commands.waitUntil(() -> manipulator.scoredAlgae()));
   }
 
