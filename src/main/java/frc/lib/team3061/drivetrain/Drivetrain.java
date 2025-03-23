@@ -101,9 +101,8 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
 
   private boolean isMoveToPoseEnabled = true;
 
-  // arbitrary to half of theoretical max acceleration
-  private SlewRateLimiter xFilter = new SlewRateLimiter(4);
-  private SlewRateLimiter yFilter = new SlewRateLimiter(4);
+  private SlewRateLimiter xFilter = new SlewRateLimiter(8);
+  private SlewRateLimiter yFilter = new SlewRateLimiter(8);
   private SlewRateLimiter thetaFilter = new SlewRateLimiter(Units.degreesToRadians(360));
 
   private boolean accelerationLimiting = false;
