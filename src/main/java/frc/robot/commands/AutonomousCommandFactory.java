@@ -378,6 +378,7 @@ public class AutonomousCommandFactory {
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+        Commands.waitSeconds(0.2),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(
@@ -416,6 +417,7 @@ public class AutonomousCommandFactory {
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+        Commands.waitSeconds(0.2),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(
