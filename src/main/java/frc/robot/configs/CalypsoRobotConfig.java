@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -98,11 +97,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Back right camera
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-10.497),
-              Units.inchesToMeters(-10.741),
-              Units.inchesToMeters(8.040)),
-          new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-162)));
+          new Translation3d(-0.280, -0.273, 0.252),
+          new Rotation3d(new Quaternion(-0.147, 0.162, 0.030, 0.975)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
@@ -113,11 +109,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-10.497),
-              Units.inchesToMeters(10.741),
-              Units.inchesToMeters(8.040)),
-          new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(162)));
+          new Translation3d(-0.276, 0.275, 0.254),
+          new Rotation3d(new Quaternion(0.155, 0.169, -0.025, 0.973)));
 
   // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;

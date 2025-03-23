@@ -136,10 +136,10 @@ public class DriveToReef extends Command {
     // Reset all controllers
     this.targetPose = poseSupplier.get();
 
-    if (DriverStation.isAutonomous()) {
-      xController.setP(driveKp.get() - 1);
-      yController.setP(driveKp.get() - 1);
-    }
+    // if (DriverStation.isAutonomous()) {
+    //   xController.setP(driveKp.get() - 1);
+    //   yController.setP(driveKp.get() - 1);
+    // }
 
     oneCoralAway = false;
     firstRun = true;

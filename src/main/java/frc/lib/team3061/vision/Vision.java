@@ -178,8 +178,8 @@ public class Vision extends SubsystemBase {
             .transformBy(
                 new Transform3d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    -Units.inchesToMeters(14.0),
-                    Units.inchesToMeters(1.0),
+                    Units.inchesToMeters(14.0),
+                    -Units.inchesToMeters(1.0),
                     new Rotation3d()));
 
     // the BL camera is calibrated based on an offset AprilTag on the robot-to-camera transform
@@ -189,8 +189,8 @@ public class Vision extends SubsystemBase {
             .transformBy(
                 new Transform3d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
-                    Units.inchesToMeters(14.0),
-                    Units.inchesToMeters(1.0),
+                    -Units.inchesToMeters(14.0),
+                    -Units.inchesToMeters(1.0),
                     new Rotation3d()));
   }
 
