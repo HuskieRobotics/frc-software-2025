@@ -72,6 +72,7 @@ public class DriveToReef extends Command {
   private static final LoggedTunableNumber driveKp =
       new LoggedTunableNumber(
           "DriveToReef/DriveKp", RobotConfig.getInstance().getDriveToPoseDriveKP());
+
   private static final LoggedTunableNumber driveKd =
       new LoggedTunableNumber(
           "DriveToReef/DriveKd", RobotConfig.getInstance().getDriveToPoseDriveKD());
@@ -134,6 +135,11 @@ public class DriveToReef extends Command {
   public void initialize() {
     // Reset all controllers
     this.targetPose = poseSupplier.get();
+
+    if (DriverStation.isAutonomous()) {
+      xController.setP(driveKp.get() - 0.5);
+      yController.setP(driveKp.get() - 0.5);
+    }
 
     oneCoralAway = false;
     firstRun = true;
