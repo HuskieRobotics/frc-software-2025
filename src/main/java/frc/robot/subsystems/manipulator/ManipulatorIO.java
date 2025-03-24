@@ -61,6 +61,8 @@ public interface ManipulatorIO {
 
   public default void setIndexerMotorVelocity(double velocity) {}
 
+  public default void setIndexerMotorPosition(double position) {}
+
   public default void setFunnelMotorCurrent(double current) {}
 
   public default void setIndexerMotorCurrent(double current) {}

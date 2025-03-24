@@ -628,8 +628,8 @@ public class Manipulator extends SubsystemBase {
   }
 
   public void holdWheelPosition(double targetPosition) {
-    double output = positionController.calculate(inputs.indexerPositionRotations, targetPosition);
-    io.setIndexerMotorVoltage(output);
+    double position = positionController.calculate(inputs.indexerPositionRotations, targetPosition);
+    io.setIndexerMotorPosition(position);
   }
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the

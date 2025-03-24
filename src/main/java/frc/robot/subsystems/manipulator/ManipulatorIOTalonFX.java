@@ -7,6 +7,7 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -51,6 +52,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private VoltageOut funnelVoltageRequest;
   private VoltageOut indexerVoltageRequest;
+
+  private PositionVoltage indexerPositionRequest;
 
   private TorqueCurrentFOC funnelCurrentRequest;
   private TorqueCurrentFOC indexerCurrentRequest;
@@ -168,6 +171,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelVoltageRequest = new VoltageOut(0.0);
     indexerVoltageRequest = new VoltageOut(0.0);
+
+    indexerPositionRequest = new PositionVoltage(0.0);
 
     funnelCurrentRequest = new TorqueCurrentFOC(0.0);
     indexerCurrentRequest = new TorqueCurrentFOC(0.0);
@@ -409,6 +414,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   @Override
   public void setIndexerMotorVoltage(double volts) {
     this.indexerMotor.setControl(indexerVoltageRequest.withOutput(volts));
+  }
+
+  @Override
+  public void setIndexerMotorPosition(double position) {
+    this.indexerMotor.setControl(indexerPositionRequest.withPosition(position));
   }
 
   @Override
