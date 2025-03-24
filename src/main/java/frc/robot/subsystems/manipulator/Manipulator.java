@@ -512,6 +512,11 @@ public class Manipulator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/State", this.state);
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/scoreThroughManipulatorPressed", shootCoralButtonPressed);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/scoreAlgaeInBargeButtonPressed", scoreAlgaeInBargeButtonPressed);
+    Logger.recordOutput(
+        SUBSYSTEM_NAME + "/scoreAlgaeInProcessorButtonPressed", scoreAlgaeInProcessorButtonPressed);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/dropAlgaeButtonPressed", dropAlgaeButtonPressed);
     currentInAmps.calculate(inputs.indexerStatorCurrentAmps);
 
     // when testing, set the FUNNEL motor power, current, or position based on the Tunables (if
@@ -596,6 +601,11 @@ public class Manipulator extends SubsystemBase {
     io.setPivotMotorCurrent(current);
   }
 
+  // this will get called in the climb sequence, most likely with the extend cage catcher button
+  public void openFunnelFlap() {
+    io.unlockServos();
+  }
+
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
   // same exact thing but for the funnel and indexer motor, unsure if this is correct
   private Command getSystemCheckCommand() {
@@ -656,14 +666,20 @@ public class Manipulator extends SubsystemBase {
 
   public void scoreAlgaeInBarge() {
     scoreAlgaeInBargeButtonPressed = true;
+    scoreAlgaeInProcessorButtonPressed = false;
+    dropAlgaeButtonPressed = false;
   }
 
   public void scoreAlgaeInProcessor() {
     scoreAlgaeInProcessorButtonPressed = true;
+    scoreAlgaeInBargeButtonPressed = false;
+    dropAlgaeButtonPressed = false;
   }
 
   public void dropAlgae() {
     dropAlgaeButtonPressed = true;
+    scoreAlgaeInBargeButtonPressed = false;
+    scoreAlgaeInProcessorButtonPressed = false;
   }
 
   public boolean doneCollectingAlgae() {

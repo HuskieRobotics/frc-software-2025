@@ -101,9 +101,8 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
 
   private boolean isMoveToPoseEnabled = true;
 
-  // arbitrary to half of theoretical max acceleration
-  private SlewRateLimiter xFilter = new SlewRateLimiter(4);
-  private SlewRateLimiter yFilter = new SlewRateLimiter(4);
+  private SlewRateLimiter xFilter = new SlewRateLimiter(8);
+  private SlewRateLimiter yFilter = new SlewRateLimiter(8);
   private SlewRateLimiter thetaFilter = new SlewRateLimiter(Units.degreesToRadians(360));
 
   private boolean accelerationLimiting = false;
@@ -901,19 +900,6 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
    */
   public void enableAccelerationLimiting() {
     this.accelerationLimiting = true;
-
-    // convert from robot-relative coordinates to field-relative coordinates
-    ChassisSpeeds robotRelativeSpeeds = this.getRobotRelativeSpeeds();
-
-    // CCW rotation into field frame
-    var rotated =
-        new Translation2d(
-                robotRelativeSpeeds.vxMetersPerSecond, robotRelativeSpeeds.vyMetersPerSecond)
-            .rotateBy(RobotOdometry.getInstance().getEstimatedPose().getRotation());
-
-    this.xFilter.reset(rotated.getX());
-    this.yFilter.reset(rotated.getY());
-    this.thetaFilter.reset(robotRelativeSpeeds.omegaRadiansPerSecond);
   }
 
   public void disableAccelerationLimiting() {

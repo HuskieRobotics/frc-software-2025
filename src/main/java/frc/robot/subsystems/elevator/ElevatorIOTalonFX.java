@@ -41,7 +41,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private DynamicMotionMagicVoltage leadPositionRequestDown;
   private VoltageOut leadVoltageRequest;
 
-  private Alert configAlert =
+  private Alert leadConfigAlert =
+      new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
+  private Alert followerConfigAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
   private StatusSignal<Current> leadStatorCurrent;
@@ -240,7 +242,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0.0;
     config.HardwareLimitSwitch.ReverseLimitEnable = true;
 
-    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorLead, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorLead, config, leadConfigAlert);
 
     FaultReporter.getInstance()
         .registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Lead", motor);
@@ -252,7 +254,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorFollower, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorFollower, config, followerConfigAlert);
 
     FaultReporter.getInstance()
         .registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Follower", motor);

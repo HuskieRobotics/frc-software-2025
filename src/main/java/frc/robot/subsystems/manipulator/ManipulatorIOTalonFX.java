@@ -24,6 +24,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DigitalInput; // imported this class for the sensors
+import edu.wpi.first.wpilibj.Servo;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -58,7 +59,14 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   private VelocityTorqueCurrentFOC funnelVelocityRequest;
   private VelocityTorqueCurrentFOC indexerVelocityRequest;
 
-  private Alert configAlert =
+  private Servo rightServo;
+  private Servo leftServo;
+
+  private Alert funnelConfigAlert =
+      new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
+  private Alert indexerConfigAlert =
+      new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
+  private Alert pivotConfigAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
 
   private final LoggedTunableNumber funnelKp =
@@ -144,6 +152,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     funnelMotor = new TalonFX(FUNNEL_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
     indexerMotor = new TalonFX(INDEXER_MOTOR_ID);
     pivotMotor = new TalonFX(PIVOT_MOTOR_ID);
+
+    rightServo = new Servo(3);
+    leftServo = new Servo(4);
 
     funnelIRSensor = new DigitalInput(FUNNEL_IR_SENSOR_ID);
     indexerIRSensor = new DigitalInput(INDEXER_IR_SENSOR_ID);
@@ -378,47 +389,26 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         pivotKa,
         pivotKg);
 
-    // update funnel and indexer motor sim
     funnelMotorSim.updateSim();
     indexerMotorSim.updateSim();
     pivotMotorSim.updateSim();
   }
 
-  /**
-   * Set the motor voltage to the specified number of volts
-   *
-   * @param volts the volts to set the motor voltage to
-   */
   @Override
   public void setFunnelMotorVoltage(double volts) {
     this.funnelMotor.setControl(funnelVoltageRequest.withOutput(volts));
   }
 
-  /**
-   * Set the motor power to the specified number of volts.
-   *
-   * @param volts the volts to set the motor voltage to
-   */
   @Override
   public void setIndexerMotorVoltage(double volts) {
     this.indexerMotor.setControl(indexerVoltageRequest.withOutput(volts));
   }
 
-  /**
-   * Set the motor current to the specified value in amps.
-   *
-   * @param power the current to set the motor to in amps
-   */
   @Override
   public void setFunnelMotorCurrent(double current) {
     this.funnelMotor.setControl(funnelCurrentRequest.withOutput(current));
   }
 
-  /**
-   * Set the motor current to the specified value in amps.
-   *
-   * @param power the current to set the motor to in amps
-   */
   @Override
   public void setIndexerMotorCurrent(double current) {
     this.indexerMotor.setControl(indexerCurrentRequest.withOutput(current));
@@ -441,9 +431,20 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     }
   }
 
-  /*
-   * This method configures the Funnel motor.
-   */
+  // the right and the left servo will be set in opposite positions to go the same direction
+  @Override
+  public void unlockServos() {
+    rightServo.set(1);
+    leftServo.set(0);
+  }
+
+  // will not be used in a real match
+  @Override
+  public void lockServos() {
+    rightServo.set(0);
+    leftServo.set(1);
+  }
+
   private void configFunnelMotor(TalonFX motor) {
 
     TalonFXConfiguration config = new TalonFXConfiguration();
@@ -473,7 +474,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kV = funnelKv.get();
     config.Slot0.kA = funnelKa.get();
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, funnelConfigAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "funnel motor", motor);
   }
@@ -506,7 +507,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kV = indexerKv.get();
     config.Slot0.kA = indexerKa.get();
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, indexerConfigAlert);
 
     FaultReporter.getInstance().registerHardware(SUBSYSTEM_NAME, "indexer motor", motor);
   }
@@ -556,7 +557,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     //     PIVOT_MOTOR_SCORING_IN_PROCESSOR.in(Rotations);
     // config.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 
-    Phoenix6Util.applyAndCheckConfiguration(motor, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(motor, config, pivotConfigAlert);
 
     this.pivotMotor.setPosition(PIVOT_MOTOR_STARTING_POS);
 
