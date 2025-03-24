@@ -595,31 +595,31 @@ public class Manipulator extends SubsystemBase {
   }
 
   public void setFunnelMotorVoltage(double volts) {
-    io.setFunnelMotorVoltage(volts);
+    io.setFunnelVoltage(volts);
   }
 
   public void setFunnelMotorCurrent(double current) {
-    io.setFunnelMotorCurrent(current);
+    io.setFunnelCurrent(current);
   }
 
   public void setFunnelMotorVelocity(double velocity) {
-    io.setFunnelMotorVelocity(velocity);
+    io.setFunnelVelocity(velocity);
   }
 
   public void setIndexerMotorVoltage(double volts) {
-    io.setIndexerMotorVoltage(volts);
+    io.setIndexerVoltage(volts);
   }
 
   public void setIndexerMotorCurrent(double current) {
-    io.setIndexerMotorCurrent(current);
+    io.setIndexerCurrent(current);
   }
 
   public void setIndexerMotorVelocity(double velocity) {
-    io.setIndexerMotorVelocity(velocity);
+    io.setIndexerVelocity(velocity);
   }
 
   public void setPivotMotorCurrent(double current) {
-    io.setPivotMotorCurrent(current);
+    io.setPivotCurrent(current);
   }
 
   // this will get called in the climb sequence, most likely with the extend cage catcher button
@@ -629,7 +629,7 @@ public class Manipulator extends SubsystemBase {
 
   public void holdWheelPosition(double targetPosition) {
     double position = positionController.calculate(inputs.indexerPositionRotations, targetPosition);
-    io.setIndexerMotorPosition(position);
+    io.setIndexerPosition(position);
   }
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
@@ -637,8 +637,8 @@ public class Manipulator extends SubsystemBase {
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
-            Commands.run(() -> io.setFunnelMotorVoltage(3.6)).withTimeout(1.0),
-            Commands.run(() -> io.setIndexerMotorVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setIndexerVoltage(3.6)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
                   if (inputs.funnelVelocityRPS < 2.0) {
@@ -650,8 +650,8 @@ public class Manipulator extends SubsystemBase {
                             true);
                   }
                 }),
-            Commands.run(() -> io.setFunnelMotorVoltage(-2.4)).withTimeout(1.0),
-            Commands.run(() -> io.setIndexerMotorVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setIndexerVoltage(-2.4)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
                   if (inputs.indexerVelocityRPS > -2.0) {
@@ -664,8 +664,8 @@ public class Manipulator extends SubsystemBase {
                   }
                 }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0)))
-        .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
+        .andThen(Commands.runOnce(() -> io.setFunnelVoltage(0.0)))
+        .andThen(Commands.runOnce(() -> io.setIndexerVoltage(0.0)));
   }
 
   private void shootCoral() {

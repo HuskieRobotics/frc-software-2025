@@ -407,42 +407,42 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   }
 
   @Override
-  public void setFunnelMotorVoltage(double volts) {
+  public void setFunnelVoltage(double volts) {
     this.funnelMotor.setControl(funnelVoltageRequest.withOutput(volts));
   }
 
   @Override
-  public void setIndexerMotorVoltage(double volts) {
+  public void setIndexerVoltage(double volts) {
     this.indexerMotor.setControl(indexerVoltageRequest.withOutput(volts));
   }
 
   @Override
-  public void setIndexerMotorPosition(double position) {
+  public void setIndexerPosition(double position) {
     this.indexerMotor.setControl(indexerPositionRequest.withPosition(position));
   }
 
   @Override
-  public void setFunnelMotorCurrent(double current) {
+  public void setFunnelCurrent(double current) {
     this.funnelMotor.setControl(funnelCurrentRequest.withOutput(current));
   }
 
   @Override
-  public void setIndexerMotorCurrent(double current) {
+  public void setIndexerCurrent(double current) {
     this.indexerMotor.setControl(indexerCurrentRequest.withOutput(current));
   }
 
   @Override
-  public void setFunnelMotorVelocity(double velocity) {
+  public void setFunnelVelocity(double velocity) {
     this.funnelMotor.setControl(funnelVelocityRequest.withVelocity(velocity));
   }
 
   @Override
-  public void setIndexerMotorVelocity(double velocity) {
+  public void setIndexerVelocity(double velocity) {
     this.indexerMotor.setControl(indexerVelocityRequest.withVelocity(velocity));
   }
 
   @Override
-  public void setPivotMotorCurrent(double current) {
+  public void setPivotCurrent(double current) {
     if (Math.abs(current - this.pivotCurrentRequest.Output) > PIVOT_CURRENT_TOLERANCE_AMPS) {
       this.pivotMotor.setControl(pivotCurrentRequest.withOutput(current));
     }

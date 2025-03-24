@@ -53,21 +53,21 @@ public interface ManipulatorIO {
 
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
-  public default void setFunnelMotorVoltage(double volts) {}
+  public default void setFunnelVoltage(double volts) {}
 
-  public default void setFunnelMotorVelocity(double velocity) {}
+  public default void setFunnelVelocity(double velocity) {}
 
-  public default void setIndexerMotorVoltage(double volts) {}
+  public default void setIndexerVoltage(double volts) {}
 
-  public default void setIndexerMotorVelocity(double velocity) {}
+  public default void setIndexerVelocity(double velocity) {}
 
-  public default void setIndexerMotorPosition(double position) {}
+  public default void setIndexerPosition(double position) {}
 
-  public default void setFunnelMotorCurrent(double current) {}
+  public default void setFunnelCurrent(double current) {}
 
-  public default void setIndexerMotorCurrent(double current) {}
+  public default void setIndexerCurrent(double current) {}
 
-  public default void setPivotMotorCurrent(double current) {}
+  public default void setPivotCurrent(double current) {}
 
   public default void unlockServos() {}
 
