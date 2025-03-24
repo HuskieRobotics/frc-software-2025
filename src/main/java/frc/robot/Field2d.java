@@ -92,14 +92,14 @@ public class Field2d {
 
   public void populateReefZone() {
     // make a region of the reef center faces transformed by 18 inches
-    // the reef zone is 14 inches from the reef, but since this region2d is not actually the hexagon
-    // but a rotated version,
-    // add 4 inches for safety.
+    // the reef zone is 14 inches from the reef
+    // however, a few inches are added for safety as well as the region measuring to the center of
+    // the robot
     Translation2d[] transformedCenterFaces = new Translation2d[6];
     for (int i = 0; i < 6; i++) {
       Pose2d centerFace =
           FieldConstants.Reef.centerFaces[i].transformBy(
-              new Transform2d(Units.inchesToMeters(18.0), 0.0, Rotation2d.fromDegrees(0.0)));
+              new Transform2d(Units.inchesToMeters(36.0), 0.0, Rotation2d.fromDegrees(0.0)));
       transformedCenterFaces[i] = new Translation2d(centerFace.getX(), centerFace.getY());
     }
     this.reefZone = new Region2d(transformedCenterFaces);
@@ -634,7 +634,7 @@ public class Field2d {
       pose = FlippingUtil.flipFieldPose(pose);
     }
 
-    return reefZone.contains(pose);
+    return !reefZone.contains(pose);
   }
 
   public enum Side {
