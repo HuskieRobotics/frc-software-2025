@@ -1,11 +1,9 @@
 package frc.robot.subsystems.manipulator;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.LOOP_PERIOD_SECS;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -86,9 +84,6 @@ public class Manipulator extends SubsystemBase {
   Timer ejectingCoralTimer = new Timer();
   Timer intakingAlgaeTimer = new Timer();
   Timer scoringAlgaeTimer = new Timer();
-
-  private PIDController positionController =
-      new PIDController(INDEXER_KP, INDEXER_KI, INDEXER_KD, LOOP_PERIOD_SECS);
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
@@ -299,7 +294,6 @@ public class Manipulator extends SubsystemBase {
         subsystem.setIndexerMotorVoltage(0.0);
         subsystem.shootCoralButtonPressed = false;
 
-        subsystem.positionController.reset();
         subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
       }
 
@@ -628,8 +622,7 @@ public class Manipulator extends SubsystemBase {
   }
 
   public void holdWheelPosition(double targetPosition) {
-    double position = positionController.calculate(inputs.indexerPositionRotations, targetPosition);
-    io.setIndexerPosition(position);
+    io.setIndexerPosition(targetPosition);
   }
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
