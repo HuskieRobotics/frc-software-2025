@@ -41,6 +41,7 @@ public class Field2d {
   private static Field2d instance = null;
 
   private Region2d[] regions;
+  private Region2d reefZone;
 
   private Alliance alliance = DriverStation.Alliance.Blue;
 
@@ -610,6 +611,11 @@ public class Field2d {
             13.841666999458502, 5.029054264702699, Rotation2d.fromDegrees(-120.12660737579654));
 
     return redReefLeftBranches;
+  }
+
+  public boolean isOutsideOfReefZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    return reefZone.contains(pose);
   }
 
   public enum Side {

@@ -251,7 +251,11 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
         Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
         Commands.runOnce(() -> elevator.goToNearestAlgae(), elevator),
-        Commands.waitUntil(manipulator::doneCollectingAlgae));
+        Commands.waitUntil(manipulator::doneCollectingAlgae),
+        Commands.either(
+            getLeaveReefZoneCommand(drivetrain, elevator),
+            Commands.none(),
+            () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()));
   }
 
   private static Command getScoreWithAlgaeSelectedCommand(
@@ -288,5 +292,18 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         getScoreCoralCommand(manipulator, elevator),
         getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision));
+  }
+
+  private static Command getLeaveReefZoneCommand(Drivetrain drivetrain, Elevator elevator) {
+    return Commands.parallel(
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate),
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().isOutsideOfReefZone()),
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator)));
   }
 }
