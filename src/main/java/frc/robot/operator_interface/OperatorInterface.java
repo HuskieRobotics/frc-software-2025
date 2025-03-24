@@ -100,6 +100,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getExtendClimberToMatchPositionButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getRaiseElevatorSlowButton() {
     return new Trigger(() -> false);
   }

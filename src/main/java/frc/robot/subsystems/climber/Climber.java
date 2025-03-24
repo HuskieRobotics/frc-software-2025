@@ -12,8 +12,6 @@ public class Climber extends SubsystemBase {
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
-  private final LoggedTunableNumber minHeight =
-      new LoggedTunableNumber("Climber/MinHeight", ClimberConstants.MIN_HEIGHT_INCHES);
   private final LoggedTunableNumber maxHeight =
       new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_HEIGHT_INCHES);
   private final LoggedTunableNumber cageCatcherExtendPos =
@@ -41,7 +39,7 @@ public class Climber extends SubsystemBase {
 
   public void extendCageCatcher() {
     io.unlockServo();
-    io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
+    io.setVoltage(ClimberConstants.RELEASE_CAGE_CATCHER_VOLTAGE);
     this.isClimbing = true;
   }
 
@@ -65,10 +63,6 @@ public class Climber extends SubsystemBase {
     io.setVoltage(0);
   }
 
-  public void stopExtension() {
-    io.setVoltage(0);
-  }
-
   public void zero() {
     io.zeroPosition();
     this.isClimbing = false;
@@ -80,7 +74,7 @@ public class Climber extends SubsystemBase {
 
   // should we add a tolerance here for if the position slips a little bit?
   public boolean cageCatcherReleased() {
-    return inputs.positionInches > (ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES - 0.5);
+    return inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES;
   }
 
   public double getPosition() {
