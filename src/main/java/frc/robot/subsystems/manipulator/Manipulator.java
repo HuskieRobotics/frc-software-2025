@@ -88,7 +88,7 @@ public class Manipulator extends SubsystemBase {
   Timer scoringAlgaeTimer = new Timer();
 
   private PIDController positionController =
-      new PIDController(INDEXER_HOLD_KP, INDEXER_HOLD_KI, INDEXER_HOLD_KD, LOOP_PERIOD_SECS);
+      new PIDController(INDEXER_KP, INDEXER_KI, INDEXER_KD, LOOP_PERIOD_SECS);
 
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
@@ -244,7 +244,7 @@ public class Manipulator extends SubsystemBase {
 
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
-                > THRESHOLD_FOR_CORAL_CURRENT_SPIKE) // the currentInAmps filters out the current in
+                > CORAL_CURRENT_SPIKE_THRESHOLD) // the currentInAmps filters out the current in
         // the
         // noise and getting the lastValue gets the last value
         // of the current, and if that last value is greater
@@ -369,7 +369,7 @@ public class Manipulator extends SubsystemBase {
 
         // check for current spike or if algae IR has detected algae
         if (subsystem.inputs.isAlgaeIRBlocked
-            && subsystem.currentInAmps.lastValue() > THRESHOLD_CURRENT_SPIKE_ALGAE) {
+            && subsystem.currentInAmps.lastValue() > ALGAE_CURRENT_SPIKE_THRESHOLD) {
           subsystem.setState(State.ALGAE_IN_MANIPULATOR);
         } else if (subsystem.intakingAlgaeTimer.hasElapsed(INTAKE_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL);

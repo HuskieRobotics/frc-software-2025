@@ -38,43 +38,35 @@ public class ManipulatorConstants {
 
   public static final int ALGAE_IR_BACKUP_SENSOR_ID = 7;
 
-  // not sure what this is???
-  public static final double GEAR_RATIO_FUNNEL = 9.0;
-
-  public static final double GEAR_RATIO_MANIPULATOR = 1.0;
-
-  public static final double GEAR_RATIO_PIVOT = 3.0;
+  public static final double FUNNEL_GEAR_RATIO = 9.0;
+  public static final double MANIPULATOR_GEAR_RATIO = 1.0;
+  public static final double PIVOT_GEAR_RATIO = 3.0;
 
   public static final double MANIPULATOR_LENGTH_METERS = 0.264;
-
   public static final double MANIPULATOR_MASS_KG = 0.9789;
 
   // tunable PID constants for both motors -- ALL ARE TBD
-  public static final double FUNNEL_MOTOR_KP = 0;
-  public static final double FUNNEL_MOTOR_KI = 0;
-  public static final double FUNNEL_MOTOR_KD = 0;
-  public static final double FUNNEL_MOTOR_KS = 0;
-  public static final double FUNNEL_MOTOR_KV = 0.05;
-  public static final double FUNNEL_MOTOR_KA = 0.01;
+  public static final double FUNNEL_KP = 0;
+  public static final double FUNNEL_KI = 0;
+  public static final double FUNNEL_KD = 0;
+  public static final double FUNNEL_KS = 0;
+  public static final double FUNNEL_KV = 0.05;
+  public static final double FUNNEL_KA = 0.01;
 
-  public static final double INDEXER_MOTOR_KP = 0;
-  public static final double INDEXER_MOTOR_KI = 0;
-  public static final double INDEXER_MOTOR_KD = 0;
-  public static final double INDEXER_MOTOR_KS = 0;
-  public static final double INDEXER_MOTOR_KV = 0.05;
-  public static final double INDEXER_MOTOR_KA = 0.01;
+  public static final double INDEXER_KP = 0;
+  public static final double INDEXER_KI = 0;
+  public static final double INDEXER_KD = 0;
+  public static final double INDEXER_KS = 0;
+  public static final double INDEXER_KV = 0.05;
+  public static final double INDEXER_KA = 0.01;
 
-  public static final double INDEXER_HOLD_KP = 0.0;
-  public static final double INDEXER_HOLD_KI = 0.0;
-  public static final double INDEXER_HOLD_KD = 0.0;
-
-  public static final double PIVOT_MOTOR_KP = 10.0;
-  public static final double PIVOT_MOTOR_KI = 0;
-  public static final double PIVOT_MOTOR_KD = 0;
-  public static final double PIVOT_MOTOR_KS = 0;
-  public static final double PIVOT_MOTOR_KV = 0;
-  public static final double PIVOT_MOTOR_KA = 0;
-  public static final double PIVOT_MOTOR_KG = 0.0;
+  public static final double PIVOT_KP = 10.0;
+  public static final double PIVOT_KI = 0;
+  public static final double PIVOT_KD = 0;
+  public static final double PIVOT_KS = 0;
+  public static final double PIVOT_KV = 0;
+  public static final double PIVOT_KA = 0;
+  public static final double PIVOT_KG = 0.0;
 
   public static final double PIVOT_EXTEND_CURRENT = -15.0;
   public static final double PIVOT_RETRACT_UP_CURRENT = 20;
@@ -125,8 +117,8 @@ public class ManipulatorConstants {
   public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
   public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40;
-  public static final double THRESHOLD_FOR_CORAL_CURRENT_SPIKE = 35.0;
-  public static final double THRESHOLD_CURRENT_SPIKE_ALGAE = 30.0;
+  public static final double CORAL_CURRENT_SPIKE_THRESHOLD = 35.0;
+  public static final double ALGAE_CURRENT_SPIKE_THRESHOLD = 30.0;
 
   public static final double PIVOT_CURRENT_TOLERANCE_AMPS = 1.0;
 }

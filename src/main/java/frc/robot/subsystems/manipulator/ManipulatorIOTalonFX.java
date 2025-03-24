@@ -73,47 +73,47 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
 
   private final LoggedTunableNumber funnelKp =
-      new LoggedTunableNumber("Manipulator/Funnel/kP", FUNNEL_MOTOR_KP);
+      new LoggedTunableNumber("Manipulator/Funnel/kP", FUNNEL_KP);
   private final LoggedTunableNumber funnelKi =
-      new LoggedTunableNumber("Manipulator/Funnel/kI", FUNNEL_MOTOR_KI);
+      new LoggedTunableNumber("Manipulator/Funnel/kI", FUNNEL_KI);
   private final LoggedTunableNumber funnelKd =
-      new LoggedTunableNumber("Manipulator/Funnel/kD", FUNNEL_MOTOR_KD);
+      new LoggedTunableNumber("Manipulator/Funnel/kD", FUNNEL_KD);
   private final LoggedTunableNumber funnelKs =
-      new LoggedTunableNumber("Manipulator/Funnel/kS", FUNNEL_MOTOR_KS);
+      new LoggedTunableNumber("Manipulator/Funnel/kS", FUNNEL_KS);
   private final LoggedTunableNumber funnelKv =
-      new LoggedTunableNumber("Manipulator/Funnel/kV", FUNNEL_MOTOR_KV);
+      new LoggedTunableNumber("Manipulator/Funnel/kV", FUNNEL_KV);
   private final LoggedTunableNumber funnelKa =
-      new LoggedTunableNumber("Manipulator/Funnel/kA", FUNNEL_MOTOR_KA);
+      new LoggedTunableNumber("Manipulator/Funnel/kA", FUNNEL_KA);
 
   private final LoggedTunableNumber indexerKp =
-      new LoggedTunableNumber("Manipulator/Indexer/kP", INDEXER_MOTOR_KP);
+      new LoggedTunableNumber("Manipulator/Indexer/kP", INDEXER_KP);
   private final LoggedTunableNumber indexerKi =
-      new LoggedTunableNumber("Manipulator/Indexer/kI", INDEXER_MOTOR_KI);
+      new LoggedTunableNumber("Manipulator/Indexer/kI", INDEXER_KI);
   private final LoggedTunableNumber indexerKd =
-      new LoggedTunableNumber("Manipulator/Indexer/kD", INDEXER_MOTOR_KD);
+      new LoggedTunableNumber("Manipulator/Indexer/kD", INDEXER_KD);
   private final LoggedTunableNumber indexerKs =
-      new LoggedTunableNumber("Manipulator/Indexer/kS", INDEXER_MOTOR_KS);
+      new LoggedTunableNumber("Manipulator/Indexer/kS", INDEXER_KS);
   private final LoggedTunableNumber indexerKv =
-      new LoggedTunableNumber("Manipulator/Indexer/kV", INDEXER_MOTOR_KV);
+      new LoggedTunableNumber("Manipulator/Indexer/kV", INDEXER_KV);
   private final LoggedTunableNumber indexerKa =
-      new LoggedTunableNumber("Manipulator/Indexer/kA", INDEXER_MOTOR_KA);
+      new LoggedTunableNumber("Manipulator/Indexer/kA", INDEXER_KA);
 
   // new tunable values for pivot motor
 
   private final LoggedTunableNumber pivotKp =
-      new LoggedTunableNumber("Manipulator/Pivot/kP", PIVOT_MOTOR_KP);
+      new LoggedTunableNumber("Manipulator/Pivot/kP", PIVOT_KP);
   private final LoggedTunableNumber pivotKi =
-      new LoggedTunableNumber("Manipulator/Pivot/kI", PIVOT_MOTOR_KI);
+      new LoggedTunableNumber("Manipulator/Pivot/kI", PIVOT_KI);
   private final LoggedTunableNumber pivotKd =
-      new LoggedTunableNumber("Manipulator/Pivot/kD", PIVOT_MOTOR_KD);
+      new LoggedTunableNumber("Manipulator/Pivot/kD", PIVOT_KD);
   private final LoggedTunableNumber pivotKs =
-      new LoggedTunableNumber("Manipulator/Pivot/kS", PIVOT_MOTOR_KS);
+      new LoggedTunableNumber("Manipulator/Pivot/kS", PIVOT_KS);
   private final LoggedTunableNumber pivotKv =
-      new LoggedTunableNumber("Manipulator/Pivot/kV", PIVOT_MOTOR_KV);
+      new LoggedTunableNumber("Manipulator/Pivot/kV", PIVOT_KV);
   private final LoggedTunableNumber pivotKa =
-      new LoggedTunableNumber("Manipulator/Pivot/kA", PIVOT_MOTOR_KA);
+      new LoggedTunableNumber("Manipulator/Pivot/kA", PIVOT_KA);
   private final LoggedTunableNumber pivotKg =
-      new LoggedTunableNumber("Manipulator/Pivot/kG", PIVOT_MOTOR_KG);
+      new LoggedTunableNumber("Manipulator/Pivot/kG", PIVOT_KG);
 
   private VelocitySystemSim funnelMotorSim;
   private VelocitySystemSim indexerMotorSim;
@@ -231,25 +231,17 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
     funnelMotorSim =
         new VelocitySystemSim(
-            funnelMotor,
-            FUNNEL_MOTOR_INVERTED,
-            FUNNEL_MOTOR_KV,
-            FUNNEL_MOTOR_KA,
-            GEAR_RATIO_FUNNEL);
+            funnelMotor, FUNNEL_MOTOR_INVERTED, FUNNEL_KV, FUNNEL_KA, FUNNEL_GEAR_RATIO);
     indexerMotorSim =
         new VelocitySystemSim(
-            indexerMotor,
-            INDEXER_MOTOR_INVERTED,
-            INDEXER_MOTOR_KV,
-            INDEXER_MOTOR_KA,
-            GEAR_RATIO_MANIPULATOR);
+            indexerMotor, INDEXER_MOTOR_INVERTED, INDEXER_KV, INDEXER_KA, MANIPULATOR_GEAR_RATIO);
 
     // Add sim for pivot motor
     pivotMotorSim =
         new ArmSystemSim(
             pivotMotor,
             PIVOT_MOTOR_INVERTED,
-            GEAR_RATIO_PIVOT,
+            PIVOT_GEAR_RATIO,
             MANIPULATOR_LENGTH_METERS,
             MANIPULATOR_MASS_KG,
             Units.degreesToRadians(0.0),
@@ -473,7 +465,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimit = FUNNEL_MOTOR_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    config.Feedback.SensorToMechanismRatio = GEAR_RATIO_FUNNEL;
+    config.Feedback.SensorToMechanismRatio = FUNNEL_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
         FUNNEL_MOTOR_INVERTED
@@ -510,7 +502,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimit = INDEXER_MOTOR_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    config.Feedback.SensorToMechanismRatio = GEAR_RATIO_MANIPULATOR;
+    config.Feedback.SensorToMechanismRatio = MANIPULATOR_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
         INDEXER_MOTOR_INVERTED
@@ -543,7 +535,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimit = PIVOT_MOTOR_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    config.Feedback.SensorToMechanismRatio = GEAR_RATIO_PIVOT;
+    config.Feedback.SensorToMechanismRatio = PIVOT_GEAR_RATIO;
 
     config.MotorOutput.Inverted =
         PIVOT_MOTOR_INVERTED
