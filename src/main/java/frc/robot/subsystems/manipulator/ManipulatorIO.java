@@ -46,9 +46,6 @@ public interface ManipulatorIO {
     double pivotMotorVoltage = 0;
 
     double pivotMotorAngleDeg = 0;
-
-    double rightServoPosition = 0.0;
-    double leftServoPosition = 0.0;
   }
 
   public default void updateInputs(ManipulatorIOInputs inputs) {}
@@ -68,8 +65,4 @@ public interface ManipulatorIO {
   public default void setIndexerCurrent(double current) {}
 
   public default void setPivotCurrent(double current) {}
-
-  public default void unlockServos() {}
-
-  public default void lockServos() {}
 }

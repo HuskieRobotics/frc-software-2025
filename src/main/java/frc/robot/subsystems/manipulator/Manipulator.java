@@ -616,11 +616,6 @@ public class Manipulator extends SubsystemBase {
     io.setPivotCurrent(current);
   }
 
-  // this will get called in the climb sequence, most likely with the extend cage catcher button
-  public void openFunnelFlap() {
-    io.unlockServos();
-  }
-
   public void holdWheelPosition(double targetPosition) {
     io.setIndexerPosition(targetPosition);
   }

@@ -19,7 +19,6 @@ public class ClimberCommandFactory {
         .onTrue(
             Commands.sequence(
                     Commands.runOnce(manipulator::disableFunnelForClimb, manipulator),
-                    Commands.runOnce(manipulator::openFunnelFlap, manipulator),
                     Commands.runOnce(climber::extendCageCatcher, climber),
                     Commands.waitUntil(climber::cageCatcherReleased),
                     Commands.runOnce(climber::stop, climber))

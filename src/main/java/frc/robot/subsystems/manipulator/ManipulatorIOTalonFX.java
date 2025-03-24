@@ -25,7 +25,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DigitalInput; // imported this class for the sensors
-import edu.wpi.first.wpilibj.Servo;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -61,9 +60,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private VelocityTorqueCurrentFOC funnelVelocityRequest;
   private VelocityTorqueCurrentFOC indexerVelocityRequest;
-
-  private Servo rightServo;
-  private Servo leftServo;
 
   private Alert funnelConfigAlert =
       new Alert("Failed to apply configuration for manipulator.", AlertType.kError);
@@ -157,9 +153,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     funnelMotor = new TalonFX(FUNNEL_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
     indexerMotor = new TalonFX(INDEXER_MOTOR_ID);
     pivotMotor = new TalonFX(PIVOT_MOTOR_ID);
-
-    rightServo = new Servo(3);
-    leftServo = new Servo(4);
 
     funnelIRSensor = new DigitalInput(FUNNEL_IR_SENSOR_ID);
     indexerIRSensor = new DigitalInput(INDEXER_IR_SENSOR_ID);
@@ -438,20 +431,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     if (Math.abs(current - this.pivotCurrentRequest.Output) > PIVOT_CURRENT_TOLERANCE_AMPS) {
       this.pivotMotor.setControl(pivotCurrentRequest.withOutput(current));
     }
-  }
-
-  // the right and the left servo will be set in opposite positions to go the same direction
-  @Override
-  public void unlockServos() {
-    rightServo.set(1);
-    leftServo.set(0);
-  }
-
-  // will not be used in a real match
-  @Override
-  public void lockServos() {
-    rightServo.set(0);
-    leftServo.set(1);
   }
 
   private void configFunnelMotor(TalonFX motor) {
