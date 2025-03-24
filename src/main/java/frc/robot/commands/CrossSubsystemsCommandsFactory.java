@@ -295,15 +295,15 @@ public class CrossSubsystemsCommandsFactory {
   }
 
   private static Command getLeaveReefZoneCommand(Drivetrain drivetrain, Elevator elevator) {
-    return Commands.parallel(
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().isOutsideOfReefZone()),
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator)),
         new TeleopSwerve(
             drivetrain,
             OISelector.getOperatorInterface()::getTranslateX,
             OISelector.getOperatorInterface()::getTranslateY,
-            OISelector.getOperatorInterface()::getRotate),
-        Commands.sequence(
-            Commands.waitUntil(() -> Field2d.getInstance().isOutsideOfReefZone()),
-            Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator)));
+            OISelector.getOperatorInterface()::getRotate));
   }
 }
