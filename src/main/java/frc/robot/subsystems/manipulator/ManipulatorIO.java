@@ -31,6 +31,8 @@ public interface ManipulatorIO {
     double indexerReferenceVelocityRPS = 0;
     double pivotReferencePositionRot = 0;
 
+    double indexerPositionRotations = 0.0;
+
     double funnelClosedLoopErrorRPS = 0.0;
     double indexerClosedLoopErrorRPS = 0.0;
     double pivotClosedLoopErrorRot = 0.0;

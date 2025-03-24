@@ -142,6 +142,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   private StatusSignal<Angle> pivotMotorAngle;
 
+  private StatusSignal<Angle> indexerPositionRotations;
+
   private final Debouncer funnelConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer indexerConnectedDebouncer = new Debouncer(0.5);
   private final Debouncer pivotConnectedDebouncer = new Debouncer(0.5);
@@ -193,6 +195,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     indexerMotorStatorCurrent = indexerMotor.getStatorCurrent();
     pivotMotorStatorCurrent = pivotMotor.getStatorCurrent();
 
+    indexerPositionRotations = indexerMotor.getPosition();
+
     pivotMotorAngle = pivotMotor.getPosition();
 
     Phoenix6Util.registerSignals(
@@ -209,6 +213,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
         indexerMotorStatorCurrent,
         indexerMotorTemp,
         indexerMotorSupplyCurrent,
+        indexerPositionRotations,
         pivotMotorVoltage,
         pivotMotorSupplyCurrent,
         pivotMotorTemp,
@@ -295,6 +300,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     inputs.funnelSupplyCurrentAmps = funnelMotorSupplyCurrent.getValueAsDouble();
     inputs.indexerSupplyCurrentAmps = indexerMotorSupplyCurrent.getValueAsDouble();
     inputs.pivotSupplyCurrentAmps = pivotMotorSupplyCurrent.getValueAsDouble();
+
+    inputs.indexerPositionRotations = indexerPositionRotations.getValueAsDouble();
 
     // Getting the signal from the TalonFX is more time consuming than having the signal already
     // available. However, if we attempt to get the signal earlier, it won't be bound to the correct

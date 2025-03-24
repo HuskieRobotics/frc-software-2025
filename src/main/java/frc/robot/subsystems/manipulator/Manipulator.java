@@ -1,9 +1,11 @@
 package frc.robot.subsystems.manipulator;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.LOOP_PERIOD_SECS;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -85,6 +87,9 @@ public class Manipulator extends SubsystemBase {
   Timer intakingAlgaeTimer = new Timer();
   Timer scoringAlgaeTimer = new Timer();
 
+  private PIDController positionController =
+      new PIDController(INDEXER_HOLD_KP, INDEXER_HOLD_KI, INDEXER_HOLD_KD, LOOP_PERIOD_SECS);
+
   private ManipulatorIO io;
   private final ManipulatorIOInputsAutoLogged inputs = new ManipulatorIOInputsAutoLogged();
   private State state = State.WAITING_FOR_CORAL;
@@ -106,6 +111,7 @@ public class Manipulator extends SubsystemBase {
   private boolean shootingFast = false;
 
   private boolean disableFunnelForClimb = false;
+  private double targetIndexerPosition;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -292,12 +298,17 @@ public class Manipulator extends SubsystemBase {
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(0.0);
         subsystem.shootCoralButtonPressed = false;
+
+        subsystem.positionController.reset();
+        subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
       }
 
       @Override
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.HAS_CORAL);
         subsystem.retractPivot();
+
+        subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
 
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
@@ -614,6 +625,11 @@ public class Manipulator extends SubsystemBase {
   // this will get called in the climb sequence, most likely with the extend cage catcher button
   public void openFunnelFlap() {
     io.unlockServos();
+  }
+
+  public void holdWheelPosition(double targetPosition) {
+    double output = positionController.calculate(inputs.indexerPositionRotations, targetPosition);
+    io.setIndexerMotorVoltage(output);
   }
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the

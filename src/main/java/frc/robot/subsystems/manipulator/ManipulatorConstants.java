@@ -64,6 +64,10 @@ public class ManipulatorConstants {
   public static final double INDEXER_MOTOR_KV = 0.05;
   public static final double INDEXER_MOTOR_KA = 0.01;
 
+  public static final double INDEXER_HOLD_KP = 0.0;
+  public static final double INDEXER_HOLD_KI = 0.0;
+  public static final double INDEXER_HOLD_KD = 0.0;
+
   public static final double PIVOT_MOTOR_KP = 10.0;
   public static final double PIVOT_MOTOR_KI = 0;
   public static final double PIVOT_MOTOR_KD = 0;
