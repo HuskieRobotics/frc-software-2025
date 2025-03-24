@@ -299,7 +299,7 @@ public class RobotContainer {
     configureDrivetrainCommands();
     configureVisionCommands();
 
-    ClimberCommandFactory.registerCommands(oi, climber);
+    ClimberCommandFactory.registerCommands(oi, climber, manipulator);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator, vision);
 

@@ -103,8 +103,9 @@ public class Manipulator extends SubsystemBase {
   private boolean dropAlgaeButtonPressed = false;
 
   private boolean readyToScore = false;
-
   private boolean shootingFast = false;
+
+  private boolean disableFunnelForClimb = false;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -188,7 +189,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
         subsystem.readyToScore = false;
       }
 
@@ -197,6 +197,12 @@ public class Manipulator extends SubsystemBase {
 
         LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
         subsystem.retractPivot();
+
+        if (subsystem.disableFunnelForClimb) {
+          subsystem.setFunnelMotorVoltage(0.0);
+          subsystem.disableFunnelForClimb =
+              false; // set to false so we don't periodically request 0 voltage
+        }
 
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
@@ -571,6 +577,10 @@ public class Manipulator extends SubsystemBase {
     }
 
     state.execute(this);
+  }
+
+  public void disableFunnelForClimb() {
+    this.disableFunnelForClimb = true;
   }
 
   public void setFunnelMotorVoltage(double volts) {

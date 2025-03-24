@@ -4,18 +4,22 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.operator_interface.OperatorInterface;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants;
+import frc.robot.subsystems.manipulator.Manipulator;
 
 public class ClimberCommandFactory {
 
   private ClimberCommandFactory() {}
 
-  public static void registerCommands(OperatorInterface oi, Climber climber) {
+  public static void registerCommands(
+      OperatorInterface oi, Climber climber, Manipulator manipulator) {
 
     // take in the manipulator subsystem here as well and call the openFunnelFlap method along with
     // cage catcher extension
     oi.getExtendCageCatcherButton()
         .onTrue(
             Commands.sequence(
+                    Commands.runOnce(manipulator::disableFunnelForClimb, manipulator),
+                    Commands.runOnce(manipulator::openFunnelFlap, manipulator),
                     Commands.runOnce(climber::extendCageCatcher, climber),
                     Commands.waitUntil(climber::cageCatcherReleased),
                     Commands.runOnce(climber::stop, climber))
