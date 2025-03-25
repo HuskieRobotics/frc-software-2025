@@ -13,7 +13,7 @@ public class ClimberConstants {
   public static final double EXTEND_VOLTAGE = -3.0;
 
   // FIXME: tune
-  public static final double CLIMB_VOLTAGE = 3.0;
+  public static final double CLIMB_VOLTAGE = 9.0;
 
   public static final double RELEASE_CAGE_CATCHER_VOLTAGE = 3.0;
   public static final double RETRACT_VOLTAGE_SLOW = 3.0;
