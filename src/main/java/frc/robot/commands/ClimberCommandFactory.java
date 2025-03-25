@@ -39,7 +39,8 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::extendSlow, climber),
                     Commands.waitUntil(
                         () -> climber.getPosition() < -ClimberConstants.MAX_HEIGHT_INCHES),
-                    Commands.runOnce(climber::stop, climber))
+                    Commands.runOnce(climber::stop, climber),
+                    Commands.runOnce(climber::zero, climber))
                 .withName("extend climber to match position"));
 
     oi.getRetractClimberSlowButton()
@@ -54,5 +55,8 @@ public class ClimberCommandFactory {
     oi.getExtendClimberSlowButton()
         .onTrue(Commands.runOnce(climber::extendSlow, climber).withName("extend climber slow"));
     oi.getExtendClimberSlowButton().onFalse(Commands.runOnce(climber::stop));
+
+    oi.getZeroClimberButton()
+        .onTrue(Commands.runOnce(climber::zero, climber).withName("zero climber"));
   }
 }

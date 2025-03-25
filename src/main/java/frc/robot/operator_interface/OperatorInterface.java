@@ -88,6 +88,10 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
+  public default Trigger getDriveToNearestCoralStationButton() {
+    return new Trigger(() -> false);
+  }
+
   public default Trigger getInitiateClimbButton() {
     return new Trigger(() -> false);
   }
@@ -121,6 +125,10 @@ public interface OperatorInterface {
   }
 
   public default Trigger getInterruptAll() {
+    return new Trigger(() -> false);
+  }
+
+  public default Trigger getZeroClimberButton() {
     return new Trigger(() -> false);
   }
 
