@@ -68,6 +68,7 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(
             new DriveToStation(
                     drivetrain,
+                    manipulator,
                     () -> Field2d.getInstance().getNearestCoralStation(),
                     new Transform2d(
                         Units.inchesToMeters(0.5),

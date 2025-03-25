@@ -24,6 +24,7 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,7 +45,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class DriveToStation extends Command {
   private final Drivetrain drivetrain;
-  // change the pose supplier to no longer be final since we will change it if we stall on a coral
+  private final Manipulator manipulator;
   private Supplier<Pose2d> poseSupplier;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
@@ -93,8 +94,13 @@ public class DriveToStation extends Command {
    * @param poseSupplier a supplier that returns the pose to drive to
    */
   public DriveToStation(
-      Drivetrain drivetrain, Supplier<Pose2d> poseSupplier, Transform2d tolerance, double timeout) {
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Supplier<Pose2d> poseSupplier,
+      Transform2d tolerance,
+      double timeout) {
     this.drivetrain = drivetrain;
+    this.manipulator = manipulator;
     this.poseSupplier = poseSupplier;
     this.targetTolerance = tolerance;
     this.timer = new Timer();
@@ -258,6 +264,7 @@ public class DriveToStation extends Command {
     // check if it is physically possible for us to drive to the selected position without going
     // through the reef (sign of our x difference)
     return cannotReachTargetPose
+        || manipulator.indexingCoral()
         || !drivetrain.isMoveToPoseEnabled()
         || this.timer.hasElapsed(timeout)
         || atGoal;
