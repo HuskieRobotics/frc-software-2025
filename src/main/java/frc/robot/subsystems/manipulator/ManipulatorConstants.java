@@ -53,10 +53,10 @@ public class ManipulatorConstants {
   public static final double FUNNEL_KV = 0.05;
   public static final double FUNNEL_KA = 0.01;
 
-  public static final double INDEXER_KP = 0;
+  public static final double INDEXER_KP = 8.0;
   public static final double INDEXER_KI = 0;
   public static final double INDEXER_KD = 0;
-  public static final double INDEXER_KS = 0;
+  public static final double INDEXER_KS = 0.5;
   public static final double INDEXER_KV = 0.05;
   public static final double INDEXER_KA = 0.01;
 

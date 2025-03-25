@@ -38,28 +38,23 @@ public class Climber extends SubsystemBase {
   }
 
   public void extendCageCatcher() {
-    io.unlockServo();
     io.setVoltage(ClimberConstants.RELEASE_CAGE_CATCHER_VOLTAGE);
     this.isClimbing = true;
   }
 
   public void climb() {
-    io.unlockServo();
     io.setVoltage(ClimberConstants.CLIMB_VOLTAGE);
   }
 
   public void retractSlow() {
-    io.unlockServo();
     io.setVoltage(ClimberConstants.RETRACT_VOLTAGE_SLOW);
   }
 
   public void extendSlow() {
-    io.unlockServo();
     io.setVoltage(ClimberConstants.EXTEND_VOLTAGE);
   }
 
   public void stop() {
-    io.lockServo();
     io.setVoltage(0);
   }
 
@@ -74,6 +69,7 @@ public class Climber extends SubsystemBase {
 
   // should we add a tolerance here for if the position slips a little bit?
   public boolean cageCatcherReleased() {
+
     return inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES;
   }
 
