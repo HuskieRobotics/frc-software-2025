@@ -50,6 +50,9 @@ public class Field2d {
   private Map<Pose2d, Pose2d> removeAlgaePoses = new HashMap<Pose2d, Pose2d>();
   private Pose2d[] allReefCenterFaces = new Pose2d[12];
 
+  private Pose2d[] processors = new Pose2d[2];
+  private Pose2d[] coralStations = new Pose2d[4];
+
   private final boolean COMPETITION_FIELD =
       true; // set TRUE if home field calibration or at competition
 
@@ -103,6 +106,16 @@ public class Field2d {
       transformedCenterFaces[i] = new Translation2d(centerFace.getX(), centerFace.getY());
     }
     this.reefZone = new Region2d(transformedCenterFaces);
+  }
+
+  public void populateStationsAndProcessors() {
+    processors[0] = FieldConstants.Processor.centerFace;
+    processors[1] = FlippingUtil.flipFieldPose(processors[0]);
+
+    coralStations[0] = FieldConstants.CoralStation.leftCenterFace;
+    coralStations[1] = FieldConstants.CoralStation.rightCenterFace;
+    coralStations[2] = FlippingUtil.flipFieldPose(coralStations[0]);
+    coralStations[3] = FlippingUtil.flipFieldPose(coralStations[1]);
   }
 
   /**
@@ -466,10 +479,6 @@ public class Field2d {
   public Pose2d getNearestProcessor() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    Pose2d[] processors = new Pose2d[2];
-    processors[0] = FieldConstants.Processor.centerFace;
-    processors[1] = FlippingUtil.flipFieldPose(processors[0]);
-
     Pose2d nearestProcessor = pose.nearest(Arrays.asList(processors));
     nearestProcessor =
         nearestProcessor.transformBy(
@@ -484,14 +493,6 @@ public class Field2d {
 
   public Pose2d getNearestCoralStation() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-
-    Pose2d[] coralStations = new Pose2d[2];
-    coralStations[0] = FieldConstants.CoralStation.leftCenterFace;
-    coralStations[1] = FieldConstants.CoralStation.rightCenterFace;
-    if (getAlliance() == Alliance.Red) {
-      coralStations[0] = FlippingUtil.flipFieldPose(coralStations[0]);
-      coralStations[1] = FlippingUtil.flipFieldPose(coralStations[1]);
-    }
 
     Pose2d nearestCoralStation = pose.nearest(Arrays.asList(coralStations));
     nearestCoralStation =

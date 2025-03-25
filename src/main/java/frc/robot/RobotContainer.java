@@ -94,6 +94,7 @@ public class RobotContainer {
 
     Field2d.getInstance().populateReefBranchPoseMaps();
     Field2d.getInstance().populateReefZone();
+    Field2d.getInstance().populateStationsAndProcessors();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
