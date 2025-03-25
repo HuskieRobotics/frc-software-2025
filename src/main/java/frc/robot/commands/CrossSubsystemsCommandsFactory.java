@@ -14,6 +14,7 @@ import frc.lib.team3061.vision.Vision;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
@@ -29,6 +30,7 @@ public class CrossSubsystemsCommandsFactory {
       Drivetrain drivetrain,
       Elevator elevator,
       Manipulator manipulator,
+      Climber climber,
       Vision vision) {
 
     oi.getScoreButton()
@@ -62,7 +64,21 @@ public class CrossSubsystemsCommandsFactory {
                     manipulator::hasIndexedCoral)
                 .withName("prep to score"));
 
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
+    oi.getDriveToNearestCoralStationButton()
+        .onTrue(
+            new DriveToStation(
+                    drivetrain,
+                    manipulator,
+                    () -> Field2d.getInstance().getNearestCoralStation(),
+                    new Transform2d(
+                        Units.inchesToMeters(0.5),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)),
+                    3.0)
+                .withName("drive to nearest coral station"));
+
+    oi.getInterruptAll()
+        .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
@@ -130,14 +146,19 @@ public class CrossSubsystemsCommandsFactory {
    * IRs say that we should.
    */
   private static Command getInterruptAllCommand(
-      Manipulator manipulator, Elevator elevator, Drivetrain drivetrain, OperatorInterface oi) {
+      Manipulator manipulator,
+      Elevator elevator,
+      Drivetrain drivetrain,
+      Climber climber,
+      OperatorInterface oi) {
     return Commands.parallel(
             Commands.sequence(
                 Commands.runOnce(manipulator::shootCoralFast, manipulator),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP),
                     elevator),
-                Commands.runOnce(manipulator::resetStateMachine, manipulator)),
+                Commands.runOnce(manipulator::resetStateMachine, manipulator),
+                Commands.runOnce(climber::stop, climber)),
             new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
         .withName("interrupt all");
   }
@@ -251,7 +272,11 @@ public class CrossSubsystemsCommandsFactory {
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
         Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
         Commands.runOnce(() -> elevator.goToNearestAlgae(), elevator),
-        Commands.waitUntil(manipulator::doneCollectingAlgae));
+        Commands.waitUntil(manipulator::doneCollectingAlgae),
+        Commands.either(
+            getLeaveReefZoneCommand(drivetrain, elevator),
+            Commands.none(),
+            () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()));
   }
 
   private static Command getScoreWithAlgaeSelectedCommand(
@@ -288,5 +313,18 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         getScoreCoralCommand(manipulator, elevator),
         getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision));
+  }
+
+  private static Command getLeaveReefZoneCommand(Drivetrain drivetrain, Elevator elevator) {
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().isOutsideOfReefZone()),
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator)),
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
   }
 }

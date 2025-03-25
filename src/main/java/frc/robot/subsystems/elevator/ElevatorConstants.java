@@ -112,8 +112,8 @@ public class ElevatorConstants {
   public static final Distance FAR_L3_HEIGHT = Inches.of(51);
   public static final Distance L4_HEIGHT = Inches.of(71);
 
-  public static final Distance BARGE_HEIGHT = Inches.of(74); // FIXME: tune
-  public static final Distance PROCESSOR_HEIGHT = Inches.of(0); // FIXME: tune
+  public static final Distance BARGE_HEIGHT = Inches.of(74);
+  public static final Distance PROCESSOR_HEIGHT = Inches.of(0);
 
   public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
@@ -121,11 +121,9 @@ public class ElevatorConstants {
   public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(0.5);
   public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(2.0);
 
-  // height under is 24 // height of impact is 28
   public static final Distance BELOW_HIGH_ALGAE_HEIGHT = Inches.of(20.0);
   public static final Distance HIGH_ALGAE_HEIGHT = Inches.of(30.0);
 
-  // height under is 9 // height of impact is 13
   public static final Distance BELOW_LOW_ALGAE_HEIGHT = Inches.of(5.0);
   public static final Distance LOW_ALGAE_HEIGHT = Inches.of(15.0);
 

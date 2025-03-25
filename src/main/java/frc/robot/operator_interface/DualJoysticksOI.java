@@ -73,6 +73,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getZeroClimberButton() {
+    return translateJoystickButtons[10];
+  }
+
+  @Override
   public Trigger getLowerElevatorSlowButton() {
     return translateJoystickButtons[11];
   }
@@ -87,6 +92,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getScoreButton() {
     return rotateJoystickButtons[1];
+  }
+
+  @Override
+  public Trigger getDriveToNearestCoralStationButton() {
+    return rotateJoystickButtons[2];
   }
 
   @Override
@@ -107,6 +117,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   @Override
   public Trigger getCurrentPoseButton() {
     return rotateJoystickButtons[6];
+  }
+
+  @Override
+  public Trigger getExtendClimberToMatchPositionButton() {
+    return rotateJoystickButtons[9];
   }
 
   @Override

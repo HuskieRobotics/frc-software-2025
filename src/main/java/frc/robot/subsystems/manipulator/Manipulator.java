@@ -103,8 +103,10 @@ public class Manipulator extends SubsystemBase {
   private boolean dropAlgaeButtonPressed = false;
 
   private boolean readyToScore = false;
-
   private boolean shootingFast = false;
+
+  private boolean disableFunnelForClimb = false;
+  private double targetIndexerPosition;
 
   /**
    * Create a new subsystem with its associated hardware interface object.
@@ -188,7 +190,6 @@ public class Manipulator extends SubsystemBase {
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
-        // subsystem.setPivotMotorCurrent(PIVOT_CURRENT_RETRACTED);
         subsystem.readyToScore = false;
       }
 
@@ -197,6 +198,12 @@ public class Manipulator extends SubsystemBase {
 
         LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
         subsystem.retractPivot();
+
+        if (subsystem.disableFunnelForClimb) {
+          subsystem.setFunnelMotorVoltage(0.0);
+          subsystem.disableFunnelForClimb =
+              false; // set to false so we don't periodically request 0 voltage
+        }
 
         if (subsystem.inputs.isFunnelIRBlocked) {
           subsystem.setState(State.INDEXING_CORAL_IN_MANIPULATOR);
@@ -232,7 +239,7 @@ public class Manipulator extends SubsystemBase {
 
         if (subsystem.inputs.isIndexerIRBlocked
             && subsystem.currentInAmps.lastValue()
-                > THRESHOLD_FOR_CORAL_CURRENT_SPIKE) // the currentInAmps filters out the current in
+                > CORAL_CURRENT_SPIKE_THRESHOLD) // the currentInAmps filters out the current in
         // the
         // noise and getting the lastValue gets the last value
         // of the current, and if that last value is greater
@@ -286,12 +293,16 @@ public class Manipulator extends SubsystemBase {
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorVoltage(0.0);
         subsystem.shootCoralButtonPressed = false;
+
+        subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
       }
 
       @Override
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.HAS_CORAL);
         subsystem.retractPivot();
+
+        subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
 
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
@@ -352,7 +363,7 @@ public class Manipulator extends SubsystemBase {
 
         // check for current spike or if algae IR has detected algae
         if (subsystem.inputs.isAlgaeIRBlocked
-            && subsystem.currentInAmps.lastValue() > THRESHOLD_CURRENT_SPIKE_ALGAE) {
+            && subsystem.currentInAmps.lastValue() > ALGAE_CURRENT_SPIKE_THRESHOLD) {
           subsystem.setState(State.ALGAE_IN_MANIPULATOR);
         } else if (subsystem.intakingAlgaeTimer.hasElapsed(INTAKE_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL);
@@ -573,37 +584,40 @@ public class Manipulator extends SubsystemBase {
     state.execute(this);
   }
 
+  public void disableFunnelForClimb() {
+    this.disableFunnelForClimb = true;
+  }
+
   public void setFunnelMotorVoltage(double volts) {
-    io.setFunnelMotorVoltage(volts);
+    io.setFunnelVoltage(volts);
   }
 
   public void setFunnelMotorCurrent(double current) {
-    io.setFunnelMotorCurrent(current);
+    io.setFunnelCurrent(current);
   }
 
   public void setFunnelMotorVelocity(double velocity) {
-    io.setFunnelMotorVelocity(velocity);
+    io.setFunnelVelocity(velocity);
   }
 
   public void setIndexerMotorVoltage(double volts) {
-    io.setIndexerMotorVoltage(volts);
+    io.setIndexerVoltage(volts);
   }
 
   public void setIndexerMotorCurrent(double current) {
-    io.setIndexerMotorCurrent(current);
+    io.setIndexerCurrent(current);
   }
 
   public void setIndexerMotorVelocity(double velocity) {
-    io.setIndexerMotorVelocity(velocity);
+    io.setIndexerVelocity(velocity);
   }
 
   public void setPivotMotorCurrent(double current) {
-    io.setPivotMotorCurrent(current);
+    io.setPivotCurrent(current);
   }
 
-  // this will get called in the climb sequence, most likely with the extend cage catcher button
-  public void openFunnelFlap() {
-    io.unlockServos();
+  public void holdWheelPosition(double targetPosition) {
+    io.setIndexerPosition(targetPosition);
   }
 
   // Whichever line of code does something with the motors, i replaced it with 2 lines that do the
@@ -611,8 +625,8 @@ public class Manipulator extends SubsystemBase {
   private Command getSystemCheckCommand() {
     return Commands.sequence(
             Commands.runOnce(() -> FaultReporter.getInstance().clearFaults(SUBSYSTEM_NAME)),
-            Commands.run(() -> io.setFunnelMotorVoltage(3.6)).withTimeout(1.0),
-            Commands.run(() -> io.setIndexerMotorVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelVoltage(3.6)).withTimeout(1.0),
+            Commands.run(() -> io.setIndexerVoltage(3.6)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
                   if (inputs.funnelVelocityRPS < 2.0) {
@@ -624,8 +638,8 @@ public class Manipulator extends SubsystemBase {
                             true);
                   }
                 }),
-            Commands.run(() -> io.setFunnelMotorVoltage(-2.4)).withTimeout(1.0),
-            Commands.run(() -> io.setIndexerMotorVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setFunnelVoltage(-2.4)).withTimeout(1.0),
+            Commands.run(() -> io.setIndexerVoltage(-2.4)).withTimeout(1.0),
             Commands.runOnce(
                 () -> {
                   if (inputs.indexerVelocityRPS > -2.0) {
@@ -638,8 +652,8 @@ public class Manipulator extends SubsystemBase {
                   }
                 }))
         .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
-        .andThen(Commands.runOnce(() -> io.setFunnelMotorVoltage(0.0)))
-        .andThen(Commands.runOnce(() -> io.setIndexerMotorVoltage(0.0)));
+        .andThen(Commands.runOnce(() -> io.setFunnelVoltage(0.0)))
+        .andThen(Commands.runOnce(() -> io.setIndexerVoltage(0.0)));
   }
 
   private void shootCoral() {

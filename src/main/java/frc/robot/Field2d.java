@@ -41,6 +41,7 @@ public class Field2d {
   private static Field2d instance = null;
 
   private Region2d[] regions;
+  private Region2d reefZone;
 
   private Alliance alliance = DriverStation.Alliance.Blue;
 
@@ -48,6 +49,9 @@ public class Field2d {
   private Map<Pose2d, Pose2d> rightReefPoses = new HashMap<Pose2d, Pose2d>();
   private Map<Pose2d, Pose2d> removeAlgaePoses = new HashMap<Pose2d, Pose2d>();
   private Pose2d[] allReefCenterFaces = new Pose2d[12];
+
+  private Pose2d[] processors = new Pose2d[2];
+  private Pose2d[] coralStations = new Pose2d[4];
 
   private final boolean COMPETITION_FIELD =
       true; // set TRUE if home field calibration or at competition
@@ -87,6 +91,31 @@ public class Field2d {
    */
   public void setRegions(Region2d[] regions) {
     this.regions = regions;
+  }
+
+  public void populateReefZone() {
+    // make a region of the reef center faces transformed by 18 inches
+    // the reef zone is 14 inches from the reef
+    // however, a few inches are added for safety as well as the region measuring to the center of
+    // the robot
+    Translation2d[] transformedCenterFaces = new Translation2d[6];
+    for (int i = 0; i < 6; i++) {
+      Pose2d centerFace =
+          FieldConstants.Reef.centerFaces[i].transformBy(
+              new Transform2d(Units.inchesToMeters(36.0), 0.0, Rotation2d.fromDegrees(0.0)));
+      transformedCenterFaces[i] = new Translation2d(centerFace.getX(), centerFace.getY());
+    }
+    this.reefZone = new Region2d(transformedCenterFaces);
+  }
+
+  public void populateStationsAndProcessors() {
+    processors[0] = FieldConstants.Processor.centerFace;
+    processors[1] = FlippingUtil.flipFieldPose(processors[0]);
+
+    coralStations[0] = FieldConstants.CoralStation.leftCenterFace;
+    coralStations[1] = FieldConstants.CoralStation.rightCenterFace;
+    coralStations[2] = FlippingUtil.flipFieldPose(coralStations[0]);
+    coralStations[3] = FlippingUtil.flipFieldPose(coralStations[1]);
   }
 
   /**
@@ -450,10 +479,6 @@ public class Field2d {
   public Pose2d getNearestProcessor() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
 
-    Pose2d[] processors = new Pose2d[2];
-    processors[0] = FieldConstants.Processor.centerFace;
-    processors[1] = FlippingUtil.flipFieldPose(processors[0]);
-
     Pose2d nearestProcessor = pose.nearest(Arrays.asList(processors));
     nearestProcessor =
         nearestProcessor.transformBy(
@@ -464,6 +489,20 @@ public class Field2d {
                 Rotation2d.fromDegrees(180)));
 
     return nearestProcessor;
+  }
+
+  public Pose2d getNearestCoralStation() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    Pose2d nearestCoralStation = pose.nearest(Arrays.asList(coralStations));
+    nearestCoralStation =
+        nearestCoralStation.transformBy(
+            new Transform2d(
+                (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
+                0,
+                Rotation2d.fromDegrees(180)));
+
+    return nearestCoralStation;
   }
 
   /*
@@ -610,6 +649,15 @@ public class Field2d {
             13.841666999458502, 5.029054264702699, Rotation2d.fromDegrees(-120.12660737579654));
 
     return redReefLeftBranches;
+  }
+
+  public boolean isOutsideOfReefZone() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    if (getAlliance() == Alliance.Red) {
+      pose = FlippingUtil.flipFieldPose(pose);
+    }
+
+    return !reefZone.contains(pose);
   }
 
   public enum Side {

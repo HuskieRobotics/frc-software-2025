@@ -93,6 +93,8 @@ public class RobotContainer {
     createRobotConfig();
 
     Field2d.getInstance().populateReefBranchPoseMaps();
+    Field2d.getInstance().populateReefZone();
+    Field2d.getInstance().populateStationsAndProcessors();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -299,9 +301,10 @@ public class RobotContainer {
     configureDrivetrainCommands();
     configureVisionCommands();
 
-    ClimberCommandFactory.registerCommands(oi, climber);
+    ClimberCommandFactory.registerCommands(oi, climber, manipulator);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
-    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator, vision);
+    CrossSubsystemsCommandsFactory.registerCommands(
+        oi, drivetrain, elevator, manipulator, climber, vision);
 
     // Endgame alerts[]
     new Trigger(
@@ -427,11 +430,11 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("print current pose"));
 
-    // new Trigger(
-    //         () -> {
-    //           return drivetrain.isTilted() && !climber.isClimbing();
-    //         })
-    //     .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
+    new Trigger(
+            () -> {
+              return drivetrain.isTilted() && !climber.isClimbing();
+            })
+        .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());

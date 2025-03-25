@@ -21,10 +21,6 @@ public interface ClimberIO {
 
   public default void setVoltage(double voltage) {}
 
-  public default void unlockServo() {}
-
-  public default void lockServo() {}
-
   public default void zeroPosition() {}
   // determined hardware methods
 }

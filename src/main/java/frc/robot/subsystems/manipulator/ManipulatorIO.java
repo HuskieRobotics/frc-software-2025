@@ -31,6 +31,8 @@ public interface ManipulatorIO {
     double indexerReferenceVelocityRPS = 0;
     double pivotReferencePositionRot = 0;
 
+    double indexerPositionRotations = 0.0;
+
     double funnelClosedLoopErrorRPS = 0.0;
     double indexerClosedLoopErrorRPS = 0.0;
     double pivotClosedLoopErrorRot = 0.0;
@@ -44,28 +46,23 @@ public interface ManipulatorIO {
     double pivotMotorVoltage = 0;
 
     double pivotMotorAngleDeg = 0;
-
-    double rightServoPosition = 0.0;
-    double leftServoPosition = 0.0;
   }
 
   public default void updateInputs(ManipulatorIOInputs inputs) {}
 
-  public default void setFunnelMotorVoltage(double volts) {}
+  public default void setFunnelVoltage(double volts) {}
 
-  public default void setFunnelMotorVelocity(double velocity) {}
+  public default void setFunnelVelocity(double velocity) {}
 
-  public default void setIndexerMotorVoltage(double volts) {}
+  public default void setIndexerVoltage(double volts) {}
 
-  public default void setIndexerMotorVelocity(double velocity) {}
+  public default void setIndexerVelocity(double velocity) {}
 
-  public default void setFunnelMotorCurrent(double current) {}
+  public default void setIndexerPosition(double position) {}
 
-  public default void setIndexerMotorCurrent(double current) {}
+  public default void setFunnelCurrent(double current) {}
 
-  public default void setPivotMotorCurrent(double current) {}
+  public default void setIndexerCurrent(double current) {}
 
-  public default void unlockServos() {}
-
-  public default void lockServos() {}
+  public default void setPivotCurrent(double current) {}
 }

@@ -7,7 +7,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -38,7 +37,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private TalonFX elevatorMotorFollower;
 
   private MotionMagicExpoVoltage leadPositionRequest;
-  private DynamicMotionMagicVoltage leadPositionRequestDown;
   private VoltageOut leadVoltageRequest;
 
   private Alert leadConfigAlert =
@@ -160,7 +158,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         elevatorVelocityStatusSignal);
 
     leadPositionRequest = new MotionMagicExpoVoltage(0);
-    leadPositionRequestDown = new DynamicMotionMagicVoltage(0, 10, 100, 500);
     leadVoltageRequest = new VoltageOut(0);
 
     configElevatorMotorLead(elevatorMotorLead);
@@ -388,18 +385,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPosition(Distance position) {
-    if (localPosition < position.in(Inches)) {
-
-      // set the elevator to slot 0
-      elevatorMotorLead.setControl(
-          leadPositionRequest
-              .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
-              .withSlot(0));
-    } else {
-      elevatorMotorLead.setControl(
-          leadPositionRequestDown
-              .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
-              .withSlot(0));
-    }
+    elevatorMotorLead.setControl(
+        leadPositionRequest
+            .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
+            .withSlot(0));
   }
 }
