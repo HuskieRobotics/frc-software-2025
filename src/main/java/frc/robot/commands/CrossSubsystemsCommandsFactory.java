@@ -64,6 +64,18 @@ public class CrossSubsystemsCommandsFactory {
                     manipulator::hasIndexedCoral)
                 .withName("prep to score"));
 
+    oi.getDriveToNearestCoralStationButton()
+        .onTrue(
+            new DriveToStation(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestCoralStation(),
+                    new Transform2d(
+                        Units.inchesToMeters(0.5),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)),
+                    3.0)
+                .withName("drive to nearest coral station"));
+
     oi.getInterruptAll()
         .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, oi));
 

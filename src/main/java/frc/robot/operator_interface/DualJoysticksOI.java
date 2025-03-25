@@ -95,6 +95,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getDriveToNearestCoralStationButton() {
+    return rotateJoystickButtons[2];
+  }
+
+  @Override
   public Trigger getInitiateClimbButton() {
     return rotateJoystickButtons[3];
   }

@@ -482,6 +482,28 @@ public class Field2d {
     return nearestProcessor;
   }
 
+  public Pose2d getNearestCoralStation() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+
+    Pose2d[] coralStations = new Pose2d[2];
+    coralStations[0] = FieldConstants.CoralStation.leftCenterFace;
+    coralStations[1] = FieldConstants.CoralStation.rightCenterFace;
+    if (getAlliance() == Alliance.Red) {
+      coralStations[0] = FlippingUtil.flipFieldPose(coralStations[0]);
+      coralStations[1] = FlippingUtil.flipFieldPose(coralStations[1]);
+    }
+
+    Pose2d nearestCoralStation = pose.nearest(Arrays.asList(coralStations));
+    nearestCoralStation =
+        nearestCoralStation.transformBy(
+            new Transform2d(
+                (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
+                0,
+                Rotation2d.fromDegrees(180)));
+
+    return nearestCoralStation;
+  }
+
   /*
    * These methods are for manually populating reef branch pose maps based on the measured robot pose in the correct scoring position.
    */
