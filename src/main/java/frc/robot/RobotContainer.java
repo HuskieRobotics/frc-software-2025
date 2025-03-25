@@ -302,7 +302,8 @@ public class RobotContainer {
 
     ClimberCommandFactory.registerCommands(oi, climber, manipulator);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
-    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator, vision);
+    CrossSubsystemsCommandsFactory.registerCommands(
+        oi, drivetrain, elevator, manipulator, climber, vision);
 
     // Endgame alerts[]
     new Trigger(

@@ -73,6 +73,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getZeroClimberButton() {
+    return translateJoystickButtons[10];
+  }
+
+  @Override
   public Trigger getLowerElevatorSlowButton() {
     return translateJoystickButtons[11];
   }
