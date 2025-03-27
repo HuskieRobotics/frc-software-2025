@@ -23,6 +23,6 @@ public class ClimberConstants {
   public static final double MAX_HEIGHT_INCHES = 19.75; // 16 + 3.75
   public static final double HARDSTOP_POSITION_INCHES = 30.0;
 
-  public static final int CLIMBER_LIMIT_SWITCH_DIO_1 = 4;
-  public static final int CLIMBER_LIMIT_SWITCH_DIO_2 = 5;
+  public static final int CLIMBER_LIMIT_SWITCH_DIO_1 = 8;
+  public static final int CLIMBER_LIMIT_SWITCH_DIO_2 = 9;
 }

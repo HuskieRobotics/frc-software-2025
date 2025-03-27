@@ -500,7 +500,7 @@ public class Field2d {
             new Transform2d(
                 (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
                 0,
-                Rotation2d.fromDegrees(180)));
+                Rotation2d.fromDegrees(0)));
 
     return nearestCoralStation;
   }
