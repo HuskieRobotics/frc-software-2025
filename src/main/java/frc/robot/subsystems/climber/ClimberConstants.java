@@ -21,6 +21,8 @@ public class ClimberConstants {
   public static final double DRUM_DIAMETER = 1.0;
   public static final double CAGE_CATCHER_EXTEND_POS_INCHES = 3.75;
   public static final double MAX_HEIGHT_INCHES = 19.75; // 16 + 3.75
+  public static final double HARDSTOP_POSITION_INCHES = 30.0;
 
-  public static final int CLIMBER_LIMIT_SWITCH_DIO = 4;
+  public static final int CLIMBER_LIMIT_SWITCH_DIO_1 = 4;
+  public static final int CLIMBER_LIMIT_SWITCH_DIO_2 = 5;
 }

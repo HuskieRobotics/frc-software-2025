@@ -14,7 +14,8 @@ public interface ClimberIO {
     double tempCelsius = 0.0;
     double positionRotations = 0.0;
     double positionInches = 0.0;
-    boolean limitSwitchEngaged = false;
+    boolean limitSwitch1Engaged = false;
+    boolean limitSwitch2Engaged = false;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}

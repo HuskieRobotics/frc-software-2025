@@ -72,7 +72,7 @@ public class Climber extends SubsystemBase {
   }
 
   public boolean limitSwitchEngaged() {
-    return inputs.limitSwitchEngaged;
+    return inputs.limitSwitch1Engaged || inputs.limitSwitch2Engaged;
   }
 
   public double getPosition() {

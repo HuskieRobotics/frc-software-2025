@@ -29,7 +29,8 @@ public class ClimberIOTalonFX implements ClimberIO {
   private VoltageOut climberVoltageRequest;
   private ElevatorSystemSim elevatorSystemSim;
 
-  private DigitalInput limitSwitch;
+  private DigitalInput limitSwitch1;
+  private DigitalInput limitSwitch2;
 
   private StatusSignal<Voltage> voltage;
   private StatusSignal<Current> statorCurrentAmps;
@@ -44,7 +45,8 @@ public class ClimberIOTalonFX implements ClimberIO {
         new TalonFX(
             ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
 
-    limitSwitch = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO);
+    limitSwitch1 = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO_1);
+    limitSwitch2 = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO_2);
 
     configMotor();
 
@@ -84,7 +86,8 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
-    inputs.limitSwitchEngaged = limitSwitch.get();
+    inputs.limitSwitch1Engaged = limitSwitch1.get();
+    inputs.limitSwitch2Engaged = limitSwitch2.get();
     elevatorSystemSim.updateSim();
   }
 
