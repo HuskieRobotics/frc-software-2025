@@ -303,6 +303,7 @@ public class Manipulator extends SubsystemBase {
         subsystem.retractPivot();
 
         subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
+        Logger.recordOutput(SUBSYSTEM_NAME + "/targetWheelPosition", subsystem.targetIndexerPosition);
 
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
