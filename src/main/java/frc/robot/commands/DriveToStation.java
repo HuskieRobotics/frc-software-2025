@@ -252,19 +252,18 @@ public class DriveToStation extends Command {
 
     boolean cannotReachTargetPose = false;
     Logger.recordOutput("DriveToStation/cannotReachTargetPose", cannotReachTargetPose);
-    if (firstRun) {
-      firstRun = false;
-      cannotReachTargetPose = robotRelativeDifference.getX() > 0.05;
-      if (cannotReachTargetPose) {
-        drivetrain.setDriveToPoseCanceled(true);
-      }
-    }
+    // if (firstRun) {
+    //   firstRun = false;
+    //   cannotReachTargetPose = robotRelativeDifference.getX() > 0.05;
+    //   if (cannotReachTargetPose) {
+    //     drivetrain.setDriveToPoseCanceled(true);
+    //   }
+    // }
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
     // check if it is physically possible for us to drive to the selected position without going
     // through the reef (sign of our x difference)
-    return cannotReachTargetPose
-        || manipulator.indexingCoral()
+    return manipulator.indexingCoral()
         || !drivetrain.isMoveToPoseEnabled()
         || this.timer.hasElapsed(timeout)
         || atGoal;
