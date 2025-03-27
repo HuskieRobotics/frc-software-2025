@@ -28,8 +28,7 @@ public class ClimberCommandFactory {
         .onTrue(
             Commands.sequence(
                     Commands.runOnce(climber::climb, climber),
-                    Commands.waitUntil(
-                        () -> climber.getPosition() > ClimberConstants.MAX_HEIGHT_INCHES),
+                    Commands.waitUntil(climber::limitSwitchEngaged),
                     Commands.runOnce(climber::stop, climber))
                 .withName("finish climb"));
 

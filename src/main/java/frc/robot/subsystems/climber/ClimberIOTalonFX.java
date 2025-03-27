@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
@@ -27,6 +28,8 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private VoltageOut climberVoltageRequest;
   private ElevatorSystemSim elevatorSystemSim;
+
+  private DigitalInput limitSwitch;
 
   private StatusSignal<Voltage> voltage;
   private StatusSignal<Current> statorCurrentAmps;
@@ -41,6 +44,8 @@ public class ClimberIOTalonFX implements ClimberIO {
         new TalonFX(
             ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
 
+    limitSwitch = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO);
+
     configMotor();
 
     voltage = climberMotor.getMotorVoltage();
@@ -53,7 +58,6 @@ public class ClimberIOTalonFX implements ClimberIO {
         true, voltage, statorCurrentAmps, supplyCurrentAmps, tempCelsius, positionRotations);
 
     climberVoltageRequest = new VoltageOut(0);
-    // ask lauren for mass and max height
     elevatorSystemSim =
         new ElevatorSystemSim(
             climberMotor,
@@ -80,6 +84,7 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
+    inputs.limitSwitchEngaged = limitSwitch.get();
     elevatorSystemSim.updateSim();
   }
 
