@@ -484,7 +484,7 @@ public class Field2d {
         nearestProcessor.transformBy(
             new Transform2d(
                 (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0)
-                    + Units.inchesToMeters(12.0),
+                    + Units.inchesToMeters(10.0), /* was 12 */
                 Units.inchesToMeters(-4.5),
                 Rotation2d.fromDegrees(180)));
 
