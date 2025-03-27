@@ -244,7 +244,7 @@ public class Manipulator extends SubsystemBase {
         // noise and getting the lastValue gets the last value
         // of the current, and if that last value is greater
         // than some constant, then current spike has been
-        // detected
+        // detected 
         {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
         } else if (subsystem.coralInIndexingState.hasElapsed(
@@ -302,8 +302,13 @@ public class Manipulator extends SubsystemBase {
         LEDs.getInstance().requestState(States.HAS_CORAL);
         subsystem.retractPivot();
 
+        if (DriverStation.isDisabled()) {
+          subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
+        }
+
         subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
-        Logger.recordOutput(SUBSYSTEM_NAME + "/targetWheelPosition", subsystem.targetIndexerPosition);
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/targetWheelPosition", subsystem.targetIndexerPosition);
 
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);
