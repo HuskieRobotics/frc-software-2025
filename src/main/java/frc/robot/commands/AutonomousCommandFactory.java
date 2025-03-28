@@ -260,8 +260,8 @@ public class AutonomousCommandFactory {
             Side.LEFT,
             collectCoralAfterL2L,
             scoreCoralK));
-        // ,getCollectAndScoreFourthCommand(
-        //     drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
+    // ,getCollectAndScoreFourthCommand(
+    //     drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
   }
 
   public Command getFourCoralRightCommand(
@@ -304,8 +304,8 @@ public class AutonomousCommandFactory {
             Side.LEFT,
             collectCoralAfterD2R,
             scoreCoralC));
-        // .getCollectAndScoreFourthCommand(
-        //     drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC));
+    // .getCollectAndScoreFourthCommand(
+    //     drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC));
   }
 
   public Command getOneCoralCenterCommand(
@@ -417,7 +417,7 @@ public class AutonomousCommandFactory {
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-        Commands.waitSeconds(0.2),
+        Commands.waitSeconds(0.5),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(
