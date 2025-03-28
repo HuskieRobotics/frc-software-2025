@@ -222,6 +222,7 @@ public class DriveToReef extends Command {
     // this target pose needs to be set as a one-coral-away offset in the reef-relative x direction
     // shouldn't)
     double reefRelativeXDifference = reefRelativeDifference.getX();
+
     if (xDebouncer.calculate(
             Math.abs(
                     Math.abs(reefRelativeXDifference)
@@ -312,7 +313,8 @@ public class DriveToReef extends Command {
     }
 
     boolean atGoal =
-        Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
+        (Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
+                || reefRelativeDifference.getX() > 0)
             && Math.abs(reefRelativeDifference.getY()) < targetTolerance.getY()
             && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
