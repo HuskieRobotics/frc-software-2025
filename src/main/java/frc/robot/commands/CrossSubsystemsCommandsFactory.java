@@ -80,7 +80,7 @@ public class CrossSubsystemsCommandsFactory {
                 .withName("drive to nearest coral station"));
 
     oi.getInterruptAll()
-        .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, oi));
+        .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, vision, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
@@ -152,6 +152,7 @@ public class CrossSubsystemsCommandsFactory {
       Elevator elevator,
       Drivetrain drivetrain,
       Climber climber,
+      Vision vision,
       OperatorInterface oi) {
     return Commands.parallel(
             Commands.sequence(
@@ -161,7 +162,8 @@ public class CrossSubsystemsCommandsFactory {
                     elevator),
                 Commands.runOnce(manipulator::resetStateMachine, manipulator),
                 Commands.runOnce(climber::stop, climber)),
-            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
         .withName("interrupt all");
   }
 
