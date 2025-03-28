@@ -259,9 +259,9 @@ public class AutonomousCommandFactory {
             vision,
             Side.LEFT,
             collectCoralAfterL2L,
-            scoreCoralK),
-        getCollectAndScoreFourthCommand(
-            drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
+            scoreCoralK));
+        // ,getCollectAndScoreFourthCommand(
+        //     drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
   }
 
   public Command getFourCoralRightCommand(
@@ -303,9 +303,9 @@ public class AutonomousCommandFactory {
             vision,
             Side.LEFT,
             collectCoralAfterD2R,
-            scoreCoralC),
-        getCollectAndScoreFourthCommand(
-            drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC));
+            scoreCoralC));
+        // .getCollectAndScoreFourthCommand(
+        //     drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC));
   }
 
   public Command getOneCoralCenterCommand(
