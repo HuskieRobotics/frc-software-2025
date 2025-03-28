@@ -65,6 +65,8 @@ public class DriveToReef extends Command {
 
   private boolean firstRun = true;
 
+  public static final double PIPE_FROM_REEF_CENTER_INCHES = 6.469;
+
   private double timeout;
 
   private Timer timer;
@@ -226,6 +228,8 @@ public class DriveToReef extends Command {
                         - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
                 < Units.inchesToMeters(0.5))
         && !oneCoralAway
+        && Math.abs(reefRelativeDifference.getY())
+            < Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES * 2)
         && !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
             || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
         && !DriverStation.isAutonomous()) {
