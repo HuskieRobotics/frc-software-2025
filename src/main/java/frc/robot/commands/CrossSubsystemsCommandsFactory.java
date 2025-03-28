@@ -35,25 +35,27 @@ public class CrossSubsystemsCommandsFactory {
 
     oi.getScoreButton()
         .onTrue(
-            Commands.either(
-                    getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
-                    Commands.sequence(
-                        getScoreCoralCommand(manipulator, elevator),
-                        Commands.deadline(
-                            elevator.getElevatorLowerAndResetCommand(),
-                            new TeleopSwerve(
-                                drivetrain,
-                                OISelector.getOperatorInterface()::getTranslateX,
-                                OISelector.getOperatorInterface()::getTranslateY,
-                                OISelector.getOperatorInterface()::getRotate))),
-                    () ->
-                        (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
-                            || OISelector.getOperatorInterface()
-                                .getAlgaeProcessorTrigger()
-                                .getAsBoolean()
-                            || OISelector.getOperatorInterface()
-                                .getAlgaeDropTrigger()
-                                .getAsBoolean()))
+            Commands.sequence(
+                    Commands.either(
+                        getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
+                        Commands.sequence(
+                            getScoreCoralCommand(manipulator, elevator),
+                            Commands.deadline(
+                                elevator.getElevatorLowerAndResetCommand(),
+                                new TeleopSwerve(
+                                    drivetrain,
+                                    OISelector.getOperatorInterface()::getTranslateX,
+                                    OISelector.getOperatorInterface()::getTranslateY,
+                                    OISelector.getOperatorInterface()::getRotate))),
+                        () ->
+                            (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeProcessorTrigger()
+                                    .getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeDropTrigger()
+                                    .getAsBoolean())),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
                 .withName("score"));
 
     oi.getPrepToScoreButton()
@@ -193,8 +195,7 @@ public class CrossSubsystemsCommandsFactory {
                             DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                             Rotation2d.fromDegrees(
                                 DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                        5.0),
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                        5.0)),
                 Commands.runOnce(elevator::goToSelectedPosition, elevator)),
             () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
   }
