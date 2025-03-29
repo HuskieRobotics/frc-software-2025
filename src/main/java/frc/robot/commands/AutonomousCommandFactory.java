@@ -243,6 +243,9 @@ public class AutonomousCommandFactory {
       return Commands.none();
     }
 
+    Timer timer = new Timer();
+    timer.reset();
+
     return Commands.sequence(
         getScoreFirstAutoCoralCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT),
         getCollectAndScoreCommand(
