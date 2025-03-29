@@ -494,7 +494,7 @@ public class AutonomousCommandFactory {
   }
 
   private Command getCollectCoralCommand(Manipulator manipulator) {
-    return Commands.waitUntil(manipulator::indexingCoral);
+    return Commands.waitUntil(() -> manipulator.indexingCoral() || manipulator.hasIndexedCoral());
   }
 
   private Command createTuningAutoPath(
