@@ -482,7 +482,7 @@ public class Vision extends SubsystemBase {
     if (observation.type() == PoseObservationType.MULTI_TAG) {
       xyStdDev *= (reprojectionErrorScaleFactor.get() * observation.reprojectionError());
     } else {
-      xyStdDev *= (ambiguityScaleFactor.get() * observation.averageAmbiguity());
+      xyStdDev *= (ambiguityScaleFactor.get() * (observation.averageAmbiguity() + 0.1));
     }
 
     // only trust the rotation component for multi-tag strategies; for single-tag, set the standard

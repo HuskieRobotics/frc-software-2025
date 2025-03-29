@@ -67,10 +67,12 @@ public class Climber extends SubsystemBase {
     return this.isClimbing;
   }
 
-  // should we add a tolerance here for if the position slips a little bit?
   public boolean cageCatcherReleased() {
-
     return inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES;
+  }
+
+  public boolean limitSwitchEngaged() {
+    return inputs.limitSwitch1Engaged || inputs.limitSwitch2Engaged;
   }
 
   public double getPosition() {

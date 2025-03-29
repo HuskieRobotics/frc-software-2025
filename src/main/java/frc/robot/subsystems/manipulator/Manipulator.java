@@ -302,7 +302,13 @@ public class Manipulator extends SubsystemBase {
         LEDs.getInstance().requestState(States.HAS_CORAL);
         subsystem.retractPivot();
 
+        if (DriverStation.isDisabled()) {
+          subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
+        }
+
         subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
+        Logger.recordOutput(
+            SUBSYSTEM_NAME + "/targetWheelPosition", subsystem.targetIndexerPosition);
 
         if (subsystem.shootCoralButtonPressed) {
           subsystem.setState(State.SHOOT_CORAL);

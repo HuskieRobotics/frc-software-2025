@@ -29,9 +29,12 @@ public class ClimberCommandFactory {
             Commands.sequence(
                     Commands.runOnce(climber::climb, climber),
                     Commands.waitUntil(
-                        () -> climber.getPosition() > ClimberConstants.MAX_HEIGHT_INCHES),
+                        () ->
+                            (climber.limitSwitchEngaged()
+                                || climber.getPosition()
+                                    > ClimberConstants.HARDSTOP_POSITION_INCHES)),
                     Commands.runOnce(climber::stop, climber))
-                .withName("retract climber"));
+                .withName("finish climb"));
 
     oi.getExtendClimberToMatchPositionButton()
         .onTrue(

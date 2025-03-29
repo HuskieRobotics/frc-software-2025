@@ -62,7 +62,6 @@
             "/RealOutputs/LEDS",
             "/RealOutputs/DriveToPose/difference (reef frame)",
             "/RealOutputs/DriveToPose/difference (reef frame)/translation",
-            "/Vision/3",
             "/Vision/3/PoseObservations",
             "/Vision/3/PoseObservations/0",
             "/Vision/2",
@@ -75,16 +74,18 @@
             "/RealOutputs/DriveToReef/difference (reef frame)/translation",
             "/Tuning/Manipulator",
             "/Tuning/Manipulator/Pivot",
-            "/RealOutputs/Manipulator",
             "/RealOutputs/Manipulator/ArmSim",
             "/RealOutputs/Manipulator/ArmSim/ArmPivot",
             "/RealOutputs/Manipulator/ArmSim/ArmPivot/Arm",
-            "/RealOutputs/DriveToBarge",
-            "/RealOutputs/DriveToProcessor"
+            "/RealOutputs/DriveToProcessor",
+            "/NetworkInputs/Tuning",
+            "/NetworkInputs/Tuning/operatorDashboard",
+            "/RealOutputs/Vision",
+            "/Vision"
           ]
         },
         "tabs": {
-          "selected": 3,
+          "selected": 6,
           "tabs": [
             {
               "type": 0,
@@ -169,7 +170,7 @@
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "color": "#ff0000"
+                      "color": "#ff00ff"
                     }
                   },
                   {
@@ -193,6 +194,15 @@
                   {
                     "type": "ghost",
                     "logKey": "/RealOutputs/DriveToProcessor/targetPose",
+                    "logType": "Pose2d",
+                    "visible": true,
+                    "options": {
+                      "color": "#00ffff"
+                    }
+                  },
+                  {
+                    "type": "ghost",
+                    "logKey": "/RealOutputs/DriveToStation/targetPose",
                     "logType": "Pose2d",
                     "visible": true,
                     "options": {
@@ -259,7 +269,7 @@
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "model": "3061 (Artemis)",
+                      "model": "3061 (2025)",
                       "color": "#00ff00"
                     }
                   },
@@ -269,7 +279,7 @@
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "model": "3061 (Artemis)",
+                      "model": "3061 (2025)",
                       "color": "#ff0000"
                     }
                   }
@@ -282,9 +292,9 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -3.4133651456358036,
-                  3.4390724682751896,
-                  -7.7475460010804245
+                  -7.131209963237522,
+                  3.3655387142570454,
+                  -3.3389900393854393
                 ],
                 "cameraTarget": [
                   -3.8519104237044157,
@@ -453,6 +463,109 @@
             },
             {
               "type": 1,
+              "title": "DriveToReef",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/DriveToReef/difference (reef frame)/translation/x",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/DriveToReef/x velocity (reef frame)",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/DriveToReef/difference (reef frame)/translation/y",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/DriveToReef/y velocity (reef frame)",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "discreteSources": [
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/DriveToReef/isFinished",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/DriveToReef/one coral away",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/DriveToReef/withinTolerance",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/DriveToReef/boost velocity",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
+                    }
+                  }
+                ],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "407fzjz08dofovgshfuuh2zatxjyfsa5",
+              "renderer": null,
+              "controlsHeight": 200
+            },
+            {
+              "type": 1,
               "title": "Vision Results",
               "controller": {
                 "leftSources": [
@@ -561,15 +674,6 @@
                     }
                   },
                   {
-                    "type": "rotationLegacy",
-                    "logKey": "/Drivetrain/Gyro/YawDeg",
-                    "logType": "Number",
-                    "visible": true,
-                    "options": {
-                      "units": "radians"
-                    }
-                  },
-                  {
                     "type": "chassisSpeeds",
                     "logKey": "/Drivetrain/MeasuredChassisSpeeds",
                     "logType": "ChassisSpeeds",
@@ -585,6 +689,15 @@
                     "visible": true,
                     "options": {
                       "color": "#0000ff"
+                    }
+                  },
+                  {
+                    "type": "rotationLegacy",
+                    "logKey": "/Drivetrain/RawHeadingDeg",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "units": "degrees"
                     }
                   }
                 ],
@@ -1414,5 +1527,5 @@
     }
   ],
   "satellites": [],
-  "version": "4.1.4"
+  "version": "4.1.5"
 }

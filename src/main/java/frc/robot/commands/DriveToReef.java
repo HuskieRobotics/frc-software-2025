@@ -65,6 +65,8 @@ public class DriveToReef extends Command {
 
   private boolean firstRun = true;
 
+  public static final double PIPE_FROM_REEF_CENTER_INCHES = 6.469;
+
   private double timeout;
 
   private Timer timer;
@@ -203,11 +205,15 @@ public class DriveToReef extends Command {
     if (oneCoralAway) {
       reefRelativeVelocities =
           new Translation2d(reefRelativeVelocities.getX(), reefRelativeVelocities.getY());
+    } else if (DriverStation.isAutonomous()) {
+      reefRelativeVelocities =
+          new Translation2d(
+              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_AUTO,
+              reefRelativeVelocities.getY());
     } else {
       reefRelativeVelocities =
           new Translation2d(
-              reefRelativeVelocities.getX()
-                  + DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST,
+              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
               reefRelativeVelocities.getY());
     }
 
@@ -220,12 +226,15 @@ public class DriveToReef extends Command {
     // this target pose needs to be set as a one-coral-away offset in the reef-relative x direction
     // shouldn't)
     double reefRelativeXDifference = reefRelativeDifference.getX();
+
     if (xDebouncer.calculate(
             Math.abs(
                     Math.abs(reefRelativeXDifference)
                         - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
                 < Units.inchesToMeters(0.5))
         && !oneCoralAway
+        && Math.abs(reefRelativeDifference.getY())
+            < Units.inchesToMeters(PIPE_FROM_REEF_CENTER_INCHES * 2)
         && !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
             || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
         && !DriverStation.isAutonomous()) {
@@ -308,7 +317,8 @@ public class DriveToReef extends Command {
     }
 
     boolean atGoal =
-        Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
+        (Math.abs(reefRelativeDifference.getX()) < targetTolerance.getX()
+                || reefRelativeDifference.getX() > 0)
             && Math.abs(reefRelativeDifference.getY()) < targetTolerance.getY()
             && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
