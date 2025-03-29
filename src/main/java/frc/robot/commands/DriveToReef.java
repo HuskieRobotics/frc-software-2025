@@ -205,11 +205,17 @@ public class DriveToReef extends Command {
     if (oneCoralAway) {
       reefRelativeVelocities =
           new Translation2d(reefRelativeVelocities.getX(), reefRelativeVelocities.getY());
+    } else if (DriverStation.isAutonomous()) {
+      reefRelativeVelocities =
+          new Translation2d(
+              reefRelativeVelocities.getX()
+                  + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
+              reefRelativeVelocities.getY());
     } else {
       reefRelativeVelocities =
           new Translation2d(
               reefRelativeVelocities.getX()
-                  + DrivetrainConstants.DRIVE_TO_REEF_BUMPER_TO_REEF_BOOST,
+                  + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
               reefRelativeVelocities.getY());
     }
 
