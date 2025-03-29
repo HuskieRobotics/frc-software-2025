@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -259,9 +260,13 @@ public class AutonomousCommandFactory {
             vision,
             Side.LEFT,
             collectCoralAfterL2L,
-            scoreCoralK));
-    // ,getCollectAndScoreFourthCommand(
-    //     drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK));
+            scoreCoralK),
+        Commands.either(
+            getCollectAndScoreFourthCommand(
+                drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK),
+            Commands.none(), // if we can't collect the fourth coral, do nothing
+            () -> (Timer.getTimestamp() < 12.0) // only run if we have time left in auto
+            ));
   }
 
   public Command getFourCoralRightCommand(
@@ -286,6 +291,8 @@ public class AutonomousCommandFactory {
       return Commands.none();
     }
 
+    Timer timer = new Timer();
+    timer.reset();
     return Commands.sequence(
         getScoreFirstAutoCoralCommand(drivetrain, manipulator, elevator, vision, Side.LEFT),
         getCollectAndScoreCommand(
@@ -303,9 +310,12 @@ public class AutonomousCommandFactory {
             vision,
             Side.LEFT,
             collectCoralAfterD2R,
-            scoreCoralC));
-    // .getCollectAndScoreFourthCommand(
-    //     drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC));
+            scoreCoralC),
+        Commands.either(
+            getCollectAndScoreFourthCommand(
+                drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC),
+            Commands.none(),
+            () -> (Timer.getTimestamp() < 12.0)));
   }
 
   public Command getOneCoralCenterCommand(
@@ -431,34 +441,32 @@ public class AutonomousCommandFactory {
       Vision vision,
       Side side,
       PathPlannerPath collect) {
-    return Commands.sequence(
-        AutoBuilder.followPath(collect),
-        getCollectCoralCommand(manipulator),
-        Commands.parallel(
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getFourthAutoCoralPose(side),
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    4.0)),
-            Commands.sequence(
-                Commands.waitSeconds(0.5),
-                Commands.waitUntil(manipulator::hasIndexedCoral),
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L2), elevator))),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L2)),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
-        Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-        Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
+    return Commands.sequence(AutoBuilder.followPath(collect), getCollectCoralCommand(manipulator));
+    // ,Commands.parallel(
+    //     Commands.sequence(
+    //         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2)), vision),
+    //         new DriveToReef(
+    //             drivetrain,
+    //             () -> Field2d.getInstance().getFourthAutoCoralPose(side),
+    //             manipulator::setReadyToScore,
+    //             elevator::setDistanceFromReef,
+    //             new Transform2d(
+    //                 DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+    //                 DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+    //                 Rotation2d.fromDegrees(
+    //                     DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+    //             4.0)),
+    //     Commands.sequence(
+    //         Commands.waitSeconds(0.5),
+    //         Commands.waitUntil(manipulator::hasIndexedCoral),
+    //         Commands.runOnce(
+    //             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L2), elevator))),
+    // Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L2)),
+    // Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)), vision),
+    // Commands.runOnce(manipulator::shootCoralFast, manipulator),
+    // Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+    // Commands.runOnce(
+    //     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
   private Command getCollectCoralCommand(Manipulator manipulator) {

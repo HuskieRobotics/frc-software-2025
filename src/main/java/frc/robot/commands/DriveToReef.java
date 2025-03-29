@@ -208,14 +208,12 @@ public class DriveToReef extends Command {
     } else if (DriverStation.isAutonomous()) {
       reefRelativeVelocities =
           new Translation2d(
-              reefRelativeVelocities.getX()
-                  + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
+              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_AUTO,
               reefRelativeVelocities.getY());
     } else {
       reefRelativeVelocities =
           new Translation2d(
-              reefRelativeVelocities.getX()
-                  + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
+              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
               reefRelativeVelocities.getY());
     }
 
