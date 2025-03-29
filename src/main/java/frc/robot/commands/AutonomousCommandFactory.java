@@ -54,6 +54,8 @@ public class AutonomousCommandFactory {
   private final Alert pathFileMissingAlert =
       new Alert("Could not find the specified path file.", AlertType.kError);
 
+  private Timer timer;
+
   /**
    * Returns the singleton instance of this class.
    *
@@ -66,7 +68,9 @@ public class AutonomousCommandFactory {
     return autonomousCommandFactory;
   }
 
-  private AutonomousCommandFactory() {}
+  private AutonomousCommandFactory() {
+    timer = new Timer();
+  }
 
   public Command getAutonomousCommand() {
     return autoChooser.get();
@@ -263,10 +267,8 @@ public class AutonomousCommandFactory {
       return Commands.none();
     }
 
-    Timer timer = new Timer();
-    timer.reset();
-
     return Commands.sequence(
+        Commands.runOnce(() -> timer.restart()),
         getScoreFirstAutoCoralCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT),
         getCollectAndScoreCommand(
             drivetrain,
@@ -288,7 +290,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.LEFT, collectCoralAfterK),
             Commands.none(), // if we can't collect the fourth coral, do nothing
-            () -> (Timer.getTimestamp() < 12.0) // only run if we have time left in auto
+            () -> (!timer.hasElapsed(12.0)) // only run if we have time left in auto
             ));
   }
 
@@ -314,9 +316,8 @@ public class AutonomousCommandFactory {
       return Commands.none();
     }
 
-    Timer timer = new Timer();
-    timer.reset();
     return Commands.sequence(
+        Commands.runOnce(() -> timer.restart()),
         getScoreFirstAutoCoralCommand(drivetrain, manipulator, elevator, vision, Side.LEFT),
         getCollectAndScoreCommand(
             drivetrain,
@@ -338,7 +339,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, collectCoralAfterC),
             Commands.none(),
-            () -> (Timer.getTimestamp() < 12.0)));
+            () -> (!timer.hasElapsed(12.0))));
   }
 
   public Command getOneCoralCenterCommand(
