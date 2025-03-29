@@ -430,11 +430,11 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("print current pose"));
 
-    new Trigger(
-            () -> {
-              return drivetrain.isTilted() && !climber.isClimbing();
-            })
-        .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
+    // new Trigger(
+    //         () -> {
+    //           return drivetrain.isTilted() && !climber.isClimbing();
+    //         })
+    //     .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
