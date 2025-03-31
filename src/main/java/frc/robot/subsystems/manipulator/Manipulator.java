@@ -380,8 +380,6 @@ public class Manipulator extends SubsystemBase {
     ALGAE_IN_MANIPULATOR { // state robot is in while algae is held in the manipulator
       @Override
       void onEnter(Manipulator subsystem) {
-        // lessen the voltage of the indexer/roller motor so that it keeps the algae held in the
-        // claw thing
         subsystem.setPivotMotorCurrent(0.0);
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorCurrent(subsystem.indexerHoldAlgaeCurrent.get());

@@ -64,6 +64,34 @@ public class CrossSubsystemsCommandsFactory {
                     manipulator::hasIndexedCoral)
                 .withName("prep to score"));
 
+    oi.getPrepAndAutoScoreCoralButton()
+        .onTrue(
+            Commands.either(
+                    Commands.sequence(
+                        getAutoScoreL4Command(drivetrain, manipulator, elevator, vision),
+                        Commands.deadline(
+                            elevator.getElevatorLowerAndResetCommand(),
+                            new TeleopSwerve(
+                                drivetrain,
+                                OISelector.getOperatorInterface()::getTranslateX,
+                                OISelector.getOperatorInterface()::getTranslateY,
+                                OISelector.getOperatorInterface()::getRotate))),
+                    Commands.either(
+                        /* either auto score l2 l3 or do nothing */
+                        Commands.sequence(
+                            getAutoScoreL2L3Command(drivetrain, manipulator, elevator, vision),
+                            Commands.deadline(
+                                elevator.getElevatorLowerAndResetCommand(),
+                                new TeleopSwerve(
+                                    drivetrain,
+                                    OISelector.getOperatorInterface()::getTranslateX,
+                                    OISelector.getOperatorInterface()::getTranslateY,
+                                    OISelector.getOperatorInterface()::getRotate))),
+                        getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                        () -> !OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
+                    () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
+                .withName("prep and auto score"));
+
     oi.getDriveToNearestCoralStationButton()
         .onTrue(
             new DriveToStation(
@@ -326,5 +354,35 @@ public class CrossSubsystemsCommandsFactory {
             OISelector.getOperatorInterface()::getTranslateX,
             OISelector.getOperatorInterface()::getTranslateY,
             OISelector.getOperatorInterface()::getRotate));
+  }
+
+  private static Command getAutoScoreL4Command(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
+            Commands.sequence(
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                new DriveToReef(
+                    drivetrain,
+                    () -> Field2d.getInstance().getSelectedBranch(),
+                    manipulator::setReadyToScore,
+                    elevator::setDistanceFromReef,
+                    new Transform2d(
+                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                        Rotation2d.fromDegrees(
+                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                    5.0),
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
+        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator),
+        Commands.waitUntil(
+            elevator::isAtSelectedPosition), /* possibly add a fractional wait here */
+        Commands.runOnce(manipulator::shootCoralFast, manipulator));
+  }
+
+  private static Command getAutoScoreL2L3Command(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return null;
   }
 }
