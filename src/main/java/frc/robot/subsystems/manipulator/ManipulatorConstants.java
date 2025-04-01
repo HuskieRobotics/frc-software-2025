@@ -110,11 +110,11 @@ public class ManipulatorConstants {
 
   public static final double INTAKE_ALGAE_TIMEOUT = 3.0;
   public static final double BARGE_ALGAE_TIMEOUT = 0.25;
-  public static final double PROCESSOR_ALGAE_TIMEOUT = 0.3; // FIXME: tune to be lower if we need
+  public static final double PROCESSOR_ALGAE_TIMEOUT = 0.3;
   public static final double DROP_ALGAE_TIMEOUT = 0.2;
 
   // current limits and spike thresholds
-  public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 40;
+  public static final double FUNNEL_MOTOR_PEAK_CURRENT_LIMIT = 50;
   public static final double INDEXER_MOTOR_PEAK_CURRENT_LIMIT = 40;
   public static final double PIVOT_MOTOR_PEAK_CURRENT_LIMIT = 40;
   public static final double CORAL_CURRENT_SPIKE_THRESHOLD = 35.0;
