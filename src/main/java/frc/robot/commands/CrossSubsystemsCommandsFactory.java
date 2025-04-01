@@ -218,21 +218,10 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.runOnce(elevator::goToSelectedPosition, elevator),
                 Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
-            Commands.parallel(
-                Commands.sequence(
-                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                    new DriveToReef(
-                        drivetrain,
-                        () -> Field2d.getInstance().getSelectedBranch(),
-                        manipulator::setReadyToScore,
-                        elevator::setDistanceFromReef,
-                        new Transform2d(
-                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                            Rotation2d.fromDegrees(
-                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                        5.0)),
-                Commands.runOnce(elevator::goToSelectedPosition, elevator)),
+            Commands.either(
+                getPrepL4CoralCommand(drivetrain, manipulator, elevator, vision),
+                getPrepL2L3CoralCommand(drivetrain, manipulator, elevator, vision),
+                () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()),
             () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
   }
 
@@ -399,6 +388,40 @@ public class CrossSubsystemsCommandsFactory {
   private static Command getAutoScoreL4Command(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
+        getPrepL4CoralCommand(drivetrain, manipulator, elevator, vision),
+        /* possibly add a fractional wait here */
+        Commands.either(
+            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+            () ->
+                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
+  }
+
+  private static Command getAutoScoreL2L3Command(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        getPrepL2L3CoralCommand(drivetrain, manipulator, elevator, vision),
+        /* possibly add a fractional wait here */
+        Commands.either(
+            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+            () ->
+                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
+  }
+
+  private static Command getPrepL4CoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
         Commands.parallel(
             Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
             Commands.sequence(
@@ -415,21 +438,10 @@ public class CrossSubsystemsCommandsFactory {
                             DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                     5.0))),
         Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator),
-        Commands.waitUntil(
-            elevator::isAtSelectedPosition), /* possibly add a fractional wait here */
-        Commands.either(
-            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
-            Commands.sequence(
-                Commands.runOnce(manipulator::shootCoralFast, manipulator),
-                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-            () ->
-                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
-                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
-                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
+        Commands.waitUntil(elevator::isAtSelectedPosition));
   }
 
-  private static Command getAutoScoreL2L3Command(
+  private static Command getPrepL2L3CoralCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
         Commands.parallel(
@@ -447,18 +459,7 @@ public class CrossSubsystemsCommandsFactory {
                         Rotation2d.fromDegrees(
                             DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                     5.0))),
-        Commands.waitUntil(
-            elevator::isAtSelectedPosition), /* possibly add a fractional wait here */
-        Commands.either(
-            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
-            Commands.sequence(
-                Commands.runOnce(manipulator::shootCoralFast, manipulator),
-                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-            () ->
-                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
-                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
-                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
+        Commands.waitUntil(elevator::isAtSelectedPosition));
   }
 
   private static Command getElevatorLowerAndResetCommand(
