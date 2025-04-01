@@ -283,7 +283,7 @@ public class CrossSubsystemsCommandsFactory {
     // first. uf not, do in simultaneous
 
     // FIXME: ask ian about this; just canceling the drive to barge for now
-    // THIS IS SKETCHY; being under the barge at our target pose would cause us to still probably
+    // being under the barge at our target pose would cause us to still probably
     // raise directly through the barge on the way up.
     // would need to go backwards and then forwards again. May not be worth due to how quick the
     // driver could manually do that if we just cancel.
