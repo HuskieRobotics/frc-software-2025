@@ -61,38 +61,16 @@ public class CrossSubsystemsCommandsFactory {
     oi.getPrepToScoreButton()
         .onTrue(
             Commands.either(
-                    getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                    Commands.either(
+                        getPrepAndAutoScoreCoralCommand(drivetrain, manipulator, elevator, vision),
+                        getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                        () ->
+                            OISelector.getOperatorInterface()
+                                .getEnableAutoScoringTrigger()
+                                .getAsBoolean()),
                     getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
                     manipulator::hasIndexedCoral)
                 .withName("prep to score"));
-
-    oi.getPrepAndAutoScoreCoralButton()
-        .onTrue(
-            Commands.either(
-                    Commands.sequence(
-                        getAutoScoreL4Command(drivetrain, manipulator, elevator, vision),
-                        Commands.deadline(
-                            elevator.getElevatorLowerAndResetCommand(),
-                            new TeleopSwerve(
-                                drivetrain,
-                                OISelector.getOperatorInterface()::getTranslateX,
-                                OISelector.getOperatorInterface()::getTranslateY,
-                                OISelector.getOperatorInterface()::getRotate))),
-                    Commands.either(
-                        /* either auto score l2 l3 or just prep the l1 */
-                        Commands.sequence(
-                            getAutoScoreL2L3Command(drivetrain, manipulator, elevator, vision),
-                            Commands.deadline(
-                                elevator.getElevatorLowerAndResetCommand(),
-                                new TeleopSwerve(
-                                    drivetrain,
-                                    OISelector.getOperatorInterface()::getTranslateX,
-                                    OISelector.getOperatorInterface()::getTranslateY,
-                                    OISelector.getOperatorInterface()::getRotate))),
-                        getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
-                        () -> !OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
-                    () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())
-                .withName("prep and auto score"));
 
     oi.getDriveToNearestCoralStationButton()
         .onTrue(
@@ -164,6 +142,37 @@ public class CrossSubsystemsCommandsFactory {
         () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
   }
 
+  private static Command getPrepAndAutoScoreCoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+            Commands.waitUntil(manipulator::hasIndexedCoral),
+            Commands.either(
+                Commands.sequence(
+                    getAutoScoreL4Command(drivetrain, manipulator, elevator, vision),
+                    Commands.deadline(
+                        elevator.getElevatorLowerAndResetCommand(),
+                        new TeleopSwerve(
+                            drivetrain,
+                            OISelector.getOperatorInterface()::getTranslateX,
+                            OISelector.getOperatorInterface()::getTranslateY,
+                            OISelector.getOperatorInterface()::getRotate))),
+                Commands.either(
+                    /* either auto score l2 l3 or just prep the l1 */
+                    Commands.sequence(
+                        getAutoScoreL2L3Command(drivetrain, manipulator, elevator, vision),
+                        Commands.deadline(
+                            elevator.getElevatorLowerAndResetCommand(),
+                            new TeleopSwerve(
+                                drivetrain,
+                                OISelector.getOperatorInterface()::getTranslateX,
+                                OISelector.getOperatorInterface()::getTranslateY,
+                                OISelector.getOperatorInterface()::getRotate))),
+                    getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                    () -> !OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
+                () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()))
+        .withName("prep and auto score");
+  }
+
   /*
    * 1. Shoot coral
    * 2. Bring elevator down to hardstop (can further adjust with manual override if necessary)
@@ -201,9 +210,6 @@ public class CrossSubsystemsCommandsFactory {
         .withName("Override driveToPose");
   }
 
-  // go to selected reef spot or don't move (depending on sign of x difference)
-  // this logic will get handled in DriveToReef
-  // red flash for a second if we can't move
   private static Command getPrepCoralCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
@@ -411,7 +417,16 @@ public class CrossSubsystemsCommandsFactory {
         Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator),
         Commands.waitUntil(
             elevator::isAtSelectedPosition), /* possibly add a fractional wait here */
-        Commands.runOnce(manipulator::shootCoralFast, manipulator));
+        Commands.either(
+            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+            () ->
+                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
   }
 
   private static Command getAutoScoreL2L3Command(
@@ -434,6 +449,15 @@ public class CrossSubsystemsCommandsFactory {
                     5.0))),
         Commands.waitUntil(
             elevator::isAtSelectedPosition), /* possibly add a fractional wait here */
-        Commands.runOnce(manipulator::shootCoralFast, manipulator));
+        Commands.either(
+            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+            () ->
+                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
   }
 }
