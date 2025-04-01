@@ -53,6 +53,11 @@ public class Field2d {
   private Pose2d[] processors = new Pose2d[2];
   private Pose2d[] coralStations = new Pose2d[4];
 
+  private static final Pose2d BARGE_POSE =
+      new Pose2d(
+          new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
+          Rotation2d.fromDegrees(0.0));
+
   private final boolean COMPETITION_FIELD =
       true; // set TRUE if home field calibration or at competition
 
@@ -452,15 +457,26 @@ public class Field2d {
   public Pose2d getBargePose() {
     // x arbitrary from 20 inches x from the middle cage
 
-    Pose2d bargePose =
-        new Pose2d(
-            new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
-            Rotation2d.fromDegrees(0.0));
-
     if (getAlliance() == Alliance.Red) {
-      bargePose = FlippingUtil.flipFieldPose(bargePose);
+      return FlippingUtil.flipFieldPose(BARGE_POSE);
     }
-    return bargePose;
+    return BARGE_POSE;
+  }
+
+  public boolean isShortOfBarge() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    Transform2d robotRelativeDifference = new Transform2d(pose, BARGE_POSE);
+
+    return robotRelativeDifference.getX() < 0;
+  }
+
+  public boolean isFarFromBarge() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    Transform2d robotRelativeDifference = new Transform2d(pose, BARGE_POSE);
+
+    // do not absolute value this due to the chances of us also working with under the barge later
+    // FIXME: tune to be closer possibly
+    return robotRelativeDifference.getX() < -Units.inchesToMeters(36);
   }
 
   public Pose2d getFourthAutoCoralPose(Side side) {

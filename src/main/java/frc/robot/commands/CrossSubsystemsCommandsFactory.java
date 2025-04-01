@@ -249,16 +249,7 @@ public class CrossSubsystemsCommandsFactory {
       Vision vision,
       OperatorInterface oi) {
     return Commands.either(
-        Commands.parallel(
-            Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
-            new DriveToBarge(
-                drivetrain,
-                () -> Field2d.getInstance().getBargePose(),
-                manipulator::setReadyToScore,
-                // FIXME: make these constants
-                new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
-                oi::getTranslateY)),
+        getPrepAlgaeBargeCommand(drivetrain, manipulator, elevator, oi),
         Commands.either(
             Commands.parallel(
                 Commands.runOnce(
@@ -277,6 +268,46 @@ public class CrossSubsystemsCommandsFactory {
             Commands.none(),
             () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
         () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean());
+  }
+
+  public static Command getPrepAlgaeBargeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, OperatorInterface oi) {
+    // check if we are short of barge or far of barge
+    // if we are short of barge, check if we are within 2 feet. if we are, then put elevator up
+    // first. uf not, do in simultaneous
+
+    // FIXME: ask ian about this; just canceling the drive to barge for now
+    // THIS IS SKETCHY; being under the barge at our target pose would cause us to still probably
+    // raise directly through the barge on the way up.
+    // would need to go backwards and then forwards again. May not be worth due to how quick the
+    // driver could manually do that if we just cancel.
+    // if we are far of barge, then drive backwards first and then raise the elevator up
+    return Commands.either(
+        Commands.either(
+            Commands.parallel(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+                new DriveToBarge(
+                    drivetrain,
+                    () -> Field2d.getInstance().getBargePose(),
+                    manipulator::setReadyToScore,
+                    // FIXME: make these constants
+                    new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
+                    oi::getTranslateY)),
+            Commands.sequence(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+                Commands.waitUntil(
+                    () -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)),
+                new DriveToBarge(
+                    drivetrain,
+                    () -> Field2d.getInstance().getBargePose(),
+                    manipulator::setReadyToScore,
+                    new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
+                    oi::getTranslateY)),
+            () -> Field2d.getInstance().isFarFromBarge()),
+        Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
+        () -> Field2d.getInstance().isShortOfBarge());
   }
 
   public static Command getCollectAlgaeCommand(
