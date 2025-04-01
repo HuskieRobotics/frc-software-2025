@@ -88,10 +88,6 @@ public interface OperatorInterface {
     return new Trigger(() -> false);
   }
 
-  public default Trigger getPrepAndAutoScoreCoralButton() {
-    return new Trigger(() -> false);
-  }
-
   public default Trigger getDriveToNearestCoralStationButton() {
     return new Trigger(() -> false);
   }

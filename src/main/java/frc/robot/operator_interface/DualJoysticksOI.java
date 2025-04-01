@@ -58,11 +58,6 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
-  public Trigger getPrepAndAutoScoreCoralButton() {
-    return translateJoystickButtons[4];
-  }
-
-  @Override
   public Trigger getInterruptAll() {
     return translateJoystickButtons[5];
   }
