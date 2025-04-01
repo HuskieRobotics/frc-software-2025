@@ -12,6 +12,9 @@ public class OperatorDashboard implements OperatorInterface {
   public final LoggedTunableBoolean enablePrimaryIRSensors =
       new LoggedTunableBoolean("operatorDashboard/Enable Primary IR Sensors", true, true);
 
+  public final LoggedTunableBoolean enableAutoScoring =
+      new LoggedTunableBoolean("operatorDashboard/Enable Auto Scoring", true, true);
+
   public final LoggedTunableBoolean level1 =
       new LoggedTunableBoolean("operatorDashboard/Level 1", false, true);
   public final LoggedTunableBoolean level2 =
@@ -97,6 +100,9 @@ public class OperatorDashboard implements OperatorInterface {
     getReefBranchJTrigger().onTrue(getToggleReefBranch(reefBranchJ));
     getReefBranchKTrigger().onTrue(getToggleReefBranch(reefBranchK));
     getReefBranchLTrigger().onTrue(getToggleReefBranch(reefBranchL));
+
+    getEnableAutoScoringTrigger()
+        .onTrue(Commands.runOnce(() -> enableAutoScoring.set(!enableAutoScoring.get())));
   }
 
   @Override
@@ -107,6 +113,11 @@ public class OperatorDashboard implements OperatorInterface {
   @Override
   public Trigger getEnablePrimaryIRSensorsTrigger() {
     return new Trigger(() -> enablePrimaryIRSensors.get());
+  }
+
+  @Override
+  public Trigger getEnableAutoScoringTrigger() {
+    return new Trigger(() -> enableAutoScoring.get());
   }
 
   @Override

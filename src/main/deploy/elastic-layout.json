@@ -12,7 +12,7 @@
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 352.0,
             "type": "Alerts",
             "properties": {
               "topic": "/SmartDashboard/Alerts",
@@ -22,7 +22,7 @@
           {
             "title": "Auto Routine",
             "x": 0.0,
-            "y": 384.0,
+            "y": 352.0,
             "width": 256.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
@@ -37,7 +37,7 @@
             "x": 256.0,
             "y": 256.0,
             "width": 256.0,
-            "height": 256.0,
+            "height": 224.0,
             "type": "Radial Gauge",
             "properties": {
               "topic": "/AdvantageKit/Drivetrain/RawHeadingDeg",
@@ -85,6 +85,19 @@
               "false_color": 4294198070,
               "true_icon": "None",
               "false_icon": "None"
+            }
+          },
+          {
+            "title": "Enable Auto Scoring",
+            "x": 0.0,
+            "y": 480.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Enable Auto Scoring",
+              "period": 0.06,
+              "data_type": "boolean"
             }
           }
         ]
@@ -338,6 +351,19 @@
             "type": "Toggle Button",
             "properties": {
               "topic": "/Tuning/operatorDashboard/L",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
+          },
+          {
+            "title": "Enable Auto Scoring",
+            "x": 672.0,
+            "y": 448.0,
+            "width": 560.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Enable Auto Scoring",
               "period": 0.06,
               "data_type": "boolean"
             }
