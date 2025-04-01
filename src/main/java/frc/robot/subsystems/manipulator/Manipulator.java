@@ -108,6 +108,8 @@ public class Manipulator extends SubsystemBase {
   private boolean disableFunnelForClimb = false;
   private double targetIndexerPosition;
 
+  private boolean readyForCoral = false;
+
   /**
    * Create a new subsystem with its associated hardware interface object.
    *
@@ -185,12 +187,37 @@ public class Manipulator extends SubsystemBase {
    * https://www.chiefdelphi.com/t/enums-and-subsytem-states/463974/6
    */
   private enum State {
+    WAITING_FOR_ELEVATOR {
+      @Override
+      void onEnter(Manipulator subsystem) {
+        subsystem.setFunnelMotorVoltage(0.0);
+        subsystem.setIndexerMotorVoltage(0.0);
+        subsystem.readyToScore = false;
+      }
+
+      @Override
+      void execute(Manipulator subsystem) {
+        subsystem.retractPivot();
+        LEDs.getInstance().requestState(States.WAITING_FOR_CORAL);
+
+        if (subsystem.readyForCoral) {
+          subsystem.setState(State.WAITING_FOR_CORAL);
+        }
+      }
+
+      @Override
+      void onExit(Manipulator subsystem) {
+        subsystem.readyForCoral = false;
+      }
+    },
+
     WAITING_FOR_CORAL {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
         subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         subsystem.readyToScore = false;
+        subsystem.readyForCoral = false; // add redundancy just in case
       }
 
       @Override
@@ -383,7 +410,7 @@ public class Manipulator extends SubsystemBase {
       }
     },
 
-    ALGAE_IN_MANIPULATOR { // state robot is in while algae is held in the manipulator
+    ALGAE_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setPivotMotorCurrent(0.0);
@@ -429,8 +456,6 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.SCORING);
 
-        // check if the IR sensor for the algae is unblocked, if so, then switch to the either the
-        // WAITING_FOR_ALGAE_IN_MANIPULATOR or the WAITING_FOR_CORAL_IN_FUNNEL state
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(BARGE_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL);
@@ -738,6 +763,10 @@ public class Manipulator extends SubsystemBase {
 
   public boolean isReadyToScore() {
     return readyToScore;
+  }
+
+  public void setReadyForCoral(boolean ready) {
+    this.readyForCoral = ready;
   }
 
   public Angle getPivotAngle() {
