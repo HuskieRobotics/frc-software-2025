@@ -389,7 +389,6 @@ public class AutonomousCommandFactory {
 
     //
     return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
@@ -433,7 +432,7 @@ public class AutonomousCommandFactory {
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
         Commands.parallel(
             Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
             new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
@@ -443,10 +442,10 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                1.6),
-            Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4))),
+                1.6)),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-        Commands.waitSeconds(0.2), // ADD WAIT TO SEE IF NOT WAITING WAS IMPEDING PRECISION
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(
