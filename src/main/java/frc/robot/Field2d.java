@@ -53,9 +53,14 @@ public class Field2d {
   private Pose2d[] processors = new Pose2d[2];
   private Pose2d[] coralStations = new Pose2d[4];
 
-  private static final Pose2d BARGE_POSE =
+  private static final Pose2d CENTER_BARGE_POSE =
       new Pose2d(
           new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
+          Rotation2d.fromDegrees(0.0));
+
+  private static final Pose2d RIGHT_BARGE_POSE =
+      new Pose2d(
+          new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(206.855)),
           Rotation2d.fromDegrees(0.0));
 
   private final boolean COMPETITION_FIELD =
@@ -454,18 +459,25 @@ public class Field2d {
     return new AlgaePosition(removeAlgaePoses.get(nearestCenterFace), isHighAlgae);
   }
 
-  public Pose2d getBargePose() {
+  public Pose2d getCenterBargePose() {
     // x arbitrary from 20 inches x from the middle cage
 
     if (getAlliance() == Alliance.Red) {
-      return FlippingUtil.flipFieldPose(BARGE_POSE);
+      return FlippingUtil.flipFieldPose(CENTER_BARGE_POSE);
     }
-    return BARGE_POSE;
+    return CENTER_BARGE_POSE;
+  }
+
+  public Pose2d getRightBargePose() {
+    if (getAlliance() == Alliance.Red) {
+      return FlippingUtil.flipFieldPose(RIGHT_BARGE_POSE);
+    }
+    return RIGHT_BARGE_POSE;
   }
 
   public boolean isShortOfBarge() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-    Transform2d robotRelativeDifference = new Transform2d(pose, BARGE_POSE);
+    Transform2d robotRelativeDifference = new Transform2d(pose, CENTER_BARGE_POSE);
 
     // should be 0 but changing to 6 inches just for clearance so things don't break
     return robotRelativeDifference.getX() < -Units.inchesToMeters(6);
@@ -473,7 +485,7 @@ public class Field2d {
 
   public boolean isFarFromBarge() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-    Transform2d robotRelativeDifference = new Transform2d(pose, BARGE_POSE);
+    Transform2d robotRelativeDifference = new Transform2d(pose, CENTER_BARGE_POSE);
 
     // do not absolute value this due to the chances of us also working with under the barge later
     // FIXME: tune to be closer possibly

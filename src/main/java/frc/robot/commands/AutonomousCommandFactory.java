@@ -22,6 +22,7 @@ import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -100,6 +101,10 @@ public class AutonomousCommandFactory {
 
     Command fourPieceRight = getFourCoralRightCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("4 Piece Right", fourPieceRight);
+
+    Command oneCoralTwoAlgae =
+        getOneCoralTwoAlgaeCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("1 Coral 2 Algae", oneCoralTwoAlgae);
 
     // Command autoAutoSelector =
     //     Commands.either(
@@ -359,6 +364,67 @@ public class AutonomousCommandFactory {
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         AutoBuilder.followPath(backUpH1C));
+  }
+
+  public Command getOneCoralTwoAlgaeCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    PathPlannerPath backUpAfterFirstAlgae;
+    PathPlannerPath backUpAfterSecondAlgae;
+    try {
+      backUpAfterFirstAlgae = PathPlannerPath.fromPathFile("Back Up After 1st Algae");
+      backUpAfterSecondAlgae = PathPlannerPath.fromPathFile("Back Up After 2nd Algae");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getOneCoralTwoAlgaeCommand.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.none();
+    }
+
+    // Use DRIVE-TO-PROCESSOR even though we are going to the barge so it uses the
+    // bargeAndProcessorKp instead of running a normal Drive-To-Pose
+
+    // we back up after the first algae so that our collect algae can get the correct "nearest
+    // algae" pose
+
+    //
+    return Commands.sequence(
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
+            drivetrain, manipulator, elevator, vision),
+        Commands.parallel(
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator),
+            new DriveToProcessor(
+                drivetrain,
+                () -> Field2d.getInstance().getRightBargePose(),
+                manipulator::setReadyToScore,
+                new Transform2d(
+                    Units.inchesToMeters(0.5), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
+                3.0)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BARGE)),
+        Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
+        Commands.waitUntil(manipulator::scoredAlgae),
+        Commands.parallel(
+            AutoBuilder.followPath(backUpAfterFirstAlgae),
+            elevator.getElevatorLowerAndResetCommand()),
+        CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
+            drivetrain, manipulator, elevator, vision),
+        Commands.parallel(
+            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator),
+            new DriveToProcessor(
+                drivetrain,
+                () -> Field2d.getInstance().getCenterBargePose(),
+                manipulator::setReadyToScore,
+                new Transform2d(
+                    Units.inchesToMeters(0.5), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
+                3.0)),
+        Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BARGE)),
+        Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
+        Commands.waitUntil(manipulator::scoredAlgae),
+        Commands.parallel(
+            elevator.getElevatorLowerAndResetCommand(),
+            AutoBuilder.followPath(backUpAfterSecondAlgae)));
   }
 
   private Command getScoreL4Command(

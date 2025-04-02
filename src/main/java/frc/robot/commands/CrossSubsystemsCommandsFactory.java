@@ -284,7 +284,7 @@ public class CrossSubsystemsCommandsFactory {
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
                 new DriveToBarge(
                     drivetrain,
-                    () -> Field2d.getInstance().getBargePose(),
+                    () -> Field2d.getInstance().getCenterBargePose(),
                     manipulator::setReadyToScore,
                     // FIXME: make these constants
                     new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
@@ -296,7 +296,7 @@ public class CrossSubsystemsCommandsFactory {
                     () -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)),
                 new DriveToBarge(
                     drivetrain,
-                    () -> Field2d.getInstance().getBargePose(),
+                    () -> Field2d.getInstance().getCenterBargePose(),
                     manipulator::setReadyToScore,
                     new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
                     oi::getTranslateY)),
