@@ -389,7 +389,7 @@ public class AutonomousCommandFactory {
 
     //
     return Commands.sequence(
-        getScoreBackHybridL4Command(drivetrain, manipulator, elevator, vision, Side.LEFT),
+        getScoreL4BeforeAlgaeCommand(drivetrain, manipulator, elevator, vision, Side.LEFT),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         Commands.parallel(
@@ -452,7 +452,7 @@ public class AutonomousCommandFactory {
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
-  private Command getScoreBackHybridL4Command(
+  private Command getScoreL4BeforeAlgaeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision, Side side) {
     return Commands.sequence(
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
