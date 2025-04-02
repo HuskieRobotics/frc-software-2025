@@ -389,7 +389,7 @@ public class AutonomousCommandFactory {
 
     //
     return Commands.sequence(
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        getScoreBackHybridL4Command(drivetrain, manipulator, elevator, vision, Side.LEFT),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         Commands.parallel(
@@ -450,6 +450,29 @@ public class AutonomousCommandFactory {
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(
             () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
+  }
+
+  private Command getScoreBackHybridL4Command(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision, Side side) {
+    return Commands.sequence(
+        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+        Commands.parallel(
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
+            new DriveToReef(
+                drivetrain,
+                () -> Field2d.getInstance().getNearestBranch(side),
+                manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
+                new Transform2d(
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                1.6)),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
+        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()));
   }
 
   private Command getScoreFirstAutoCoralCommand(
