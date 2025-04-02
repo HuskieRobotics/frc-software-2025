@@ -31,7 +31,6 @@ public class AutonomousCommandFactory {
 
   private static AutonomousCommandFactory autonomousCommandFactory = null;
 
-  // arbitrary, find the actual starting poses
   private Pose2d blueLeftStartingAutoPose =
       new Pose2d(7.017, 6.076, Rotation2d.fromDegrees(-132.957));
   private Pose2d blueRightStartingAutoPose =
@@ -105,6 +104,14 @@ public class AutonomousCommandFactory {
     Command oneCoralTwoAlgae =
         getOneCoralTwoAlgaeCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("1 Coral 2 Algae", oneCoralTwoAlgae);
+
+    Command twoCoralBackLeft =
+        getTwoCoralBackLeftCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("2 Coral Back Left", twoCoralBackLeft);
+
+    Command twoCoralBackRight =
+        getTwoCoralBackRightCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("2 Coral Back Right", twoCoralBackRight);
 
     // Command autoAutoSelector =
     //     Commands.either(
@@ -424,6 +431,58 @@ public class AutonomousCommandFactory {
         Commands.parallel(
             elevator.getElevatorLowerAndResetCommand(),
             AutoBuilder.followPath(backUpAfterSecondAlgae)));
+  }
+
+  public Command getTwoCoralBackLeftCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    PathPlannerPath collectCoralAfterG;
+    PathPlannerPath driveToH;
+
+    try {
+      collectCoralAfterG = PathPlannerPath.fromPathFile("Collect Coral Left After G");
+      driveToH = PathPlannerPath.fromPathFile("Drive To H Left");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getTwoCoralBackLeftCommand.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        Commands.parallel(
+            AutoBuilder.followPath(collectCoralAfterG), elevator.getElevatorLowerAndResetCommand()),
+        getCollectCoralCommand(manipulator),
+        AutoBuilder.followPath(driveToH),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        elevator.getElevatorLowerAndResetCommand());
+  }
+
+  public Command getTwoCoralBackRightCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    PathPlannerPath collectCoralAfterH;
+    PathPlannerPath driveToG;
+
+    try {
+      collectCoralAfterH = PathPlannerPath.fromPathFile("Collect Coral Right After H");
+      driveToG = PathPlannerPath.fromPathFile("Drive To G Right");
+    } catch (Exception e) {
+      pathFileMissingAlert.setText(
+          "Could not find the specified path file in getTwoCoralBackRightCommand.");
+      pathFileMissingAlert.set(true);
+
+      return Commands.none();
+    }
+
+    return Commands.sequence(
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        Commands.parallel(
+            AutoBuilder.followPath(collectCoralAfterH), elevator.getElevatorLowerAndResetCommand()),
+        getCollectCoralCommand(manipulator),
+        AutoBuilder.followPath(driveToG),
+        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        elevator.getElevatorLowerAndResetCommand());
   }
 
   private Command getScoreL4Command(

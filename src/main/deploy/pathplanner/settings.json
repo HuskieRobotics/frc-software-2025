@@ -3,10 +3,11 @@
   "robotLength": 0.85725,
   "holonomicMode": true,
   "pathFolders": [
+    "1 Coral 2 Algae",
     "1 Piece Center",
     "3 Piece Left",
     "3 Piece Right",
-    "1 Coral 2 Algae",
+    "2 Piece Back",
     "Tuning"
   ],
   "autoFolders": [
