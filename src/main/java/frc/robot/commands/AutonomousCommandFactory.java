@@ -4,8 +4,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FlippingUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
@@ -30,20 +28,6 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class AutonomousCommandFactory {
 
   private static AutonomousCommandFactory autonomousCommandFactory = null;
-
-  private Pose2d blueLeftStartingAutoPose =
-      new Pose2d(7.017, 6.076, Rotation2d.fromDegrees(-132.957));
-  private Pose2d blueRightStartingAutoPose =
-      new Pose2d(6.972, 1.884, Rotation2d.fromDegrees(145.333));
-  private Pose2d redLeftStartingAutoPose = FlippingUtil.flipFieldPose(blueLeftStartingAutoPose);
-  private Pose2d redRightStartingAutoPose = FlippingUtil.flipFieldPose(blueRightStartingAutoPose);
-
-  // set arbitrary tolerance values to 3 inches in each direction and 5 degrees
-  private Transform2d autoStartTolerance =
-      new Transform2d(
-          Units.inchesToMeters(3),
-          Units.inchesToMeters(3),
-          new Rotation2d(Units.degreesToRadians(5)));
 
   // use AdvantageKit's LoggedDashboardChooser instead of SendableChooser to ensure accurate logging
   private final LoggedDashboardChooser<Command> autoChooser =
