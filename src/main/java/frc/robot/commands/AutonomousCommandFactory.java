@@ -97,6 +97,14 @@ public class AutonomousCommandFactory {
         getTwoCoralBackRightCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("2 Coral Back Right", twoCoralBackRight);
 
+    Command bumpAndThreeCoralLeft =
+        getBumpAndThreeCoralLeftCommand(drivetrain, manipulator, elevator, vision);
+    autoChooser.addOption("Bump and 3 Coral Left", bumpAndThreeCoralLeft);
+
+    Command bumpAndThreeCoralRight =
+        getBumpAndThreeCoralRightCommand(drivetrain, manipulator, elevator, vision);
+    autoChooser.addOption("Bump and 3 Coral Right", bumpAndThreeCoralRight);
+
     // Command autoAutoSelector =
     //     Commands.either(
     //         fourPieceRight,
@@ -467,6 +475,24 @@ public class AutonomousCommandFactory {
         AutoBuilder.followPath(driveToG),
         getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
         elevator.getElevatorLowerAndResetCommand());
+  }
+
+  // FIXME: maybe change this to robot relative? it doesn't really matter though since it's just one
+  // direction
+  private Command getBumpAndThreeCoralLeftCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, true), drivetrain)
+            .withTimeout(1.0),
+        getFourCoralLeftCommand(drivetrain, vision, manipulator, elevator));
+  }
+
+  private Command getBumpAndThreeCoralRightCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, true), drivetrain)
+            .withTimeout(1.0),
+        getFourCoralRightCommand(drivetrain, vision, manipulator, elevator));
   }
 
   private Command getScoreL4Command(
