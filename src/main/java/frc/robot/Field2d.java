@@ -534,6 +534,26 @@ public class Field2d {
     return nearestCoralStation;
   }
 
+  public Pose2d getLeftCoralStation() {
+    int offset = getAlliance() == Alliance.Red ? 2 : 0;
+
+    return coralStations[offset].transformBy(
+        new Transform2d(
+            (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
+            0,
+            Rotation2d.fromDegrees(0)));
+  }
+
+  public Pose2d getRightCoralStation() {
+    int offset = getAlliance() == Alliance.Red ? 3 : 1;
+
+    return coralStations[offset].transformBy(
+        new Transform2d(
+            (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
+            0,
+            Rotation2d.fromDegrees(0)));
+  }
+
   /*
    * These methods are for manually populating reef branch pose maps based on the measured robot pose in the correct scoring position.
    */
