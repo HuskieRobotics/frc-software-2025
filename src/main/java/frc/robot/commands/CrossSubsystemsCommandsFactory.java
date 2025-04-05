@@ -137,6 +137,8 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.either(
         getScoreL1Command(manipulator, elevator),
         Commands.sequence(
+            Commands.runOnce(elevator::goToSelectedPosition, elevator),
+            Commands.waitUntil(elevator::isAtSelectedPosition),
             Commands.runOnce(manipulator::shootCoralFast, manipulator),
             Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
         () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
