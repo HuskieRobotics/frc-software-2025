@@ -42,6 +42,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.manipulator.Manipulator;
@@ -69,6 +70,8 @@ public class RobotContainer {
   private Elevator elevator;
 
   private Trigger driveToPoseCanceledTrigger;
+
+  private Trigger indexedCoralTrigger;
 
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
@@ -305,6 +308,22 @@ public class RobotContainer {
     ElevatorCommandsFactory.registerCommands(oi, elevator);
     CrossSubsystemsCommandsFactory.registerCommands(
         oi, drivetrain, elevator, manipulator, climber, vision);
+
+    // Automatic elevator raising trigger
+    // if the selected height is l3 or l4, then max our height at l2
+    // if drive to pose gets canceled, go back to the target height
+    indexedCoralTrigger =
+        new Trigger(
+            () ->
+                (DriverStation.isTeleopEnabled() && manipulator.hasIndexedCoral())
+                    || drivetrain.getDriveToPoseCanceled());
+    indexedCoralTrigger.onTrue(
+        Commands.either(
+                Commands.runOnce(elevator::goToSelectedPosition),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L2)),
+                () ->
+                    (oi.getLevel1Trigger().getAsBoolean() || oi.getLevel2Trigger().getAsBoolean()))
+            .withName("go to selected position or L2"));
 
     // Endgame alerts[]
     new Trigger(
