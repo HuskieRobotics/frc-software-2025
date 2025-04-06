@@ -100,9 +100,6 @@ public class OperatorDashboard implements OperatorInterface {
     getReefBranchJTrigger().onTrue(getToggleReefBranch(reefBranchJ));
     getReefBranchKTrigger().onTrue(getToggleReefBranch(reefBranchK));
     getReefBranchLTrigger().onTrue(getToggleReefBranch(reefBranchL));
-
-    getEnableAutoScoringTrigger()
-        .onTrue(Commands.runOnce(() -> enableAutoScoring.set(!enableAutoScoring.get())));
   }
 
   @Override

@@ -412,7 +412,7 @@ public class CrossSubsystemsCommandsFactory {
         Commands.either(
             getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
             Commands.sequence(
-                Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.runOnce(manipulator::shootCoralSlow, manipulator),
                 Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
             () ->

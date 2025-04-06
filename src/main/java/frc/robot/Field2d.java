@@ -477,7 +477,7 @@ public class Field2d {
 
   public boolean isShortOfBarge() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-    Transform2d robotRelativeDifference = new Transform2d(pose, CENTER_BARGE_POSE);
+    Transform2d robotRelativeDifference = new Transform2d(pose, getCenterBargePose());
 
     // should be 0 but changing to 6 inches just for clearance so things don't break
     return robotRelativeDifference.getX() < -Units.inchesToMeters(6);
@@ -485,7 +485,7 @@ public class Field2d {
 
   public boolean isFarFromBarge() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-    Transform2d robotRelativeDifference = new Transform2d(pose, CENTER_BARGE_POSE);
+    Transform2d robotRelativeDifference = new Transform2d(pose, getCenterBargePose());
 
     // do not absolute value this due to the chances of us also working with under the barge later
     // FIXME: tune to be closer possibly

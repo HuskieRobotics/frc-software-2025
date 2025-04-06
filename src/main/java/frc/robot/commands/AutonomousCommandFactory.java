@@ -363,7 +363,9 @@ public class AutonomousCommandFactory {
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         Commands.parallel(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator),
+            Commands.sequence(
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator)),
             new DriveToProcessor(
                 drivetrain,
                 () -> Field2d.getInstance().getRightBargePose(),
@@ -380,7 +382,9 @@ public class AutonomousCommandFactory {
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         Commands.parallel(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator),
+            Commands.sequence(
+                Commands.waitSeconds(0.5),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator)),
             new DriveToProcessor(
                 drivetrain,
                 () -> Field2d.getInstance().getCenterBargePose(),
