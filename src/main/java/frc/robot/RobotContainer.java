@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
@@ -289,9 +288,6 @@ public class RobotContainer {
       return;
     }
 
-    // clear the list of composed commands since we are about to rebind them to potentially new
-    // triggers
-    CommandScheduler.getInstance().clearComposedCommands();
     configureButtonBindings();
   }
 
