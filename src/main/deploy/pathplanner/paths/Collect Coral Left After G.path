@@ -48,7 +48,7 @@
   "folder": "2 Piece Back",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -178.2100893917539
   },
   "useDefaultConstraints": true
 }
