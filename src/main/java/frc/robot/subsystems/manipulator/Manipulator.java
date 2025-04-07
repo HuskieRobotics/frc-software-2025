@@ -458,7 +458,7 @@ public class Manipulator extends SubsystemBase {
 
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(BARGE_ALGAE_TIMEOUT)) {
-          subsystem.setState(State.WAITING_FOR_CORAL);
+          subsystem.setState(State.WAITING_FOR_ELEVATOR);
         }
       }
 
