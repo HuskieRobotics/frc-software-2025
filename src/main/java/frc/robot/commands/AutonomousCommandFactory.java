@@ -473,8 +473,8 @@ public class AutonomousCommandFactory {
   private Command getScoreL4Command(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator, Side side) {
     return Commands.sequence(
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
         Commands.parallel(
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
             Commands.sequence(
                 Commands.waitUntil(
                     manipulator::hasIndexedCoral), /* possibly add a fractional wait here */
@@ -492,8 +492,9 @@ public class AutonomousCommandFactory {
                 4.0)),
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-        Commands.runOnce(manipulator::shootCoralFast, manipulator),
+        Commands.parallel(
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
+            Commands.runOnce(manipulator::shootCoralFast, manipulator)),
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
         Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HARDSTOP), elevator));
   }
