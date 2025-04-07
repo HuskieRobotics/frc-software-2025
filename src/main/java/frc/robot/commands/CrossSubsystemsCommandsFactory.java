@@ -157,24 +157,46 @@ public class CrossSubsystemsCommandsFactory {
             Commands.either(
                 Commands.sequence(
                     getAutoScoreL4Command(drivetrain, manipulator, elevator, vision),
-                    Commands.deadline(
-                        getElevatorLowerAndResetCommand(elevator, manipulator),
-                        new TeleopSwerve(
-                            drivetrain,
-                            OISelector.getOperatorInterface()::getTranslateX,
-                            OISelector.getOperatorInterface()::getTranslateY,
-                            OISelector.getOperatorInterface()::getRotate))),
-                Commands.either(
-                    /* either auto score l2 l3 or just prep the l1 */
-                    Commands.sequence(
-                        getAutoScoreL2L3Command(drivetrain, manipulator, elevator, vision),
+                    Commands.either(
+                        Commands.none(),
                         Commands.deadline(
                             getElevatorLowerAndResetCommand(elevator, manipulator),
                             new TeleopSwerve(
                                 drivetrain,
                                 OISelector.getOperatorInterface()::getTranslateX,
                                 OISelector.getOperatorInterface()::getTranslateY,
-                                OISelector.getOperatorInterface()::getRotate))),
+                                OISelector.getOperatorInterface()::getRotate)),
+                        () ->
+                            (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeDropTrigger()
+                                    .getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeProcessorTrigger()
+                                    .getAsBoolean()))),
+                Commands.either(
+                    /* either auto score l2 l3 or just prep the l1 */
+                    Commands.sequence(
+                        getAutoScoreL2L3Command(drivetrain, manipulator, elevator, vision),
+                        Commands.either(
+                            Commands.none(),
+                            Commands.deadline(
+                                getElevatorLowerAndResetCommand(elevator, manipulator),
+                                new TeleopSwerve(
+                                    drivetrain,
+                                    OISelector.getOperatorInterface()::getTranslateX,
+                                    OISelector.getOperatorInterface()::getTranslateY,
+                                    OISelector.getOperatorInterface()::getRotate)),
+                            () ->
+                                (OISelector.getOperatorInterface()
+                                        .getAlgaeBargeTrigger()
+                                        .getAsBoolean()
+                                    || OISelector.getOperatorInterface()
+                                        .getAlgaeDropTrigger()
+                                        .getAsBoolean()
+                                    || OISelector.getOperatorInterface()
+                                        .getAlgaeProcessorTrigger()
+                                        .getAsBoolean()))),
                     getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
                     () -> !OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
                 () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()))
