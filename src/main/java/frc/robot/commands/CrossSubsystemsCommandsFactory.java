@@ -61,13 +61,19 @@ public class CrossSubsystemsCommandsFactory {
     oi.getPrepToScoreButton()
         .onTrue(
             Commands.either(
-                    Commands.either(
-                        getPrepAndAutoScoreCoralCommand(drivetrain, manipulator, elevator, vision),
-                        getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
-                        () ->
-                            OISelector.getOperatorInterface()
-                                .getEnableAutoScoringTrigger()
-                                .getAsBoolean()),
+                    Commands.sequence(
+                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                        Commands.either(
+                            Commands.sequence(
+                                getPrepAndAutoScoreCoralCommand(
+                                    drivetrain, manipulator, elevator, vision),
+                                Commands.runOnce(
+                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                            getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                            () ->
+                                OISelector.getOperatorInterface()
+                                    .getEnableAutoScoringTrigger()
+                                    .getAsBoolean())),
                     getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
                     manipulator::hasIndexedCoral)
                 .withName("prep to score"));
@@ -396,8 +402,7 @@ public class CrossSubsystemsCommandsFactory {
             getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
             Commands.sequence(
                 Commands.runOnce(manipulator::shootCoralFast, manipulator),
-                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
             () ->
                 (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
                     || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
@@ -413,8 +418,7 @@ public class CrossSubsystemsCommandsFactory {
             getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
             Commands.sequence(
                 Commands.runOnce(manipulator::shootCoralSlow, manipulator),
-                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
             () ->
                 (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
                     || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
@@ -426,19 +430,16 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.parallel(
             Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getSelectedBranch(),
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    5.0))),
+            new DriveToReef(
+                drivetrain,
+                () -> Field2d.getInstance().getSelectedBranch(),
+                manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
+                new Transform2d(
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                5.0)),
         Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator),
         Commands.waitUntil(elevator::isAtSelectedPosition));
   }
@@ -448,19 +449,16 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.parallel(
             Commands.runOnce(elevator::goToSelectedPosition, elevator),
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getSelectedBranch(),
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    5.0))),
+            new DriveToReef(
+                drivetrain,
+                () -> Field2d.getInstance().getSelectedBranch(),
+                manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
+                new Transform2d(
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                5.0)),
         Commands.waitUntil(elevator::isAtSelectedPosition));
   }
 
