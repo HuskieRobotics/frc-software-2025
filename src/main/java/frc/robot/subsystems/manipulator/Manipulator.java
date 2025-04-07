@@ -110,6 +110,8 @@ public class Manipulator extends SubsystemBase {
 
   private boolean readyForCoral = false;
 
+  private boolean coralInManipulatorFirstRun = true;
+
   /**
    * Create a new subsystem with its associated hardware interface object.
    *
@@ -318,10 +320,10 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorVoltage(0.0);
+        subsystem.zeroIndexerPosition();
+        subsystem.targetIndexerPosition = 0.0;
         subsystem.shootCoralButtonPressed = false;
-
-        subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
+        subsystem.coralInManipulatorFirstRun = true;
       }
 
       @Override
@@ -333,7 +335,12 @@ public class Manipulator extends SubsystemBase {
           subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
         }
 
-        subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
+        if (subsystem.coralInManipulatorFirstRun) {
+          subsystem.coralInManipulatorFirstRun = false;
+        } else {
+          subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
+        }
+
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/targetWheelPosition", subsystem.targetIndexerPosition);
 
@@ -631,6 +638,10 @@ public class Manipulator extends SubsystemBase {
 
   public void setIndexerMotorVoltage(double volts) {
     io.setIndexerVoltage(volts);
+  }
+
+  public void zeroIndexerPosition() {
+    io.zeroIndexerPosition();
   }
 
   public void setIndexerMotorCurrent(double current) {
