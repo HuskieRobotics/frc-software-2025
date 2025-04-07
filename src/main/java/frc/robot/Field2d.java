@@ -492,16 +492,22 @@ public class Field2d {
     return robotRelativeDifference.getX() > Units.inchesToMeters(36);
   }
 
-  public Pose2d getFourthAutoCoralPose(Side side) {
+  public Pose2d getFourthAutoCoralPose(Side side, boolean closeAuto) {
     int offset = 0;
     if (getAlliance() == Alliance.Red) {
       offset = 6;
     }
 
     if (side == Side.LEFT) {
-      return leftReefPoses.get(allReefCenterFaces[offset]);
+      if (closeAuto) {
+        return leftReefPoses.get(allReefCenterFaces[offset]);
+      }
+      return leftReefPoses.get(allReefCenterFaces[offset + 4]);
     } else {
-      return rightReefPoses.get(allReefCenterFaces[offset]);
+      if (closeAuto) {
+        return rightReefPoses.get(allReefCenterFaces[offset]);
+      }
+      return rightReefPoses.get(allReefCenterFaces[offset + 2]);
     }
   }
 

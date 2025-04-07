@@ -79,11 +79,21 @@ public class AutonomousCommandFactory {
     Command onePieceCenter = getOneCoralCenterCommand(drivetrain, vision, manipulator, elevator);
     autoChooser.addOption("1 Piece Center", onePieceCenter);
 
-    Command fourPieceLeft = getFourCoralLeftCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("4 Piece Left JKLA", fourPieceLeft);
+    Command fourPieceCloseLeft =
+        getFourCoralLeftCloseCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("4 Piece Left Close JKLA", fourPieceCloseLeft);
 
-    Command fourPieceRight = getFourCoralRightCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("4 Piece Right EDCA", fourPieceRight);
+    Command fourPieceCloseRight =
+        getFourCoralRightCloseCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("4 Piece Right Close EDCA", fourPieceCloseRight);
+
+    Command fourPieceFarLeft =
+        getFourCoralLeftFarCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("4 Piece Left Far IKLJ", fourPieceFarLeft);
+
+    Command fourPieceFarRight =
+        getFourCoralRightFarCommand(drivetrain, vision, manipulator, elevator);
+    autoChooser.addOption("4 Piece Right Far FDCE", fourPieceFarRight);
 
     Command oneCoralTwoAlgae =
         getOneCoralTwoAlgaeCommand(drivetrain, vision, manipulator, elevator);
@@ -247,7 +257,8 @@ public class AutonomousCommandFactory {
     return CharacterizationCommands.wheelRadiusCharacterization(drivetrain);
   }
 
-  public Command getFourCoralLeftCommand(
+  // 4 Coral: J, K, L, A
+  public Command getFourCoralLeftCloseCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     // PathPlannerPath collectCoralAfterJ2L;
     // PathPlannerPath scoreCoralL2L;
@@ -281,13 +292,14 @@ public class AutonomousCommandFactory {
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         Commands.either(
             getCollectAndScoreFourthCommand(
-                drivetrain, manipulator, elevator, vision, Side.LEFT, false),
+                drivetrain, manipulator, elevator, vision, Side.LEFT, false, true),
             Commands.none(), // if we can't collect the fourth coral, do nothing
             () -> (!timer.hasElapsed(12.0)) // only run if we have time left in auto
             ));
   }
 
-  public Command getFourCoralRightCommand(
+  // 4 Coral: E, D, C, B
+  public Command getFourCoralRightCloseCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     // PathPlannerPath collectCoralAfterE2R;
     // PathPlannerPath scoreCoralD2R;
@@ -321,9 +333,50 @@ public class AutonomousCommandFactory {
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
             getCollectAndScoreFourthCommand(
-                drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
+                drivetrain, manipulator, elevator, vision, Side.RIGHT, true, true),
             Commands.none(),
             () -> (!timer.hasElapsed(12.0))));
+  }
+
+  // 4 Coral: I, K, L, J
+  public Command getFourCoralLeftFarCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(() -> timer.restart()),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.LEFT)),
+        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
+        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
+        Commands.either(
+            getCollectAndScoreFourthCommand(
+                drivetrain, manipulator, elevator, vision, Side.RIGHT, false, false),
+            Commands.none(),
+            () -> (!timer.hasElapsed(11.0))));
+  }
+
+  // 4 Coral: F, D, C, E
+  // maybe switch order of F and E in order to avoid collisions with other robots
+  public Command getFourCoralRightFarCommand(
+      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.runOnce(() -> timer.restart()),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.RIGHT)),
+        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
+        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
+        Commands.either(
+            getCollectAndScoreFourthCommand(
+                drivetrain, manipulator, elevator, vision, Side.LEFT, true, false),
+            Commands.none(),
+            () -> (!timer.hasElapsed(11.0))));
   }
 
   public Command getOneCoralCenterCommand(
@@ -495,7 +548,7 @@ public class AutonomousCommandFactory {
     return Commands.sequence(
         Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, true), drivetrain)
             .withTimeout(1.0),
-        getFourCoralLeftCommand(drivetrain, vision, manipulator, elevator));
+        getFourCoralLeftCloseCommand(drivetrain, vision, manipulator, elevator));
   }
 
   private Command getBumpAndThreeCoralRightCommand(
@@ -503,7 +556,7 @@ public class AutonomousCommandFactory {
     return Commands.sequence(
         Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, true), drivetrain)
             .withTimeout(1.0),
-        getFourCoralRightCommand(drivetrain, vision, manipulator, elevator));
+        getFourCoralRightCloseCommand(drivetrain, vision, manipulator, elevator));
   }
 
   private Command getScoreL4Command(
@@ -595,7 +648,8 @@ public class AutonomousCommandFactory {
       Elevator elevator,
       Vision vision,
       Side side,
-      boolean rightCoralStation) {
+      boolean rightCoralStation,
+      boolean closeAuto) {
     return Commands.sequence(
         new DriveToStation(
             drivetrain,
@@ -615,7 +669,7 @@ public class AutonomousCommandFactory {
                 vision,
                 manipulator,
                 elevator,
-                Field2d.getInstance().getFourthAutoCoralPose(side)),
+                Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto)),
             () -> (timer.hasElapsed(13.0)) // FIXME: arbitrary tune this time
             ));
   }
