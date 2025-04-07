@@ -80,10 +80,10 @@ public class AutonomousCommandFactory {
     autoChooser.addOption("1 Piece Center", onePieceCenter);
 
     Command fourPieceLeft = getFourCoralLeftCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("4 Piece Left", fourPieceLeft);
+    autoChooser.addOption("4 Piece Left JKLA", fourPieceLeft);
 
     Command fourPieceRight = getFourCoralRightCommand(drivetrain, vision, manipulator, elevator);
-    autoChooser.addOption("4 Piece Right", fourPieceRight);
+    autoChooser.addOption("4 Piece Right EDCA", fourPieceRight);
 
     Command oneCoralTwoAlgae =
         getOneCoralTwoAlgaeCommand(drivetrain, vision, manipulator, elevator);
