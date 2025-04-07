@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
@@ -270,7 +271,12 @@ public class AutonomousCommandFactory {
 
     return Commands.sequence(
         Commands.runOnce(() -> timer.restart()),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.RIGHT)),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         Commands.either(
@@ -305,7 +311,12 @@ public class AutonomousCommandFactory {
 
     return Commands.sequence(
         Commands.runOnce(() -> timer.restart()),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.LEFT)),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
@@ -330,7 +341,12 @@ public class AutonomousCommandFactory {
 
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.RIGHT)),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         AutoBuilder.followPath(backUpH1C));
@@ -417,12 +433,22 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.LEFT)),
         Commands.parallel(
             AutoBuilder.followPath(collectCoralAfterG), elevator.getElevatorLowerAndResetCommand()),
         getCollectCoralCommand(manipulator),
         AutoBuilder.followPath(driveToH),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.RIGHT)),
         elevator.getElevatorLowerAndResetCommand());
   }
 
@@ -443,12 +469,22 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.RIGHT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.RIGHT)),
         Commands.parallel(
             AutoBuilder.followPath(collectCoralAfterH), elevator.getElevatorLowerAndResetCommand()),
         getCollectCoralCommand(manipulator),
         AutoBuilder.followPath(driveToG),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, Side.LEFT),
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(Side.LEFT)),
         elevator.getElevatorLowerAndResetCommand());
   }
 
@@ -471,7 +507,11 @@ public class AutonomousCommandFactory {
   }
 
   private Command getScoreL4Command(
-      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator, Side side) {
+      Drivetrain drivetrain,
+      Vision vision,
+      Manipulator manipulator,
+      Elevator elevator,
+      Pose2d pose) {
     return Commands.sequence(
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
@@ -482,7 +522,7 @@ public class AutonomousCommandFactory {
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator)),
             new DriveToReef(
                 drivetrain,
-                () -> Field2d.getInstance().getNearestBranch(side),
+                () -> pose,
                 manipulator::setReadyToScore,
                 elevator::setDistanceFromReef,
                 new Transform2d(
@@ -541,7 +581,12 @@ public class AutonomousCommandFactory {
                 Units.inchesToMeters(0.5), Units.inchesToMeters(1.0), Rotation2d.fromDegrees(2.0)),
             4.0),
         getCollectCoralCommand(manipulator),
-        getScoreL4Command(drivetrain, vision, manipulator, elevator, side));
+        getScoreL4Command(
+            drivetrain,
+            vision,
+            manipulator,
+            elevator,
+            Field2d.getInstance().getNearestBranch(side)));
   }
 
   private Command getCollectAndScoreFourthCommand(
@@ -565,37 +610,14 @@ public class AutonomousCommandFactory {
         getCollectCoralCommand(manipulator),
         Commands.either(
             Commands.none(),
-            getScoreFourthAutoCoralCommand(drivetrain, vision, manipulator, elevator, side),
+            getScoreL4Command(
+                drivetrain,
+                vision,
+                manipulator,
+                elevator,
+                Field2d.getInstance().getFourthAutoCoralPose(side)),
             () -> (timer.hasElapsed(13.0)) // FIXME: arbitrary tune this time
             ));
-  }
-
-  private Command getScoreFourthAutoCoralCommand(
-      Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator, Side side) {
-    return Commands.sequence(
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-        Commands.parallel(
-            Commands.sequence(
-                Commands.waitUntil(
-                    manipulator::hasIndexedCoral), /* possibly add a fractional wait here */
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator)),
-            new DriveToReef(
-                drivetrain,
-                () -> Field2d.getInstance().getFourthAutoCoralPose(side),
-                manipulator::setReadyToScore,
-                elevator::setDistanceFromReef,
-                new Transform2d(
-                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                4.0)),
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
-        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-        Commands.runOnce(manipulator::shootCoralFast, manipulator),
-        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HARDSTOP), elevator));
   }
 
   private Command getCollectCoralCommand(Manipulator manipulator) {
