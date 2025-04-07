@@ -330,7 +330,7 @@ public class AutonomousCommandFactory {
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
     PathPlannerPath backUpH1C;
     try {
-      backUpH1C = PathPlannerPath.fromPathFile("Back Up H 1C");
+      backUpH1C = PathPlannerPath.fromPathFile("Back Up G 1C");
     } catch (Exception e) {
       pathFileMissingAlert.setText(
           "Could not find the specified path file in getOneCoralCenterCommand.");
@@ -346,7 +346,7 @@ public class AutonomousCommandFactory {
             vision,
             manipulator,
             elevator,
-            Field2d.getInstance().getNearestBranch(Side.RIGHT)),
+            Field2d.getInstance().getNearestBranch(Side.LEFT)),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         AutoBuilder.followPath(backUpH1C));
