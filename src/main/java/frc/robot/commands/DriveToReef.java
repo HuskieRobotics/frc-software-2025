@@ -91,7 +91,7 @@ public class DriveToReef extends Command {
           "DriveToReef/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
   private static final LoggedTunableNumber closeVelocityBoost =
-      new LoggedTunableNumber("DriveToReef/close velocity boost", 0.5);
+      new LoggedTunableNumber("DriveToReef/close velocity boost", 0.25); // was 0.5
 
   private final PIDController xController =
       new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
