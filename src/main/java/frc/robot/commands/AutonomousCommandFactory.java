@@ -394,7 +394,6 @@ public class AutonomousCommandFactory {
     }
 
     return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
         getScoreL4Command(
             drivetrain,
             vision,
@@ -583,8 +582,10 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                4.0)),
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
+                4.0),
+            Commands.sequence(
+                Commands.waitUntil(elevator::canScoreFartherAway),
+                Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4)))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
@@ -609,8 +610,11 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                1.6)),
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator),
+                1.6),
+            Commands.sequence(
+                Commands.waitUntil(elevator::canScoreFartherAway),
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitUntil(() -> !manipulator.coralIsInManipulator()));

@@ -461,8 +461,10 @@ public class CrossSubsystemsCommandsFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                5.0)),
-        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator),
+                5.0),
+            Commands.sequence(
+                Commands.waitUntil(elevator::canScoreFartherAway),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),
         Commands.waitUntil(elevator::isAtSelectedPosition));
   }
 
