@@ -436,25 +436,36 @@ public class Field2d {
   public AlgaePosition getNearestAlgae() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
     boolean isHighAlgae = false;
-    int offset = 0;
-    if (getAlliance() == Alliance.Red) {
-      offset = 6;
-    }
+    // int offset = 0;
+    // if (getAlliance() == Alliance.Red) {
+    //   offset = 6;
+    // }
 
     // high: A/B , E/F, I/J
     // low: C/D, G/H, K/L
     Pose2d nearestCenterFace = pose.nearest(Arrays.asList(allReefCenterFaces));
-    if (nearestCenterFace == allReefCenterFaces[offset + 0]
-        || nearestCenterFace == allReefCenterFaces[offset + 2]
-        || nearestCenterFace == allReefCenterFaces[offset + 4]) {
-      // high algae
-      isHighAlgae = true;
-    } else if (nearestCenterFace == allReefCenterFaces[offset + 1]
-        || nearestCenterFace == allReefCenterFaces[offset + 3]
-        || nearestCenterFace == allReefCenterFaces[offset + 5]) {
-      // low algae
-      isHighAlgae = false;
+    for (int i = 0; i < allReefCenterFaces.length; i++) {
+      if (nearestCenterFace == allReefCenterFaces[i]) {
+        if (i % 2 == 0) {
+          isHighAlgae = true;
+        } else {
+          isHighAlgae = false;
+        }
+        break;
+      }
     }
+
+    // if (nearestCenterFace == allReefCenterFaces[0]
+    //     || nearestCenterFace == allReefCenterFaces[2]
+    //     || nearestCenterFace == allReefCenterFaces[4]) {
+    //   // high algae
+    //   isHighAlgae = true;
+    // } else if (nearestCenterFace == allReefCenterFaces[offset + 1]
+    //     || nearestCenterFace == allReefCenterFaces[offset + 3]
+    //     || nearestCenterFace == allReefCenterFaces[offset + 5]) {
+    //   // low algae
+    //   isHighAlgae = false;
+    // }
 
     return new AlgaePosition(removeAlgaePoses.get(nearestCenterFace), isHighAlgae);
   }
