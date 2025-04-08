@@ -425,7 +425,8 @@ public class CrossSubsystemsCommandsFactory {
             getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
             Commands.sequence(
                 Commands.runOnce(manipulator::shootCoralFast, manipulator),
-                Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> elevator.setXFromReef(100.0))),
             () ->
                 (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
                     || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
@@ -441,7 +442,8 @@ public class CrossSubsystemsCommandsFactory {
             getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
             Commands.sequence(
                 Commands.runOnce(manipulator::shootCoralSlow, manipulator),
-                Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> elevator.setXFromReef(100.0))),
             () ->
                 (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
                     || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
