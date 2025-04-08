@@ -199,7 +199,8 @@ public class CrossSubsystemsCommandsFactory {
                                         .getAsBoolean()))),
                     getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
                     () -> !OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
-                () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()))
+                () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()),
+            Commands.runOnce(() -> elevator.setXFromReef(100.0)))
         .withName("prep and auto score");
   }
 
