@@ -475,7 +475,7 @@ public class CrossSubsystemsCommandsFactory {
                 5.0),
             Commands.sequence(
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
-                Commands.waitUntil(elevator::canScoreFartherAway),
+                Commands.waitUntil(elevator::canScoreFartherAway).withTimeout(5.0),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),
         Commands.waitUntil(elevator::isAtSelectedPosition));
   }
@@ -500,8 +500,6 @@ public class CrossSubsystemsCommandsFactory {
 
   private static Command getElevatorLowerAndResetCommand(
       Elevator elevator, Manipulator manipulator) {
-    return Commands.sequence(
-        elevator.getElevatorLowerAndResetCommand(),
-        Commands.runOnce(() -> manipulator.setReadyForCoral(true), manipulator));
+    return elevator.getElevatorLowerAndResetCommand();
   }
 }
