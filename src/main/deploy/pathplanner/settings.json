@@ -5,9 +5,11 @@
   "pathFolders": [
     "1 Coral 2 Algae",
     "1 Piece Center",
+    "2 Piece Back",
     "3 Piece Left",
     "3 Piece Right",
-    "2 Piece Back",
+    "4 Left (Far and Close)",
+    "4 Right (Far and Close)",
     "Tuning"
   ],
   "autoFolders": [
