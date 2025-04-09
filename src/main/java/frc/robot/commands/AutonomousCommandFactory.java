@@ -590,7 +590,8 @@ public class AutonomousCommandFactory {
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 4.0),
             Commands.sequence(
-                Commands.waitUntil(elevator::canScoreFartherAway).withTimeout(4.0),
+                Commands.waitUntil(
+                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
                 Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4)))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.parallel(
@@ -618,7 +619,8 @@ public class AutonomousCommandFactory {
             Commands.sequence(
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
-                Commands.waitUntil(elevator::canScoreFartherAway).withTimeout(3.0),
+                Commands.waitUntil(
+                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
