@@ -599,8 +599,6 @@ public class AutonomousCommandFactory {
     return Commands.sequence(
         Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
         Commands.parallel(
-            Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
             new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getNearestBranch(side),
@@ -612,6 +610,8 @@ public class AutonomousCommandFactory {
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 1.6),
             Commands.sequence(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
                 Commands.waitUntil(elevator::canScoreFartherAway),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),

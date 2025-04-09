@@ -454,7 +454,6 @@ public class CrossSubsystemsCommandsFactory {
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
         Commands.parallel(
-            Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
             new DriveToReef(
                 drivetrain,
                 () -> Field2d.getInstance().getSelectedBranch(),
@@ -466,6 +465,7 @@ public class CrossSubsystemsCommandsFactory {
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 5.0),
             Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
                 Commands.waitUntil(elevator::canScoreFartherAway),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),
         Commands.waitUntil(elevator::isAtSelectedPosition));
