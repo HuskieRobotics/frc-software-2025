@@ -74,7 +74,12 @@ public class ElevatorConstants {
 
   public static final double CRUISE_VELOCITY = 0;
 
+  // This is the current we watch for to detect that the elevator is completely down against the
+  // hard stop
   public static final double STALL_CURRENT = 40.0;
+
+  // This is the current we watch for to detect that the elevator is jammed and needs to be stopped
+  public static final double JAMMED_CURRENT = 59.0;
 
   public enum ScoringHeight {
     HARDSTOP,

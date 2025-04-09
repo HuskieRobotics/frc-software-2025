@@ -11,10 +11,12 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -36,6 +38,9 @@ public class Elevator extends SubsystemBase {
 
   private Alert hardStopAlert =
       new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
+
+  private Alert jammedAlert =
+      new Alert("Elevator jam detected. Use manual control.", AlertType.kError);
 
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
@@ -113,7 +118,15 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
     Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
 
-    current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+    if (current.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
+      CommandScheduler.getInstance()
+          .schedule(
+              Commands.sequence(
+                  Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
+                  Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
+                      .withTimeout(1.0)));
+      jammedAlert.set(true);
+    }
 
     if (testingMode.get() == 1) {
 
