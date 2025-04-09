@@ -371,8 +371,8 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT)),
-        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
-        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
+        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
+        getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.LEFT, true, false),
@@ -546,16 +546,16 @@ public class AutonomousCommandFactory {
   private Command getBumpAndThreeCoralLeftCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
-        Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, true), drivetrain)
-            .withTimeout(1.0),
+        Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, false), drivetrain)
+            .withTimeout(0.3),
         getFourCoralLeftCloseCommand(drivetrain, vision, manipulator, elevator));
   }
 
   private Command getBumpAndThreeCoralRightCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
-        Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, true), drivetrain)
-            .withTimeout(1.0),
+        Commands.run(() -> drivetrain.drive(-3.0, 0.0, 0.0, true, false), drivetrain)
+            .withTimeout(0.3),
         getFourCoralRightCloseCommand(drivetrain, vision, manipulator, elevator));
   }
 
@@ -584,7 +584,7 @@ public class AutonomousCommandFactory {
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 4.0),
             Commands.sequence(
-                Commands.waitUntil(elevator::canScoreFartherAway),
+                Commands.waitUntil(elevator::canScoreFartherAway).withTimeout(4.0),
                 Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4)))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.parallel(
@@ -612,7 +612,7 @@ public class AutonomousCommandFactory {
             Commands.sequence(
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
-                Commands.waitUntil(elevator::canScoreFartherAway),
+                Commands.waitUntil(elevator::canScoreFartherAway).withTimeout(3.0),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
