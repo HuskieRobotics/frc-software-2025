@@ -479,6 +479,17 @@ public class Field2d {
     return CENTER_BARGE_POSE;
   }
 
+  public Pose2d getShortOfBargePose() {
+    Pose2d shortOfBargePose =
+        CENTER_BARGE_POSE.transformBy(
+            new Transform2d(-Units.inchesToMeters(18), 0.0, Rotation2d.fromDegrees(0.0)));
+
+    if (getAlliance() == Alliance.Red) {
+      return FlippingUtil.flipFieldPose(shortOfBargePose);
+    }
+    return shortOfBargePose;
+  }
+
   public Pose2d getRightBargePose() {
     if (getAlliance() == Alliance.Red) {
       return FlippingUtil.flipFieldPose(RIGHT_BARGE_POSE);
@@ -491,7 +502,7 @@ public class Field2d {
     Transform2d robotRelativeDifference = new Transform2d(pose, getCenterBargePose());
 
     // 12 inch buffer, lower if we need to
-    return robotRelativeDifference.getX() > Units.inchesToMeters(12);
+    return robotRelativeDifference.getX() > Units.inchesToMeters(18);
   }
 
   public boolean isFarFromBarge() {

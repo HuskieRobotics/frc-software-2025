@@ -318,29 +318,16 @@ public class CrossSubsystemsCommandsFactory {
     // driver could manually do that if we just cancel.
     // if we are far of barge, then drive backwards first and then raise the elevator up
     return Commands.either(
-        Commands.either(
-            Commands.parallel(
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
-                new DriveToBarge(
-                    drivetrain,
-                    () -> Field2d.getInstance().getCenterBargePose(),
-                    manipulator::setReadyToScore,
-                    // FIXME: make these constants
-                    new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
-                    oi::getTranslateY)),
-            Commands.sequence(
-                Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
-                Commands.waitUntil(
-                    () -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)),
-                new DriveToBarge(
-                    drivetrain,
-                    () -> Field2d.getInstance().getCenterBargePose(),
-                    manipulator::setReadyToScore,
-                    new Transform2d(Units.inchesToMeters(1.0), 20.0, Rotation2d.fromDegrees(5.0)),
-                    oi::getTranslateY)),
-            () -> Field2d.getInstance().isFarFromBarge()),
+        Commands.parallel(
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+            new DriveToBarge(
+                drivetrain,
+                elevator,
+                () -> Field2d.getInstance().getShortOfBargePose(),
+                manipulator::setReadyToScore,
+                new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
+                oi::getTranslateY)),
         Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
         () -> Field2d.getInstance().isShortOfBarge());
   }

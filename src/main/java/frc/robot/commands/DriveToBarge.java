@@ -23,6 +23,8 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -45,6 +47,7 @@ import org.littletonrobotics.junction.Logger;
  */
 public class DriveToBarge extends Command {
   private final Drivetrain drivetrain;
+  private final Elevator elevator;
   private final Supplier<Pose2d> poseSupplier;
   private final Consumer<Boolean> onTarget;
   private Pose2d targetPose;
@@ -77,6 +80,8 @@ public class DriveToBarge extends Command {
   private DoubleSupplier translationYSupplier;
   private Transform2d tolerance;
 
+  private boolean updatedPose;
+
   /**
    * Constructs a new DriveToBarge command that drives the robot in a straight line to the specified
    * pose. A pose supplier is specified instead of a pose since the target pose may not be known
@@ -91,11 +96,13 @@ public class DriveToBarge extends Command {
    */
   public DriveToBarge(
       Drivetrain drivetrain,
+      Elevator elevator,
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
       Transform2d tolerance,
       DoubleSupplier translationYSupplier) {
     this.drivetrain = drivetrain;
+    this.elevator = elevator;
     this.poseSupplier = poseSupplier;
     this.onTarget = onTargetConsumer;
     this.tolerance = tolerance;
@@ -153,6 +160,11 @@ public class DriveToBarge extends Command {
         thetaKd);
 
     Pose2d currentPose = drivetrain.getPose();
+
+    if (!updatedPose && elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)) {
+      targetPose = Field2d.getInstance().getCenterBargePose();
+      updatedPose = true;
+    }
 
     // use last values of filter
     double xVelocity = xController.calculate(currentPose.getX(), this.targetPose.getX());
