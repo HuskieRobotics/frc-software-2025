@@ -964,7 +964,8 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
             getSwerveCheckCommand(SwerveCheckTypes.BACKWARD),
             getSwerveCheckCommand(SwerveCheckTypes.CLOCKWISE),
             getSwerveCheckCommand(SwerveCheckTypes.COUNTERCLOCKWISE))
-        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+        // FIXME: uncomment after tuning system test with reasonable tolerances
+        // .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
         .andThen(Commands.runOnce(() -> this.drive(0, 0, 0, true, false), this))
         .withName(SUBSYSTEM_NAME + "SystemCheck");
   }
