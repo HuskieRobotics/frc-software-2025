@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.805122950819672,
-        "y": 7.051895491803277
+        "x": 2.8849315068493144,
+        "y": 7.082726883561644
       },
       "isLocked": false,
       "linkedName": "(New) Collect Left"
     },
     {
       "anchor": {
-        "x": 4.843032786885245,
-        "y": 5.625358606557377
+        "x": 4.582833904109589,
+        "y": 5.95580051369863
       },
       "prevControl": {
-        "x": 3.3205942622950824,
-        "y": 6.872079918032787
+        "x": 3.0952910958904107,
+        "y": 7.05267551369863
       },
       "nextControl": null,
       "isLocked": false,
@@ -34,7 +34,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
