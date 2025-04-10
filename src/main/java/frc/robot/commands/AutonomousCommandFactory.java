@@ -286,7 +286,8 @@ public class AutonomousCommandFactory {
         Commands.either(
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.LEFT, driveToA, false, true),
-            Commands.none(), // if we can't collect the fourth coral, do nothing
+            elevator.getElevatorLowerAndResetCommand(), // if we can't collect the fourth coral, do
+            // nothing
             () -> (!timer.hasElapsed(12.0)) // only run if we have time left in auto
             ));
   }
@@ -319,7 +320,7 @@ public class AutonomousCommandFactory {
         Commands.either(
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, driveToB, true, true),
-            Commands.none(),
+            elevator.getElevatorLowerAndResetCommand(),
             () -> (!timer.hasElapsed(12.0))));
   }
 
@@ -350,7 +351,7 @@ public class AutonomousCommandFactory {
         Commands.either(
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, driveToJ, false, false),
-            Commands.none(),
+            elevator.getElevatorLowerAndResetCommand(),
             () -> (!timer.hasElapsed(11.0))));
   }
 
@@ -382,7 +383,7 @@ public class AutonomousCommandFactory {
         Commands.either(
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.LEFT, driveToE, true, false),
-            Commands.none(),
+            elevator.getElevatorLowerAndResetCommand(),
             () -> (!timer.hasElapsed(11.0))));
   }
 
@@ -597,8 +598,7 @@ public class AutonomousCommandFactory {
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
             Commands.runOnce(manipulator::shootCoralFast, manipulator)),
-        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
-        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.HARDSTOP), elevator));
+        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()));
   }
 
   private Command getScoreL4BeforeAlgaeCommand(
@@ -636,16 +636,20 @@ public class AutonomousCommandFactory {
       Side side,
       boolean rightCoralStation) {
     return Commands.sequence(
-        new DriveToStation(
-            drivetrain,
-            manipulator,
-            () ->
-                (rightCoralStation
-                    ? Field2d.getInstance().getRightCoralStation()
-                    : Field2d.getInstance().getLeftCoralStation()),
-            new Transform2d(
-                Units.inchesToMeters(0.5), Units.inchesToMeters(1.0), Rotation2d.fromDegrees(2.0)),
-            4.0),
+        Commands.parallel(
+            elevator.getElevatorLowerAndResetCommand(),
+            new DriveToStation(
+                drivetrain,
+                manipulator,
+                () ->
+                    (rightCoralStation
+                        ? Field2d.getInstance().getRightCoralStation()
+                        : Field2d.getInstance().getLeftCoralStation()),
+                new Transform2d(
+                    Units.inchesToMeters(0.5),
+                    Units.inchesToMeters(1.0),
+                    Rotation2d.fromDegrees(2.0)),
+                4.0)),
         getCollectCoralCommand(manipulator),
         getScoreL4Command(
             drivetrain,
@@ -665,16 +669,20 @@ public class AutonomousCommandFactory {
       boolean rightCoralStation,
       boolean closeAuto) {
     return Commands.sequence(
-        new DriveToStation(
-            drivetrain,
-            manipulator,
-            () ->
-                (rightCoralStation
-                    ? Field2d.getInstance().getRightCoralStation()
-                    : Field2d.getInstance().getLeftCoralStation()),
-            new Transform2d(
-                Units.inchesToMeters(0.5), Units.inchesToMeters(1.0), Rotation2d.fromDegrees(2.0)),
-            4.0),
+        Commands.parallel(
+            elevator.getElevatorLowerAndResetCommand(),
+            new DriveToStation(
+                drivetrain,
+                manipulator,
+                () ->
+                    (rightCoralStation
+                        ? Field2d.getInstance().getRightCoralStation()
+                        : Field2d.getInstance().getLeftCoralStation()),
+                new Transform2d(
+                    Units.inchesToMeters(0.5),
+                    Units.inchesToMeters(1.0),
+                    Rotation2d.fromDegrees(2.0)),
+                4.0)),
         getCollectCoralCommand(manipulator),
         Commands.either(
             Commands.none(),
@@ -689,7 +697,8 @@ public class AutonomousCommandFactory {
                     vision,
                     manipulator,
                     elevator,
-                    () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto))),
+                    () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto)),
+                elevator.getElevatorLowerAndResetCommand()),
             () -> (timer.hasElapsed(13.0)) // FIXME: arbitrary tune this time
             ));
   }
