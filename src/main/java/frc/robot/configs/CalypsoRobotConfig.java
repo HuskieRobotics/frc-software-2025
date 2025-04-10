@@ -47,7 +47,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.985073979);
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
-  private static final Distance WHEEL_RADIUS = Meters.of(0.050115);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.050154);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.34925, 0.34925);
@@ -97,8 +97,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Back right camera
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
-          new Translation3d(-0.280, -0.273, 0.252),
-          new Rotation3d(new Quaternion(-0.147, 0.162, 0.030, 0.975)));
+          new Translation3d(-0.279, -0.273, 0.253),
+          new Rotation3d(new Quaternion(-0.149, 0.161, 0.027, 0.975)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
@@ -109,8 +109,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
-          new Translation3d(-0.276, 0.275, 0.254),
-          new Rotation3d(new Quaternion(0.155, 0.169, -0.025, 0.973)));
+          new Translation3d(-0.276, 0.276, 0.253),
+          new Rotation3d(new Quaternion(0.157, 0.163, -0.025, 0.974)));
 
   // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
@@ -442,7 +442,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   @Override
   public Pigeon2Configuration getPigeonConfigForSwerveDrivetrain() {
     return new Pigeon2Configuration()
-        .withMountPose(new MountPoseConfigs().withMountPoseYaw(-90.0).withMountPoseRoll(180.0));
+        .withMountPose(new MountPoseConfigs().withMountPoseRoll(-180.0));
   }
 
   @Override
