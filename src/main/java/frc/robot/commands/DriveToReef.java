@@ -56,6 +56,7 @@ public class DriveToReef extends Command {
   private final Consumer<Transform2d> distanceFromReefConsumer;
   private Pose2d targetPose;
   private Transform2d targetTolerance;
+  private boolean forAlgae;
 
   private Debouncer xDebouncer = new Debouncer(0.2);
 
@@ -90,8 +91,10 @@ public class DriveToReef extends Command {
       new LoggedTunableNumber(
           "DriveToReef/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
-  private static final LoggedTunableNumber closeVelocityBoost =
-      new LoggedTunableNumber("DriveToReef/close velocity boost", 0.25); // was 0.5
+  private static final LoggedTunableNumber coralYVelocityBoost =
+      new LoggedTunableNumber("DriveToReef/y velocity boost", 0.25); // was 0.5
+  private static final LoggedTunableNumber algaeYVelocityBoost =
+      new LoggedTunableNumber("DriveToReef/algae y velocity boost", 0.5); // was 0.5
 
   private final PIDController xController =
       new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
@@ -114,6 +117,7 @@ public class DriveToReef extends Command {
       Consumer<Boolean> onTargetConsumer,
       Consumer<Transform2d> distanceConsumer,
       Transform2d tolerance,
+      boolean forAlgae,
       double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
@@ -251,16 +255,15 @@ public class DriveToReef extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
+      double yVelocityBoost = forAlgae ? algaeYVelocityBoost.get() : coralYVelocityBoost.get();
       if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
-                reefRelativeVelocities.getX(),
-                reefRelativeVelocities.getY() - closeVelocityBoost.get());
+                reefRelativeVelocities.getX(), reefRelativeVelocities.getY() - yVelocityBoost);
       } else if (reefRelativeDifference.getY() < 0 && !oneCoralAway) {
         reefRelativeVelocities =
             new Translation2d(
-                reefRelativeVelocities.getX(),
-                reefRelativeVelocities.getY() + closeVelocityBoost.get());
+                reefRelativeVelocities.getX(), reefRelativeVelocities.getY() + yVelocityBoost);
       }
     } else {
       Logger.recordOutput("DriveToReef/boost velocity", false);
