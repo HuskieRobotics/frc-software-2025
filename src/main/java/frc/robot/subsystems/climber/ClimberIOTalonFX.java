@@ -104,10 +104,13 @@ public class ClimberIOTalonFX implements ClimberIO {
   private void configMotor() {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit =
+        ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLowerTime = ClimberConstants.CLIMBER_PEAK_CURRENT_DURATION;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake; // was coast earlier
 
