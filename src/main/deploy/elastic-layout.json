@@ -345,12 +345,12 @@
           {
             "title": "Enable Auto Scoring",
             "x": 656.0,
-            "y": 416.0,
+            "y": 432.0,
             "width": 608.0,
             "height": 128.0,
             "type": "Toggle Button",
             "properties": {
-              "topic": "/AdvantageKit/NetworkInputs/Tuning/operatorDashboard/Enable Auto Scoring",
+              "topic": "/Tuning/operatorDashboard/Enable Auto Scoring",
               "period": 0.06,
               "data_type": "boolean"
             }

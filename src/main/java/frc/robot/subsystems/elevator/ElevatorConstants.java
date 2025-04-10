@@ -70,7 +70,7 @@ public class ElevatorConstants {
 
   // was 0.05 with no funnel or climber on robot, caused wheels to leave ground
   // arbitrary increase for now
-  public static final double KA_EXPO = 0.2;
+  public static final double KA_EXPO = 0.15; // 0.2
 
   public static final double CRUISE_VELOCITY = 0;
 
