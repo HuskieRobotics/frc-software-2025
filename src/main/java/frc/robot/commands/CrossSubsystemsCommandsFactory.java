@@ -43,7 +43,7 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.runOnce(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
                                 .withTimeout(0.2),
                             Commands.deadline(
-                                getElevatorLowerAndResetCommand(elevator, manipulator),
+                                elevator.getElevatorLowerAndResetCommand(),
                                 new TeleopSwerve(
                                     drivetrain,
                                     OISelector.getOperatorInterface()::getTranslateX,
@@ -165,7 +165,7 @@ public class CrossSubsystemsCommandsFactory {
                             Commands.runOnce(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
                                 .withTimeout(0.2),
                             Commands.deadline(
-                                getElevatorLowerAndResetCommand(elevator, manipulator),
+                                elevator.getElevatorLowerAndResetCommand(),
                                 new TeleopSwerve(
                                     drivetrain,
                                     OISelector.getOperatorInterface()::getTranslateX,
@@ -190,7 +190,7 @@ public class CrossSubsystemsCommandsFactory {
                                         () -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
                                     .withTimeout(0.2),
                                 Commands.deadline(
-                                    getElevatorLowerAndResetCommand(elevator, manipulator),
+                                    elevator.getElevatorLowerAndResetCommand(),
                                     new TeleopSwerve(
                                         drivetrain,
                                         OISelector.getOperatorInterface()::getTranslateX,
@@ -382,7 +382,7 @@ public class CrossSubsystemsCommandsFactory {
         Commands.sequence(
             getScoreAlgaeCommand(drivetrain, manipulator, elevator),
             Commands.deadline(
-                getElevatorLowerAndResetCommand(elevator, manipulator),
+                elevator.getElevatorLowerAndResetCommand(),
                 new TeleopSwerve(
                     drivetrain,
                     OISelector.getOperatorInterface()::getTranslateX,
@@ -497,10 +497,5 @@ public class CrossSubsystemsCommandsFactory {
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 5.0)),
         Commands.waitUntil(elevator::isAtSelectedPosition));
-  }
-
-  private static Command getElevatorLowerAndResetCommand(
-      Elevator elevator, Manipulator manipulator) {
-    return elevator.getElevatorLowerAndResetCommand();
   }
 }
