@@ -436,10 +436,6 @@ public class Field2d {
   public AlgaePosition getNearestAlgae() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
     boolean isHighAlgae = false;
-    // int offset = 0;
-    // if (getAlliance() == Alliance.Red) {
-    //   offset = 6;
-    // }
 
     // high: A/B , E/F, I/J
     // low: C/D, G/H, K/L
@@ -454,18 +450,6 @@ public class Field2d {
         break;
       }
     }
-
-    // if (nearestCenterFace == allReefCenterFaces[0]
-    //     || nearestCenterFace == allReefCenterFaces[2]
-    //     || nearestCenterFace == allReefCenterFaces[4]) {
-    //   // high algae
-    //   isHighAlgae = true;
-    // } else if (nearestCenterFace == allReefCenterFaces[offset + 1]
-    //     || nearestCenterFace == allReefCenterFaces[offset + 3]
-    //     || nearestCenterFace == allReefCenterFaces[offset + 5]) {
-    //   // low algae
-    //   isHighAlgae = false;
-    // }
 
     return new AlgaePosition(removeAlgaePoses.get(nearestCenterFace), isHighAlgae);
   }
@@ -503,15 +487,6 @@ public class Field2d {
 
     // 12 inch buffer, lower if we need to
     return robotRelativeDifference.getX() > Units.inchesToMeters(18);
-  }
-
-  public boolean isFarFromBarge() {
-    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
-    Transform2d robotRelativeDifference = new Transform2d(pose, getCenterBargePose());
-
-    // do not absolute value this due to the chances of us also working with under the barge later
-    // FIXME: tune to be closer possibly
-    return robotRelativeDifference.getX() > Units.inchesToMeters(36);
   }
 
   public Pose2d getFourthAutoCoralPose(Side side, boolean closeAuto) {
