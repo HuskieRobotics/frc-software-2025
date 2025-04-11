@@ -560,7 +560,8 @@ public class AutonomousCommandFactory {
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
                 Commands.waitUntil(
-                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+                        () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
+                    .withTimeout(4.0),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)),
             new DriveToReef(
@@ -601,7 +602,8 @@ public class AutonomousCommandFactory {
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
                 Commands.waitUntil(
-                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+                        () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
+                    .withTimeout(4.0),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
