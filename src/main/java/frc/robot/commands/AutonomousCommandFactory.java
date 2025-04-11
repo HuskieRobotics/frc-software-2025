@@ -70,7 +70,8 @@ public class AutonomousCommandFactory {
         Commands.sequence(
             Commands.print("Raising Elevator"),
             Commands.waitUntil(manipulator::hasIndexedCoral),
-            Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4))));
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)));
 
     /************ One Piece Center ************
      *
@@ -579,7 +580,11 @@ public class AutonomousCommandFactory {
                 Commands.waitUntil(
                     manipulator::hasIndexedCoral), /* possibly add a fractional wait here */
                 Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator)),
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
+                Commands.waitUntil(
+                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)),
             new DriveToReef(
                 drivetrain,
                 poseSupplier,
@@ -590,11 +595,7 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 false,
-                4.0),
-            Commands.sequence(
-                Commands.waitUntil(
-                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
-                Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4)))),
+                4.0)),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
@@ -694,7 +695,7 @@ public class AutonomousCommandFactory {
                     Commands.sequence(
                         Commands.waitSeconds(0.4),
                         Commands.waitUntil(manipulator::hasIndexedCoral),
-                        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3)))),
+                        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator))),
                 getScoreL4Command(
                     drivetrain,
                     vision,
