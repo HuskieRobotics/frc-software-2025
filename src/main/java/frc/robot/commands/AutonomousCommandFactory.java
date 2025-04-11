@@ -262,17 +262,6 @@ public class AutonomousCommandFactory {
   // 4 Coral: J, K, L, A
   public Command getFourCoralLeftCloseCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    PathPlannerPath driveToA;
-
-    try {
-      driveToA = PathPlannerPath.fromPathFile("Drive To A 4CL");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText(
-          "Could not find the specified path file in getFourCoralRightCloseAutoCommand.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
 
     return Commands.sequence(
         Commands.runOnce(() -> timer.restart()),
@@ -286,7 +275,7 @@ public class AutonomousCommandFactory {
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         Commands.either(
             getCollectAndScoreFourthCommand(
-                drivetrain, manipulator, elevator, vision, Side.LEFT, driveToA, false, true),
+                drivetrain, manipulator, elevator, vision, Side.LEFT, null, false, true),
             elevator.getElevatorLowerAndResetCommand(), // if we can't collect the fourth coral, do
             // nothing
             () -> (!timer.hasElapsed(500.0)) // only run if we have time left in auto
@@ -296,17 +285,6 @@ public class AutonomousCommandFactory {
   // 4 Coral: E, D, C, B
   public Command getFourCoralRightCloseCommand(
       Drivetrain drivetrain, Vision vision, Manipulator manipulator, Elevator elevator) {
-    PathPlannerPath driveToB;
-
-    try {
-      driveToB = PathPlannerPath.fromPathFile("Drive To B 4CR");
-    } catch (Exception e) {
-      pathFileMissingAlert.setText(
-          "Could not find the specified path file in getFourCoralRightCloseAutoCommand.");
-      pathFileMissingAlert.set(true);
-
-      return Commands.none();
-    }
 
     return Commands.sequence(
         Commands.runOnce(() -> timer.restart()),
@@ -320,7 +298,7 @@ public class AutonomousCommandFactory {
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
             getCollectAndScoreFourthCommand(
-                drivetrain, manipulator, elevator, vision, Side.RIGHT, driveToB, true, true),
+                drivetrain, manipulator, elevator, vision, Side.RIGHT, null, true, true),
             elevator.getElevatorLowerAndResetCommand(),
             () -> (!timer.hasElapsed(500.0))));
   }
@@ -707,7 +685,7 @@ public class AutonomousCommandFactory {
                     elevator,
                     () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto)),
                 elevator.getElevatorLowerAndResetCommand()),
-            () -> (timer.hasElapsed(500.0)) // FIXME: arbitrary tune this time
+            () -> (timer.hasElapsed(500.0)) // FIXME: tune this time
             ));
   }
 
