@@ -497,8 +497,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     // limit switch, but we will set it using a control request
     config.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = true;
     config.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = 0.0;
-    // FIXME: I don't think this is needed; test and, if not, remove from elevator config as well
-    // config.HardwareLimitSwitch.ReverseLimitEnable = true;
 
     config.MotorOutput.Inverted =
         INDEXER_MOTOR_INVERTED
