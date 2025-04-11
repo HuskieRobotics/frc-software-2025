@@ -527,8 +527,6 @@ public class AutonomousCommandFactory {
         elevator.getElevatorLowerAndResetCommand());
   }
 
-  // FIXME: maybe change this to robot relative? it doesn't really matter though since it's just one
-  // direction
   private Command getBumpAndThreeCoralLeftCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
     return Commands.sequence(
@@ -555,8 +553,7 @@ public class AutonomousCommandFactory {
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
             Commands.sequence(
-                Commands.waitUntil(
-                    manipulator::hasIndexedCoral), /* possibly add a fractional wait here */
+                Commands.waitUntil(manipulator::hasIndexedCoral),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
                 Commands.waitUntil(
@@ -599,6 +596,7 @@ public class AutonomousCommandFactory {
                 false,
                 1.6),
             Commands.sequence(
+                Commands.waitUntil(manipulator::hasIndexedCoral),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
                 Commands.waitUntil(
