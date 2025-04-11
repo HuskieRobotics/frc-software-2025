@@ -313,10 +313,7 @@ public class RobotContainer {
     // if the selected height is l3 or l4, then max our height at l2
     // if drive to pose gets canceled, go back to the target height
     indexedCoralTrigger =
-        new Trigger(
-            () ->
-                (DriverStation.isTeleopEnabled() && manipulator.hasIndexedCoral())
-                    || drivetrain.getDriveToPoseCanceled());
+        new Trigger(() -> (DriverStation.isTeleopEnabled() && manipulator.hasIndexedCoral()));
     indexedCoralTrigger.onTrue(
         Commands.either(
                 Commands.runOnce(elevator::goToSelectedPosition),
