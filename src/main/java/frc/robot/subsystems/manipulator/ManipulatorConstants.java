@@ -74,7 +74,7 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_COLLECTION_VOLTAGE = 4.0;
 
-  public static final double INDEXER_HOLD_ALGAE_CURRENT = 30.0;
+  public static final double INDEXER_HOLD_ALGAE_CURRENT = 40.0;
   public static final double INDEXER_SHOOT_ALGAE_BARGE_CURRENT = -35.0;
   public static final double INDEXER_SHOOT_ALGAE_PROCESSOR_CURRENT = -35.0;
   public static final double INDEXER_DROP_ALGAE_CURRENT = -35.0;
@@ -86,12 +86,6 @@ public class ManipulatorConstants {
 
   public static final double INDEXER_EJECT_VOLTAGE = -12.0;
   public static final double INDEXER_COLLECT_ALGAE_VOLTAGE = 4.0;
-
-  // deprecated constants -- using current control
-  // FIXME: remove once current control is confirmed
-  public static final double INDEXER_HOLD_ALGAE_VOLTAGE = 2.0;
-  public static final double INDEXER_SHOOT_ALGAE_BARGE_VOLTAGE = -10.0;
-  public static final double INDEXER_SHOOT_ALGAE_PROCESSOR_VOLTAGE = -10.0;
 
   public static final double FUNNEL_COLLECTION_VOLTAGE = 4.0;
   public static final double FUNNEL_EJECT_VOLTAGE = -10.0;

@@ -70,11 +70,16 @@ public class ElevatorConstants {
 
   // was 0.05 with no funnel or climber on robot, caused wheels to leave ground
   // arbitrary increase for now
-  public static final double KA_EXPO = 0.2;
+  public static final double KA_EXPO = 0.15; // 0.2
 
   public static final double CRUISE_VELOCITY = 0;
 
+  // This is the current we watch for to detect that the elevator is completely down against the
+  // hard stop
   public static final double STALL_CURRENT = 40.0;
+
+  // This is the current we watch for to detect that the elevator is jammed and needs to be stopped
+  public static final double JAMMED_CURRENT = 59.0;
 
   public enum ScoringHeight {
     HARDSTOP,
@@ -115,10 +120,10 @@ public class ElevatorConstants {
   public static final Distance BARGE_HEIGHT = Inches.of(74);
   public static final Distance PROCESSOR_HEIGHT = Inches.of(0);
 
-  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(6.0);
+  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(10.0); // 6
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
 
-  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(6.0); // 0.5
   public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(2.0);
 
   public static final Distance BELOW_HIGH_ALGAE_HEIGHT = Inches.of(20.0);

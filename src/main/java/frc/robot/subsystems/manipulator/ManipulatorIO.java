@@ -54,6 +54,8 @@ public interface ManipulatorIO {
 
   public default void setFunnelVelocity(double velocity) {}
 
+  public default void zeroIndexerPosition() {}
+
   public default void setIndexerVoltage(double volts) {}
 
   public default void setIndexerVelocity(double velocity) {}

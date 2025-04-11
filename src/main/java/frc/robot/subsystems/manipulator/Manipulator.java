@@ -108,6 +108,8 @@ public class Manipulator extends SubsystemBase {
   private boolean disableFunnelForClimb = false;
   private double targetIndexerPosition;
 
+  private boolean coralInManipulatorFirstRun = true;
+
   /**
    * Create a new subsystem with its associated hardware interface object.
    *
@@ -291,10 +293,10 @@ public class Manipulator extends SubsystemBase {
       @Override
       void onEnter(Manipulator subsystem) {
         subsystem.setFunnelMotorVoltage(0.0);
-        subsystem.setIndexerMotorVoltage(0.0);
+        subsystem.zeroIndexerPosition();
+        subsystem.targetIndexerPosition = 0.0;
         subsystem.shootCoralButtonPressed = false;
-
-        subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
+        subsystem.coralInManipulatorFirstRun = true;
       }
 
       @Override
@@ -306,7 +308,12 @@ public class Manipulator extends SubsystemBase {
           subsystem.targetIndexerPosition = subsystem.inputs.indexerPositionRotations;
         }
 
-        subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
+        if (subsystem.coralInManipulatorFirstRun) {
+          subsystem.coralInManipulatorFirstRun = false;
+        } else {
+          subsystem.holdWheelPosition(subsystem.targetIndexerPosition);
+        }
+
         Logger.recordOutput(
             SUBSYSTEM_NAME + "/targetWheelPosition", subsystem.targetIndexerPosition);
 
@@ -383,11 +390,9 @@ public class Manipulator extends SubsystemBase {
       }
     },
 
-    ALGAE_IN_MANIPULATOR { // state robot is in while algae is held in the manipulator
+    ALGAE_IN_MANIPULATOR {
       @Override
       void onEnter(Manipulator subsystem) {
-        // lessen the voltage of the indexer/roller motor so that it keeps the algae held in the
-        // claw thing
         subsystem.setPivotMotorCurrent(0.0);
         subsystem.setFunnelMotorVoltage(0.0);
         subsystem.setIndexerMotorCurrent(subsystem.indexerHoldAlgaeCurrent.get());
@@ -431,8 +436,6 @@ public class Manipulator extends SubsystemBase {
       void execute(Manipulator subsystem) {
         LEDs.getInstance().requestState(States.SCORING);
 
-        // check if the IR sensor for the algae is unblocked, if so, then switch to the either the
-        // WAITING_FOR_ALGAE_IN_MANIPULATOR or the WAITING_FOR_CORAL_IN_FUNNEL state
         if (!subsystem.inputs.isAlgaeIRBlocked
             && subsystem.scoringAlgaeTimer.hasElapsed(BARGE_ALGAE_TIMEOUT)) {
           subsystem.setState(State.WAITING_FOR_CORAL);
@@ -608,6 +611,10 @@ public class Manipulator extends SubsystemBase {
 
   public void setIndexerMotorVoltage(double volts) {
     io.setIndexerVoltage(volts);
+  }
+
+  public void zeroIndexerPosition() {
+    io.zeroIndexerPosition();
   }
 
   public void setIndexerMotorCurrent(double current) {
