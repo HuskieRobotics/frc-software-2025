@@ -690,12 +690,16 @@ public class AutonomousCommandFactory {
         Commands.either(
             Commands.none(),
             Commands.sequence(
-                Commands.parallel(
-                    AutoBuilder.followPath(path),
-                    Commands.sequence(
-                        Commands.waitSeconds(0.4),
-                        Commands.waitUntil(manipulator::hasIndexedCoral),
-                        Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator))),
+                Commands.either(
+                    Commands.none(),
+                    Commands.parallel(
+                        AutoBuilder.followPath(path),
+                        Commands.sequence(
+                            Commands.waitSeconds(0.4),
+                            Commands.waitUntil(manipulator::hasIndexedCoral),
+                            Commands.runOnce(
+                                () -> elevator.goToPosition(ScoringHeight.L3), elevator))),
+                    () -> closeAuto),
                 getScoreL4Command(
                     drivetrain,
                     vision,
