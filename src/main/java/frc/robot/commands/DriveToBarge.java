@@ -124,6 +124,8 @@ public class DriveToBarge extends Command {
     // Reset all controllers
     this.targetPose = poseSupplier.get();
 
+    updatedPose = false;
+
     drivetrain.enableAccelerationLimiting();
 
     Logger.recordOutput("DriveToBarge/targetPose", targetPose);

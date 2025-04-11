@@ -288,7 +288,7 @@ public class AutonomousCommandFactory {
                 drivetrain, manipulator, elevator, vision, Side.LEFT, driveToA, false, true),
             elevator.getElevatorLowerAndResetCommand(), // if we can't collect the fourth coral, do
             // nothing
-            () -> (!timer.hasElapsed(12.0)) // only run if we have time left in auto
+            () -> (!timer.hasElapsed(500.0)) // only run if we have time left in auto
             ));
   }
 
@@ -321,7 +321,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, driveToB, true, true),
             elevator.getElevatorLowerAndResetCommand(),
-            () -> (!timer.hasElapsed(12.0))));
+            () -> (!timer.hasElapsed(500.0))));
   }
 
   // 4 Coral: I, K, L, J
@@ -352,7 +352,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, driveToJ, false, false),
             elevator.getElevatorLowerAndResetCommand(),
-            () -> (!timer.hasElapsed(11.0))));
+            () -> (!timer.hasElapsed(500.0))));
   }
 
   // 4 Coral: F, D, C, E
@@ -384,7 +384,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.LEFT, driveToE, true, false),
             elevator.getElevatorLowerAndResetCommand(),
-            () -> (!timer.hasElapsed(11.0))));
+            () -> (!timer.hasElapsed(500.0))));
   }
 
   public Command getOneCoralCenterCommand(
@@ -692,7 +692,8 @@ public class AutonomousCommandFactory {
                 Commands.parallel(
                     AutoBuilder.followPath(path),
                     Commands.sequence(
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.4),
+                        Commands.waitUntil(manipulator::hasIndexedCoral),
                         Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3)))),
                 getScoreL4Command(
                     drivetrain,
@@ -701,7 +702,7 @@ public class AutonomousCommandFactory {
                     elevator,
                     () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto)),
                 elevator.getElevatorLowerAndResetCommand()),
-            () -> (timer.hasElapsed(13.0)) // FIXME: arbitrary tune this time
+            () -> (timer.hasElapsed(500.0)) // FIXME: arbitrary tune this time
             ));
   }
 
