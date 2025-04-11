@@ -422,8 +422,8 @@ public class AutonomousCommandFactory {
                 () -> Field2d.getInstance().getRightBargePose(),
                 manipulator::setReadyToScore,
                 new Transform2d(
-                    Units.inchesToMeters(0.5), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
-                3.0)),
+                    Units.inchesToMeters(1.0), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
+                2.0)),
         Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BARGE)),
         Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
         Commands.waitUntil(manipulator::scoredAlgae),
@@ -434,14 +434,14 @@ public class AutonomousCommandFactory {
             drivetrain, manipulator, elevator, vision),
         Commands.parallel(
             Commands.sequence(
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(0.75),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator)),
             new DriveToProcessor(
                 drivetrain,
-                () -> Field2d.getInstance().getCenterBargePose(),
+                () -> Field2d.getInstance().getRightBargePose(),
                 manipulator::setReadyToScore,
                 new Transform2d(
-                    Units.inchesToMeters(0.5), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
+                    Units.inchesToMeters(1.0), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
                 3.0)),
         Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BARGE)),
         Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
