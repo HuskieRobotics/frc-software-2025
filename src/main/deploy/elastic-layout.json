@@ -341,6 +341,19 @@
               "period": 0.06,
               "data_type": "boolean"
             }
+          },
+          {
+            "title": "Enable Auto Scoring",
+            "x": 656.0,
+            "y": 432.0,
+            "width": 608.0,
+            "height": 128.0,
+            "type": "Toggle Button",
+            "properties": {
+              "topic": "/Tuning/operatorDashboard/Enable Auto Scoring",
+              "period": 0.06,
+              "data_type": "boolean"
+            }
           }
         ]
       }
@@ -400,6 +413,192 @@
               "topic": "/Tuning/operatorDashboard/Enable Vision",
               "period": 0.06,
               "data_type": "boolean"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "System Test",
+      "grid_layout": {
+        "layouts": [],
+        "containers": [
+          {
+            "title": "SystemCheck",
+            "x": 576.0,
+            "y": 48.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/SystemStatus/Drivetrain/SystemCheck",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "SystemCheck",
+            "x": 0.0,
+            "y": 16.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Command",
+            "properties": {
+              "topic": "/SmartDashboard/SystemStatus/Elevator/SystemCheck",
+              "period": 0.06,
+              "show_type": true
+            }
+          },
+          {
+            "title": "CheckRan",
+            "x": 832.0,
+            "y": 48.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/CheckRan",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "SystemOK",
+            "x": 960.0,
+            "y": 48.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/SystemOK",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Faults",
+            "x": 576.0,
+            "y": 176.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/Faults",
+              "period": 0.06,
+              "data_type": "string[]",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "LastFault",
+            "x": 576.0,
+            "y": 304.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/LastFault",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Status",
+            "x": 832.0,
+            "y": 304.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Drivetrain/Status",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "CheckRan",
+            "x": 256.0,
+            "y": 16.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Elevator/CheckRan",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "SystemOK",
+            "x": 384.0,
+            "y": 16.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Elevator/SystemOK",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Faults",
+            "x": 0.0,
+            "y": 144.0,
+            "width": 512.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Elevator/Faults",
+              "period": 0.06,
+              "data_type": "string[]",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "LastFault",
+            "x": 0.0,
+            "y": 272.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Elevator/LastFault",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
+            }
+          },
+          {
+            "title": "Status",
+            "x": 256.0,
+            "y": 272.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "/AdvantageKit/RealOutputs/SystemStatus/Elevator/Status",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
             }
           }
         ]

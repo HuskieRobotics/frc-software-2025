@@ -39,6 +39,7 @@ public class ClimberCommandFactory {
     oi.getExtendClimberToMatchPositionButton()
         .onTrue(
             Commands.sequence(
+                    Commands.runOnce(climber::zero, climber),
                     Commands.runOnce(climber::extendSlow, climber),
                     Commands.waitUntil(
                         () -> climber.getPosition() < -ClimberConstants.MAX_HEIGHT_INCHES),

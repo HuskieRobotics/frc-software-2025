@@ -398,12 +398,20 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   @Override
   public void setIndexerVoltage(double volts) {
-    this.indexerMotor.setControl(indexerVoltageRequest.withOutput(volts));
+    this.indexerMotor.setControl(
+        indexerVoltageRequest.withLimitForwardMotion(false).withOutput(volts));
+  }
+
+  @Override
+  public void zeroIndexerPosition() {
+    this.indexerMotor.setControl(
+        indexerVoltageRequest.withLimitForwardMotion(true).withOutput(0.0));
   }
 
   @Override
   public void setIndexerPosition(double position) {
-    this.indexerMotor.setControl(indexerPositionRequest.withPosition(position));
+    this.indexerMotor.setControl(
+        indexerPositionRequest.withLimitForwardMotion(false).withPosition(position));
   }
 
   @Override
@@ -413,7 +421,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   @Override
   public void setIndexerCurrent(double current) {
-    this.indexerMotor.setControl(indexerCurrentRequest.withOutput(current));
+    this.indexerMotor.setControl(
+        indexerCurrentRequest.withLimitForwardMotion(false).withOutput(current));
   }
 
   @Override
@@ -423,7 +432,8 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   @Override
   public void setIndexerVelocity(double velocity) {
-    this.indexerMotor.setControl(indexerVelocityRequest.withVelocity(velocity));
+    this.indexerMotor.setControl(
+        indexerVelocityRequest.withLimitForwardMotion(false).withVelocity(velocity));
   }
 
   @Override
@@ -482,6 +492,11 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.CurrentLimits.StatorCurrentLimitEnable = true;
 
     config.Feedback.SensorToMechanismRatio = MANIPULATOR_GEAR_RATIO;
+
+    // configure a hardware limit switch that zeros the elevator when lowered; there is no hardware
+    // limit switch, but we will set it using a control request
+    config.HardwareLimitSwitch.ForwardLimitAutosetPositionEnable = true;
+    config.HardwareLimitSwitch.ForwardLimitAutosetPositionValue = 0.0;
 
     config.MotorOutput.Inverted =
         INDEXER_MOTOR_INVERTED

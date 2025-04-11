@@ -53,6 +53,16 @@ public class Field2d {
   private Pose2d[] processors = new Pose2d[2];
   private Pose2d[] coralStations = new Pose2d[4];
 
+  private static final Pose2d CENTER_BARGE_POSE =
+      new Pose2d(
+          new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
+          Rotation2d.fromDegrees(0.0));
+
+  private static final Pose2d RIGHT_BARGE_POSE =
+      new Pose2d(
+          new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(206.855)),
+          Rotation2d.fromDegrees(0.0));
+
   private final boolean COMPETITION_FIELD =
       true; // set TRUE if home field calibration or at competition
 
@@ -426,53 +436,75 @@ public class Field2d {
   public AlgaePosition getNearestAlgae() {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
     boolean isHighAlgae = false;
-    int offset = 0;
-    if (getAlliance() == Alliance.Red) {
-      offset = 6;
-    }
 
     // high: A/B , E/F, I/J
     // low: C/D, G/H, K/L
     Pose2d nearestCenterFace = pose.nearest(Arrays.asList(allReefCenterFaces));
-    if (nearestCenterFace == allReefCenterFaces[offset + 0]
-        || nearestCenterFace == allReefCenterFaces[offset + 2]
-        || nearestCenterFace == allReefCenterFaces[offset + 4]) {
-      // high algae
-      isHighAlgae = true;
-    } else if (nearestCenterFace == allReefCenterFaces[offset + 1]
-        || nearestCenterFace == allReefCenterFaces[offset + 3]
-        || nearestCenterFace == allReefCenterFaces[offset + 5]) {
-      // low algae
-      isHighAlgae = false;
+    for (int i = 0; i < allReefCenterFaces.length; i++) {
+      if (nearestCenterFace == allReefCenterFaces[i]) {
+        if (i % 2 == 0) {
+          isHighAlgae = true;
+        } else {
+          isHighAlgae = false;
+        }
+        break;
+      }
     }
 
     return new AlgaePosition(removeAlgaePoses.get(nearestCenterFace), isHighAlgae);
   }
 
-  public Pose2d getBargePose() {
+  public Pose2d getCenterBargePose() {
     // x arbitrary from 20 inches x from the middle cage
 
-    Pose2d bargePose =
-        new Pose2d(
-            new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
-            Rotation2d.fromDegrees(0.0));
-
     if (getAlliance() == Alliance.Red) {
-      bargePose = FlippingUtil.flipFieldPose(bargePose);
+      return FlippingUtil.flipFieldPose(CENTER_BARGE_POSE);
     }
-    return bargePose;
+    return CENTER_BARGE_POSE;
   }
 
-  public Pose2d getFourthAutoCoralPose(Side side) {
+  public Pose2d getShortOfBargePose() {
+    Pose2d shortOfBargePose =
+        CENTER_BARGE_POSE.transformBy(
+            new Transform2d(-Units.inchesToMeters(18), 0.0, Rotation2d.fromDegrees(0.0)));
+
+    if (getAlliance() == Alliance.Red) {
+      return FlippingUtil.flipFieldPose(shortOfBargePose);
+    }
+    return shortOfBargePose;
+  }
+
+  public Pose2d getRightBargePose() {
+    if (getAlliance() == Alliance.Red) {
+      return FlippingUtil.flipFieldPose(RIGHT_BARGE_POSE);
+    }
+    return RIGHT_BARGE_POSE;
+  }
+
+  public boolean isShortOfBarge() {
+    Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
+    Transform2d robotRelativeDifference = new Transform2d(pose, getCenterBargePose());
+
+    // 12 inch buffer, lower if we need to
+    return robotRelativeDifference.getX() > Units.inchesToMeters(18);
+  }
+
+  public Pose2d getFourthAutoCoralPose(Side side, boolean closeAuto) {
     int offset = 0;
     if (getAlliance() == Alliance.Red) {
       offset = 6;
     }
 
     if (side == Side.LEFT) {
-      return leftReefPoses.get(allReefCenterFaces[offset]);
+      if (closeAuto) {
+        return leftReefPoses.get(allReefCenterFaces[offset]);
+      }
+      return leftReefPoses.get(allReefCenterFaces[offset + 4]);
     } else {
-      return rightReefPoses.get(allReefCenterFaces[offset]);
+      if (closeAuto) {
+        return rightReefPoses.get(allReefCenterFaces[offset]);
+      }
+      return rightReefPoses.get(allReefCenterFaces[offset + 2]);
     }
   }
 
@@ -505,40 +537,56 @@ public class Field2d {
     return nearestCoralStation;
   }
 
-  /*
-   * These methods are for manually populating reef branch pose maps based on the measured robot pose in the correct scoring position.
-   */
+  public Pose2d getLeftCoralStation() {
+    int offset = getAlliance() == Alliance.Red ? 2 : 0;
+
+    return coralStations[offset].transformBy(
+        new Transform2d(
+            (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
+            0,
+            Rotation2d.fromDegrees(0)));
+  }
+
+  public Pose2d getRightCoralStation() {
+    int offset = getAlliance() == Alliance.Red ? 3 : 1;
+
+    return coralStations[offset].transformBy(
+        new Transform2d(
+            (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0),
+            0,
+            Rotation2d.fromDegrees(0)));
+  }
+
   private Pose2d[] populateBlueReefRightBranches() {
     Pose2d[] blueReefRightBranches = new Pose2d[6];
     // ORDER (clockwise): B, L, J, H, F, D
     // B
     blueReefRightBranches[0] =
         new Pose2d(
-            3.229818603562776, 3.8648756851682364, Rotation2d.fromDegrees(-0.17889520040049436));
+            3.2297402335147383, 3.8536669362597844, Rotation2d.fromDegrees(0.09841323474273349));
 
     // L
     blueReefRightBranches[1] =
         new Pose2d(
-            3.7176156282759605, 5.035380869555658, Rotation2d.fromDegrees(-60.10709497904928));
+            3.725592350433539, 5.036519855034012, Rotation2d.fromDegrees(-59.37011637456746));
 
     // J
     blueReefRightBranches[2] =
         new Pose2d(
-            4.966760203506612, 5.20700655083356, Rotation2d.fromDegrees(-120.50276965017787));
+            4.967192219760977, 5.204947178816335, Rotation2d.fromDegrees(-120.00071817534271));
 
     // H
     blueReefRightBranches[3] =
         new Pose2d(
-            5.751655098482316, 4.183732157427522, Rotation2d.fromDegrees(179.67501229375796));
+            5.746347345713832, 4.172053345535966, Rotation2d.fromDegrees(179.93194082621312));
 
     // F
     blueReefRightBranches[4] =
-        new Pose2d(
-            5.2563454537513445, 3.0141128709412994, Rotation2d.fromDegrees(119.39127568247405));
+        new Pose2d(5.258977068895843, 3.019646846491732, Rotation2d.fromDegrees(120.5460721330139));
 
     // D
     blueReefRightBranches[5] =
-        new Pose2d(4.014241609545086, 2.846973683493267, Rotation2d.fromDegrees(60.57340938572369));
+        new Pose2d(4.004744379230419, 2.856851423095725, Rotation2d.fromDegrees(60.48934006593803));
 
     return blueReefRightBranches;
   }
@@ -549,30 +597,32 @@ public class Field2d {
     // A
     blueReefLeftBranches[0] =
         new Pose2d(
-            3.230542336549387, 4.193007927492786, Rotation2d.fromDegrees(-0.10181025091822583));
+            3.2299947937097664, 4.185286326078665, Rotation2d.fromDegrees(0.415094344192135));
 
     // K
     blueReefLeftBranches[1] =
         new Pose2d(
-            4.010643260665861, 5.204141168931486, Rotation2d.fromDegrees(-59.92450083674441));
+            4.003636527227158, 5.198255868863797, Rotation2d.fromDegrees(-60.10053198394155));
 
     // I
     blueReefLeftBranches[2] =
         new Pose2d(
-            5.276753358736465, 5.0267056648963395, Rotation2d.fromDegrees(-119.95088757038484));
+            5.260342497072796, 5.0314651896348055, Rotation2d.fromDegrees(-119.52833633158033));
 
     // G
     blueReefLeftBranches[3] =
         new Pose2d(
-            5.750908678104904, 3.8621098391612554, Rotation2d.fromDegrees(179.68958461210676));
+            5.7489758447301424, 3.858442017686741, Rotation2d.fromDegrees(179.84448470654726));
 
     // E
     blueReefLeftBranches[4] =
-        new Pose2d(4.967337814725686, 2.848124833495257, Rotation2d.fromDegrees(119.7932088156921));
+        new Pose2d(
+            4.973352013827546, 2.854211345691346, Rotation2d.fromDegrees(119.56560752240074));
 
     // C
     blueReefLeftBranches[5] =
-        new Pose2d(3.7141747842348485, 3.019437777942879, Rotation2d.fromDegrees(60.4742856167002));
+        new Pose2d(
+            3.7175196664431724, 3.020055908870375, Rotation2d.fromDegrees(60.08890637786532));
 
     return blueReefLeftBranches;
   }
@@ -583,32 +633,32 @@ public class Field2d {
     // B
     redReefRightBranches[0] =
         new Pose2d(
-            14.320720415187344, 4.184033251040251, Rotation2d.fromDegrees(-179.5396778347839));
+            14.322995714644378, 4.200589964509978, Rotation2d.fromDegrees(-179.34948084802707));
 
     // L
     redReefRightBranches[1] =
         new Pose2d(
-            13.832900295444404, 3.0172264415239596, Rotation2d.fromDegrees(119.85502437679067));
+            13.829653180848501, 3.0131002588192035, Rotation2d.fromDegrees(120.29422585119042));
 
     // J
     redReefRightBranches[2] =
         new Pose2d(
-            12.571949778471065, 2.8488636363959317, Rotation2d.fromDegrees(60.29114158605732));
+            12.582025375503665, 2.844122487105607, Rotation2d.fromDegrees(60.42707787072029));
 
     // H
     redReefRightBranches[3] =
         new Pose2d(
-            11.796071028860094, 3.867363990420004, Rotation2d.fromDegrees(-0.09948627549695879));
+            11.800203937804532, 3.864283797147812, Rotation2d.fromDegrees(-0.5851569329692476));
 
     // F
     redReefRightBranches[4] =
         new Pose2d(
-            12.284519496572326, 5.036756443709353, Rotation2d.fromDegrees(-59.93637786402808));
+            12.285534658850395, 5.0300249078136785, Rotation2d.fromDegrees(-59.682359245717));
 
     // D
     redReefRightBranches[5] =
         new Pose2d(
-            13.55314624028025, 5.193721262283811, Rotation2d.fromDegrees(-120.24661569289086));
+            13.548286154407275, 5.195941678902002, Rotation2d.fromDegrees(-120.02118644762864));
 
     return redReefRightBranches;
   }
@@ -619,32 +669,33 @@ public class Field2d {
     // ORDER (clockwise): A, K, I, G, E, C
     // A
     redReefLeftBranches[0] =
-        new Pose2d(14.31979633815289, 3.856825038161692, Rotation2d.fromDegrees(179.8562374074041));
+        new Pose2d(
+            14.320218201746318, 3.8417616052339834, Rotation2d.fromDegrees(-179.86564755896464));
 
     // K
     redReefLeftBranches[1] =
         new Pose2d(
-            13.538278124818714, 2.8473068940183475, Rotation2d.fromDegrees(120.00124833818488));
+            13.539298323818617, 2.8455270580452545, Rotation2d.fromDegrees(119.92335318322094));
 
     // I
     redReefLeftBranches[2] =
         new Pose2d(
-            12.268909270987784, 3.024518569894161, Rotation2d.fromDegrees(60.16963198950504));
+            12.288438659399192, 3.017322920872917, Rotation2d.fromDegrees(59.90802439025146));
 
     // G
     redReefLeftBranches[3] =
         new Pose2d(
-            11.795148549502741, 4.198638905923342, Rotation2d.fromDegrees(-0.10766688992053104));
+            11.799123557273212, 4.186674433022764, Rotation2d.fromDegrees(-0.03228418321640545));
 
     // E
     redReefLeftBranches[4] =
         new Pose2d(
-            12.574952391375794, 5.204771483613289, Rotation2d.fromDegrees(-59.815946018525125));
+            12.587631657043788, 5.204901940879206, Rotation2d.fromDegrees(-60.567031105092155));
 
     // C
     redReefLeftBranches[5] =
         new Pose2d(
-            13.838407776798107, 5.0317099908377445, Rotation2d.fromDegrees(-119.90855915364374));
+            13.841666999458502, 5.029054264702699, Rotation2d.fromDegrees(-120.12660737579654));
 
     return redReefLeftBranches;
   }

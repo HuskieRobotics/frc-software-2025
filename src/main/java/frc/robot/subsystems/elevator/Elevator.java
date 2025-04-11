@@ -11,10 +11,13 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
+import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
@@ -37,11 +40,16 @@ public class Elevator extends SubsystemBase {
   private Alert hardStopAlert =
       new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
 
+  private Alert jammedAlert =
+      new Alert("Elevator jam detected. Use manual control.", AlertType.kError);
+
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
           0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
   // filter's impulse response, and the second value is the time-period, how often
   // the calculate() method will be called
+
+  private LinearFilter jamFilter = LinearFilter.singlePoleIIR(0.4, 0.02);
 
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
@@ -68,8 +76,8 @@ public class Elevator extends SubsystemBase {
 
     SysIdRoutineChooser.getInstance().addOption("Elevator Voltage 3", sysIdRoutineStage3);
 
-    // FaultReporter.getInstance()
-    //     .registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
+    FaultReporter.getInstance()
+        .registerSystemCheck(SUBSYSTEM_NAME, getElevatorSystemCheckCommand());
   }
 
   private final SysIdRoutine sysIdRoutineStage1 =
@@ -112,8 +120,18 @@ public class Elevator extends SubsystemBase {
 
     Logger.recordOutput(SUBSYSTEM_NAME + "/targetPosition", targetPosition);
     Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
+    Logger.recordOutput(SUBSYSTEM_NAME + "/canScoreFartherAway", canScoreFartherAway());
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+    if (jamFilter.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
+      CommandScheduler.getInstance()
+          .schedule(
+              Commands.sequence(
+                  Commands.runOnce(() -> elevatorIO.setMotorVoltage(0), this),
+                  Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
+                      .withTimeout(1.0)));
+      jammedAlert.set(true);
+    }
 
     if (testingMode.get() == 1) {
 
@@ -201,9 +219,45 @@ public class Elevator extends SubsystemBase {
     return getPosition().minus(reefBranchToDistance(reefBranch)).abs(Inches) < TOLERANCE_INCHES;
   }
 
-  // TODO: Implement system check method
   public Command getElevatorSystemCheckCommand() {
-    return null;
+    return Commands.sequence(
+            getTestPositionCommand(ScoringHeight.L1),
+            getTestPositionCommand(ScoringHeight.ABOVE_L1),
+            getTestPositionCommand(ScoringHeight.L2),
+            getTestPositionCommand(ScoringHeight.L3),
+            getTestPositionCommand(ScoringHeight.L4),
+            getTestPositionCommand(ScoringHeight.MAX_L2),
+            getTestPositionCommand(ScoringHeight.MAX_L3),
+            getTestPositionCommand(ScoringHeight.BELOW_LOW_ALGAE),
+            getTestPositionCommand(ScoringHeight.LOW_ALGAE),
+            getTestPositionCommand(ScoringHeight.BELOW_HIGH_ALGAE),
+            getTestPositionCommand(ScoringHeight.HIGH_ALGAE),
+            getTestPositionCommand(ScoringHeight.BARGE),
+            getTestPositionCommand(ScoringHeight.PROCESSOR))
+        .until(() -> !FaultReporter.getInstance().getFaults(SUBSYSTEM_NAME).isEmpty())
+        .andThen(getElevatorLowerAndResetCommand())
+        .withName(SUBSYSTEM_NAME + "SystemCheck");
+  }
+
+  private Command getTestPositionCommand(ScoringHeight reefBranch) {
+    return Commands.sequence(
+        Commands.runOnce(() -> goToPosition(reefBranch), this),
+        Commands.waitUntil(() -> isAtPosition(reefBranch)).withTimeout(1.0),
+        Commands.runOnce(() -> checkPosition(reefBranch), this));
+  }
+
+  private void checkPosition(ScoringHeight reefBranch) {
+    if (!isAtPosition(reefBranch)) {
+      FaultReporter.getInstance()
+          .addFault(
+              SUBSYSTEM_NAME,
+              "Elevator position not at "
+                  + reefBranch
+                  + " as expected. Should be: "
+                  + reefBranchToDistance(reefBranch)
+                  + " but is: "
+                  + getPosition());
+    }
   }
 
   public void goToPosition(ScoringHeight reefBranch) {
@@ -233,6 +287,8 @@ public class Elevator extends SubsystemBase {
 
   public boolean canScoreFartherAway() {
     return Math.abs(distanceFromReef.getX()) < FAR_SCORING_DISTANCE
+        // FIXME: when approach the reef from the side, this next condition may cause this to
+        // always return false
         && Math.abs(distanceFromReef.getX()) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
         && Math.abs(distanceFromReef.getY()) < FAR_SCORING_Y_TOLERANCE
         && Math.abs(distanceFromReef.getRotation().getDegrees())

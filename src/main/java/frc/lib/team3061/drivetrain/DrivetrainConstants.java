@@ -18,7 +18,8 @@ public class DrivetrainConstants {
   public static final double DRIVE_TO_REEF_X_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_Y_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_THETA_TOLERANCE_DEG = 2.0;
-  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP = 0.25;
+  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP =
+      0.1; // was 0.25 at midwest, was 0.1 at start at home
   public static final double DRIVE_TO_REEF_X_BOOST_AUTO = 0.1;
   public static final double DRIVE_TO_STATION_X_BOOST = -0.25;
 
@@ -35,6 +36,9 @@ public class DrivetrainConstants {
 
   public static final double TILT_THRESHOLD_DEG = 5.0;
   public static final double UNTILT_VELOCITY_MPS = 0.5;
+
+  public static final double SYSTEM_TEST_VELOCITY_TOLERANCE = 0.25;
+  public static final double SYSTEM_TEST_ANGLE_TOLERANCE_DEG = 1.25;
 
   public enum SysIDCharacterizationMode {
     TRANSLATION_VOLTS,

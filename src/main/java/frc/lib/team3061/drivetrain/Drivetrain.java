@@ -1148,10 +1148,30 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
                     .andThen(
                         Commands.runOnce(
                             () -> {
-                              checkSwerveModule(0, 135, 1, -0.38 * Math.PI, .1);
-                              checkSwerveModule(1, 45, 1, -0.38 * Math.PI, .1);
-                              checkSwerveModule(2, 45, 1, 0.38 * Math.PI, .1);
-                              checkSwerveModule(3, 135, 1, 0.38 * Math.PI, .1);
+                              checkSwerveModule(
+                                  0,
+                                  135,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  -0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                              checkSwerveModule(
+                                  1,
+                                  45,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  -0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                              checkSwerveModule(
+                                  2,
+                                  45,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                              checkSwerveModule(
+                                  3,
+                                  135,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  0.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
                             })))
             .withTimeout(1);
       case COUNTERCLOCKWISE:
@@ -1161,10 +1181,30 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
                     .andThen(
                         Commands.runOnce(
                             () -> {
-                              checkSwerveModule(0, 135, 1, .38 * Math.PI, .1);
-                              checkSwerveModule(1, 45, 1, .38 * Math.PI, .1);
-                              checkSwerveModule(2, 45, 1, -.38 * Math.PI, .1);
-                              checkSwerveModule(3, 135, 1, -.38 * Math.PI, .1);
+                              checkSwerveModule(
+                                  0,
+                                  135,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  .38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                              checkSwerveModule(
+                                  1,
+                                  45,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  .38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                              checkSwerveModule(
+                                  2,
+                                  45,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  -.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
+                              checkSwerveModule(
+                                  3,
+                                  135,
+                                  SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                  -.38 * Math.PI,
+                                  SYSTEM_TEST_VELOCITY_TOLERANCE);
                             })))
             .withTimeout(1);
       default:
@@ -1184,7 +1224,12 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
                     Commands.runOnce(
                         () -> {
                           for (int i = 0; i < this.inputs.swerve.length; i++) {
-                            checkSwerveModule(i, angleTarget, 1, velocityTarget, 0.1);
+                            checkSwerveModule(
+                                i,
+                                angleTarget,
+                                SYSTEM_TEST_ANGLE_TOLERANCE_DEG,
+                                velocityTarget,
+                                SYSTEM_TEST_VELOCITY_TOLERANCE);
                           }
                         })))
         .withTimeout(2);
