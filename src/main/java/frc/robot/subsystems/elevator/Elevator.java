@@ -49,6 +49,8 @@ public class Elevator extends SubsystemBase {
   // filter's impulse response, and the second value is the time-period, how often
   // the calculate() method will be called
 
+  private LinearFilter jamFilter = LinearFilter.singlePoleIIR(0.4, 0.02);
+
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private final LoggedTunableNumber testingMode =
@@ -120,7 +122,8 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/distanceFromReef", distanceFromReef);
     Logger.recordOutput(SUBSYSTEM_NAME + "/canScoreFartherAway", canScoreFartherAway());
 
-    if (current.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
+    current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+    if (jamFilter.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
       CommandScheduler.getInstance()
           .schedule(
               Commands.sequence(
