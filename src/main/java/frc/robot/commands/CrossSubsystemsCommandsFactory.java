@@ -77,7 +77,7 @@ public class CrossSubsystemsCommandsFactory {
                                     .getEnableAutoScoringTrigger()
                                     .getAsBoolean())),
                     getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
-                    manipulator::hasIndexedCoral)
+                    () -> manipulator.indexingCoral() || manipulator.hasIndexedCoral())
                 .withName("prep to score"));
 
     oi.getDriveToNearestCoralStationButton()
