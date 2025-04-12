@@ -552,8 +552,7 @@ public class AutonomousCommandFactory {
                 Commands.waitUntil(manipulator::hasIndexedCoral),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
-                Commands.waitUntil(
-                        () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
+                Commands.waitUntil(() -> (elevator.closeToReef() || manipulator.isReadyToScore()))
                     .withTimeout(4.0),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)),
@@ -595,8 +594,7 @@ public class AutonomousCommandFactory {
                 Commands.waitUntil(manipulator::hasIndexedCoral),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
-                Commands.waitUntil(
-                        () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
+                Commands.waitUntil(() -> (elevator.closeToReef() || manipulator.isReadyToScore()))
                     .withTimeout(1.6),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -293,6 +294,14 @@ public class Elevator extends SubsystemBase {
         && Math.abs(distanceFromReef.getY()) < FAR_SCORING_Y_TOLERANCE
         && Math.abs(distanceFromReef.getRotation().getDegrees())
             < FAR_SCORING_THETA_TOLERANCE.getDegrees();
+  }
+
+  // for use in auto (and maybe teleop)
+  // if we get within 10 inches of the reef, just raise the elevator to L4 to not waste time at the
+  // reef
+  // 10 inches should be enough to save time while also not making the elevator rock side to side
+  public boolean closeToReef() {
+    return Math.abs(distanceFromReef.getX()) < Units.inchesToMeters(10.0);
   }
 
   public void setDistanceFromReef(Transform2d distance) {
