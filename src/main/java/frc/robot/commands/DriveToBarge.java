@@ -52,8 +52,6 @@ public class DriveToBarge extends Command {
   private final Consumer<Boolean> onTarget;
   private Pose2d targetPose;
 
-  private double timeout;
-
   private Timer timer;
 
   private static final LoggedTunableNumber driveKp =
@@ -102,8 +100,7 @@ public class DriveToBarge extends Command {
       Supplier<Pose2d> poseSupplier,
       Consumer<Boolean> onTargetConsumer,
       Transform2d tolerance,
-      DoubleSupplier translationYSupplier,
-      double timeout) {
+      DoubleSupplier translationYSupplier) {
     this.drivetrain = drivetrain;
     this.elevator = elevator;
     this.poseSupplier = poseSupplier;
@@ -111,7 +108,6 @@ public class DriveToBarge extends Command {
     this.tolerance = tolerance;
     this.timer = new Timer();
     this.translationYSupplier = translationYSupplier;
-    this.timeout = timeout;
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -170,7 +166,6 @@ public class DriveToBarge extends Command {
     if (!updatedPose && elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)) {
       targetPose = Field2d.getInstance().getCenterBargePose();
       updatedPose = true;
-      Logger.recordOutput("DriveToBarge/targetPose", targetPose);
     }
 
     // use last values of filter
@@ -220,15 +215,10 @@ public class DriveToBarge extends Command {
             && Math.abs(robotRelativeDifference.getRotation().getRadians())
                 < tolerance.getRotation().getRadians();
 
-    if (atGoal) {
-      onTarget.accept(true);
-      Logger.recordOutput("DriveToProcessor/withinTolerance", true);
-    } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout)) {
-      onTarget.accept(false);
-    }
+    onTarget.accept(atGoal);
 
-    // check each of the controllers is at their goal or if the timeout has elapsed
-    return !drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout) || atGoal;
+    // check each of the controllers is at their goal
+    return !drivetrain.isMoveToPoseEnabled();
   }
 
   /**
