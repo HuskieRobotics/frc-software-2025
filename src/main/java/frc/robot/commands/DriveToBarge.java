@@ -166,6 +166,7 @@ public class DriveToBarge extends Command {
     if (!updatedPose && elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)) {
       targetPose = Field2d.getInstance().getCenterBargePose();
       updatedPose = true;
+      Logger.recordOutput("DriveToBarge/targetPose", targetPose);
     }
 
     // use last values of filter
@@ -216,8 +217,11 @@ public class DriveToBarge extends Command {
                 < tolerance.getRotation().getRadians();
 
     onTarget.accept(atGoal);
+    Logger.recordOutput("DriveToProcessor/withinTolerance", atGoal);
 
-    // check each of the controllers is at their goal
+    // this command should never finish as the driver needs to be able to move in the y direction
+    // until aligned to the barge where there are few algae; it is interrupted when the algae is
+    // shot
     return !drivetrain.isMoveToPoseEnabled();
   }
 
