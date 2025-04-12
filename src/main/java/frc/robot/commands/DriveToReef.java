@@ -231,10 +231,9 @@ public class DriveToReef extends Command {
     // shouldn't)
     double reefRelativeXDifference = reefRelativeDifference.getX();
 
+    // when testing, remove the y condition just to check if we get a new target pose
     if (xDebouncer.calculate(
-            Math.abs(
-                    Math.abs(reefRelativeXDifference)
-                        - DrivetrainConstants.DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE)
+            Math.abs(Math.abs(reefRelativeXDifference) - Units.inchesToMeters(4.5))
                 < Units.inchesToMeters(0.5))
         && !oneCoralAway
         && Math.abs(reefRelativeDifference.getY())
