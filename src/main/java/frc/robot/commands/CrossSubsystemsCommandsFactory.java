@@ -327,7 +327,8 @@ public class CrossSubsystemsCommandsFactory {
                 () -> Field2d.getInstance().getShortOfBargePose(),
                 manipulator::setReadyToScore,
                 new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
-                oi::getTranslateY)),
+                oi::getTranslateY,
+                5.0 /* FIXME: tune */)),
         Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
         () -> Field2d.getInstance().isShortOfBarge());
   }
