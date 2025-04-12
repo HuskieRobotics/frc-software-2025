@@ -358,11 +358,12 @@ public class RobotContainer {
     driveToPoseCanceledTrigger = new Trigger(drivetrain::getDriveToPoseCanceled);
     driveToPoseCanceledTrigger.onTrue(
         Commands.sequence(
-            Commands.run(
-                    () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
-                    drivetrain)
-                .withTimeout(0.5),
-            Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false))));
+                Commands.run(
+                        () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
+                        drivetrain)
+                    .withTimeout(0.5),
+                Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false)))
+            .withName("cancel drive to pose"));
 
     // lock rotation to the nearest 180° while driving
     oi.getLock180Button()
