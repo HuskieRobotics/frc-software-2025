@@ -442,7 +442,7 @@ public class AutonomousCommandFactory {
                 manipulator::setReadyToScore,
                 new Transform2d(
                     Units.inchesToMeters(1.0), Units.inchesToMeters(3), Rotation2d.fromDegrees(2)),
-                3.0)),
+                2.5)),
         Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.BARGE)),
         Commands.runOnce(manipulator::scoreAlgaeInBarge, manipulator),
         Commands.waitUntil(manipulator::scoredAlgae),
