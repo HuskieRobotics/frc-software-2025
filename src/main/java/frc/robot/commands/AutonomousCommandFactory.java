@@ -69,6 +69,8 @@ public class AutonomousCommandFactory {
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)));
 
+    autoChooser.addDefaultOption("Do Nothing", Commands.none());
+
     /************ One Piece Center ************
      *
      * 1 coral scored H L4
@@ -643,6 +645,18 @@ public class AutonomousCommandFactory {
       PathPlannerPath path,
       boolean rightCoralStation,
       boolean closeAuto) {
+    Command optionalFollowPathCommand;
+    if (path != null) {
+      optionalFollowPathCommand =
+          Commands.parallel(
+              AutoBuilder.followPath(path),
+              Commands.sequence(
+                  Commands.waitSeconds(0.4),
+                  Commands.waitUntil(manipulator::hasIndexedCoral),
+                  Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator)));
+    } else {
+      optionalFollowPathCommand = Commands.none();
+    }
     return Commands.sequence(
         Commands.parallel(
             elevator.getElevatorLowerAndResetCommand(),
@@ -662,16 +676,7 @@ public class AutonomousCommandFactory {
         Commands.either(
             Commands.none(),
             Commands.sequence(
-                Commands.either(
-                    Commands.none(),
-                    Commands.parallel(
-                        AutoBuilder.followPath(path),
-                        Commands.sequence(
-                            Commands.waitSeconds(0.4),
-                            Commands.waitUntil(manipulator::hasIndexedCoral),
-                            Commands.runOnce(
-                                () -> elevator.goToPosition(ScoringHeight.L3), elevator))),
-                    () -> closeAuto),
+                optionalFollowPathCommand,
                 getScoreL4Command(
                     drivetrain,
                     vision,
