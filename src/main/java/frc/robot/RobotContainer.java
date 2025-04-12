@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
@@ -312,10 +313,14 @@ public class RobotContainer {
         new Trigger(() -> (DriverStation.isTeleopEnabled() && manipulator.hasIndexedCoral()));
     indexedCoralTrigger.onTrue(
         Commands.either(
-                Commands.runOnce(elevator::goToSelectedPosition),
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L2)),
-                () ->
-                    (oi.getLevel1Trigger().getAsBoolean() || oi.getLevel2Trigger().getAsBoolean()))
+                Commands.none(),
+                Commands.either(
+                    Commands.runOnce(elevator::goToSelectedPosition),
+                    Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L2)),
+                    () ->
+                        (oi.getLevel1Trigger().getAsBoolean()
+                            || oi.getLevel2Trigger().getAsBoolean())),
+                () -> CommandScheduler.getInstance().requiring(elevator) != null)
             .withName("go to selected position or L2"));
 
     // Endgame alerts[]
