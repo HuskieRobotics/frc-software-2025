@@ -134,6 +134,8 @@ public class Elevator extends SubsystemBase {
                           .withTimeout(1.0))
                   .withName("stop elevator jammed"));
       jammedAlert.set(true);
+    } else {
+      jammedAlert.set(false);
     }
 
     if (testingMode.get() == 1) {
