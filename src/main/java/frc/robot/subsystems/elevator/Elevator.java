@@ -128,9 +128,11 @@ public class Elevator extends SubsystemBase {
       CommandScheduler.getInstance()
           .schedule(
               Commands.sequence(
-                  Commands.runOnce(() -> elevatorIO.setMotorVoltage(0), this),
-                  Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
-                      .withTimeout(1.0)));
+                      Commands.runOnce(() -> elevatorIO.setMotorVoltage(0), this),
+                      Commands.run(
+                              () -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
+                          .withTimeout(1.0))
+                  .withName("stop elevator jammed"));
       jammedAlert.set(true);
     }
 
