@@ -67,6 +67,10 @@ public abstract class LEDs extends SubsystemBase {
     NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
+    CAGE_CAUGHT(
+        (leds, section) ->
+            leds.wave(
+                section, Color.kPurple, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
     UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
     ELEVATOR_JAMMED((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
@@ -82,10 +86,6 @@ public abstract class LEDs extends SubsystemBase {
             leds.wave(
                 section, Color.kBlue, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
-    CAGE_CAUGHT(
-        (leds, section) ->
-            leds.wave(
-                section, Color.kPurple, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     HAS_CORAL((leds, section) -> leds.solid(section, Color.kBlue)),
     HAS_ALGAE((leds, section) -> leds.solid(section, Color.kBlue)),
     INDEXING_CORAL((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
