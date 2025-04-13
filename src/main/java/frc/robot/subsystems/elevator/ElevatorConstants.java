@@ -111,16 +111,16 @@ public class ElevatorConstants {
   public static final Distance ABOVE_L1_HEIGHT = Inches.of(25.0);
 
   public static final Distance L2_HEIGHT = Inches.of(30);
-  public static final Distance FAR_L2_HEIGHT = Inches.of(36);
+  public static final Distance FAR_L2_HEIGHT = Inches.of(39);
 
   public static final Distance L3_HEIGHT = Inches.of(45);
-  public static final Distance FAR_L3_HEIGHT = Inches.of(51);
+  public static final Distance FAR_L3_HEIGHT = Inches.of(54); // 51 before
   public static final Distance L4_HEIGHT = Inches.of(71);
 
   public static final Distance BARGE_HEIGHT = Inches.of(74);
   public static final Distance PROCESSOR_HEIGHT = Inches.of(0);
 
-  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(10.0); // 6
+  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(8.0); // 6
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
 
   public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(6.0); // 0.5
