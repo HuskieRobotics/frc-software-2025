@@ -40,7 +40,7 @@ public class CrossSubsystemsCommandsFactory {
                         getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
                         Commands.sequence(
                             getScoreCoralCommand(manipulator, elevator),
-                            Commands.runOnce(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
+                            Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
                                 .withTimeout(0.2),
                             Commands.deadline(
                                 elevator.getElevatorLowerAndResetCommand(),
@@ -162,7 +162,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.either(
                         Commands.none(),
                         Commands.sequence(
-                            Commands.runOnce(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
+                            Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
                                 .withTimeout(0.2),
                             Commands.deadline(
                                 elevator.getElevatorLowerAndResetCommand(),
@@ -186,8 +186,7 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.either(
                             Commands.none(),
                             Commands.sequence(
-                                Commands.runOnce(
-                                        () -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
+                                Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
                                     .withTimeout(0.2),
                                 Commands.deadline(
                                     elevator.getElevatorLowerAndResetCommand(),

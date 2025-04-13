@@ -87,7 +87,7 @@ public class ManipulatorConstants {
   public static final double INDEXER_EJECT_VOLTAGE = -12.0;
   public static final double INDEXER_COLLECT_ALGAE_VOLTAGE = 4.0;
 
-  public static final double FUNNEL_COLLECTION_VOLTAGE = 4.0;
+  public static final double FUNNEL_COLLECTION_VOLTAGE = 4.0; // 4
   public static final double FUNNEL_EJECT_VOLTAGE = -10.0;
 
   // in place for if velocity control gets used

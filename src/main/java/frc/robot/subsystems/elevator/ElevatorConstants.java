@@ -108,7 +108,7 @@ public class ElevatorConstants {
    */
 
   public static final Distance L1_HEIGHT = Inches.of(15.0);
-  public static final Distance ABOVE_L1_HEIGHT = Inches.of(25.0);
+  public static final Distance ABOVE_L1_HEIGHT = Inches.of(35.0);
 
   public static final Distance L2_HEIGHT = Inches.of(30);
   public static final Distance FAR_L2_HEIGHT = Inches.of(40);
