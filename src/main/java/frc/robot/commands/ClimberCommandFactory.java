@@ -30,7 +30,7 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::climb, climber),
                     Commands.waitUntil(
                         () ->
-                            (climber.limitSwitchEngaged()
+                            (climber.climberLimitSwitchEngaged()
                                 || climber.getPosition()
                                     > ClimberConstants.HARDSTOP_POSITION_INCHES)),
                     Commands.runOnce(climber::stop, climber))

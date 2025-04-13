@@ -71,8 +71,12 @@ public class Climber extends SubsystemBase {
     return inputs.positionInches > ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES;
   }
 
-  public boolean limitSwitchEngaged() {
+  public boolean climberLimitSwitchEngaged() {
     return inputs.limitSwitch1Engaged || inputs.limitSwitch2Engaged;
+  }
+
+  public boolean cageCatcherLimitSwitchEngaged() {
+    return inputs.cageCatcherLimitSwitchEngaged;
   }
 
   public double getPosition() {
