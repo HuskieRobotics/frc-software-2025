@@ -10,12 +10,15 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
+import frc.lib.team3061.util.RobotOdometry;
 import frc.lib.team3061.vision.Vision;
+import frc.lib.team6328.util.FieldConstants;
 import frc.robot.Field2d;
 import frc.robot.Field2d.Side;
 import frc.robot.subsystems.elevator.Elevator;
@@ -69,7 +72,7 @@ public class AutonomousCommandFactory {
             Commands.runOnce(
                 () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)));
 
-    autoChooser.addDefaultOption("Do Nothing", Commands.none());
+    // autoChooser.addDefaultOption("Do Nothing", Commands.none());
 
     /************ One Piece Center ************
      *
@@ -115,23 +118,23 @@ public class AutonomousCommandFactory {
         getBumpAndThreeCoralRightCommand(drivetrain, manipulator, elevator, vision);
     autoChooser.addOption("Bump and 3 Coral Right", bumpAndThreeCoralRight);
 
-    // Command autoAutoSelector =
-    //     Commands.either(
-    //         getFourCoralRightCloseCommand(drivetrain, vision, manipulator, elevator),
-    //         getFourCoralLeftCloseCommand(drivetrain, vision, manipulator, elevator),
-    //         () -> {
-    //           if ((Field2d.getInstance().getAlliance() == Alliance.Blue
-    //                   && RobotOdometry.getInstance().getEstimatedPose().getY()
-    //                       < FieldConstants.fieldWidth / 2.0)
-    //               || (Field2d.getInstance().getAlliance() == Alliance.Red
-    //                   && RobotOdometry.getInstance().getEstimatedPose().getY()
-    //                       > FieldConstants.fieldWidth / 2.0)) {
-    //             return true;
-    //           } else {
-    //             return false;
-    //           }
-    //         });
-    // autoChooser.addDefaultOption("Auto Auto Selector", autoAutoSelector);
+    Command autoAutoSelector =
+        Commands.either(
+            getFourCoralRightCloseCommand(drivetrain, vision, manipulator, elevator),
+            getFourCoralLeftCloseCommand(drivetrain, vision, manipulator, elevator),
+            () -> {
+              if ((Field2d.getInstance().getAlliance() == Alliance.Blue
+                      && RobotOdometry.getInstance().getEstimatedPose().getY()
+                          < FieldConstants.fieldWidth / 2.0)
+                  || (Field2d.getInstance().getAlliance() == Alliance.Red
+                      && RobotOdometry.getInstance().getEstimatedPose().getY()
+                          > FieldConstants.fieldWidth / 2.0)) {
+                return true;
+              } else {
+                return false;
+              }
+            });
+    autoChooser.addDefaultOption("Auto Auto Selector", autoAutoSelector);
 
     /************ Start Point ************
      *
