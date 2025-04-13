@@ -100,7 +100,9 @@ public class ManipulatorConstants {
 
   // used for timer
   public static final double CORAL_COLLECTION_TIME_OUT = 4.0;
-  public static final double EJECT_CORAL_DURATION_SECONDS = 2.5;
+  public static final double FIRST_EJECT_CORAL_SECONDS = 0.5;
+  public static final double SECOND_INTAKE_CORAL_SECONDS = 1.5;
+  public static final double FINAL_EJECT_CORAL_DURATION_SECONDS = 3.5;
 
   public static final double INTAKE_ALGAE_TIMEOUT = 3.0;
   public static final double BARGE_ALGAE_TIMEOUT = 0.25;
