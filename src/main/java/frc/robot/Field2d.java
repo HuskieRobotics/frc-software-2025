@@ -485,7 +485,7 @@ public class Field2d {
     Pose2d pose = RobotOdometry.getInstance().getEstimatedPose();
     Transform2d robotRelativeDifference = new Transform2d(pose, getCenterBargePose());
 
-    // 12 inch buffer, lower if we need to
+    // 18 inch buffer, lower if we need to
     return robotRelativeDifference.getX() > Units.inchesToMeters(18);
   }
 
