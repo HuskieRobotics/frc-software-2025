@@ -495,8 +495,9 @@ public class RobotContainer {
     // update LEDs so that they turn yellow. maybe use our reef relative difference, and if it is
     // less than 6
     // but outside of our normal tolerance, turn yellow until we are within tolerance
-
-    if (elevator.canScoreFartherAway()) {
+    if (climber.cageCaught()) {
+      LEDs.getInstance().requestState(LEDs.States.CAGE_CAUGHT);
+    } else if (elevator.canScoreFartherAway()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);

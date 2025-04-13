@@ -75,7 +75,7 @@ public class Climber extends SubsystemBase {
     return inputs.limitSwitch1Engaged || inputs.limitSwitch2Engaged;
   }
 
-  public boolean cageCatcherLimitSwitchEngaged() {
+  public boolean cageCaught() {
     return inputs.cageCatcherLimitSwitchEngaged;
   }
 

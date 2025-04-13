@@ -72,7 +72,6 @@ public abstract class LEDs extends SubsystemBase {
     ELEVATOR_JAMMED((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
     DRIVE_TO_POSE_CANCELED(
         (leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
-
     EJECTING_CORAL(
         (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),
     SCORING((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),
@@ -83,6 +82,10 @@ public abstract class LEDs extends SubsystemBase {
             leds.wave(
                 section, Color.kBlue, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     AUTO_DRIVING_TO_SCORE((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
+    CAGE_CAUGHT(
+        (leds, section) ->
+            leds.wave(
+                section, Color.kPurple, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     HAS_CORAL((leds, section) -> leds.solid(section, Color.kBlue)),
     HAS_ALGAE((leds, section) -> leds.solid(section, Color.kBlue)),
     INDEXING_CORAL((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
