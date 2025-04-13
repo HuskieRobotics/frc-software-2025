@@ -126,6 +126,7 @@ public class DriveToReef extends Command {
     this.targetTolerance = tolerance;
     this.timer = new Timer();
     this.timeout = timeout;
+    this.forAlgae = forAlgae;
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
