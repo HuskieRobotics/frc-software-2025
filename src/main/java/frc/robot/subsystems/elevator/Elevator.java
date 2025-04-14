@@ -22,8 +22,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.Constants;
-import frc.robot.Constants.Mode;
 import frc.robot.Field2d;
 import frc.robot.Field2d.AlgaePosition;
 import frc.robot.operator_interface.OISelector;
@@ -126,18 +124,19 @@ public class Elevator extends SubsystemBase {
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
 
-    if (targetPosition == ScoringHeight.HARDSTOP && !hasBeenZeroed) {
-      if (Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM) {
-        hasBeenZeroed = true;
-        elevatorIO.setMotorVoltage(0);
-        hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE);
-        elevatorIO.zeroPosition();
-      } else if (getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES) {
-        elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
-      }
-    } else {
-      hasBeenZeroed = false;
-    }
+    // FIXME: restore if needed after testing
+    // if (targetPosition == ScoringHeight.HARDSTOP && !hasBeenZeroed) {
+    //   if (Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM) {
+    //     hasBeenZeroed = true;
+    //     elevatorIO.setMotorVoltage(0);
+    //     hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE);
+    //     elevatorIO.zeroPosition();
+    //   } else if (getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES) {
+    //     elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
+    //   }
+    // } else {
+    //   hasBeenZeroed = false;
+    // }
 
     if (jamFilter.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
       CommandScheduler.getInstance()
