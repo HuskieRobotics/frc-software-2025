@@ -26,6 +26,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -272,7 +273,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            elevator.closeToReef()),
+            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         Commands.either(
@@ -296,7 +297,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            elevator.closeToReef()),
+            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
@@ -328,7 +329,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            elevator.closeToReef()),
+            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
         Commands.either(
@@ -361,7 +362,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            elevator.closeToReef()),
+            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
@@ -391,7 +392,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            elevator.canScoreFartherAway()),
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         AutoBuilder.followPath(backUpH1C));
@@ -484,7 +485,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            elevator.canScoreFartherAway()),
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
         Commands.parallel(
             AutoBuilder.followPath(collectCoralAfterG), elevator.getElevatorLowerAndResetCommand()),
         getCollectCoralCommand(manipulator),
@@ -495,7 +496,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            elevator.canScoreFartherAway()),
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
         elevator.getElevatorLowerAndResetCommand());
   }
 
@@ -522,7 +523,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            elevator.canScoreFartherAway()),
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
         Commands.parallel(
             AutoBuilder.followPath(collectCoralAfterH), elevator.getElevatorLowerAndResetCommand()),
         getCollectCoralCommand(manipulator),
@@ -533,7 +534,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            elevator.canScoreFartherAway()),
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
         elevator.getElevatorLowerAndResetCommand());
   }
 
@@ -559,7 +560,7 @@ public class AutonomousCommandFactory {
       Manipulator manipulator,
       Elevator elevator,
       Supplier<Pose2d> poseSupplier,
-      boolean elevatorUpCondition) {
+      BooleanSupplier elevatorUpCondition) {
     return Commands.sequence(
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
@@ -567,8 +568,7 @@ public class AutonomousCommandFactory {
                 Commands.waitUntil(manipulator::hasIndexedCoral),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
-                Commands.waitUntil(() -> (elevatorUpCondition || manipulator.isReadyToScore()))
-                    .withTimeout(4.0),
+                Commands.waitUntil(elevatorUpCondition).withTimeout(4.0),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator)),
             new DriveToReef(
@@ -648,7 +648,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(side),
-            elevator.canScoreFartherAway()));
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())));
   }
 
   private Command getCollectAndScoreFourthCommand(
@@ -698,7 +698,7 @@ public class AutonomousCommandFactory {
                     manipulator,
                     elevator,
                     () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto),
-                    elevator.canScoreFartherAway()),
+                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
                 elevator.getElevatorLowerAndResetCommand()),
             () -> (timer.hasElapsed(500.0)) // FIXME: tune this time
             ));
