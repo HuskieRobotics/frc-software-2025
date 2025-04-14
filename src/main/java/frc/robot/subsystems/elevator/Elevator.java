@@ -305,10 +305,10 @@ public class Elevator extends SubsystemBase {
     goToPosition(getSelectedPosition());
   }
 
+  // x distance from reef is between 0.5 inches and 8 inches
+  // y distance from reef is less than 4 inches
   public boolean canScoreFartherAway() {
     return Math.abs(distanceFromReef.getX()) < FAR_SCORING_DISTANCE
-        // FIXME: when approach the reef from the side, this next condition may cause this to
-        // always return false
         && Math.abs(distanceFromReef.getX()) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
         && Math.abs(distanceFromReef.getY()) < FAR_SCORING_Y_TOLERANCE
         && Math.abs(distanceFromReef.getRotation().getDegrees())
