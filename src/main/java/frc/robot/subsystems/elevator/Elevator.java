@@ -320,7 +320,7 @@ public class Elevator extends SubsystemBase {
   // reef
   // 10 inches should be enough to save time while also not making the elevator rock side to side
   public boolean closeToReef() {
-    return Math.abs(distanceFromReef.getX()) < Units.inchesToMeters(10.0);
+    return Math.abs(distanceFromReef.getX()) < Units.inchesToMeters(12.0);
   }
 
   public void setDistanceFromReef(Transform2d distance) {
