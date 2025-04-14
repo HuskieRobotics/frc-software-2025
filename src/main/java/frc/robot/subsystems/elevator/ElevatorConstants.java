@@ -120,10 +120,10 @@ public class ElevatorConstants {
   public static final Distance BARGE_HEIGHT = Inches.of(74);
   public static final Distance PROCESSOR_HEIGHT = Inches.of(0);
 
-  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(8.0); // 6
+  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(9.0); // 8
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
 
-  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(4.0);
+  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(5.0); // 4
   public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(5.0);
 
   public static final Distance BELOW_HIGH_ALGAE_HEIGHT = Inches.of(20.0);

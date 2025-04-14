@@ -677,6 +677,16 @@ public class Manipulator extends SubsystemBase {
 
   private void shootCoral() {
     shootCoralButtonPressed = true;
+    if (shootingFast) {
+      if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
+          || OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+        setIndexerMotorVoltage(slowShootingVoltage.get());
+      } else {
+        setIndexerMotorVoltage(fastShootingVoltage.get());
+      }
+    } else {
+      setIndexerMotorVoltage(fastShootingVoltage.get());
+    }
   }
 
   public void shootCoralFast() {
