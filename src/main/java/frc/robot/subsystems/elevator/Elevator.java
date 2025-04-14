@@ -44,6 +44,7 @@ public class Elevator extends SubsystemBase {
   private Alert jammedAlert =
       new Alert("Elevator jam detected. Use manual control.", AlertType.kError);
 
+  private boolean hasBeenZeroed = false;
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
           0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
@@ -124,6 +125,20 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/canScoreFartherAway", canScoreFartherAway());
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+
+    if (targetPosition == ScoringHeight.HARDSTOP && !hasBeenZeroed) {
+      if (Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM) {
+        hasBeenZeroed = true;
+        elevatorIO.setMotorVoltage(0);
+        hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE);
+        elevatorIO.zeroPosition();
+      } else if (getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES) {
+        elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
+      }
+    } else {
+      hasBeenZeroed = false;
+    }
+
     if (jamFilter.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
       CommandScheduler.getInstance()
           .schedule(
@@ -368,16 +383,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command getElevatorLowerAndResetCommand() {
-    return Commands.sequence(
-        Commands.runOnce(() -> goToPosition(ScoringHeight.HARDSTOP)),
-        Commands.waitUntil(
-            () -> getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES),
-        Commands.runOnce(() -> elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE)),
-        Commands.waitUntil(
-            () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
-        Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
-        Commands.runOnce(
-            () -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
-        Commands.runOnce(() -> elevatorIO.zeroPosition()));
+    return Commands.runOnce(() -> goToPosition(ScoringHeight.HARDSTOP));
   }
 }
