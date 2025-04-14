@@ -285,8 +285,10 @@ public class Manipulator extends SubsystemBase {
           subsystem.setState(State.WAITING_FOR_CORAL);
         } else if (subsystem.ejectingCoralTimer.hasElapsed(SECOND_INTAKE_CORAL_SECONDS)) {
           subsystem.setFunnelMotorVoltage(subsystem.funnelEjectingVoltage.get());
+          subsystem.setIndexerMotorVoltage(subsystem.indexerEjectingVoltage.get());
         } else if (subsystem.ejectingCoralTimer.hasElapsed(FIRST_EJECT_CORAL_SECONDS)) {
           subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
+          subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         }
       }
 
