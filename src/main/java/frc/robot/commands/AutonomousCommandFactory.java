@@ -627,7 +627,8 @@ public class AutonomousCommandFactory {
       Side side,
       boolean rightCoralStation) {
     return Commands.sequence(
-        Commands.parallel(
+        Commands.deadline(
+            getCollectCoralCommand(manipulator),
             elevator.getElevatorLowerAndResetCommand(),
             new DriveToStation(
                 drivetrain,
@@ -641,7 +642,6 @@ public class AutonomousCommandFactory {
                     Units.inchesToMeters(1.0),
                     Rotation2d.fromDegrees(2.0)),
                 4.0)),
-        getCollectCoralCommand(manipulator),
         getScoreL4Command(
             drivetrain,
             vision,
@@ -673,7 +673,8 @@ public class AutonomousCommandFactory {
       optionalFollowPathCommand = Commands.none();
     }
     return Commands.sequence(
-        Commands.parallel(
+        Commands.deadline(
+            getCollectCoralCommand(manipulator),
             elevator.getElevatorLowerAndResetCommand(),
             new DriveToStation(
                 drivetrain,
@@ -687,7 +688,6 @@ public class AutonomousCommandFactory {
                     Units.inchesToMeters(1.0),
                     Rotation2d.fromDegrees(2.0)),
                 4.0)),
-        getCollectCoralCommand(manipulator),
         Commands.either(
             Commands.none(),
             Commands.sequence(
