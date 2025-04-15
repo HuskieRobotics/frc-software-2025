@@ -251,6 +251,13 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+    config.CurrentLimits.SupplyCurrentLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerTime = 0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
     Phoenix6Util.applyAndCheckConfiguration(elevatorMotorFollower, config, followerConfigAlert);
 
     FaultReporter.getInstance()
