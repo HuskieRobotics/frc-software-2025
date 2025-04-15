@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.0259221311475404,
-        "y": 6.955993852459016
+        "x": 3.0448770491803274,
+        "y": 7.387551229508197
       },
       "isLocked": false,
       "linkedName": "(New) Collect Left"
     },
     {
       "anchor": {
-        "x": 3.1527663934426227,
-        "y": 6.4764856557377035
+        "x": 4.471413934426229,
+        "y": 5.937038934426229
       },
       "prevControl": {
-        "x": 2.6372950819672134,
-        "y": 6.644313524590162
+        "x": 4.17172131147541,
+        "y": 6.404559426229508
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 2.0,
-    "rotation": -116.56505117707799
+    "rotation": -118.73979529168811
   },
   "reversed": false,
   "folder": "4 Left (Far and Close)",

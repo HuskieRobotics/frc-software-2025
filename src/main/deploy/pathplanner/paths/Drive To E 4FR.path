@@ -8,20 +8,20 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.8248287671232877,
-        "y": 1.1626070205479448
+        "x": 3.032889344262295,
+        "y": 0.9141905737704917
       },
       "isLocked": false,
       "linkedName": "(New) Collect Right"
     },
     {
       "anchor": {
-        "x": 4.372474315068493,
-        "y": 2.1392765410958905
+        "x": 4.3755122950819665,
+        "y": 1.777305327868853
       },
       "prevControl": {
-        "x": 2.914982876712328,
-        "y": 1.1325556506849317
+        "x": 4.195696721311475,
+        "y": 1.1059938524590154
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 1.0,
-    "rotation": 120.96375653207356
+    "velocity": 2.0,
+    "rotation": 121.86597769360371
   },
   "reversed": false,
   "folder": "4 Right (Far and Close)",
