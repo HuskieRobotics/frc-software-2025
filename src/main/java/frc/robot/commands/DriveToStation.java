@@ -140,9 +140,6 @@ public class DriveToStation extends Command {
   @Override
   public void execute() {
 
-    // just for at home to see when it gets triggered
-    LEDs.getInstance().requestState(LEDs.States.AUTO_DRIVING_TO_SCORE);
-
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(
         hashCode(),
