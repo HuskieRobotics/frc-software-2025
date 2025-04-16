@@ -205,7 +205,7 @@ public class RobotContainer {
 
     manipulator = new Manipulator(new ManipulatorIO() {});
     climber = new Climber(new ClimberIO() {});
-    elevator = new Elevator(new ElevatorIO() {});
+    elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
   private void createCTRESimSubsystems() {
