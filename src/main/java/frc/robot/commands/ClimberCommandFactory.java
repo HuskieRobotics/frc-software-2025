@@ -30,7 +30,7 @@ public class ClimberCommandFactory {
                     Commands.runOnce(climber::climb, climber),
                     Commands.waitUntil(
                         () ->
-                            (climber.limitSwitchEngaged()
+                            (climber.climberLimitSwitchEngaged()
                                 || climber.getPosition()
                                     > ClimberConstants.HARDSTOP_POSITION_INCHES)),
                     Commands.runOnce(climber::stop, climber))
@@ -58,7 +58,8 @@ public class ClimberCommandFactory {
 
     oi.getExtendClimberSlowButton()
         .onTrue(Commands.runOnce(climber::extendSlow, climber).withName("extend climber slow"));
-    oi.getExtendClimberSlowButton().onFalse(Commands.runOnce(climber::stop));
+    oi.getExtendClimberSlowButton()
+        .onFalse(Commands.runOnce(climber::stop).withName("extend climber slow stop climber"));
 
     oi.getZeroClimberButton()
         .onTrue(Commands.runOnce(climber::zero, climber).withName("zero climber"));

@@ -40,7 +40,7 @@ public class CrossSubsystemsCommandsFactory {
                         getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
                         Commands.sequence(
                             getScoreCoralCommand(manipulator, elevator),
-                            Commands.runOnce(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
+                            Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
                                 .withTimeout(0.2),
                             Commands.deadline(
                                 elevator.getElevatorLowerAndResetCommand(),
@@ -77,7 +77,7 @@ public class CrossSubsystemsCommandsFactory {
                                     .getEnableAutoScoringTrigger()
                                     .getAsBoolean())),
                     getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
-                    manipulator::hasIndexedCoral)
+                    () -> manipulator.indexingCoral() || manipulator.hasIndexedCoral())
                 .withName("prep to score"));
 
     oi.getDriveToNearestCoralStationButton()
@@ -162,7 +162,7 @@ public class CrossSubsystemsCommandsFactory {
                     Commands.either(
                         Commands.none(),
                         Commands.sequence(
-                            Commands.runOnce(() -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
+                            Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
                                 .withTimeout(0.2),
                             Commands.deadline(
                                 elevator.getElevatorLowerAndResetCommand(),
@@ -186,8 +186,7 @@ public class CrossSubsystemsCommandsFactory {
                         Commands.either(
                             Commands.none(),
                             Commands.sequence(
-                                Commands.runOnce(
-                                        () -> drivetrain.drive(-1.0, 0.0, 0.0, false, false))
+                                Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
                                     .withTimeout(0.2),
                                 Commands.deadline(
                                     elevator.getElevatorLowerAndResetCommand(),
@@ -465,6 +464,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
                 Commands.waitUntil(
+                        /* FIXME: change this to closeToReef() if we want to save a little time and it doesn't cause rock */
                         () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
                     .withTimeout(5.0),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),

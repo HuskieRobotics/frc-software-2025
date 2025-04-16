@@ -277,12 +277,18 @@ public class Manipulator extends SubsystemBase {
         LEDs.getInstance().requestState(States.EJECTING_CORAL);
         subsystem.retractPivot();
 
-        if (!subsystem.inputs.isFunnelIRBlocked
-            && !subsystem.inputs.isIndexerIRBlocked
-            && subsystem.ejectingCoralTimer.hasElapsed(EJECT_CORAL_DURATION_SECONDS)) {
-          subsystem.setState(State.WAITING_FOR_CORAL);
-        } else if (subsystem.inputs.isIndexerIRBlocked) {
+        if (subsystem.inputs.isIndexerIRBlocked) {
           subsystem.setState(State.CORAL_IN_MANIPULATOR);
+        } else if (!subsystem.inputs.isFunnelIRBlocked
+            && !subsystem.inputs.isIndexerIRBlocked
+            && subsystem.ejectingCoralTimer.hasElapsed(FINAL_EJECT_CORAL_DURATION_SECONDS)) {
+          subsystem.setState(State.WAITING_FOR_CORAL);
+        } else if (subsystem.ejectingCoralTimer.hasElapsed(SECOND_INTAKE_CORAL_SECONDS)) {
+          subsystem.setFunnelMotorVoltage(subsystem.funnelEjectingVoltage.get());
+          subsystem.setIndexerMotorVoltage(subsystem.indexerEjectingVoltage.get());
+        } else if (subsystem.ejectingCoralTimer.hasElapsed(FIRST_EJECT_CORAL_SECONDS)) {
+          subsystem.setFunnelMotorVoltage(subsystem.funnelCollectionVoltage.get());
+          subsystem.setIndexerMotorVoltage(subsystem.indexerCollectionVoltage.get());
         }
       }
 
@@ -671,6 +677,16 @@ public class Manipulator extends SubsystemBase {
 
   private void shootCoral() {
     shootCoralButtonPressed = true;
+    if (shootingFast) {
+      if (OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()
+          || OISelector.getOperatorInterface().getLevel3Trigger().getAsBoolean()) {
+        setIndexerMotorVoltage(slowShootingVoltage.get());
+      } else {
+        setIndexerMotorVoltage(fastShootingVoltage.get());
+      }
+    } else {
+      setIndexerMotorVoltage(fastShootingVoltage.get());
+    }
   }
 
   public void shootCoralFast() {

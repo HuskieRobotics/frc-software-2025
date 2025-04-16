@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.RobotConfig;
@@ -312,10 +313,14 @@ public class RobotContainer {
         new Trigger(() -> (DriverStation.isTeleopEnabled() && manipulator.hasIndexedCoral()));
     indexedCoralTrigger.onTrue(
         Commands.either(
-                Commands.runOnce(elevator::goToSelectedPosition),
-                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L2)),
-                () ->
-                    (oi.getLevel1Trigger().getAsBoolean() || oi.getLevel2Trigger().getAsBoolean()))
+                Commands.none(),
+                Commands.either(
+                    Commands.runOnce(elevator::goToSelectedPosition),
+                    Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L2)),
+                    () ->
+                        (oi.getLevel1Trigger().getAsBoolean()
+                            || oi.getLevel2Trigger().getAsBoolean())),
+                () -> CommandScheduler.getInstance().requiring(elevator) != null)
             .withName("go to selected position or L2"));
 
     // Endgame alerts[]
@@ -358,11 +363,12 @@ public class RobotContainer {
     driveToPoseCanceledTrigger = new Trigger(drivetrain::getDriveToPoseCanceled);
     driveToPoseCanceledTrigger.onTrue(
         Commands.sequence(
-            Commands.run(
-                    () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
-                    drivetrain)
-                .withTimeout(0.5),
-            Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false))));
+                Commands.run(
+                        () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
+                        drivetrain)
+                    .withTimeout(0.5),
+                Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false)))
+            .withName("cancel drive to pose"));
 
     // lock rotation to the nearest 180° while driving
     oi.getLock180Button()
@@ -489,8 +495,9 @@ public class RobotContainer {
     // update LEDs so that they turn yellow. maybe use our reef relative difference, and if it is
     // less than 6
     // but outside of our normal tolerance, turn yellow until we are within tolerance
-
-    if (elevator.canScoreFartherAway()) {
+    if (climber.cageCaught() && climber.cageCatcherReleased()) {
+      LEDs.getInstance().requestState(LEDs.States.CAGE_CAUGHT);
+    } else if (elevator.canScoreFartherAway()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
     } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);

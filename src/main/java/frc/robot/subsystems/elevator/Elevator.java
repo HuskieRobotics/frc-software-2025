@@ -7,6 +7,7 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -21,8 +22,6 @@ import frc.lib.team3061.leds.LEDs;
 import frc.lib.team3061.util.SysIdRoutineChooser;
 import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
-import frc.robot.Constants;
-import frc.robot.Constants.Mode;
 import frc.robot.Field2d;
 import frc.robot.Field2d.AlgaePosition;
 import frc.robot.operator_interface.OISelector;
@@ -43,6 +42,7 @@ public class Elevator extends SubsystemBase {
   private Alert jammedAlert =
       new Alert("Elevator jam detected. Use manual control.", AlertType.kError);
 
+  private boolean hasBeenZeroed = false;
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
           0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
@@ -123,14 +123,33 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/canScoreFartherAway", canScoreFartherAway());
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
+
+    // FIXME: restore if needed after testing
+    // if (targetPosition == ScoringHeight.HARDSTOP && !hasBeenZeroed) {
+    //   if (Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM) {
+    //     hasBeenZeroed = true;
+    //     elevatorIO.setMotorVoltage(0);
+    //     hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE);
+    //     elevatorIO.zeroPosition();
+    //   } else if (getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES) {
+    //     elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
+    //   }
+    // } else {
+    //   hasBeenZeroed = false;
+    // }
+
     if (jamFilter.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
       CommandScheduler.getInstance()
           .schedule(
               Commands.sequence(
-                  Commands.runOnce(() -> elevatorIO.setMotorVoltage(0), this),
-                  Commands.run(() -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
-                      .withTimeout(1.0)));
+                      Commands.runOnce(() -> elevatorIO.setMotorVoltage(0), this),
+                      Commands.run(
+                              () -> LEDs.getInstance().requestState(LEDs.States.ELEVATOR_JAMMED))
+                          .withTimeout(1.0))
+                  .withName("stop elevator jammed"));
       jammedAlert.set(true);
+    } else {
+      jammedAlert.set(false);
     }
 
     if (testingMode.get() == 1) {
@@ -285,14 +304,22 @@ public class Elevator extends SubsystemBase {
     goToPosition(getSelectedPosition());
   }
 
+  // x distance from reef is between 0.5 inches and 8 inches
+  // y distance from reef is less than 4 inches
   public boolean canScoreFartherAway() {
     return Math.abs(distanceFromReef.getX()) < FAR_SCORING_DISTANCE
-        // FIXME: when approach the reef from the side, this next condition may cause this to
-        // always return false
         && Math.abs(distanceFromReef.getX()) > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
         && Math.abs(distanceFromReef.getY()) < FAR_SCORING_Y_TOLERANCE
         && Math.abs(distanceFromReef.getRotation().getDegrees())
             < FAR_SCORING_THETA_TOLERANCE.getDegrees();
+  }
+
+  // for use in auto (and maybe teleop)
+  // if we get within 10 inches of the reef, just raise the elevator to L4 to not waste time at the
+  // reef
+  // 10 inches should be enough to save time while also not making the elevator rock side to side
+  public boolean closeToReef() {
+    return Math.abs(distanceFromReef.getX()) < Units.inchesToMeters(12.0);
   }
 
   public void setDistanceFromReef(Transform2d distance) {
@@ -355,16 +382,6 @@ public class Elevator extends SubsystemBase {
   }
 
   public Command getElevatorLowerAndResetCommand() {
-    return Commands.sequence(
-        Commands.runOnce(() -> goToPosition(ScoringHeight.HARDSTOP)),
-        Commands.waitUntil(
-            () -> getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES),
-        Commands.runOnce(() -> elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE)),
-        Commands.waitUntil(
-            () -> Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM),
-        Commands.runOnce(() -> elevatorIO.setMotorVoltage(0)),
-        Commands.runOnce(
-            () -> hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE)),
-        Commands.runOnce(() -> elevatorIO.zeroPosition()));
+    return Commands.runOnce(() -> goToPosition(ScoringHeight.HARDSTOP));
   }
 }

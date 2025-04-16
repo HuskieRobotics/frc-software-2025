@@ -24,4 +24,5 @@ public class ClimberConstants {
 
   public static final int CLIMBER_LIMIT_SWITCH_DIO_1 = 8;
   public static final int CLIMBER_LIMIT_SWITCH_DIO_2 = 9;
+  public static final int CAGE_CATCHER_LIMIT_SWITCH_DIO = 4;
 }

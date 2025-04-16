@@ -67,12 +67,15 @@ public abstract class LEDs extends SubsystemBase {
     NO_AUTO_SELECTED((leds, section) -> leds.solid(section, Color.kYellow)),
     DISABLED(LEDs::updateToDisabledPattern),
     AUTO((leds, section) -> leds.orangePulse(section, PULSE_DURATION)),
+    CAGE_CAUGHT(
+        (leds, section) ->
+            leds.wave(
+                section, Color.kPurple, Color.kBlack, WAVE_FAST_CYCLE_LENGTH, WAVE_FAST_DURATION)),
     ENDGAME_ALERT((leds, section) -> leds.strobe(section, Color.kYellow, STROBE_SLOW_DURATION)),
     UNTILTING_ROBOT((leds, section) -> leds.strobe(section, Color.kRed, STROBE_SLOW_DURATION)),
     ELEVATOR_JAMMED((leds, section) -> leds.strobe(section, Color.kBlue, STROBE_SLOW_DURATION)),
     DRIVE_TO_POSE_CANCELED(
         (leds, section) -> leds.strobe(section, Color.kPink, STROBE_SLOW_DURATION)),
-
     EJECTING_CORAL(
         (leds, section) -> leds.strobe(section, new Color(255, 20, 0), STROBE_SLOW_DURATION)),
     SCORING((leds, section) -> leds.strobe(section, Color.kGreen, STROBE_SLOW_DURATION)),

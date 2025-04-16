@@ -1,9 +1,9 @@
 {
   "hubs": [
     {
-      "x": 0,
+      "x": 214,
       "y": 38,
-      "width": 1478,
+      "width": 1265,
       "height": 944,
       "state": {
         "sidebar": {
@@ -51,7 +51,6 @@
             "/RealOutputs/DriveToPose/difference",
             "/RealOutputs/DriveToPose/difference/translation",
             "/RealOutputs/CommandsAll",
-            "/Drivetrain/FR",
             "/RealOutputs/DriveToPose",
             "/RealOutputs/DriveToPose/difference (reef frame)",
             "/RealOutputs/DriveToPose/difference (reef frame)/translation",
@@ -69,8 +68,6 @@
             "/RealOutputs/Manipulator/ArmSim",
             "/RealOutputs/Manipulator/ArmSim/ArmPivot",
             "/RealOutputs/Manipulator/ArmSim/ArmPivot/Arm",
-            "/RealOutputs/DriveToProcessor",
-            "/NetworkInputs/Tuning",
             "/NetworkInputs/Tuning/operatorDashboard",
             "/RealOutputs/DriveToReef/difference (reef frame)/rotation",
             "/RealOutputs/Elevator/distanceFromReef/translation",
@@ -80,19 +77,33 @@
             "/RealOutputs/DriveToReef/targetPose",
             "/RealOutputs/DriveToReef/targetPose/translation",
             "/RealOutputs/DriveToReef/targetPose/rotation",
-            "/RealOutputs/Drivetrain/Pose",
             "/RealOutputs/Drivetrain/Pose/translation",
             "/RealOutputs/Drivetrain/Pose/rotation",
-            "/Drivetrain/ReferenceChassisSpeeds",
             "/RealOutputs",
             "/RealOutputs/SystemStatus/Elevator",
             "/RealOutputs/SystemStatus/Elevator/Faults",
-            "/Drivetrain/BL",
-            "/Drivetrain/BL/OdometryTurnPositions/0"
+            "/Drivetrain/BL/OdometryTurnPositions/0",
+            "/NetworkInputs/Tuning/Elevator",
+            "/NetworkInputs/Tuning",
+            "/NetworkInputs/SmartDashboard",
+            "/Drivetrain/MeasuredChassisSpeeds",
+            "/RealOutputs/Vision/RobotPosesAccepted",
+            "/RealOutputs/DriveToProcessor",
+            "/RealOutputs/DriveToProcessor/difference (robot relative)",
+            "/RealOutputs/DriveToProcessor/targetPose",
+            "/RealOutputs/DriveToProcessor/targetPose/translation",
+            "/RealOutputs/DriveToProcessor/difference (robot relative)/translation",
+            "/RealOutputs/DriveToBarge",
+            "/RealOutputs/DriveToBarge/difference (robot relative)",
+            "/RealOutputs/DriveToBarge/targetPose",
+            "/RealOutputs/DriveToBarge/targetPose/translation",
+            "/RealOutputs/DriveToBarge/difference (robot relative)/translation",
+            "/RealOutputs/Drivetrain",
+            "/Climber"
           ]
         },
         "tabs": {
-          "selected": 1,
+          "selected": 6,
           "tabs": [
             {
               "type": 0,
@@ -320,7 +331,7 @@
                     "type": "stepped",
                     "logKey": "/Elevator/PositionInches",
                     "logType": "Number",
-                    "visible": true,
+                    "visible": false,
                     "options": {
                       "color": "#c0b487",
                       "size": "normal"
@@ -333,6 +344,16 @@
                     "visible": true,
                     "options": {
                       "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Elevator/SupplyCurrentAmpsLead",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
                       "size": "normal"
                     }
                   }
@@ -355,6 +376,36 @@
                     "visible": false,
                     "options": {
                       "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Manipulator/IndexerStatorCurrentAmps",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#3b875a",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Manipulator/IndexerPositionRotations",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#d993aa",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/RealOutputs/Drivetrain/Speed",
+                    "logType": "Number",
+                    "visible": false,
+                    "options": {
+                      "color": "#5f4528",
                       "size": "normal"
                     }
                   }
@@ -467,6 +518,15 @@
                     "options": {
                       "color": "#c0b487"
                     }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/NetworkInputs/SmartDashboard/Auto Routine",
+                    "logType": "String",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584"
+                    }
                   }
                 ],
                 "leftLockedRange": null,
@@ -485,6 +545,39 @@
               "controllerUUID": "oqrmlfp8in5fniyi0djkt3edx4h74pvr",
               "renderer": null,
               "controlsHeight": 412
+            },
+            {
+              "type": 6,
+              "title": "Statistics",
+              "controller": {
+                "sources": [
+                  {
+                    "type": "independent",
+                    "logKey": "/Elevator/StatorCurrentAmpsLead",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2"
+                    }
+                  },
+                  {
+                    "type": "independent",
+                    "logKey": "/Elevator/SupplyCurrentAmpsLead",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b"
+                    }
+                  }
+                ],
+                "timeRange": "enabled",
+                "rangeMin": 0,
+                "rangeMax": 100,
+                "stepSize": 5
+              },
+              "controllerUUID": "jvx18j1isn55lkxlbi3nx3wutdeizl5w",
+              "renderer": null,
+              "controlsHeight": 200
             },
             {
               "type": 1,
@@ -615,7 +708,18 @@
                     }
                   }
                 ],
-                "rightSources": [],
+                "rightSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Climber/PositionInches",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584",
+                      "size": "normal"
+                    }
+                  }
+                ],
                 "discreteSources": [
                   {
                     "type": "stripes",
@@ -624,6 +728,33 @@
                     "visible": true,
                     "options": {
                       "color": "#e5b31b"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Climber/CageCatcherLimitSwitchEngaged",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Climber/LimitSwitch1Engaged",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#e48b32"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/Climber/LimitSwitch2Engaged",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#c0b487"
                     }
                   }
                 ],
@@ -791,6 +922,71 @@
               "controlsHeight": 200
             },
             {
+              "type": 1,
+              "title": "Line Graph",
+              "controller": {
+                "leftSources": [
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/BL/SteerAbsolutePositionDeg",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#2b66a2",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/BR/SteerAbsolutePositionDeg",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#e5b31b",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/FL/SteerAbsolutePositionDeg",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#af2437",
+                      "size": "normal"
+                    }
+                  },
+                  {
+                    "type": "stepped",
+                    "logKey": "/Drivetrain/FR/SteerAbsolutePositionDeg",
+                    "logType": "Number",
+                    "visible": true,
+                    "options": {
+                      "color": "#80588e",
+                      "size": "normal"
+                    }
+                  }
+                ],
+                "rightSources": [],
+                "discreteSources": [],
+                "leftLockedRange": null,
+                "rightLockedRange": null,
+                "leftUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "rightUnitConversion": {
+                  "type": null,
+                  "factor": 1
+                },
+                "leftFilter": 0,
+                "rightFilter": 0
+              },
+              "controllerUUID": "pc5m8oxlcjjtb53grqxsz5xvo69s80lt",
+              "renderer": null,
+              "controlsHeight": 261
+            },
+            {
               "type": 8,
               "title": "Joysticks",
               "controller": [
@@ -841,7 +1037,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "/RealOutputs/CommandsAll/drive to nearest left branch",
+                    "logKey": "/RealOutputs/CommandsAll/prep to score",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
@@ -850,7 +1046,7 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "/RealOutputs/CommandsAll/drive to nearest right branch",
+                    "logKey": "/RealOutputs/CommandsAll/drive to nearest coral station",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
@@ -859,11 +1055,38 @@
                   },
                   {
                     "type": "stripes",
-                    "logKey": "/RealOutputs/CommandsAll/score coral",
+                    "logKey": "/RealOutputs/CommandsAll/go to selected position or L2",
                     "logType": "Boolean",
                     "visible": true,
                     "options": {
                       "color": "#c0b487"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/CommandsAll/Override driveToPose",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#858584"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/CommandsAll/score",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#3b875a"
+                    }
+                  },
+                  {
+                    "type": "stripes",
+                    "logKey": "/RealOutputs/CommandsAll/InstantCommand",
+                    "logType": "Boolean",
+                    "visible": true,
+                    "options": {
+                      "color": "#d993aa"
                     }
                   }
                 ],
@@ -882,7 +1105,7 @@
               },
               "controllerUUID": "38oq3909kqg1b5eu3ug8dil68yi1olsp",
               "renderer": null,
-              "controlsHeight": 200
+              "controlsHeight": 517
             },
             {
               "type": 1,

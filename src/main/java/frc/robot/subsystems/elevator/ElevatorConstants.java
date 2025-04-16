@@ -108,23 +108,23 @@ public class ElevatorConstants {
    */
 
   public static final Distance L1_HEIGHT = Inches.of(15.0);
-  public static final Distance ABOVE_L1_HEIGHT = Inches.of(25.0);
+  public static final Distance ABOVE_L1_HEIGHT = Inches.of(35.0);
 
   public static final Distance L2_HEIGHT = Inches.of(30);
-  public static final Distance FAR_L2_HEIGHT = Inches.of(36);
+  public static final Distance FAR_L2_HEIGHT = Inches.of(40);
 
   public static final Distance L3_HEIGHT = Inches.of(45);
-  public static final Distance FAR_L3_HEIGHT = Inches.of(51);
+  public static final Distance FAR_L3_HEIGHT = Inches.of(55); // 51 before
   public static final Distance L4_HEIGHT = Inches.of(71);
 
   public static final Distance BARGE_HEIGHT = Inches.of(74);
   public static final Distance PROCESSOR_HEIGHT = Inches.of(0);
 
-  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(10.0); // 6
+  public static final Double FAR_SCORING_DISTANCE = Units.inchesToMeters(9.0); // 8
   public static final Double MIN_FAR_SCORING_DISTANCE = Units.inchesToMeters(3.0);
 
-  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(6.0); // 0.5
-  public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(2.0);
+  public static final Double FAR_SCORING_Y_TOLERANCE = Units.inchesToMeters(5.0); // 4
+  public static final Rotation2d FAR_SCORING_THETA_TOLERANCE = Rotation2d.fromDegrees(5.0);
 
   public static final Distance BELOW_HIGH_ALGAE_HEIGHT = Inches.of(20.0);
   public static final Distance HIGH_ALGAE_HEIGHT = Inches.of(30.0);

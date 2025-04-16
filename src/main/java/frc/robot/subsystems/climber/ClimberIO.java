@@ -16,6 +16,7 @@ public interface ClimberIO {
     double positionInches = 0.0;
     boolean limitSwitch1Engaged = false;
     boolean limitSwitch2Engaged = false;
+    boolean cageCatcherLimitSwitchEngaged = false;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}
