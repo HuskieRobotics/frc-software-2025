@@ -281,7 +281,7 @@ public class AutonomousCommandFactory {
                 drivetrain, manipulator, elevator, vision, Side.LEFT, null, false, true),
             elevator.getElevatorLowerAndResetCommand(), // if we can't collect the fourth coral, do
             // nothing
-            () -> (!timer.hasElapsed(500.0)) // only run if we have time left in auto
+            () -> (!timer.hasElapsed(13.5)) // only run if we have time left in auto
             ));
   }
 
@@ -304,7 +304,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, null, true, true),
             elevator.getElevatorLowerAndResetCommand(),
-            () -> (!timer.hasElapsed(500.0))));
+            () -> (!timer.hasElapsed(13.5))));
   }
 
   // 4 Coral: I, K, L, J
@@ -336,7 +336,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.RIGHT, driveToJ, false, false),
             elevator.getElevatorLowerAndResetCommand(),
-            () -> (!timer.hasElapsed(500.0))));
+            () -> (!timer.hasElapsed(13.5))));
   }
 
   // 4 Coral: F, D, C, E
@@ -369,7 +369,7 @@ public class AutonomousCommandFactory {
             getCollectAndScoreFourthCommand(
                 drivetrain, manipulator, elevator, vision, Side.LEFT, driveToE, true, false),
             elevator.getElevatorLowerAndResetCommand(),
-            () -> (!timer.hasElapsed(500.0))));
+            () -> (!timer.hasElapsed(13.5))));
   }
 
   public Command getOneCoralCenterCommand(
@@ -700,8 +700,7 @@ public class AutonomousCommandFactory {
                     () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto),
                     () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
                 elevator.getElevatorLowerAndResetCommand()),
-            () -> (timer.hasElapsed(500.0)) // FIXME: tune this time
-            ));
+            () -> (timer.hasElapsed(13.75))));
   }
 
   private Command getCollectCoralCommand(Manipulator manipulator) {
