@@ -464,8 +464,7 @@ public class CrossSubsystemsCommandsFactory {
             Commands.sequence(
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
                 Commands.waitUntil(
-                        /* FIXME: change this to closeToReef() if we want to save a little time and it doesn't cause rock */
-                        () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
+                        () -> (manipulator.isReadyToScore()))
                     .withTimeout(5.0),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),
         Commands.waitUntil(elevator::isAtSelectedPosition));
