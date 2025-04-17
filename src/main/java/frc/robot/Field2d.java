@@ -55,7 +55,7 @@ public class Field2d {
 
   private static final Pose2d CENTER_BARGE_POSE = /* 305 before change */
       new Pose2d(
-          new Translation2d(Units.inchesToMeters(299), Units.inchesToMeters(242.855)),
+          new Translation2d(Units.inchesToMeters(301), Units.inchesToMeters(242.855)),
           Rotation2d.fromDegrees(0.0));
 
   private static final Pose2d RIGHT_BARGE_POSE =
@@ -516,7 +516,7 @@ public class Field2d {
         nearestProcessor.transformBy(
             new Transform2d(
                 (RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0)
-                    + Units.inchesToMeters(10.0), /* was 12 */
+                    + Units.inchesToMeters(12.0),
                 Units.inchesToMeters(-4.5),
                 Rotation2d.fromDegrees(180)));
 
