@@ -103,7 +103,7 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
 
   private SlewRateLimiter xFilter = new SlewRateLimiter(8);
   private SlewRateLimiter yFilter = new SlewRateLimiter(8);
-  private SlewRateLimiter thetaFilter = new SlewRateLimiter(Units.degreesToRadians(360));
+  // private SlewRateLimiter thetaFilter = new SlewRateLimiter(Units.degreesToRadians(360));
 
   private boolean accelerationLimiting = false;
   private boolean driveToPoseCanceled = false;
@@ -280,7 +280,7 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
 
     this.xFilter.reset(0.0);
     this.yFilter.reset(0.0);
-    this.thetaFilter.reset(0.0);
+    // this.thetaFilter.reset(0.0);
 
     SysIdRoutineChooser.getInstance().addOption("Translation Volts", sysIdRoutineTranslationVolts);
 
@@ -450,18 +450,18 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
     // find the other method that the autobuilder uses to drive
     this.xFilter.calculate(xVelocity);
     this.yFilter.calculate(yVelocity);
-    this.thetaFilter.calculate(rotationalVelocity);
+    // this.thetaFilter.calculate(rotationalVelocity);
 
     // log velocity after filter
     Logger.recordOutput(SUBSYSTEM_NAME + "/filteredXVelocity", this.xFilter.lastValue());
     Logger.recordOutput(SUBSYSTEM_NAME + "/filteredYVelocity", this.yFilter.lastValue());
-    Logger.recordOutput(
-        SUBSYSTEM_NAME + "/filteredRotationalVelocity", this.thetaFilter.lastValue());
+    // Logger.recordOutput(
+    //     SUBSYSTEM_NAME + "/filteredRotationalVelocity", this.thetaFilter.lastValue());
 
     if (accelerationLimiting) {
       xVelocity = this.xFilter.lastValue();
       yVelocity = this.yFilter.lastValue();
-      rotationalVelocity = this.thetaFilter.lastValue();
+      // rotationalVelocity = this.thetaFilter.lastValue();
     }
 
     // if translation or rotation is in slow mode, multiply the x and y velocities by the
