@@ -463,9 +463,7 @@ public class CrossSubsystemsCommandsFactory {
                 5.0),
             Commands.sequence(
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
-                Commands.waitUntil(
-                        () -> (manipulator.isReadyToScore()))
-                    .withTimeout(5.0),
+                Commands.waitUntil(() -> (manipulator.isReadyToScore())).withTimeout(5.0),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),
         Commands.waitUntil(elevator::isAtSelectedPosition));
   }

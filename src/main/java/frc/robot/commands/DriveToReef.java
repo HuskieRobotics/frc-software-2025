@@ -92,7 +92,7 @@ public class DriveToReef extends Command {
           "DriveToReef/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
   private static final LoggedTunableNumber coralYVelocityBoost =
-      new LoggedTunableNumber("DriveToReef/y velocity boost", 0.25); // was 0.5
+      new LoggedTunableNumber("DriveToReef/y velocity boost", 0.2); // was 0.25
   private static final LoggedTunableNumber algaeYVelocityBoost =
       new LoggedTunableNumber("DriveToReef/algae y velocity boost", 0.5); // was 0.5
 
