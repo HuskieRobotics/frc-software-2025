@@ -53,9 +53,9 @@ public class Field2d {
   private Pose2d[] processors = new Pose2d[2];
   private Pose2d[] coralStations = new Pose2d[4];
 
-  private static final Pose2d CENTER_BARGE_POSE =
+  private static final Pose2d CENTER_BARGE_POSE = /* 305 before change */
       new Pose2d(
-          new Translation2d(Units.inchesToMeters(305), Units.inchesToMeters(242.855)),
+          new Translation2d(Units.inchesToMeters(290), Units.inchesToMeters(242.855)),
           Rotation2d.fromDegrees(0.0));
 
   private static final Pose2d RIGHT_BARGE_POSE =
