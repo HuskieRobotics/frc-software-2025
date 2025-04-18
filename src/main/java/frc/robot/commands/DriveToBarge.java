@@ -166,9 +166,8 @@ public class DriveToBarge extends Command {
 
     Transform2d robotRelativeDifference = new Transform2d(targetPose, currentPose);
     if (Math.abs(robotRelativeDifference.getX()) < Units.inchesToMeters(1.0)) {
-        LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
     }
-
 
     if (!updatedPose && elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)) {
       targetPose = Field2d.getInstance().getCenterBargePose();
