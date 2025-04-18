@@ -352,6 +352,7 @@ public class CrossSubsystemsCommandsFactory {
                         Rotation2d.fromDegrees(
                             DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                     true,
+                    false,
                     3.0),
                 Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
         Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
@@ -460,6 +461,7 @@ public class CrossSubsystemsCommandsFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 false,
+                false,
                 5.0),
             Commands.sequence(
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
@@ -483,6 +485,7 @@ public class CrossSubsystemsCommandsFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 false,
+                true,
                 5.0)),
         Commands.waitUntil(elevator::isAtSelectedPosition));
   }
