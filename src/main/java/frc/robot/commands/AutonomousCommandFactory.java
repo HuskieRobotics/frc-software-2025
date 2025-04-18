@@ -648,7 +648,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(side),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())));
+            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))).withTimeout(6.0);
   }
 
   private Command getCollectAndScoreFourthCommand(
