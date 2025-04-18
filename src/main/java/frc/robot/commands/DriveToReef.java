@@ -94,8 +94,8 @@ public class DriveToReef extends Command {
 
   private static final LoggedTunableNumber coralYVelocityBoost =
       new LoggedTunableNumber("DriveToReef/y velocity boost", 0.2); // was 0.25
-  private static final LoggedTunableNumber algaeYVelocityBoost =
-      new LoggedTunableNumber("DriveToReef/algae y velocity boost", 0.5); // was 0.5
+  private static final LoggedTunableNumber algaeAndL2L3VelocityBoost =
+      new LoggedTunableNumber("DriveToReef/algae + l2l3 y velocity boost", 0.5); // was 0.5
 
   private final PIDController xController =
       new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
@@ -221,14 +221,15 @@ public class DriveToReef extends Command {
     } else {
       if (l2l3) {
         reefRelativeVelocities =
-          new Translation2d(
-              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP_L2L3,
-              reefRelativeVelocities.getY());
+            new Translation2d(
+                reefRelativeVelocities.getX()
+                    + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP_L2L3,
+                reefRelativeVelocities.getY());
       } else {
         reefRelativeVelocities =
-          new Translation2d(
-              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP_L4,
-              reefRelativeVelocities.getY());
+            new Translation2d(
+                reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP_L4,
+                reefRelativeVelocities.getY());
       }
     }
 
@@ -265,7 +266,7 @@ public class DriveToReef extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
-      double yVelocityBoost = forAlgae ? algaeYVelocityBoost.get() : coralYVelocityBoost.get();
+      double yVelocityBoost = (forAlgae || l2l3) ? algaeAndL2L3VelocityBoost.get() : coralYVelocityBoost.get();
       if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
