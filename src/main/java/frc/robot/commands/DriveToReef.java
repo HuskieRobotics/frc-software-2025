@@ -266,7 +266,8 @@ public class DriveToReef extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
-      double yVelocityBoost = (forAlgae || l2l3) ? algaeAndL2L3VelocityBoost.get() : coralYVelocityBoost.get();
+      double yVelocityBoost =
+          (forAlgae || l2l3) ? algaeAndL2L3VelocityBoost.get() : coralYVelocityBoost.get();
       if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
