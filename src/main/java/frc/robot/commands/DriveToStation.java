@@ -22,7 +22,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
-import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Field2d;
 import frc.robot.subsystems.manipulator.Manipulator;
@@ -139,9 +138,6 @@ public class DriveToStation extends Command {
    */
   @Override
   public void execute() {
-
-    // just for at home to see when it gets triggered
-    LEDs.getInstance().requestState(LEDs.States.AUTO_DRIVING_TO_SCORE);
 
     // Update from tunable numbers
     LoggedTunableNumber.ifChanged(

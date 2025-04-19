@@ -18,8 +18,9 @@ public class DrivetrainConstants {
   public static final double DRIVE_TO_REEF_X_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_Y_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_THETA_TOLERANCE_DEG = 2.0;
-  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP =
+  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP_L4 =
       0.1; // was 0.25 at midwest, was 0.1 at start at home
+  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP_L2L3 = 0.25;
   public static final double DRIVE_TO_REEF_X_BOOST_AUTO = 0.1;
   public static final double DRIVE_TO_STATION_X_BOOST = -0.25;
 

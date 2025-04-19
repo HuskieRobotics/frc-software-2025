@@ -57,6 +57,7 @@ public class DriveToReef extends Command {
   private Pose2d targetPose;
   private Transform2d targetTolerance;
   private boolean forAlgae;
+  private boolean l2l3;
 
   private Debouncer xDebouncer = new Debouncer(0.2);
 
@@ -92,9 +93,9 @@ public class DriveToReef extends Command {
           "DriveToReef/ThetaKi", RobotConfig.getInstance().getDriveToPoseThetaKI());
 
   private static final LoggedTunableNumber coralYVelocityBoost =
-      new LoggedTunableNumber("DriveToReef/y velocity boost", 0.25); // was 0.5
-  private static final LoggedTunableNumber algaeYVelocityBoost =
-      new LoggedTunableNumber("DriveToReef/algae y velocity boost", 0.5); // was 0.5
+      new LoggedTunableNumber("DriveToReef/y velocity boost", 0.2); // was 0.25
+  private static final LoggedTunableNumber algaeAndL2L3VelocityBoost =
+      new LoggedTunableNumber("DriveToReef/algae + l2l3 y velocity boost", 0.5); // was 0.5
 
   private final PIDController xController =
       new PIDController(driveKp.get(), driveKi.get(), driveKd.get(), LOOP_PERIOD_SECS);
@@ -118,6 +119,7 @@ public class DriveToReef extends Command {
       Consumer<Transform2d> distanceConsumer,
       Transform2d tolerance,
       boolean forAlgae,
+      boolean l2l3,
       double timeout) {
     this.drivetrain = drivetrain;
     this.poseSupplier = poseSupplier;
@@ -127,6 +129,7 @@ public class DriveToReef extends Command {
     this.timer = new Timer();
     this.timeout = timeout;
     this.forAlgae = forAlgae;
+    this.l2l3 = l2l3;
     addRequirements(drivetrain);
     thetaController.enableContinuousInput(-Math.PI, Math.PI);
   }
@@ -216,10 +219,18 @@ public class DriveToReef extends Command {
               reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_AUTO,
               reefRelativeVelocities.getY());
     } else {
-      reefRelativeVelocities =
-          new Translation2d(
-              reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP,
-              reefRelativeVelocities.getY());
+      if (l2l3) {
+        reefRelativeVelocities =
+            new Translation2d(
+                reefRelativeVelocities.getX()
+                    + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP_L2L3,
+                reefRelativeVelocities.getY());
+      } else {
+        reefRelativeVelocities =
+            new Translation2d(
+                reefRelativeVelocities.getX() + DrivetrainConstants.DRIVE_TO_REEF_X_BOOST_TELEOP_L4,
+                reefRelativeVelocities.getY());
+      }
     }
 
     // get our current x chassis speeds, transform to reef relative
@@ -255,7 +266,8 @@ public class DriveToReef extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
-      double yVelocityBoost = forAlgae ? algaeYVelocityBoost.get() : coralYVelocityBoost.get();
+      double yVelocityBoost =
+          (forAlgae || l2l3) ? algaeAndL2L3VelocityBoost.get() : coralYVelocityBoost.get();
       if (reefRelativeDifference.getY() > 0) {
         reefRelativeVelocities =
             new Translation2d(
