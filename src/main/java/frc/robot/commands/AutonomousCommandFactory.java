@@ -443,9 +443,10 @@ public class AutonomousCommandFactory {
             elevator.getElevatorLowerAndResetCommand()),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
+        Commands.run(() -> drivetrain.drive(-1, 0, 0, true, false)).withTimeout(0.5),
         Commands.parallel(
             Commands.sequence(
-                Commands.waitSeconds(0.75),
+                Commands.waitSeconds(0.5),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator)),
             new DriveToProcessor(
                 drivetrain,
