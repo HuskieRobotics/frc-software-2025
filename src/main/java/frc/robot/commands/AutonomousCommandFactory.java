@@ -651,7 +651,7 @@ public class AutonomousCommandFactory {
                 manipulator,
                 elevator,
                 () -> Field2d.getInstance().getNearestBranch(side),
-                () -> (elevator.closeToReef() || manipulator.isReadyToScore())))
+                () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())))
         .withTimeout(6.0);
   }
 
@@ -702,7 +702,7 @@ public class AutonomousCommandFactory {
                     manipulator,
                     elevator,
                     () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto),
-                    () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
+                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
                 elevator.getElevatorLowerAndResetCommand()),
             () -> (timer.hasElapsed(13.75))));
   }
