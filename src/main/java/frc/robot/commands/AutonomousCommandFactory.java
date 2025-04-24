@@ -443,9 +443,10 @@ public class AutonomousCommandFactory {
             elevator.getElevatorLowerAndResetCommand()),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
+        Commands.run(() -> drivetrain.drive(-1, 0, 0, true, false)).withTimeout(0.5),
         Commands.parallel(
             Commands.sequence(
-                Commands.waitSeconds(0.75),
+                Commands.waitSeconds(0.5),
                 Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.BARGE), elevator)),
             new DriveToProcessor(
                 drivetrain,
@@ -581,6 +582,7 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
                 false,
+                false,
                 4.0)),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
         Commands.parallel(
@@ -603,6 +605,7 @@ public class AutonomousCommandFactory {
                     DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
                     DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
                     Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                false,
                 false,
                 1.6),
             Commands.sequence(
@@ -627,28 +630,29 @@ public class AutonomousCommandFactory {
       Side side,
       boolean rightCoralStation) {
     return Commands.sequence(
-        Commands.deadline(
-            getCollectCoralCommand(manipulator),
-            elevator.getElevatorLowerAndResetCommand(),
-            new DriveToStation(
+            Commands.deadline(
+                getCollectCoralCommand(manipulator),
+                elevator.getElevatorLowerAndResetCommand(),
+                new DriveToStation(
+                    drivetrain,
+                    manipulator,
+                    () ->
+                        (rightCoralStation
+                            ? Field2d.getInstance().getRightCoralStation()
+                            : Field2d.getInstance().getLeftCoralStation()),
+                    new Transform2d(
+                        Units.inchesToMeters(0.5),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)),
+                    4.0)),
+            getScoreL4Command(
                 drivetrain,
+                vision,
                 manipulator,
-                () ->
-                    (rightCoralStation
-                        ? Field2d.getInstance().getRightCoralStation()
-                        : Field2d.getInstance().getLeftCoralStation()),
-                new Transform2d(
-                    Units.inchesToMeters(0.5),
-                    Units.inchesToMeters(1.0),
-                    Rotation2d.fromDegrees(2.0)),
-                4.0)),
-        getScoreL4Command(
-            drivetrain,
-            vision,
-            manipulator,
-            elevator,
-            () -> Field2d.getInstance().getNearestBranch(side),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())));
+                elevator,
+                () -> Field2d.getInstance().getNearestBranch(side),
+                () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())))
+        .withTimeout(6.0);
   }
 
   private Command getCollectAndScoreFourthCommand(

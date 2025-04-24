@@ -15,6 +15,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -162,6 +163,11 @@ public class DriveToBarge extends Command {
         thetaKd);
 
     Pose2d currentPose = drivetrain.getPose();
+
+    Transform2d robotRelativeDifference = new Transform2d(targetPose, currentPose);
+    if (Math.abs(robotRelativeDifference.getX()) < Units.inchesToMeters(1.0)) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
+    }
 
     if (!updatedPose && elevator.isAtPosition(ElevatorConstants.ScoringHeight.BARGE)) {
       targetPose = Field2d.getInstance().getCenterBargePose();
