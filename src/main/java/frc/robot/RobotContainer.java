@@ -203,8 +203,8 @@ public class RobotContainer {
     }
     vision = new Vision(visionIOs);
 
-    manipulator = new Manipulator(new ManipulatorIOTalonFX() {});
-    climber = new Climber(new ClimberIOTalonFX() {});
+    manipulator = new Manipulator(new ManipulatorIOTalonFX());
+    climber = new Climber(new ClimberIOTalonFX());
     elevator = new Elevator(new ElevatorIOTalonFX());
   }
 
