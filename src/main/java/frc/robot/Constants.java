@@ -34,7 +34,6 @@ public final class Constants {
   private static final Alert invalidRobotAlert =
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.kError);
 
-  // FIXME: update for various robots
   public enum RobotType {
     ROBOT_DEFAULT,
     ROBOT_SIMBOT,
@@ -44,7 +43,6 @@ public final class Constants {
     ROBOT_VISION_TEST_PLATFORM
   }
 
-  // FIXME: update for various robots
   public static RobotType getRobot() {
     if (RobotBase.isReal()) {
       if (ROBOT == RobotType.ROBOT_SIMBOT) { // Invalid robot selected
@@ -58,7 +56,6 @@ public final class Constants {
     }
   }
 
-  // FIXME: update for various robots
   public static Mode getMode() {
     switch (getRobot()) {
       case ROBOT_DEFAULT, ROBOT_PRACTICE, ROBOT_PRACTICE_BOARD, ROBOT_COMPETITION:

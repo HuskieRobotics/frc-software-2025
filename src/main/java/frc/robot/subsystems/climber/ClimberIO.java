@@ -14,6 +14,9 @@ public interface ClimberIO {
     double tempCelsius = 0.0;
     double positionRotations = 0.0;
     double positionInches = 0.0;
+    boolean limitSwitch1Engaged = false;
+    boolean limitSwitch2Engaged = false;
+    boolean cageCatcherLimitSwitchEngaged = false;
   }
 
   public default void updateInputs(ClimberIOInputs inputs) {}
@@ -21,5 +24,4 @@ public interface ClimberIO {
   public default void setVoltage(double voltage) {}
 
   public default void zeroPosition() {}
-  // determined hardware methods
 }

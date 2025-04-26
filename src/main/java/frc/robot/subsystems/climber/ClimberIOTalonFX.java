@@ -1,7 +1,5 @@
 package frc.robot.subsystems.climber;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -17,10 +15,10 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.sim.ElevatorSystemSim;
-import frc.lib.team6328.util.LoggedTunableNumber;
 
 public class ClimberIOTalonFX implements ClimberIO {
   private TalonFX climberMotor;
@@ -31,6 +29,10 @@ public class ClimberIOTalonFX implements ClimberIO {
   private VoltageOut climberVoltageRequest;
   private ElevatorSystemSim elevatorSystemSim;
 
+  private DigitalInput limitSwitch1;
+  private DigitalInput limitSwitch2;
+  private DigitalInput cageCatcherLimitSwitch;
+
   private StatusSignal<Voltage> voltage;
   private StatusSignal<Current> statorCurrentAmps;
   private StatusSignal<Current> supplyCurrentAmps;
@@ -39,22 +41,14 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   private final Debouncer connectedDebouncer = new Debouncer(0.5);
 
-  private final LoggedTunableNumber KP = new LoggedTunableNumber("Climber/KP", ClimberConstants.KP);
-  private final LoggedTunableNumber KI = new LoggedTunableNumber("Climber/KI", ClimberConstants.KI);
-  private final LoggedTunableNumber KD = new LoggedTunableNumber("Climber/KD", ClimberConstants.KD);
-  private final LoggedTunableNumber KS = new LoggedTunableNumber("Climber/KS", ClimberConstants.KS);
-  private final LoggedTunableNumber KV = new LoggedTunableNumber("Climber/KV", ClimberConstants.KV);
-  private final LoggedTunableNumber KA = new LoggedTunableNumber("Climber/KA", ClimberConstants.KA);
-  private final LoggedTunableNumber KVEXP =
-      new LoggedTunableNumber("Climber/KVEXP", ClimberConstants.KVEXP);
-  private final LoggedTunableNumber KAEXP =
-      new LoggedTunableNumber("Climber/KAEXP", ClimberConstants.KAEXP);
-  private final LoggedTunableNumber KG = new LoggedTunableNumber("Climber/KG", ClimberConstants.KG);
-
   public ClimberIOTalonFX() {
     climberMotor =
         new TalonFX(
             ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
+
+    limitSwitch1 = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO_1);
+    limitSwitch2 = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO_2);
+    cageCatcherLimitSwitch = new DigitalInput(ClimberConstants.CAGE_CATCHER_LIMIT_SWITCH_DIO);
 
     configMotor();
 
@@ -68,7 +62,6 @@ public class ClimberIOTalonFX implements ClimberIO {
         true, voltage, statorCurrentAmps, supplyCurrentAmps, tempCelsius, positionRotations);
 
     climberVoltageRequest = new VoltageOut(0);
-    // ask lauren for mass and max height
     elevatorSystemSim =
         new ElevatorSystemSim(
             climberMotor,
@@ -95,6 +88,9 @@ public class ClimberIOTalonFX implements ClimberIO {
     inputs.tempCelsius = tempCelsius.getValueAsDouble();
     inputs.positionRotations = positionRotations.getValueAsDouble();
     inputs.positionInches = inputs.positionRotations * Math.PI * ClimberConstants.DRUM_DIAMETER;
+    inputs.limitSwitch1Engaged = limitSwitch1.get();
+    inputs.limitSwitch2Engaged = limitSwitch2.get();
+    inputs.cageCatcherLimitSwitchEngaged = cageCatcherLimitSwitch.get();
     elevatorSystemSim.updateSim();
   }
 
@@ -111,12 +107,15 @@ public class ClimberIOTalonFX implements ClimberIO {
   private void configMotor() {
     TalonFXConfiguration config = new TalonFXConfiguration();
 
-    config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit =
+        ClimberConstants.CLIMBER_CONTINUOUS_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLimit = ClimberConstants.CLIMBER_PEAK_CURRENT_LIMIT;
     config.CurrentLimits.SupplyCurrentLowerTime = ClimberConstants.CLIMBER_PEAK_CURRENT_DURATION;
     config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ClimberConstants.CLIMBER_STATOR_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
 
-    config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    config.MotorOutput.NeutralMode = NeutralModeValue.Brake; // was coast earlier
 
     config.Feedback.SensorToMechanismRatio = ClimberConstants.GEAR_RATIO;
 

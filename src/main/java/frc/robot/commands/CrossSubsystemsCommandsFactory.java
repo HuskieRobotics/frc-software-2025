@@ -1,9 +1,11 @@
 package frc.robot.commands;
 
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
+import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.team3061.drivetrain.Drivetrain;
@@ -11,12 +13,12 @@ import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.vision.Vision;
 import frc.robot.Constants;
 import frc.robot.Field2d;
-import frc.robot.Field2d.Side;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
+import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
-import frc.robot.subsystems.elevator.ElevatorConstants.ReefBranch;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 
@@ -29,181 +31,187 @@ public class CrossSubsystemsCommandsFactory {
       Drivetrain drivetrain,
       Elevator elevator,
       Manipulator manipulator,
+      Climber climber,
       Vision vision) {
-    oi.getScoreCoralButton()
+
+    oi.getScoreButton()
+        .onTrue(
+            Commands.sequence(
+                    Commands.either(
+                        getScoreWithAlgaeSelectedCommand(drivetrain, manipulator, elevator, vision),
+                        Commands.sequence(
+                            getScoreCoralCommand(manipulator, elevator),
+                            Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
+                                .withTimeout(0.2),
+                            Commands.deadline(
+                                elevator.getElevatorLowerAndResetCommand(),
+                                new TeleopSwerve(
+                                    drivetrain,
+                                    OISelector.getOperatorInterface()::getTranslateX,
+                                    OISelector.getOperatorInterface()::getTranslateY,
+                                    OISelector.getOperatorInterface()::getRotate))),
+                        () ->
+                            (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeProcessorTrigger()
+                                    .getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeDropTrigger()
+                                    .getAsBoolean())),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
+                .withName("score"));
+
+    oi.getPrepToScoreButton()
         .onTrue(
             Commands.either(
-                    getScoreL1Command(manipulator, elevator),
                     Commands.sequence(
+                        Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
                         Commands.either(
                             Commands.sequence(
-                                Commands.runOnce(manipulator::removeAlgae, manipulator),
-                                getScoreCoralCommand(manipulator, elevator),
-                                Commands.runOnce(elevator::goBelowSelectedAlgaePosition, elevator),
+                                getPrepAndAutoScoreCoralCommand(
+                                    drivetrain, manipulator, elevator, vision),
                                 Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                                Commands.waitUntil(elevator::isBelowSelectedAlgaePosition),
-                                new DriveToReef(
-                                    drivetrain,
-                                    () -> Field2d.getInstance().getNearestBranch(Side.REMOVE_ALGAE),
-                                    manipulator::setReadyToRemoveAlgae,
-                                    elevator::setDistanceFromReef,
-                                    new Transform2d(
-                                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                        Rotation2d.fromDegrees(
-                                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                    0.5),
-                                Commands.runOnce(elevator::goAboveSelectedAlgaePosition, elevator),
-                                Commands.runOnce(
-                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
-                                Commands.waitUntil(elevator::isAboveSelectedAlgaePosition),
-                                Commands.waitSeconds(0.5),
-                                Commands.runOnce(manipulator::algaeIsRemoved, manipulator)),
-                            getScoreCoralCommand(manipulator, elevator),
-                            elevator::isAlgaePositionSelected),
-                        Commands.deadline(
-                            // run TeleopSwerve to allow driver to move away from reef while
-                            // elevator is lowering
-                            elevator.getElevatorLowerAndResetCommand(),
-                            new TeleopSwerve(
-                                drivetrain,
-                                OISelector.getOperatorInterface()::getTranslateX,
-                                OISelector.getOperatorInterface()::getTranslateY,
-                                OISelector.getOperatorInterface()::getRotate))),
-                    () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean())
-                .withName("score coral"));
+                                    () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
+                            getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                            () ->
+                                OISelector.getOperatorInterface()
+                                    .getEnableAutoScoringTrigger()
+                                    .getAsBoolean())),
+                    getPrepAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
+                    () -> manipulator.indexingCoral() || manipulator.hasIndexedCoral())
+                .withName("prep to score"));
 
-    oi.getDescoreAlgaeAfterAutoButton()
+    oi.getDriveToNearestCoralStationButton()
         .onTrue(
-            AutonomousCommandFactory.getInstance()
-                .getDescoreAlgaeCommand(drivetrain, vision, manipulator, elevator));
+            new DriveToStation(
+                    drivetrain,
+                    manipulator,
+                    () -> Field2d.getInstance().getNearestCoralStation(),
+                    new Transform2d(
+                        Units.inchesToMeters(0.5),
+                        Units.inchesToMeters(1.0),
+                        Rotation2d.fromDegrees(2.0)),
+                    3.0)
+                .withName("drive to nearest coral station"));
 
-    // drive to left branch of nearest reef face
-    if (Constants.DEMO_MODE) {
-      // Both of these wlll just do the same thing now and not do any form of DriveToReef
-      oi.getPrepToScoreCoralLeftButton()
-          .onTrue(
-              Commands.sequence(
-                  Commands.waitUntil(manipulator::hasIndexedCoral),
-                  Commands.runOnce(elevator::goToSelectedPosition, elevator)));
+    oi.getInterruptAll()
+        .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, vision, oi));
 
-      oi.getPrepToScoreCoralLeftButton()
-          .onTrue(
-              Commands.sequence(
-                  Commands.waitUntil(manipulator::hasIndexedCoral),
-                  Commands.runOnce(elevator::goToSelectedPosition, elevator)));
-    } else {
-      oi.getPrepToScoreCoralLeftButton()
-          .onTrue(
-              Commands.sequence(
-                      Commands.waitUntil(manipulator::hasIndexedCoral),
-                      Commands.parallel(
-                          Commands.sequence(
-                              Commands.runOnce(
-                                  () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                              new DriveToReef(
-                                  drivetrain,
-                                  () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-                                  manipulator::setReadyToScore,
-                                  elevator::setDistanceFromReef,
-                                  new Transform2d(
-                                      DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                      DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                      Rotation2d.fromDegrees(
-                                          DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                  5.0),
-                              Commands.runOnce(
-                                  () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                          Commands.runOnce(elevator::goToSelectedPosition, elevator)))
-                  .withName("drive to nearest left branch"));
-
-      // drive to right branch of nearest reef face
-      oi.getPrepToScoreCoralRightButton()
-          .onTrue(
-              Commands.sequence(
-                      Commands.waitUntil(manipulator::hasIndexedCoral),
-                      Commands.parallel(
-                          Commands.sequence(
-                              Commands.runOnce(
-                                  () -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                              new DriveToReef(
-                                  drivetrain,
-                                  () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-                                  manipulator::setReadyToScore,
-                                  elevator::setDistanceFromReef,
-                                  new Transform2d(
-                                      DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                                      DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                                      Rotation2d.fromDegrees(
-                                          DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                                  3.0),
-                              Commands.runOnce(
-                                  () -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3)))),
-                          Commands.runOnce(elevator::goToSelectedPosition, elevator)))
-                  .withName("drive to nearest right branch"));
-    }
-
-    oi.getInterruptAll().onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, oi));
-
-    oi.getDriveToPoseOverrideButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
+    oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
-    return Commands.either(
-        /* FIXME: make this commands.either not insufferable */
+    return Commands.sequence(
         Commands.either(
-            Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L2), elevator),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L2))),
-                    Commands.none(),
-                    () ->
-                        Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
-                            && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.runOnce(manipulator::shootCoral, manipulator),
-                Commands.waitUntil(() -> !manipulator.hasCoral()),
-                Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
-            Commands.sequence(
-                Commands.either(
-                    Commands.sequence(
-                        Commands.runOnce(() -> elevator.goToPosition(ReefBranch.MAX_L3), elevator),
-                        Commands.waitUntil(() -> elevator.isAtPosition(ReefBranch.MAX_L3))),
-                    Commands.none(),
-                    () ->
-                        Math.abs(elevator.getDistanceFromReef())
-                                > DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE
-                            && Math.abs(elevator.getDistanceFromReef()) < FAR_SCORING_DISTANCE),
-                Commands.runOnce(manipulator::shootCoral, manipulator),
-                Commands.waitUntil(() -> !manipulator.hasCoral()),
-                Commands.runOnce(() -> elevator.setDistanceFromReef(20.0))),
-            () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
-        Commands.sequence(
-            Commands.runOnce(manipulator::shootCoral, manipulator),
-            Commands.waitUntil(() -> !manipulator.hasCoral())),
-        () ->
-            !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
-                || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()));
+            Commands.either(
+                getScoreL2L3Command(manipulator, elevator, ScoringHeight.MAX_L2),
+                getScoreL2L3Command(manipulator, elevator, ScoringHeight.MAX_L3),
+                () -> OISelector.getOperatorInterface().getLevel2Trigger().getAsBoolean()),
+            getScoreCoralCloseCommand(manipulator, elevator),
+            () ->
+                !(OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean())),
+        Commands.runOnce(() -> elevator.setXFromReef(100.0)));
   }
 
   private static Command getScoreL1Command(Manipulator manipulator, Elevator elevator) {
     return Commands.sequence(
-        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ReefBranch.L1), elevator),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.L1)),
-        Commands.runOnce(manipulator::shootCoral, manipulator),
+        Commands.runOnce(() -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L1), elevator),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L1)),
+        Commands.runOnce(manipulator::shootCoralFast, manipulator),
         Commands.waitSeconds(0.25),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.ABOVE_L1), elevator),
-        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ReefBranch.ABOVE_L1)),
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.ABOVE_L1), elevator),
+        Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.ABOVE_L1)),
         Commands.runOnce(
-            () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator));
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP), elevator));
   }
 
-  // interrupt all commands by running a command that requires every subsystem. This is used to
-  // recover to a known state if the robot becomes "stuck" in a command.
-  // "run all wheels backwards and bring elevator and carriage back to initial configuration"
+  private static Command getScoreL2L3Command(
+      Manipulator manipulator, Elevator elevator, ScoringHeight branch) {
+    return Commands.sequence(
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(branch)),
+                Commands.waitUntil(() -> elevator.isAtPosition(branch)),
+                Commands.runOnce(manipulator::shootCoralFast, manipulator)),
+            Commands.runOnce(manipulator::shootCoralSlow, manipulator),
+            () ->
+                Math.abs(elevator.getXFromReef()) > MIN_FAR_SCORING_DISTANCE
+                    && Math.abs(elevator.getXFromReef()) < FAR_SCORING_DISTANCE),
+        Commands.waitUntil(() -> !manipulator.coralIsInManipulator()));
+  }
+
+  private static Command getScoreCoralCloseCommand(Manipulator manipulator, Elevator elevator) {
+    return Commands.either(
+        getScoreL1Command(manipulator, elevator),
+        Commands.sequence(
+            Commands.runOnce(elevator::goToSelectedPosition, elevator),
+            Commands.waitUntil(elevator::isAtSelectedPosition),
+            Commands.runOnce(manipulator::shootCoralFast, manipulator),
+            Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
+        () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
+  }
+
+  private static Command getPrepAndAutoScoreCoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+            Commands.waitUntil(manipulator::hasIndexedCoral),
+            Commands.either(
+                Commands.sequence(
+                    getAutoScoreL4Command(drivetrain, manipulator, elevator, vision),
+                    Commands.either(
+                        Commands.none(),
+                        Commands.sequence(
+                            Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
+                                .withTimeout(0.2),
+                            Commands.deadline(
+                                elevator.getElevatorLowerAndResetCommand(),
+                                new TeleopSwerve(
+                                    drivetrain,
+                                    OISelector.getOperatorInterface()::getTranslateX,
+                                    OISelector.getOperatorInterface()::getTranslateY,
+                                    OISelector.getOperatorInterface()::getRotate))),
+                        () ->
+                            (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeDropTrigger()
+                                    .getAsBoolean()
+                                || OISelector.getOperatorInterface()
+                                    .getAlgaeProcessorTrigger()
+                                    .getAsBoolean()))),
+                Commands.either(
+                    /* either auto score l2 l3 or just prep the l1 */
+                    Commands.sequence(
+                        getAutoScoreL2L3Command(drivetrain, manipulator, elevator, vision),
+                        Commands.either(
+                            Commands.none(),
+                            Commands.sequence(
+                                Commands.run(() -> drivetrain.drive(-2.0, 0.0, 0.0, false, false))
+                                    .withTimeout(0.2),
+                                Commands.deadline(
+                                    elevator.getElevatorLowerAndResetCommand(),
+                                    new TeleopSwerve(
+                                        drivetrain,
+                                        OISelector.getOperatorInterface()::getTranslateX,
+                                        OISelector.getOperatorInterface()::getTranslateY,
+                                        OISelector.getOperatorInterface()::getRotate))),
+                            () ->
+                                (OISelector.getOperatorInterface()
+                                        .getAlgaeBargeTrigger()
+                                        .getAsBoolean()
+                                    || OISelector.getOperatorInterface()
+                                        .getAlgaeDropTrigger()
+                                        .getAsBoolean()
+                                    || OISelector.getOperatorInterface()
+                                        .getAlgaeProcessorTrigger()
+                                        .getAsBoolean()))),
+                    getPrepCoralCommand(drivetrain, manipulator, elevator, vision),
+                    () -> !OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()),
+                () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()),
+            Commands.runOnce(() -> elevator.setXFromReef(100.0)))
+        .withName("prep and auto score");
+  }
 
   /*
    * 1. Shoot coral
@@ -217,14 +225,22 @@ public class CrossSubsystemsCommandsFactory {
    * IRs say that we should.
    */
   private static Command getInterruptAllCommand(
-      Manipulator manipulator, Elevator elevator, Drivetrain drivetrain, OperatorInterface oi) {
+      Manipulator manipulator,
+      Elevator elevator,
+      Drivetrain drivetrain,
+      Climber climber,
+      Vision vision,
+      OperatorInterface oi) {
     return Commands.parallel(
             Commands.sequence(
-                Commands.runOnce(manipulator::shootCoral, manipulator),
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
                 Commands.runOnce(
-                    () -> elevator.goToPosition(ElevatorConstants.ReefBranch.HARDSTOP), elevator),
-                Commands.runOnce(manipulator::resetStateMachine, manipulator)),
-            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate))
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.HARDSTOP),
+                    elevator),
+                Commands.runOnce(manipulator::resetStateMachine, manipulator),
+                Commands.runOnce(climber::stop, climber)),
+            new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate),
+            Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))
         .withName("interrupt all");
   }
 
@@ -232,5 +248,246 @@ public class CrossSubsystemsCommandsFactory {
       Drivetrain drivetrain, OperatorInterface oi) {
     return new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate)
         .withName("Override driveToPose");
+  }
+
+  private static Command getPrepCoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        Commands.waitUntil(manipulator::hasIndexedCoral),
+        Commands.either(
+            Commands.sequence(
+                Commands.runOnce(elevator::goToSelectedPosition, elevator),
+                Commands.waitUntil(() -> elevator.isAtPosition(ScoringHeight.L1))),
+            Commands.either(
+                getPrepL4CoralCommand(drivetrain, manipulator, elevator, vision),
+                getPrepL2L3CoralCommand(drivetrain, manipulator, elevator, vision),
+                () -> OISelector.getOperatorInterface().getLevel4Trigger().getAsBoolean()),
+            () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean()));
+  }
+
+  private static Command getPrepAlgaeCommand(
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Elevator elevator,
+      Vision vision,
+      OperatorInterface oi) {
+    return Commands.either(
+        getPrepToScoreAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
+        getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        manipulator::hasIndexedAlgae);
+  }
+
+  private static Command getPrepToScoreAlgaeCommand(
+      Drivetrain drivetrain,
+      Manipulator manipulator,
+      Elevator elevator,
+      Vision vision,
+      OperatorInterface oi) {
+    return Commands.either(
+        getPrepAlgaeBargeCommand(drivetrain, manipulator, elevator, oi),
+        Commands.either(
+            Commands.parallel(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR),
+                    elevator),
+                new DriveToProcessor(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestProcessor(),
+                    manipulator::setReadyToScore,
+                    new Transform2d(
+                        DrivetrainConstants.DRIVE_TO_PROCESSOR_X_TOLERANCE,
+                        DrivetrainConstants.DRIVE_TO_PROCESSOR_Y_TOLERANCE,
+                        Rotation2d.fromDegrees(
+                            DrivetrainConstants.DRIVE_TO_PROCESSOR_THETA_TOLERANCE_DEG)),
+                    3.0)),
+            Commands.none(),
+            () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
+        () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean());
+  }
+
+  public static Command getPrepAlgaeBargeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, OperatorInterface oi) {
+    // check if we are short of barge or far of barge
+    // if we are short of barge, check if we are within 2 feet. if we are, then put elevator up
+    // first. uf not, do in simultaneous
+
+    // FIXME: ask ian about this; just canceling the drive to barge for now
+    // being under the barge at our target pose would cause us to still probably
+    // raise directly through the barge on the way up.
+    // would need to go backwards and then forwards again. May not be worth due to how quick the
+    // driver could manually do that if we just cancel.
+    // if we are far of barge, then drive backwards first and then raise the elevator up
+    return Commands.either(
+        Commands.parallel(
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+            new DriveToBarge(
+                drivetrain,
+                elevator,
+                () -> Field2d.getInstance().getShortOfBargePose(),
+                manipulator::setReadyToScore,
+                new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
+                oi::getTranslateY)),
+        Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
+        () -> Field2d.getInstance().isShortOfBarge());
+  }
+
+  public static Command getCollectAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    // separate collecting algae after scoring or just going to collect algae
+    return Commands.sequence(
+        Commands.runOnce(() -> elevator.goBelowNearestAlgae(), elevator),
+        Commands.waitUntil(elevator::isBelowNearestAlgae),
+        Commands.parallel(
+            Commands.runOnce(manipulator::collectAlgae, manipulator),
+            Commands.sequence(
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                new DriveToReef(
+                    drivetrain,
+                    () -> Field2d.getInstance().getNearestAlgae().pose,
+                    manipulator::setReadyToScore,
+                    elevator::setDistanceFromReef,
+                    new Transform2d(
+                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                        Rotation2d.fromDegrees(
+                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                    true,
+                    false,
+                    3.0),
+                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
+        Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
+        Commands.runOnce(() -> elevator.goToNearestAlgae(), elevator),
+        Commands.waitUntil(manipulator::doneCollectingAlgae),
+        Commands.either(
+            getLeaveReefZoneCommand(drivetrain, elevator),
+            Commands.none(),
+            () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()));
+  }
+
+  private static Command getScoreWithAlgaeSelectedCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.either(
+        Commands.sequence(
+            getScoreAlgaeCommand(drivetrain, manipulator, elevator),
+            Commands.deadline(
+                elevator.getElevatorLowerAndResetCommand(),
+                new TeleopSwerve(
+                    drivetrain,
+                    OISelector.getOperatorInterface()::getTranslateX,
+                    OISelector.getOperatorInterface()::getTranslateY,
+                    OISelector.getOperatorInterface()::getRotate))),
+        getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        manipulator::hasIndexedAlgae);
+  }
+
+  private static Command getScoreAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator) {
+    return Commands.sequence(
+        Commands.either(
+            Commands.runOnce(manipulator::scoreAlgaeInBarge),
+            Commands.either(
+                Commands.runOnce(manipulator::scoreAlgaeInProcessor),
+                Commands.runOnce(manipulator::dropAlgae),
+                () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
+            () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()),
+        Commands.waitUntil(() -> manipulator.scoredAlgae()));
+  }
+
+  private static Command getScoreCoralAndCollectAlgaeCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        getScoreCoralCommand(manipulator, elevator),
+        getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision));
+  }
+
+  private static Command getLeaveReefZoneCommand(Drivetrain drivetrain, Elevator elevator) {
+    return Commands.deadline(
+        Commands.sequence(
+            Commands.waitUntil(() -> Field2d.getInstance().isOutsideOfReefZone()),
+            Commands.runOnce(
+                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.PROCESSOR), elevator)),
+        new TeleopSwerve(
+            drivetrain,
+            OISelector.getOperatorInterface()::getTranslateX,
+            OISelector.getOperatorInterface()::getTranslateY,
+            OISelector.getOperatorInterface()::getRotate));
+  }
+
+  private static Command getAutoScoreL4Command(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        getPrepL4CoralCommand(drivetrain, manipulator, elevator, vision),
+        /* possibly add a fractional wait here */
+        Commands.either(
+            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoralFast, manipulator),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> elevator.setXFromReef(100.0))),
+            () ->
+                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
+  }
+
+  private static Command getAutoScoreL2L3Command(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        getPrepL2L3CoralCommand(drivetrain, manipulator, elevator, vision),
+        /* possibly add a fractional wait here */
+        Commands.either(
+            getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+            Commands.sequence(
+                Commands.runOnce(manipulator::shootCoralSlow, manipulator),
+                Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
+                Commands.runOnce(() -> elevator.setXFromReef(100.0))),
+            () ->
+                (OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    || OISelector.getOperatorInterface().getAlgaeDropTrigger().getAsBoolean())));
+  }
+
+  private static Command getPrepL4CoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        Commands.parallel(
+            new DriveToReef(
+                drivetrain,
+                () -> Field2d.getInstance().getSelectedBranch(),
+                manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
+                new Transform2d(
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                false,
+                false,
+                5.0),
+            Commands.sequence(
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L3), elevator),
+                Commands.waitUntil(() -> (manipulator.isReadyToScore())).withTimeout(5.0),
+                Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L4), elevator))),
+        Commands.waitUntil(elevator::isAtSelectedPosition));
+  }
+
+  private static Command getPrepL2L3CoralCommand(
+      Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, Vision vision) {
+    return Commands.sequence(
+        Commands.parallel(
+            Commands.runOnce(elevator::goToSelectedPosition, elevator),
+            new DriveToReef(
+                drivetrain,
+                () -> Field2d.getInstance().getSelectedBranch(),
+                manipulator::setReadyToScore,
+                elevator::setDistanceFromReef,
+                new Transform2d(
+                    DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                    DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                    Rotation2d.fromDegrees(DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                false,
+                true,
+                5.0)),
+        Commands.waitUntil(elevator::isAtSelectedPosition));
   }
 }

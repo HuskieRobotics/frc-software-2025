@@ -558,6 +558,10 @@ public abstract class RobotConfig {
     return 1;
   }
 
+  public double getDriveToBargeAndProcessorDriveKP() {
+    return 0.0;
+  }
+
   /**
    * Returns the the proportional constant for the PID controller for translational motion when
    * driving to a specific pose. Defaults to 0.

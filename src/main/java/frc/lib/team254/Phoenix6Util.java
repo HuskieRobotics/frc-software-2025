@@ -19,6 +19,9 @@ import java.util.function.Supplier;
 @java.lang.SuppressWarnings({"java:S112"})
 public class Phoenix6Util {
 
+  private static Alert canivoreSignalsAlert = new Alert("", Alert.AlertType.kError);
+  private static Alert rioSignalsAlert = new Alert("", Alert.AlertType.kError);
+
   private Phoenix6Util() {}
 
   /**
@@ -213,10 +216,16 @@ public class Phoenix6Util {
   /** Refresh all registered signals. */
   public static void refreshAll() {
     if (canivoreSignals.length > 0) {
-      BaseStatusSignal.refreshAll(canivoreSignals);
+      checkError(
+          BaseStatusSignal.refreshAll(canivoreSignals),
+          "failed to refresh signals on CANivore:",
+          canivoreSignalsAlert);
     }
     if (rioSignals.length > 0) {
-      BaseStatusSignal.refreshAll(rioSignals);
+      checkError(
+          BaseStatusSignal.refreshAll(rioSignals),
+          "failed to refresh signals on RIO:",
+          rioSignalsAlert);
     }
   }
 }

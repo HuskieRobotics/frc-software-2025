@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.669874926486313,
-        "y": 5.076484642322497
+        "x": 7.738227739726027,
+        "y": 4.85892551369863
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.723112940184943,
-        "y": 5.993081388897839
+        "x": 6.701455479452055,
+        "y": 5.189490582191781
       },
       "isLocked": false,
-      "linkedName": "At Branch L"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.354610655737705,
-        "y": 7.23171106557377
+        "x": 5.709760273972603,
+        "y": 5.279644691780822
       },
       "prevControl": {
-        "x": 2.6318743543678416,
-        "y": 6.6753334970806195
+        "x": 6.776583904109589,
+        "y": 5.234567636986301
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Collect Coral"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,21 +34,21 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -53.13010235415599
+    "velocity": 1.0,
+    "rotation": -121.8274465766732
   },
   "reversed": false,
-  "folder": "2 Piece Blue Left",
+  "folder": "1 Coral 2 Algae",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -57.99499999999999
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

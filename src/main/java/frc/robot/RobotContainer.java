@@ -42,6 +42,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberIO;
 import frc.robot.subsystems.climber.ClimberIOTalonFX;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.ScoringHeight;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOTalonFX;
 import frc.robot.subsystems.manipulator.Manipulator;
@@ -68,6 +69,10 @@ public class RobotContainer {
   private Climber climber;
   private Elevator elevator;
 
+  private Trigger driveToPoseCanceledTrigger;
+
+  private Trigger indexedCoralTrigger;
+
   private final LoggedNetworkNumber endgameAlert1 =
       new LoggedNetworkNumber("/Tuning/Endgame Alert #1", 20.0);
   private final LoggedNetworkNumber endgameAlert2 =
@@ -91,6 +96,8 @@ public class RobotContainer {
     createRobotConfig();
 
     Field2d.getInstance().populateReefBranchPoseMaps();
+    Field2d.getInstance().populateReefZone();
+    Field2d.getInstance().populateStationsAndProcessors();
 
     // create real, simulated, or replay subsystems based on the mode and robot specified
     if (Constants.getMode() != Mode.REPLAY) {
@@ -285,9 +292,6 @@ public class RobotContainer {
       return;
     }
 
-    // clear the list of composed commands since we are about to rebind them to potentially new
-    // triggers
-    CommandScheduler.getInstance().clearComposedCommands();
     configureButtonBindings();
   }
 
@@ -295,14 +299,29 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     configureDrivetrainCommands();
-
-    configureSubsystemCommands();
-
     configureVisionCommands();
 
-    ClimberCommandFactory.registerCommands(oi, climber);
+    ClimberCommandFactory.registerCommands(oi, climber, manipulator);
     ElevatorCommandsFactory.registerCommands(oi, elevator);
-    CrossSubsystemsCommandsFactory.registerCommands(oi, drivetrain, elevator, manipulator, vision);
+    CrossSubsystemsCommandsFactory.registerCommands(
+        oi, drivetrain, elevator, manipulator, climber, vision);
+
+    // Automatic elevator raising trigger
+    // if the selected height is l3 or l4, then max our height at l2
+    // if drive to pose gets canceled, go back to the target height
+    indexedCoralTrigger =
+        new Trigger(() -> (DriverStation.isTeleopEnabled() && manipulator.hasIndexedCoral()));
+    indexedCoralTrigger.onTrue(
+        Commands.either(
+                Commands.none(),
+                Commands.either(
+                    Commands.runOnce(elevator::goToSelectedPosition),
+                    Commands.runOnce(() -> elevator.goToPosition(ScoringHeight.L2)),
+                    () ->
+                        (oi.getLevel1Trigger().getAsBoolean()
+                            || oi.getLevel2Trigger().getAsBoolean())),
+                () -> CommandScheduler.getInstance().requiring(elevator) != null)
+            .withName("go to selected position or L2"));
 
     // Endgame alerts[]
     new Trigger(
@@ -340,6 +359,16 @@ public class RobotContainer {
      */
     drivetrain.setDefaultCommand(
         new TeleopSwerve(drivetrain, oi::getTranslateX, oi::getTranslateY, oi::getRotate));
+
+    driveToPoseCanceledTrigger = new Trigger(drivetrain::getDriveToPoseCanceled);
+    driveToPoseCanceledTrigger.onTrue(
+        Commands.sequence(
+                Commands.run(
+                        () -> LEDs.getInstance().requestState(LEDs.States.DRIVE_TO_POSE_CANCELED),
+                        drivetrain)
+                    .withTimeout(0.5),
+                Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(false)))
+            .withName("cancel drive to pose"));
 
     // lock rotation to the nearest 180° while driving
     oi.getLock180Button()
@@ -419,11 +448,11 @@ public class RobotContainer {
                 .ignoringDisable(true)
                 .withName("print current pose"));
 
-    new Trigger(
-            () -> {
-              return drivetrain.isTilted() && !climber.cageCatcherReleased();
-            })
-        .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
+    // new Trigger(
+    //         () -> {
+    //           return drivetrain.isTilted() && !climber.isClimbing();
+    //         })
+    //     .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());
@@ -431,10 +460,6 @@ public class RobotContainer {
         .whileTrue(SysIdRoutineChooser.getInstance().getQuasistaticForward());
     oi.getSysIdQuasistaticReverse()
         .whileTrue(SysIdRoutineChooser.getInstance().getQuasistaticReverse());
-  }
-
-  private void configureSubsystemCommands() {
-    // FIXME: add commands for the subsystem
   }
 
   private void configureVisionCommands() {
@@ -470,8 +495,11 @@ public class RobotContainer {
     // update LEDs so that they turn yellow. maybe use our reef relative difference, and if it is
     // less than 6
     // but outside of our normal tolerance, turn yellow until we are within tolerance
-
-    if (manipulator.isReadyToScore()) {
+    if (climber.cageCaught() && climber.cageCatcherReleased()) {
+      LEDs.getInstance().requestState(LEDs.States.CAGE_CAUGHT);
+    } else if (elevator.canScoreFartherAway()) {
+      LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE_FARTHER_AWAY);
+    } else if (manipulator.isReadyToScore()) {
       LEDs.getInstance().requestState(LEDs.States.READY_TO_SCORE);
     }
   }

@@ -7,7 +7,6 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -38,10 +37,11 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private TalonFX elevatorMotorFollower;
 
   private MotionMagicExpoVoltage leadPositionRequest;
-  private DynamicMotionMagicVoltage leadPositionRequestDown;
   private VoltageOut leadVoltageRequest;
 
-  private Alert configAlert =
+  private Alert leadConfigAlert =
+      new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
+  private Alert followerConfigAlert =
       new Alert("Failed to apply configuration for subsystem.", AlertType.kError);
 
   private StatusSignal<Current> leadStatorCurrent;
@@ -158,7 +158,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         elevatorVelocityStatusSignal);
 
     leadPositionRequest = new MotionMagicExpoVoltage(0);
-    leadPositionRequestDown = new DynamicMotionMagicVoltage(0, 10, 100, 500);
     leadVoltageRequest = new VoltageOut(0);
 
     configElevatorMotorLead(elevatorMotorLead);
@@ -172,7 +171,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
             ElevatorConstants.IS_INVERTED,
             ElevatorConstants.GEAR_RATIO,
             ElevatorConstants.ELEVATOR_MASS_KG,
-            Units.inchesToMeters(ElevatorConstants.PULLY_CIRCUMFERANCE_INCHES / (Math.PI * 2)),
+            Units.inchesToMeters(ElevatorConstants.PULLEY_CIRCUMFERENCE_INCHES / (Math.PI * 2)),
             ElevatorConstants.MIN_HEIGHT.in(Meters),
             ElevatorConstants.MAX_HEIGHT.in(Meters),
             0.0,
@@ -240,7 +239,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.HardwareLimitSwitch.ReverseLimitAutosetPositionValue = 0.0;
     config.HardwareLimitSwitch.ReverseLimitEnable = true;
 
-    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorLead, config, configAlert);
+    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorLead, config, leadConfigAlert);
 
     FaultReporter.getInstance()
         .registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Lead", motor);
@@ -252,7 +251,14 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorFollower, config, configAlert);
+    config.CurrentLimits.SupplyCurrentLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.SupplyCurrentLowerTime = 0;
+    config.CurrentLimits.SupplyCurrentLimitEnable = true;
+    config.CurrentLimits.StatorCurrentLimit = ELEVATOR_PEAK_CURRENT_LIMIT;
+    config.CurrentLimits.StatorCurrentLimitEnable = true;
+
+    Phoenix6Util.applyAndCheckConfiguration(elevatorMotorFollower, config, followerConfigAlert);
 
     FaultReporter.getInstance()
         .registerHardware(ElevatorConstants.SUBSYSTEM_NAME, "Elevator Motor Follower", motor);
@@ -302,7 +308,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.positionRotations = elevatorPositionStatusSignal.getValueAsDouble();
 
-    inputs.positionInches = inputs.positionRotations * PULLY_CIRCUMFERANCE_INCHES;
+    inputs.positionInches = inputs.positionRotations * PULLEY_CIRCUMFERENCE_INCHES;
 
     localPosition = inputs.positionInches;
 
@@ -386,18 +392,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPosition(Distance position) {
-    if (localPosition < position.in(Inches)) {
-
-      // set the elevator to slot 0
-      elevatorMotorLead.setControl(
-          leadPositionRequest
-              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
-              .withSlot(0));
-    } else {
-      elevatorMotorLead.setControl(
-          leadPositionRequestDown
-              .withPosition(position.in(Inches) / PULLY_CIRCUMFERANCE_INCHES)
-              .withSlot(0));
-    }
+    elevatorMotorLead.setControl(
+        leadPositionRequest
+            .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
+            .withSlot(0));
   }
 }

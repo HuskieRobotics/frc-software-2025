@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -48,7 +47,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final MomentOfInertia MOI = KilogramSquareMeters.of(6.985073979);
   private static final Distance TRACKWIDTH = Meters.of(0.57785);
   private static final Distance WHEELBASE = Meters.of(0.57785);
-  private static final Distance WHEEL_RADIUS = Meters.of(0.049930);
+  private static final Distance WHEEL_RADIUS = Meters.of(0.050154);
   private static final double WHEEL_COEFFICIENT_OF_FRICTION = 1.5;
   private static final Translation2d FRONT_RIGHT_CORNER_POSITION =
       new Translation2d(0.34925, 0.34925);
@@ -75,8 +74,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double DRIVE_KA = 0.43636;
 
   private static final LinearVelocity MAX_VELOCITY = MetersPerSecond.of(4.67);
-  private static final LinearVelocity MAX_COAST_VELOCITY =
-      MetersPerSecond.of(0.04); // FIXME: determine with real robot
+  private static final LinearVelocity MAX_COAST_VELOCITY = MetersPerSecond.of(0.04);
   private static final double SLOW_MODE_MULTIPLIER = 0.7;
 
   private static final String CAN_BUS_NAME = "canbus1";
@@ -92,33 +90,27 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Front right camera
   private static final Transform3d ROBOT_TO_CAMERA_0 =
       new Transform3d(
-          new Translation3d(0.180, -0.267, 0.240),
-          new Rotation3d(new Quaternion(-0.978, -0.032, 0.107, -0.176)));
+          new Translation3d(0.178, -0.268, 0.236),
+          new Rotation3d(new Quaternion(-0.977, -0.032, 0.115, -0.177)));
   // pitch 45 degrees
 
   // Back right camera
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-10.497),
-              Units.inchesToMeters(-10.741),
-              Units.inchesToMeters(8.040)),
-          new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(-162)));
+          new Translation3d(-0.279, -0.273, 0.253),
+          new Rotation3d(new Quaternion(-0.149, 0.161, 0.027, 0.975)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
       new Transform3d(
-          new Translation3d(0.181, 0.267, 0.242),
-          new Rotation3d(new Quaternion(-0.978, 0.011, 0.103, 0.183)));
+          new Translation3d(0.178, 0.267, 0.240),
+          new Rotation3d(new Quaternion(-0.976, 0.009, 0.119, 0.182)));
 
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
-          new Translation3d(
-              Units.inchesToMeters(-10.497),
-              Units.inchesToMeters(10.741),
-              Units.inchesToMeters(8.040)),
-          new Rotation3d(0, Units.degreesToRadians(-20), Units.degreesToRadians(162)));
+          new Translation3d(-0.276, 0.276, 0.253),
+          new Rotation3d(new Quaternion(0.157, 0.163, -0.025, 0.974)));
 
   // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
@@ -127,6 +119,9 @@ public class CalypsoRobotConfig extends RobotConfig {
   private static final double AUTO_TURN_P_CONTROLLER = 5.0;
   private static final double AUTO_TURN_I_CONTROLLER = 0.0;
   private static final double AUTO_TURN_D_CONTROLLER = 0.0;
+
+  // Drive To Barge constants // was 1.5 before, trying 2.0
+  private static final double DRIVE_TO_BARGE_AND_PROCESSOR_DRIVE_KP = 2.0;
 
   // Drive to Pose constants
   private static final double DRIVE_TO_POSE_DRIVE_KP = 2.0;
@@ -380,6 +375,11 @@ public class CalypsoRobotConfig extends RobotConfig {
   }
 
   @Override
+  public double getDriveToBargeAndProcessorDriveKP() {
+    return DRIVE_TO_BARGE_AND_PROCESSOR_DRIVE_KP;
+  }
+
+  @Override
   public double getDriveToPoseDriveKD() {
     return DRIVE_TO_POSE_DRIVE_KD;
   }
@@ -442,7 +442,7 @@ public class CalypsoRobotConfig extends RobotConfig {
   @Override
   public Pigeon2Configuration getPigeonConfigForSwerveDrivetrain() {
     return new Pigeon2Configuration()
-        .withMountPose(new MountPoseConfigs().withMountPoseYaw(-90.0).withMountPoseRoll(180.0));
+        .withMountPose(new MountPoseConfigs().withMountPoseRoll(-180.0));
   }
 
   @Override

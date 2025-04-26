@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.778073770491804,
-        "y": 3.887141393442622
+        "x": 1.1987704918032787,
+        "y": 7.111834016393442
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.778073770491804,
-        "y": 3.887141393442622
+        "x": 3.0448770491803274,
+        "y": 7.387551229508197
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "(New) Collect Left"
     },
     {
       "anchor": {
-        "x": 6.988831967213113,
-        "y": 4.00701844262295
+        "x": 4.471413934426229,
+        "y": 5.937038934426229
       },
       "prevControl": {
-        "x": 6.653176229508196,
-        "y": 4.00701844262295
+        "x": 4.17172131147541,
+        "y": 6.404559426229508
       },
       "nextControl": null,
       "isLocked": false,
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 2.0,
+    "rotation": -118.73979529168811
   },
   "reversed": false,
-  "folder": "1 Piece Center",
+  "folder": "4 Left (Far and Close)",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -179.02897806892088
+    "rotation": -51.00900595749437
   },
   "useDefaultConstraints": true
 }

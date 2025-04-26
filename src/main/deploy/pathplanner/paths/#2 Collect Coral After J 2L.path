@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.9741742621527774,
-        "y": 2.76113136574074
+        "x": 4.983439037104362,
+        "y": 5.280037525395637
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.802335221056887,
-        "y": 1.6493034547818362
+        "x": 4.287160333351155,
+        "y": 6.161337648363985
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "At Branch J"
     },
     {
       "anchor": {
-        "x": 1.3905737704918033,
-        "y": 0.7583504098360652
+        "x": 1.354610655737705,
+        "y": 7.23171106557377
       },
       "prevControl": {
-        "x": 2.2017347293959126,
-        "y": 1.3443521221648325
+        "x": 3.7445285767750214,
+        "y": 6.261560027266894
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Collect Right"
+      "linkedName": "Collect Coral"
     }
   ],
   "rotationTargets": [],
@@ -34,21 +34,21 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 53.941
+    "velocity": 0.0,
+    "rotation": -53.13
   },
   "reversed": false,
-  "folder": "2 Piece Blue Right",
+  "folder": "3 Piece Left",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.42100000000001
+    "rotation": -120.38
   },
   "useDefaultConstraints": true
 }

@@ -18,11 +18,28 @@ public class DrivetrainConstants {
   public static final double DRIVE_TO_REEF_X_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_Y_TOLERANCE = Units.inchesToMeters(0.5);
   public static final double DRIVE_TO_REEF_THETA_TOLERANCE_DEG = 2.0;
+  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP_L4 =
+      0.1; // was 0.25 at midwest, was 0.1 at start at home
+  public static final double DRIVE_TO_REEF_X_BOOST_TELEOP_L2L3 = 0.25;
+  public static final double DRIVE_TO_REEF_X_BOOST_AUTO = 0.1;
+  public static final double DRIVE_TO_STATION_X_BOOST = -0.25;
+
+  // FIXME: tune for if we can be less precise than this or not?
+  public static final double DRIVE_TO_PROCESSOR_X_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final double DRIVE_TO_PROCESSOR_Y_TOLERANCE = Units.inchesToMeters(0.5);
+  public static final double DRIVE_TO_PROCESSOR_THETA_TOLERANCE_DEG = 2.0;
+
+  // the diameter of a coral is 4.5 inches, but setting it to exactly that would likely result in us
+  // stalling again
+  public static final double DRIVE_TO_REEF_ONE_CORAL_AWAY_DISTANCE = Units.inchesToMeters(6);
 
   public static final double DEMO_MODE_MAX_VELOCITY = 0.5;
 
   public static final double TILT_THRESHOLD_DEG = 5.0;
   public static final double UNTILT_VELOCITY_MPS = 0.5;
+
+  public static final double SYSTEM_TEST_VELOCITY_TOLERANCE = 0.25;
+  public static final double SYSTEM_TEST_ANGLE_TOLERANCE_DEG = 1.25;
 
   public enum SysIDCharacterizationMode {
     TRANSLATION_VOLTS,

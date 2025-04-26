@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.29580910011574,
-        "y": 2.9433394820601846
+        "x": 1.10175,
+        "y": 1.0317499999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.112708333333333,
-        "y": 1.8045533130787033
+        "x": 3.032889344262295,
+        "y": 0.9141905737704917
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "(New) Collect Right"
     },
     {
       "anchor": {
-        "x": 1.3905737704918033,
-        "y": 0.7583504098360652
+        "x": 4.3755122950819665,
+        "y": 1.777305327868853
       },
       "prevControl": {
-        "x": 2.952762126656186,
-        "y": 0.9538803755894887
+        "x": 4.195696721311475,
+        "y": 1.1059938524590154
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Collect Right"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -34,21 +34,21 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 53.941
+    "velocity": 2.0,
+    "rotation": 121.86597769360371
   },
   "reversed": false,
-  "folder": "2 Piece Blue Right",
+  "folder": "4 Right (Far and Close)",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 122.619
+    "rotation": 55.22216863363617
   },
   "useDefaultConstraints": true
 }

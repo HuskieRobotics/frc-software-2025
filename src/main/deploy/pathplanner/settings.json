@@ -3,16 +3,20 @@
   "robotLength": 0.85725,
   "holonomicMode": true,
   "pathFolders": [
-    "2 Piece Blue Left",
-    "2 Piece Blue Right",
+    "1 Coral 2 Algae",
     "1 Piece Center",
+    "2 Piece Back",
+    "3 Piece Left",
+    "3 Piece Right",
+    "4 Left (Far and Close)",
+    "4 Right (Far and Close)",
     "Tuning"
   ],
   "autoFolders": [
     "Tuning"
   ],
   "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 3.0,
+  "defaultMaxAccel": 6.0,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,
   "defaultNominalVoltage": 12.0,

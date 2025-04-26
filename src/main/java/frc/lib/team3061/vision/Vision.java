@@ -3,17 +3,18 @@ package frc.lib.team3061.vision;
 import static edu.wpi.first.units.Units.*;
 import static frc.lib.team3061.vision.VisionConstants.*;
 
-import com.ctre.phoenix6.Utils;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
@@ -81,7 +82,7 @@ public class Vision extends SubsystemBase {
   private List<List<Pose3d>> robotPosesAccepted;
   private List<List<Pose3d>> robotPosesRejected;
 
-  private final Pose3d robotPoseForCalibration;
+  private final Pose3d[] robotPosesForCalibration;
 
   private final LoggedTunableNumber latencyAdjustmentSeconds =
       new LoggedTunableNumber("Vision/LatencyAdjustmentSeconds", 0.0);
@@ -158,13 +159,39 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/AprilTagsPoses", aprilTagsPoses);
 
     // robot to camera transformation calibration
-    robotPoseForCalibration =
+    robotPosesForCalibration = new Pose3d[visionIOs.length];
+    // FL and FR cameras are calibrated based on a centered AprilTag on the robot-to-camera
+    // transform calibration jig
+    robotPosesForCalibration[0] =
         new Pose3d(
             FieldConstants.Reef.centerFaces[0].transformBy(
                 new Transform2d(
                     RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
                     0,
                     Rotation2d.fromDegrees(180))));
+    robotPosesForCalibration[2] = robotPosesForCalibration[0];
+
+    // the BR camera is calibrated based on an offset AprilTag on the robot-to-camera transform
+    // calibration jig
+    robotPosesForCalibration[1] =
+        new Pose3d(FieldConstants.Reef.centerFaces[0])
+            .transformBy(
+                new Transform3d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    Units.inchesToMeters(14.0),
+                    -Units.inchesToMeters(1.0),
+                    new Rotation3d()));
+
+    // the BL camera is calibrated based on an offset AprilTag on the robot-to-camera transform
+    // calibration jig
+    robotPosesForCalibration[3] =
+        new Pose3d(FieldConstants.Reef.centerFaces[0])
+            .transformBy(
+                new Transform3d(
+                    RobotConfig.getInstance().getRobotLengthWithBumpers().in(Meters) / 2.0,
+                    -Units.inchesToMeters(14.0),
+                    -Units.inchesToMeters(1.0),
+                    new Rotation3d()));
   }
 
   /**
@@ -199,10 +226,6 @@ public class Vision extends SubsystemBase {
       robotPosesRejected.get(cameraIndex).clear();
 
       for (PoseObservation observation : inputs[cameraIndex].poseObservations) {
-        double observationTimestamp = observation.timestamp();
-        double timestamp = Timer.getTimestamp();
-        double convertedTime = Utils.fpgaToCurrentTime(observation.timestamp());
-
         // only process the vision data if the timestamp is newer than the last one
         if (this.lastTimestamps[cameraIndex] < observation.timestamp()) {
 
@@ -459,7 +482,7 @@ public class Vision extends SubsystemBase {
     if (observation.type() == PoseObservationType.MULTI_TAG) {
       xyStdDev *= (reprojectionErrorScaleFactor.get() * observation.reprojectionError());
     } else {
-      xyStdDev *= (ambiguityScaleFactor.get() * observation.averageAmbiguity());
+      xyStdDev *= (ambiguityScaleFactor.get() * (observation.averageAmbiguity() + 0.1));
     }
 
     // only trust the rotation component for multi-tag strategies; for single-tag, set the standard
@@ -479,11 +502,12 @@ public class Vision extends SubsystemBase {
   private void logCameraTransforms(int cameraIndex, PoseObservation observation) {
     // this is the pose of the robot when centered on the reef face that faces the driver station
     Pose3d cameraPose = observation.cameraPose();
-    Transform3d robotToCameraTransform = cameraPose.minus(robotPoseForCalibration);
+    Transform3d robotToCameraTransform = cameraPose.minus(robotPosesForCalibration[cameraIndex]);
 
     Logger.recordOutput(
         SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraTransform", robotToCameraTransform);
     Logger.recordOutput(
-        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraPose", robotPoseForCalibration);
+        SUBSYSTEM_NAME + "/" + cameraIndex + "/RobotToCameraPose",
+        robotPosesForCalibration[cameraIndex]);
   }
 }
