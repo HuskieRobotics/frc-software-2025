@@ -27,6 +27,7 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import java.util.function.Consumer;
@@ -358,10 +359,13 @@ public class DriveToReef extends Command {
     // check that each of the controllers is at their goal or if the timeout is elapsed
     // check if it is physically possible for us to drive to the selected position without going
     // through the reef (sign of our x difference)
+    // when in demo mode, don't drive to the reef unless we are demonstrating auto scoring
     return cannotReachTargetPose
         || !drivetrain.isMoveToPoseEnabled()
         || this.timer.hasElapsed(timeout)
-        || atGoal;
+        || atGoal
+        || (Constants.DEMO_MODE
+            && !OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean());
   }
 
   /**

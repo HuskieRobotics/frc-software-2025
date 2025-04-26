@@ -1,6 +1,5 @@
 package frc.robot.subsystems.manipulator;
 
-import frc.robot.Constants;
 import static edu.wpi.first.units.Units.Degrees;
 
 import edu.wpi.first.units.measure.Angle;
