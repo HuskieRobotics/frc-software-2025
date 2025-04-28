@@ -339,7 +339,9 @@ public class DriveToReef extends Command {
             && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
 
-    if (atGoal) {
+    if (atGoal
+        || (Constants.DEMO_MODE
+            && !OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean())) {
       onTarget.accept(true);
       Logger.recordOutput("DriveToReef/withinTolerance", true);
     } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout)) {
@@ -351,7 +353,9 @@ public class DriveToReef extends Command {
     if (firstRun) {
       firstRun = false;
       cannotReachTargetPose = reefRelativeDifference.getX() > 0.05;
-      if (cannotReachTargetPose) {
+      if (cannotReachTargetPose
+          && (!Constants.DEMO_MODE
+              || OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean())) {
         drivetrain.setDriveToPoseCanceled(true);
       }
     }

@@ -48,6 +48,7 @@ import frc.lib.team6328.util.LoggedTracer;
 import frc.lib.team6328.util.LoggedTunableNumber;
 import frc.robot.Constants;
 import frc.robot.Field2d;
+import frc.robot.operator_interface.OISelector;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -471,7 +472,8 @@ public class Drivetrain extends SubsystemBase implements CustomPoseEstimator {
       yVelocity *= slowModeMultiplier;
     }
 
-    if (Constants.DEMO_MODE) {
+    if (Constants.DEMO_MODE
+        && !OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean()) {
       double velocity = Math.sqrt(Math.pow(xVelocity, 2) + Math.pow(yVelocity, 2));
       if (velocity > DEMO_MODE_MAX_VELOCITY) {
         double scale = DEMO_MODE_MAX_VELOCITY / velocity;
