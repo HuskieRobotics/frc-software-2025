@@ -329,7 +329,7 @@ public class CrossSubsystemsCommandsFactory {
                 new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
                 oi::getTranslateY)),
         Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
-        () -> Field2d.getInstance().isShortOfBarge());
+        () -> Field2d.getInstance().isShortOfBarge() || Constants.DEMO_MODE);
   }
 
   public static Command getCollectAlgaeCommand(
