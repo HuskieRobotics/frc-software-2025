@@ -585,6 +585,7 @@ public class AutonomousCommandFactory {
                 false,
                 4.0)),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
+        Commands.waitSeconds(0.5),
         Commands.parallel(
             Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))),
             Commands.runOnce(manipulator::shootCoralFast, manipulator)),
