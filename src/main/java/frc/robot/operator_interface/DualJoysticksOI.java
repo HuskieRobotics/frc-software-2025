@@ -63,6 +63,11 @@ public class DualJoysticksOI extends OperatorDashboard {
   }
 
   @Override
+  public Trigger getTrackAprilTagButton() {
+    return translateJoystickButtons[6];
+  }
+
+  @Override
   public Trigger getResetGyroButton() {
     return translateJoystickButtons[8];
   }
