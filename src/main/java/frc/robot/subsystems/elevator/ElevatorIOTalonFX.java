@@ -7,8 +7,8 @@ import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
@@ -37,7 +37,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private TalonFX elevatorMotorLead;
   private TalonFX elevatorMotorFollower;
 
-  private MotionMagicExpoVoltage leadPositionRequest;
+  private DynamicMotionMagicExpoVoltage leadPositionRequest;
   private VoltageOut leadVoltageRequest;
 
   private Alert leadConfigAlert =
@@ -158,7 +158,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         elevatorFollowerTempStatusSignal,
         elevatorVelocityStatusSignal);
 
-    leadPositionRequest = new MotionMagicExpoVoltage(0);
+    leadPositionRequest = new DynamicMotionMagicExpoVoltage(0, 0, kVExpo.get(), kAExpo.get());
     leadVoltageRequest = new VoltageOut(0);
 
     configElevatorMotorLead(elevatorMotorLead);
@@ -229,9 +229,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     config.Slot2.kG = kGslot2.get();
 
     config.Slot2.withGravityType(GravityTypeValue.Elevator_Static);
-
-    leadMotorConfig.MotionMagicExpo_kA = kAExpo.get();
-    leadMotorConfig.MotionMagicExpo_kV = kVExpo.get();
 
     leadMotorConfig.MotionMagicCruiseVelocity = cruiseVelocity.get();
 
@@ -343,9 +340,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
           config.Slot2.kA = motionMagic[19];
           config.Slot2.kG = motionMagic[20];
 
-          config.MotionMagic.MotionMagicExpo_kV = motionMagic[21];
-          config.MotionMagic.MotionMagicExpo_kA = motionMagic[22];
-
           config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[23];
 
           this.elevatorMotorLead.getConfigurator().apply(config);
@@ -371,8 +365,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
         kVslot2,
         kAslot2,
         kGslot2,
-        kVExpo,
-        kAExpo,
         cruiseVelocity);
 
     elevatorSystemSim.updateSim();
@@ -394,9 +386,21 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
   @Override
   public void setPosition(Distance position) {
-    elevatorMotorLead.setControl(
-        leadPositionRequest
-            .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
-            .withSlot(0));
+
+    if (position.equals(MIN_HEIGHT)) {
+      elevatorMotorLead.setControl(
+          leadPositionRequest
+              .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
+              .withSlot(0)
+              .withKV(kVExpo.get() / 10.0)
+              .withKA(kAExpo.get() / 10.0));
+    } else {
+      elevatorMotorLead.setControl(
+          leadPositionRequest
+              .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
+              .withSlot(0)
+              .withKV(kVExpo.get())
+              .withKA(kAExpo.get()));
+    }
   }
 }
