@@ -340,7 +340,7 @@ public class ElevatorIOTalonFX implements ElevatorIO {
           config.Slot2.kA = motionMagic[19];
           config.Slot2.kG = motionMagic[20];
 
-          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[23];
+          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[21];
 
           this.elevatorMotorLead.getConfigurator().apply(config);
         },
@@ -392,8 +392,8 @@ public class ElevatorIOTalonFX implements ElevatorIO {
           leadPositionRequest
               .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0)
-              .withKV(kVExpo.get() / 10.0)
-              .withKA(kAExpo.get() / 10.0));
+              .withKV(kVExpo.get() * 10.0)
+              .withKA(kAExpo.get() * 10.0));
     } else {
       elevatorMotorLead.setControl(
           leadPositionRequest
