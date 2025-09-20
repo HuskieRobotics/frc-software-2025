@@ -64,53 +64,21 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   private final Debouncer connectedLeadDebouncer = new Debouncer(0.5);
   private final Debouncer connectedFollowerDebouncer = new Debouncer(0.5);
 
-  private double localPosition = 0.0;
-
   // Tunable constants
-  private final LoggedTunableNumber kPslot0 =
-      new LoggedTunableNumber("Elevator/kPslot0", ElevatorConstants.KP_SLOT0);
-  private final LoggedTunableNumber kIslot0 =
-      new LoggedTunableNumber("Elevator/kIslot0", ElevatorConstants.KI_SLOT0);
-  private final LoggedTunableNumber kDslot0 =
-      new LoggedTunableNumber("Elevator/kDslot0", ElevatorConstants.KD_SLOT0);
-  private final LoggedTunableNumber kSslot0 =
-      new LoggedTunableNumber("Elevator/kSslot0", ElevatorConstants.KS_SLOT0);
-  private final LoggedTunableNumber kVslot0 =
-      new LoggedTunableNumber("Elevator/kVslot0", ElevatorConstants.KV_SLOT0);
-  private final LoggedTunableNumber kAslot0 =
-      new LoggedTunableNumber("Elevator/kAslot0", ElevatorConstants.KA_SLOT0);
-  private final LoggedTunableNumber kGslot0 =
-      new LoggedTunableNumber("Elevator/kGslot0", ElevatorConstants.KG_SLOT0);
-
-  private final LoggedTunableNumber kPslot1 =
-      new LoggedTunableNumber("Elevator/kPslot1", ElevatorConstants.KP_SLOT1);
-  private final LoggedTunableNumber kIslot1 =
-      new LoggedTunableNumber("Elevator/kIslot1", ElevatorConstants.KI_SLOT1);
-  private final LoggedTunableNumber kDslot1 =
-      new LoggedTunableNumber("Elevator/kDslot1", ElevatorConstants.KD_SLOT1);
-  private final LoggedTunableNumber kSslot1 =
-      new LoggedTunableNumber("Elevator/kSslot1", ElevatorConstants.KS_SLOT1);
-  private final LoggedTunableNumber kVslot1 =
-      new LoggedTunableNumber("Elevator/kVslot1", ElevatorConstants.KV_SLOT1);
-  private final LoggedTunableNumber kAslot1 =
-      new LoggedTunableNumber("Elevator/kAslot1", ElevatorConstants.KA_SLOT1);
-  private final LoggedTunableNumber kGslot1 =
-      new LoggedTunableNumber("Elevator/kGslot1", ElevatorConstants.KG_SLOT1);
-
-  private final LoggedTunableNumber kPslot2 =
-      new LoggedTunableNumber("Elevator/kPslot2", ElevatorConstants.KP_SLOT2);
-  private final LoggedTunableNumber kIslot2 =
-      new LoggedTunableNumber("Elevator/kIslot2", ElevatorConstants.KI_SLOT2);
-  private final LoggedTunableNumber kDslot2 =
-      new LoggedTunableNumber("Elevator/kDslot2", ElevatorConstants.KD_SLOT2);
-  private final LoggedTunableNumber kSslot2 =
-      new LoggedTunableNumber("Elevator/kSslot2", ElevatorConstants.KS_SLOT2);
-  private final LoggedTunableNumber kVslot2 =
-      new LoggedTunableNumber("Elevator/kVslot2", ElevatorConstants.KV_SLOT2);
-  private final LoggedTunableNumber kAslot2 =
-      new LoggedTunableNumber("Elevator/kAslot2", ElevatorConstants.KA_SLOT2);
-  private final LoggedTunableNumber kGslot2 =
-      new LoggedTunableNumber("Elevator/kGslot2", ElevatorConstants.KG_SLOT2);
+  private final LoggedTunableNumber kPSlot0 =
+      new LoggedTunableNumber("Elevator/kPSlot0", ElevatorConstants.KP_SLOT0);
+  private final LoggedTunableNumber kISlot0 =
+      new LoggedTunableNumber("Elevator/kISlot0", ElevatorConstants.KI_SLOT0);
+  private final LoggedTunableNumber kDSlot0 =
+      new LoggedTunableNumber("Elevator/kDSlot0", ElevatorConstants.KD_SLOT0);
+  private final LoggedTunableNumber kSSlot0 =
+      new LoggedTunableNumber("Elevator/kSSlot0", ElevatorConstants.KS_SLOT0);
+  private final LoggedTunableNumber kVSlot0 =
+      new LoggedTunableNumber("Elevator/kVSlot0", ElevatorConstants.KV_SLOT0);
+  private final LoggedTunableNumber kASlot0 =
+      new LoggedTunableNumber("Elevator/kASlot0", ElevatorConstants.KA_SLOT0);
+  private final LoggedTunableNumber kGSlot0 =
+      new LoggedTunableNumber("Elevator/kGSlot0", ElevatorConstants.KG_SLOT0);
 
   private final LoggedTunableNumber kVExpo =
       new LoggedTunableNumber("Elevator/kVExpo", ElevatorConstants.KV_EXPO);
@@ -200,35 +168,15 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-    config.Slot0.kP = kPslot0.get();
-    config.Slot0.kI = kIslot0.get();
-    config.Slot0.kD = kDslot0.get();
-    config.Slot0.kS = kSslot0.get();
-    config.Slot0.kV = kVslot0.get();
-    config.Slot0.kA = kAslot0.get();
-    config.Slot0.kG = kGslot0.get();
+    config.Slot0.kP = kPSlot0.get();
+    config.Slot0.kI = kISlot0.get();
+    config.Slot0.kD = kDSlot0.get();
+    config.Slot0.kS = kSSlot0.get();
+    config.Slot0.kV = kVSlot0.get();
+    config.Slot0.kA = kASlot0.get();
+    config.Slot0.kG = kGSlot0.get();
 
     config.Slot0.withGravityType(GravityTypeValue.Elevator_Static);
-
-    config.Slot1.kP = kPslot1.get();
-    config.Slot1.kI = kIslot1.get();
-    config.Slot1.kD = kDslot1.get();
-    config.Slot1.kS = kSslot1.get();
-    config.Slot1.kV = kVslot1.get();
-    config.Slot1.kA = kAslot1.get();
-    config.Slot1.kG = kGslot1.get();
-
-    config.Slot1.withGravityType(GravityTypeValue.Elevator_Static);
-
-    config.Slot2.kP = kPslot2.get();
-    config.Slot2.kI = kIslot2.get();
-    config.Slot2.kD = kDslot2.get();
-    config.Slot2.kS = kSslot2.get();
-    config.Slot2.kV = kVslot2.get();
-    config.Slot2.kA = kAslot2.get();
-    config.Slot2.kG = kGslot2.get();
-
-    config.Slot2.withGravityType(GravityTypeValue.Elevator_Static);
 
     leadMotorConfig.MotionMagicCruiseVelocity = cruiseVelocity.get();
 
@@ -309,8 +257,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
 
     inputs.positionInches = inputs.positionRotations * PULLEY_CIRCUMFERENCE_INCHES;
 
-    localPosition = inputs.positionInches;
-
     LoggedTunableNumber.ifChanged(
         hashCode(),
         motionMagic -> {
@@ -323,48 +269,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
           config.Slot0.kV = motionMagic[4];
           config.Slot0.kA = motionMagic[5];
           config.Slot0.kG = motionMagic[6];
-
-          config.Slot1.kP = motionMagic[7];
-          config.Slot1.kI = motionMagic[8];
-          config.Slot1.kD = motionMagic[9];
-          config.Slot1.kS = motionMagic[10];
-          config.Slot1.kV = motionMagic[11];
-          config.Slot1.kA = motionMagic[12];
-          config.Slot1.kG = motionMagic[13];
-
-          config.Slot2.kP = motionMagic[14];
-          config.Slot2.kI = motionMagic[15];
-          config.Slot2.kD = motionMagic[16];
-          config.Slot2.kS = motionMagic[17];
-          config.Slot2.kV = motionMagic[18];
-          config.Slot2.kA = motionMagic[19];
-          config.Slot2.kG = motionMagic[20];
-
-          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[21];
+          config.MotionMagic.MotionMagicCruiseVelocity = motionMagic[7];
 
           this.elevatorMotorLead.getConfigurator().apply(config);
         },
-        kPslot0,
-        kIslot0,
-        kDslot0,
-        kSslot0,
-        kVslot0,
-        kAslot0,
-        kGslot0,
-        kPslot1,
-        kIslot1,
-        kDslot1,
-        kSslot1,
-        kVslot1,
-        kAslot1,
-        kGslot1,
-        kPslot2,
-        kIslot2,
-        kDslot2,
-        kSslot2,
-        kVslot2,
-        kAslot2,
-        kGslot2,
+        kPSlot0,
+        kISlot0,
+        kDSlot0,
+        kSSlot0,
+        kVSlot0,
+        kASlot0,
+        kGSlot0,
         cruiseVelocity);
 
     elevatorSystemSim.updateSim();
@@ -397,7 +312,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     } else {
       elevatorMotorLead.setControl(
           leadPositionRequest
-          
               .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0)
               .withKV(kVExpo.get())

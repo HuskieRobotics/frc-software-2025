@@ -5,7 +5,6 @@ import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -118,7 +117,7 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
 
   // Create StatusSignal objects for each loggable input from the ManipulatorIO class in the
   // updateInputs method
-  // change type of each status signal objecty to its corresponding type
+  // change type of each status signal object to its corresponding type
 
   private StatusSignal<AngularVelocity> funnelMotorVelocity;
   private StatusSignal<AngularVelocity> indexerMotorVelocity;
@@ -549,8 +548,6 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
     config.Slot0.kA = pivotKa.get();
     config.Slot0.kG = pivotKg.get();
     config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-
-    MotionMagicConfigs pivotMotorConfig = config.MotionMagic;
 
     // // configure soft limits while testing
     // config.SoftwareLimitSwitch.ForwardSoftLimitThreshold =
