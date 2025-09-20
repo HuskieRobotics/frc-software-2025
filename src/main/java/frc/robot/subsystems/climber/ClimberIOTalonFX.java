@@ -43,8 +43,7 @@ public class ClimberIOTalonFX implements ClimberIO {
 
   public ClimberIOTalonFX() {
     climberMotor =
-        new TalonFX(
-            ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBusName());
+        new TalonFX(ClimberConstants.CLIMBER_MOTOR_CAN_ID, RobotConfig.getInstance().getCANBus());
 
     limitSwitch1 = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO_1);
     limitSwitch2 = new DigitalInput(ClimberConstants.CLIMBER_LIMIT_SWITCH_DIO_2);

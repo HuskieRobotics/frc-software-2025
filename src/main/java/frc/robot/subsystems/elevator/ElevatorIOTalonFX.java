@@ -93,9 +93,9 @@ public class ElevatorIOTalonFX implements ElevatorIO {
   public ElevatorIOTalonFX() {
 
     elevatorMotorLead =
-        new TalonFX(ElevatorConstants.LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
+        new TalonFX(ElevatorConstants.LEAD_MOTOR_ID, RobotConfig.getInstance().getCANBus());
     elevatorMotorFollower =
-        new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
+        new TalonFX(ElevatorConstants.FOLLOWER_MOTOR_ID, RobotConfig.getInstance().getCANBus());
 
     leadStatorCurrent = elevatorMotorLead.getStatorCurrent();
     followerStatorCurrent = elevatorMotorFollower.getStatorCurrent();

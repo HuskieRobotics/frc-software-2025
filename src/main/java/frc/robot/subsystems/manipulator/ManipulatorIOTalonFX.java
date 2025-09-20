@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.manipulator.ManipulatorConstants.*;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -149,9 +150,9 @@ public class ManipulatorIOTalonFX implements ManipulatorIO {
   /** Create a TalonFX-specific generic SubsystemIO */
   public ManipulatorIOTalonFX() {
 
-    funnelMotor = new TalonFX(FUNNEL_MOTOR_ID, RobotConfig.getInstance().getCANBusName());
-    indexerMotor = new TalonFX(INDEXER_MOTOR_ID);
-    pivotMotor = new TalonFX(PIVOT_MOTOR_ID);
+    funnelMotor = new TalonFX(FUNNEL_MOTOR_ID, RobotConfig.getInstance().getCANBus());
+    indexerMotor = new TalonFX(INDEXER_MOTOR_ID, CANBus.roboRIO());
+    pivotMotor = new TalonFX(PIVOT_MOTOR_ID, CANBus.roboRIO());
 
     funnelIRSensor = new DigitalInput(FUNNEL_IR_SENSOR_ID);
     indexerIRSensor = new DigitalInput(INDEXER_IR_SENSOR_ID);
