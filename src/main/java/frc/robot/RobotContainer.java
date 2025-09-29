@@ -32,7 +32,6 @@ import frc.robot.commands.CrossSubsystemsCommandsFactory;
 import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.CalypsoRobotConfig;
-import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
@@ -103,7 +102,7 @@ public class RobotContainer {
     if (Constants.getMode() != Mode.REPLAY) {
 
       switch (Constants.getRobot()) {
-        case ROBOT_DEFAULT, ROBOT_PRACTICE, ROBOT_COMPETITION:
+        case ROBOT_PRACTICE, ROBOT_COMPETITION:
           {
             createCTRESubsystems();
             break;
@@ -163,9 +162,6 @@ public class RobotContainer {
    */
   private void createRobotConfig() {
     switch (Constants.getRobot()) {
-      case ROBOT_DEFAULT:
-        config = new DefaultRobotConfig();
-        break;
       case ROBOT_PRACTICE:
         config = new NewPracticeRobotConfig();
         break;

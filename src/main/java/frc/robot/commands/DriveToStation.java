@@ -50,8 +50,6 @@ public class DriveToStation extends Command {
   private Pose2d targetPose;
   private Transform2d targetTolerance;
 
-  private boolean firstRun = true;
-
   private double timeout;
 
   private Timer timer;
@@ -120,8 +118,6 @@ public class DriveToStation extends Command {
   public void initialize() {
     // Reset all controllers
     this.targetPose = poseSupplier.get();
-
-    firstRun = true;
 
     drivetrain.enableAccelerationLimiting();
 
@@ -252,13 +248,6 @@ public class DriveToStation extends Command {
 
     boolean cannotReachTargetPose = false;
     Logger.recordOutput("DriveToStation/cannotReachTargetPose", cannotReachTargetPose);
-    // if (firstRun) {
-    //   firstRun = false;
-    //   cannotReachTargetPose = robotRelativeDifference.getX() > 0.05;
-    //   if (cannotReachTargetPose) {
-    //     drivetrain.setDriveToPoseCanceled(true);
-    //   }
-    // }
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
     // check if it is physically possible for us to drive to the selected position without going

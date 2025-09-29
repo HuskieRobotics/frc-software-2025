@@ -69,15 +69,6 @@ public class Manipulator extends SubsystemBase {
   public final LoggedTunableNumber funnelEjectingVoltage =
       new LoggedTunableNumber("Manipulator/Funnel/EjectingVoltage", FUNNEL_EJECT_VOLTAGE);
 
-  private final LoggedTunableNumber pivotAngle =
-      new LoggedTunableNumber("Manipulator/Pivot/angle", 0); // add angle
-
-  private final LoggedTunableNumber pivotMotorVoltage =
-      new LoggedTunableNumber("Manipulator/Pivot/MotorVoltage", 0);
-
-  private final LoggedTunableNumber pivotMotorCurrent =
-      new LoggedTunableNumber("Manipulator/Pivot/Current", 0);
-
   Timer coralInIndexingState =
       new Timer(); // create a timer to track how long is spent in this stage
 
@@ -158,17 +149,6 @@ public class Manipulator extends SubsystemBase {
               sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
           new SysIdRoutine.Mechanism(
               output -> setIndexerMotorCurrent(output.in(Volts)), null, this));
-
-  // private final SysIdRoutine sysIdPivot =
-  //     new SysIdRoutine( // FIXME: check values for ramp rate and step voltage
-  //         new SysIdRoutine.Config(
-  //             Volts.of(0.1).per(Seconds), // Use default ramp rate (1 V/s)
-  //             Volts.of(0.6), // Use default step voltage (7 V)
-  //             null, // Use default timeout (10 s)
-  //             // Log state with SignalLogger class
-  //             sysIDState -> SignalLogger.writeString("SysId_State", state.toString())),
-  //         new SysIdRoutine.Mechanism(output -> setPivotMotorVoltage(output.in(Volts)), null,
-  // this));
 
   /**
    * Few subsystems require the complexity of a state machine. A simpler command-based approach is

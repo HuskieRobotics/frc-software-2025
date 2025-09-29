@@ -35,7 +35,6 @@ public final class Constants {
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.kError);
 
   public enum RobotType {
-    ROBOT_DEFAULT,
     ROBOT_SIMBOT,
     ROBOT_PRACTICE,
     ROBOT_COMPETITION,
@@ -58,7 +57,7 @@ public final class Constants {
 
   public static Mode getMode() {
     switch (getRobot()) {
-      case ROBOT_DEFAULT, ROBOT_PRACTICE, ROBOT_PRACTICE_BOARD, ROBOT_COMPETITION:
+      case ROBOT_PRACTICE, ROBOT_PRACTICE_BOARD, ROBOT_COMPETITION:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case ROBOT_SIMBOT, ROBOT_VISION_TEST_PLATFORM:

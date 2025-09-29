@@ -307,15 +307,9 @@ public class CrossSubsystemsCommandsFactory {
   public static Command getPrepAlgaeBargeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, OperatorInterface oi) {
     // check if we are short of barge or far of barge
-    // if we are short of barge, check if we are within 2 feet. if we are, then put elevator up
-    // first. uf not, do in simultaneous
+    // if we are within the specified distance, cancel the drive-to-barge command to ensure the
+    //  elevator doesn't hit the barge
 
-    // FIXME: ask ian about this; just canceling the drive to barge for now
-    // being under the barge at our target pose would cause us to still probably
-    // raise directly through the barge on the way up.
-    // would need to go backwards and then forwards again. May not be worth due to how quick the
-    // driver could manually do that if we just cancel.
-    // if we are far of barge, then drive backwards first and then raise the elevator up
     return Commands.either(
         Commands.parallel(
             Commands.runOnce(

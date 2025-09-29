@@ -36,13 +36,9 @@ public class Elevator extends SubsystemBase {
   // instantiate distanceFromReef with arbitrary far values
   private Transform2d distanceFromReef = new Transform2d(100.0, 100.0, Rotation2d.fromDegrees(180));
 
-  private Alert hardStopAlert =
-      new Alert("Elevator position not 0 at bottom. Check belts for slipping.", AlertType.kError);
-
   private Alert jammedAlert =
       new Alert("Elevator jam detected. Use manual control.", AlertType.kError);
 
-  private boolean hasBeenZeroed = false;
   private LinearFilter current =
       LinearFilter.singlePoleIIR(
           0.1, 0.02); // the first value is the time constant, the characteristic timescale of the
@@ -123,20 +119,6 @@ public class Elevator extends SubsystemBase {
     Logger.recordOutput(SUBSYSTEM_NAME + "/canScoreFartherAway", canScoreFartherAway());
 
     current.calculate(Math.abs(inputs.statorCurrentAmpsLead));
-
-    // FIXME: restore if needed after testing
-    // if (targetPosition == ScoringHeight.HARDSTOP && !hasBeenZeroed) {
-    //   if (Math.abs(current.lastValue()) > STALL_CURRENT || Constants.getMode() == Mode.SIM) {
-    //     hasBeenZeroed = true;
-    //     elevatorIO.setMotorVoltage(0);
-    //     hardStopAlert.set(Math.abs(getPosition().in(Inches)) > RESET_TOLERANCE);
-    //     elevatorIO.zeroPosition();
-    //   } else if (getPosition().in(Inches) < JUST_ABOVE_HARDSTOP.in(Inches) + TOLERANCE_INCHES) {
-    //     elevatorIO.setMotorVoltage(ELEVATOR_LOWERING_VOLTAGE);
-    //   }
-    // } else {
-    //   hasBeenZeroed = false;
-    // }
 
     if (jamFilter.calculate(Math.abs(inputs.statorCurrentAmpsLead)) > JAMMED_CURRENT) {
       CommandScheduler.getInstance()

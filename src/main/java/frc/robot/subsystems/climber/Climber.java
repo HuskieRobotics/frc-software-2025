@@ -12,12 +12,6 @@ public class Climber extends SubsystemBase {
 
   private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
   private final LoggedTunableNumber testingMode = new LoggedTunableNumber("Climber/TestingMode", 0);
-  private final LoggedTunableNumber maxHeight =
-      new LoggedTunableNumber("Climber/MaxHeight", ClimberConstants.MAX_HEIGHT_INCHES);
-  private final LoggedTunableNumber cageCatcherExtendPos =
-      new LoggedTunableNumber(
-          "Climber/CageCatcherExtendPos", ClimberConstants.CAGE_CATCHER_EXTEND_POS_INCHES);
-
   private final LoggedTunableNumber climberVoltage =
       new LoggedTunableNumber("Climber/Voltage", 0.0);
 
