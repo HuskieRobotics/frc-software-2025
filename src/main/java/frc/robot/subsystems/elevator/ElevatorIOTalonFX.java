@@ -397,7 +397,6 @@ public class ElevatorIOTalonFX implements ElevatorIO {
     } else {
       elevatorMotorLead.setControl(
           leadPositionRequest
-          
               .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0)
               .withKV(kVExpo.get())

@@ -97,8 +97,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Back right camera
   private static final Transform3d ROBOT_TO_CAMERA_1 =
       new Transform3d(
-          new Translation3d(-0.279, -0.273, 0.253),
-          new Rotation3d(new Quaternion(-0.149, 0.161, 0.027, 0.975)));
+          new Translation3d(0.177, 0.268, 0.237),
+          new Rotation3d(new Quaternion(-0.976, 0.010, 0.117, 0.184)));
 
   // Front left camera
   private static final Transform3d ROBOT_TO_CAMERA_2 =
@@ -109,8 +109,8 @@ public class CalypsoRobotConfig extends RobotConfig {
   // Back left camera
   private static final Transform3d ROBOT_TO_CAMERA_3 =
       new Transform3d(
-          new Translation3d(-0.276, 0.276, 0.253),
-          new Rotation3d(new Quaternion(0.157, 0.163, -0.025, 0.974)));
+          new Translation3d(0.180, -0.266, 0.236),
+          new Rotation3d(new Quaternion(-0.978, -0.030, 0.108, -0.173)));
 
   // default values for tunables
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
