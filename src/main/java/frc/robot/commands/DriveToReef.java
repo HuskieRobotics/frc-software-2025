@@ -346,7 +346,6 @@ public class DriveToReef extends Command {
     }
 
     boolean cannotReachTargetPose = false;
-    Logger.recordOutput("DriveToReef/cannotReachTargetPose", cannotReachTargetPose);
     if (firstRun) {
       firstRun = false;
       cannotReachTargetPose = reefRelativeDifference.getX() > 0.05;
@@ -354,6 +353,7 @@ public class DriveToReef extends Command {
         drivetrain.setDriveToPoseCanceled(true);
       }
     }
+    Logger.recordOutput("DriveToReef/cannotReachTargetPose", cannotReachTargetPose);
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
     // check if it is physically possible for us to drive to the selected position without going
