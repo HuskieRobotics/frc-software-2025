@@ -25,7 +25,7 @@ import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
 
-  private static final Debouncer droppedGamePieceDebouncer = new Debouncer(1.0);
+  private static final Debouncer droppedGamePieceDebouncer = new Debouncer(2.0);
 
   private CrossSubsystemsCommandsFactory() {}
 
@@ -107,14 +107,17 @@ public class CrossSubsystemsCommandsFactory {
     // raised position even when the manipulator is expecting to collect coral. This can result in
     // coral been fed through the funnel and into the robot below the indexer, where it may become
     // stuck. Therefore, this trigger will detect when the manipulator has no coral and has no
-    // algae. When this condition is met and the elevator is not lowered, it will lower the
-    // elevator. Since there is the possibility of a false negative (the manipulator reports that
-    // algae is gone for a brief moment, when it hasn't been dropped) use a Debouncer object that
-    // will only trigger when conditions are met for 1 second. */
+    // algae (by indirectly checking if the manipulator is in the WAITING_FOR_CORAL state). When
+    // this condition is met and the elevator is not lowered, it will lower the elevator. Since
+    // there is the possibility of a false negative (the manipulator reports that algae is gone for
+    // a brief moment, when it hasn't been dropped) use a Debouncer object that will only trigger
+    // when conditions are met for 2 second. In addition, the 2 seconds ensures that we don't
+    // interrupt a command that is responsible for scoring coral and then collecting algae. During
+    // this command, the manipulator is in the WAITING_FOR_CORAL state for about 1 second as the
+    // elevator is lowered below the algae to collect. */
     new Trigger(
             () ->
-                droppedGamePieceDebouncer.calculate(
-                        !manipulator.coralIsInManipulator() && !manipulator.algaeIsInManipulator())
+                droppedGamePieceDebouncer.calculate(manipulator.scoredAlgae())
                     && !elevator.isAtPosition(ScoringHeight.HARDSTOP))
         .onTrue(elevator.getElevatorLowerAndResetCommand().withName("lower elevator on drop"));
   }
