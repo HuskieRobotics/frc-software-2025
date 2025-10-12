@@ -3,11 +3,13 @@ package frc.robot.commands;
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
 import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.vision.Vision;
@@ -22,6 +24,8 @@ import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
+
+  private static final Debouncer droppedGamePieceDebouncer = new Debouncer(1.0);
 
   private CrossSubsystemsCommandsFactory() {}
 
@@ -97,6 +101,22 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, vision, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
+
+    // While the manipulator state machine detects when a game piece is dropped and adjust's its
+    // state accordingly, the other mechanisms are unaware. Therefore, the elevator will remain in a
+    // raised position even when the manipulator is expecting to collect coral. This can result in
+    // coral been fed through the funnel and into the robot below the indexer, where it may become
+    // stuck. Therefore, this trigger will detect when the manipulator has no coral and has no
+    // algae. When this condition is met and the elevator is not lowered, it will lower the
+    // elevator. Since there is the possibility of a false negative (the manipulator reports that
+    // algae is gone for a brief moment, when it hasn't been dropped) use a Debouncer object that
+    // will only trigger when conditions are met for 1 second. */
+    new Trigger(
+            () ->
+                droppedGamePieceDebouncer.calculate(
+                        !manipulator.coralIsInManipulator() && !manipulator.algaeIsInManipulator())
+                    && !elevator.isAtPosition(ScoringHeight.HARDSTOP))
+        .onTrue(elevator.getElevatorLowerAndResetCommand().withName("lower elevator on drop"));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
