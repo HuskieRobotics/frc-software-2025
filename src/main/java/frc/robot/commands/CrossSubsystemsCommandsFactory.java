@@ -170,7 +170,6 @@ public class CrossSubsystemsCommandsFactory {
         Commands.sequence(
             Commands.runOnce(elevator::goToSelectedPosition, elevator),
             Commands.waitUntil(elevator::isAtSelectedPosition),
-            Commands.waitSeconds(0.5),
             Commands.runOnce(manipulator::shootCoralFast, manipulator),
             Commands.waitUntil(() -> !manipulator.coralIsInManipulator())),
         () -> OISelector.getOperatorInterface().getLevel1Trigger().getAsBoolean());
@@ -439,7 +438,6 @@ public class CrossSubsystemsCommandsFactory {
         Commands.either(
             getScoreCoralAndCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
             Commands.sequence(
-                Commands.waitSeconds(0.5),
                 Commands.runOnce(manipulator::shootCoralFast, manipulator),
                 Commands.waitUntil(() -> !manipulator.coralIsInManipulator()),
                 Commands.runOnce(() -> elevator.setXFromReef(100.0))),
