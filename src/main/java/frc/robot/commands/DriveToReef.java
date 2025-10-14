@@ -151,6 +151,13 @@ public class DriveToReef extends Command {
       yController.setP(driveKp.get() - 0.5);
     }
 
+    xController.reset();
+    xController.setI(0.0);
+    xController.setIntegratorRange(-2.0, 2.0);
+    yController.reset();
+    yController.setI(0.0);
+    yController.setIntegratorRange(-2.0, 2.0);
+
     oneCoralAway = false;
     firstRun = true;
 
@@ -266,6 +273,8 @@ public class DriveToReef extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
+      xController.setI(2.0);
+      yController.setI(2.0);
       double yVelocityBoost =
           (forAlgae || l2l3) ? algaeAndL2L3VelocityBoost.get() : coralYVelocityBoost.get();
       if (reefRelativeDifference.getY() > 0) {
