@@ -257,8 +257,8 @@ public class Vision extends SubsystemBase {
                       || observation.averageAmbiguity() < AMBIGUITY_THRESHOLD)
                   && (observation.type() == PoseObservationType.SINGLE_TAG
                       || Math.abs(observation.reprojectionError()) < REPROJECTION_ERROR_THRESHOLD)
-                  && poseIsOnField(estimatedRobotPose3d)
-                  && arePoseRotationsReasonable(estimatedRobotPose3d);
+                  && poseIsOnField(estimatedRobotPose3d);
+          // && arePoseRotationsReasonable(estimatedRobotPose3d);
 
           if (acceptPose) {
             // get tag poses and update last detection times
