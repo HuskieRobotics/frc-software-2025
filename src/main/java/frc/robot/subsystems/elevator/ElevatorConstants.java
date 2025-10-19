@@ -20,9 +20,6 @@ public class ElevatorConstants {
 
   public static final double RESET_TOLERANCE = 0.25;
 
-  public static final Distance HEIGHT_SWITCH_SLOT0 = Inches.of(20); // FIXME: Update these values
-  public static final Distance HEIGHT_SWITCH_SLOT1 = Inches.of(40); // FIXME: Update these values
-
   public static final double PULLEY_CIRCUMFERENCE_INCHES = 5.9055;
   public static final int GEAR_RATIO = 5;
 
@@ -70,7 +67,7 @@ public class ElevatorConstants {
 
   // was 0.05 with no funnel or climber on robot, caused wheels to leave ground
   // arbitrary increase for now
-  public static final double KA_EXPO = 0.15; // 0.2
+  public static final double KA_EXPO = 0.2;
 
   public static final double CRUISE_VELOCITY = 0;
 
