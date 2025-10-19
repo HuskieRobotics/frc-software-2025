@@ -119,7 +119,8 @@ public class CrossSubsystemsCommandsFactory {
     new Trigger(
             () ->
                 droppedGamePieceDebouncer.calculate(manipulator.scoredAlgae())
-                    && !elevator.isAtPosition(ScoringHeight.HARDSTOP))
+                    && !elevator.isAtPosition(ScoringHeight.HARDSTOP)
+                    && !Constants.DEMO_MODE)
         .onTrue(elevator.getElevatorLowerAndResetCommand().withName("lower elevator on drop"));
   }
 
@@ -327,9 +328,7 @@ public class CrossSubsystemsCommandsFactory {
             () ->
                 OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
                     && !Constants.DEMO_MODE),
-        () ->
-            OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean()
-                && !Constants.DEMO_MODE);
+        () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean());
   }
 
   public static Command getPrepAlgaeBargeCommand(
@@ -339,18 +338,22 @@ public class CrossSubsystemsCommandsFactory {
     //  elevator doesn't hit the barge
 
     return Commands.either(
-        Commands.parallel(
-            Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
-            new DriveToBarge(
-                drivetrain,
-                elevator,
-                () -> Field2d.getInstance().getShortOfBargePose(),
-                manipulator::setReadyToScore,
-                new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
-                oi::getTranslateY)),
-        Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
-        () -> Field2d.getInstance().isShortOfBarge() || Constants.DEMO_MODE);
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+        Commands.either(
+            Commands.parallel(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+                new DriveToBarge(
+                    drivetrain,
+                    elevator,
+                    () -> Field2d.getInstance().getShortOfBargePose(),
+                    manipulator::setReadyToScore,
+                    new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
+                    oi::getTranslateY)),
+            Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
+            () -> Field2d.getInstance().isShortOfBarge()),
+        () -> Constants.DEMO_MODE);
   }
 
   public static Command getCollectAlgaeCommand(
@@ -359,24 +362,27 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goBelowNearestAlgae(), elevator),
         Commands.waitUntil(elevator::isBelowNearestAlgae),
-        Commands.parallel(
+        Commands.either(
+            Commands.parallel(
+                Commands.runOnce(manipulator::collectAlgae, manipulator),
+                Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToReef(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestAlgae().pose,
+                        manipulator::setReadyToScore,
+                        elevator::setDistanceFromReef,
+                        new Transform2d(
+                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                            Rotation2d.fromDegrees(
+                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                        true,
+                        false,
+                        3.0),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
             Commands.runOnce(manipulator::collectAlgae, manipulator),
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestAlgae().pose,
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    true,
-                    false,
-                    3.0),
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
+            () -> Constants.DEMO_MODE),
         Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
         Commands.runOnce(() -> elevator.goToNearestAlgae(), elevator),
         Commands.waitUntil(manipulator::doneCollectingAlgae),
