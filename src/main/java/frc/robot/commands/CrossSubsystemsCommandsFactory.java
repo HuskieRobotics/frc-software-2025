@@ -295,7 +295,9 @@ public class CrossSubsystemsCommandsFactory {
       OperatorInterface oi) {
     return Commands.either(
         getPrepToScoreAlgaeCommand(drivetrain, manipulator, elevator, vision, oi),
-        getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision),
+        Commands.sequence(
+            Commands.runOnce(manipulator::collectAlgae, manipulator),
+            getCollectAlgaeCommand(drivetrain, manipulator, elevator, vision)),
         manipulator::hasIndexedAlgae);
   }
 
