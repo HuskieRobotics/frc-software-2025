@@ -20,7 +20,7 @@ public final class VisionConstants {
   public static final String SUBSYSTEM_NAME = "Vision";
 
   public static final boolean ENABLE_DETAILED_LOGGING = false;
-  public static final boolean CALIBRATE_CAMERA_TRANSFORMS = true;
+  public static final boolean CALIBRATE_CAMERA_TRANSFORMS = false;
 
   // an accepted pose must be within this many seconds of the current time in order to qualify for
   // resetting the robot's pose with the reset pose to vision command
