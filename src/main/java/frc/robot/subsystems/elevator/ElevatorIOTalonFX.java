@@ -310,12 +310,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
               .withKV(kVExpo.get())
               .withKA(kAExpo.get()));
     } else {
+      double aExpo = kAExpo.get();
+      if (DriverStation.isAutonomous()) {
+        aExpo += 0.1;
+      }
+
       elevatorMotorLead.setControl(
           leadPositionRequest
               .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0)
               .withKV(kVExpo.get())
-              .withKA(kAExpo.get()));
+              .withKA(aExpo));
     }
   }
 }
