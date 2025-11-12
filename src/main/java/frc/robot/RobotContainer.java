@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,10 +30,10 @@ import frc.robot.Constants.Mode;
 import frc.robot.commands.AutonomousCommandFactory;
 import frc.robot.commands.ClimberCommandFactory;
 import frc.robot.commands.CrossSubsystemsCommandsFactory;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.ElevatorCommandsFactory;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.configs.CalypsoRobotConfig;
-import frc.robot.configs.DefaultRobotConfig;
 import frc.robot.configs.NewPracticeRobotConfig;
 import frc.robot.configs.PracticeBoardConfig;
 import frc.robot.configs.VisionTestPlatformConfig;
@@ -103,7 +104,7 @@ public class RobotContainer {
     if (Constants.getMode() != Mode.REPLAY) {
 
       switch (Constants.getRobot()) {
-        case ROBOT_DEFAULT, ROBOT_PRACTICE, ROBOT_COMPETITION:
+        case ROBOT_PRACTICE, ROBOT_COMPETITION:
           {
             createCTRESubsystems();
             break;
@@ -163,9 +164,6 @@ public class RobotContainer {
    */
   private void createRobotConfig() {
     switch (Constants.getRobot()) {
-      case ROBOT_DEFAULT:
-        config = new DefaultRobotConfig();
-        break;
       case ROBOT_PRACTICE:
         config = new NewPracticeRobotConfig();
         break;
@@ -453,6 +451,20 @@ public class RobotContainer {
     //           return drivetrain.isTilted() && !climber.isClimbing();
     //         })
     //     .whileTrue(Commands.run(() -> drivetrain.untilt(), drivetrain).withName("untilt"));
+
+    // track AprilTag command (for demos)
+    oi.getTrackAprilTagButton()
+        .toggleOnTrue(
+            new DriveToPose(
+                drivetrain,
+                () ->
+                    Field2d.getInstance()
+                        .getNearestAlgae()
+                        .pose
+                        .transformBy(new Transform2d(-2.0, 0, Rotation2d.fromDegrees(0))),
+                (x) -> {},
+                new Transform2d(),
+                1000000));
 
     oi.getSysIdDynamicForward().whileTrue(SysIdRoutineChooser.getInstance().getDynamicForward());
     oi.getSysIdDynamicReverse().whileTrue(SysIdRoutineChooser.getInstance().getDynamicReverse());

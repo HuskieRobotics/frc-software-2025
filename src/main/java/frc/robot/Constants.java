@@ -27,7 +27,7 @@ public final class Constants {
 
   // set to true in order to change all Tunable values via AdvantageScope
   public static final boolean TUNING_MODE = false;
-  public static final boolean DEMO_MODE = false;
+  public static final boolean DEMO_MODE = true;
 
   private static final RobotType ROBOT = RobotType.ROBOT_COMPETITION;
 
@@ -35,7 +35,6 @@ public final class Constants {
       new Alert("Invalid robot selected, using competition robot as default.", AlertType.kError);
 
   public enum RobotType {
-    ROBOT_DEFAULT,
     ROBOT_SIMBOT,
     ROBOT_PRACTICE,
     ROBOT_COMPETITION,
@@ -58,7 +57,7 @@ public final class Constants {
 
   public static Mode getMode() {
     switch (getRobot()) {
-      case ROBOT_DEFAULT, ROBOT_PRACTICE, ROBOT_PRACTICE_BOARD, ROBOT_COMPETITION:
+      case ROBOT_PRACTICE, ROBOT_PRACTICE_BOARD, ROBOT_COMPETITION:
         return RobotBase.isReal() ? Mode.REAL : Mode.REPLAY;
 
       case ROBOT_SIMBOT, ROBOT_VISION_TEST_PLATFORM:

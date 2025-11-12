@@ -23,6 +23,7 @@ import frc.lib.team3061.RobotConfig;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -228,7 +229,8 @@ public class DriveToBarge extends Command {
     // this command should never finish as the driver needs to be able to move in the y direction
     // until aligned to the barge where there are few algae; it is interrupted when the algae is
     // shot
-    return !drivetrain.isMoveToPoseEnabled();
+    // Don't drive to the barge when we are in demo mode.
+    return !drivetrain.isMoveToPoseEnabled() || Constants.DEMO_MODE;
   }
 
   /**

@@ -3,14 +3,17 @@ package frc.robot.commands;
 import static frc.robot.subsystems.elevator.ElevatorConstants.FAR_SCORING_DISTANCE;
 import static frc.robot.subsystems.elevator.ElevatorConstants.MIN_FAR_SCORING_DISTANCE;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.vision.Vision;
+import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import frc.robot.operator_interface.OperatorInterface;
@@ -22,6 +25,8 @@ import frc.robot.subsystems.manipulator.Manipulator;
 import java.util.List;
 
 public class CrossSubsystemsCommandsFactory {
+
+  private static final Debouncer droppedGamePieceDebouncer = new Debouncer(2.0);
 
   private CrossSubsystemsCommandsFactory() {}
 
@@ -97,6 +102,26 @@ public class CrossSubsystemsCommandsFactory {
         .onTrue(getInterruptAllCommand(manipulator, elevator, drivetrain, climber, vision, oi));
 
     oi.getOverrideDriveToPoseButton().onTrue(getDriveToPoseOverrideCommand(drivetrain, oi));
+
+    // While the manipulator state machine detects when a game piece is dropped and adjust's its
+    // state accordingly, the other mechanisms are unaware. Therefore, the elevator will remain in a
+    // raised position even when the manipulator is expecting to collect coral. This can result in
+    // coral been fed through the funnel and into the robot below the indexer, where it may become
+    // stuck. Therefore, this trigger will detect when the manipulator has no coral and has no
+    // algae (by indirectly checking if the manipulator is in the WAITING_FOR_CORAL state). When
+    // this condition is met and the elevator is not lowered, it will lower the elevator. Since
+    // there is the possibility of a false negative (the manipulator reports that algae is gone for
+    // a brief moment, when it hasn't been dropped) use a Debouncer object that will only trigger
+    // when conditions are met for 2 second. In addition, the 2 seconds ensures that we don't
+    // interrupt a command that is responsible for scoring coral and then collecting algae. During
+    // this command, the manipulator is in the WAITING_FOR_CORAL state for about 1 second as the
+    // elevator is lowered below the algae to collect. */
+    new Trigger(
+            () ->
+                droppedGamePieceDebouncer.calculate(manipulator.scoredAlgae())
+                    && !elevator.isAtPosition(ScoringHeight.HARDSTOP)
+                    && !Constants.DEMO_MODE)
+        .onTrue(elevator.getElevatorLowerAndResetCommand().withName("lower elevator on drop"));
   }
 
   private static Command getScoreCoralCommand(Manipulator manipulator, Elevator elevator) {
@@ -300,35 +325,35 @@ public class CrossSubsystemsCommandsFactory {
                             DrivetrainConstants.DRIVE_TO_PROCESSOR_THETA_TOLERANCE_DEG)),
                     3.0)),
             Commands.none(),
-            () -> OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()),
+            () ->
+                OISelector.getOperatorInterface().getAlgaeProcessorTrigger().getAsBoolean()
+                    && !Constants.DEMO_MODE),
         () -> OISelector.getOperatorInterface().getAlgaeBargeTrigger().getAsBoolean());
   }
 
   public static Command getPrepAlgaeBargeCommand(
       Drivetrain drivetrain, Manipulator manipulator, Elevator elevator, OperatorInterface oi) {
     // check if we are short of barge or far of barge
-    // if we are short of barge, check if we are within 2 feet. if we are, then put elevator up
-    // first. uf not, do in simultaneous
+    // if we are within the specified distance, cancel the drive-to-barge command to ensure the
+    //  elevator doesn't hit the barge
 
-    // FIXME: ask ian about this; just canceling the drive to barge for now
-    // being under the barge at our target pose would cause us to still probably
-    // raise directly through the barge on the way up.
-    // would need to go backwards and then forwards again. May not be worth due to how quick the
-    // driver could manually do that if we just cancel.
-    // if we are far of barge, then drive backwards first and then raise the elevator up
     return Commands.either(
-        Commands.parallel(
-            Commands.runOnce(
-                () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
-            new DriveToBarge(
-                drivetrain,
-                elevator,
-                () -> Field2d.getInstance().getShortOfBargePose(),
-                manipulator::setReadyToScore,
-                new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
-                oi::getTranslateY)),
-        Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
-        () -> Field2d.getInstance().isShortOfBarge());
+        Commands.runOnce(
+            () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+        Commands.either(
+            Commands.parallel(
+                Commands.runOnce(
+                    () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.BARGE), elevator),
+                new DriveToBarge(
+                    drivetrain,
+                    elevator,
+                    () -> Field2d.getInstance().getShortOfBargePose(),
+                    manipulator::setReadyToScore,
+                    new Transform2d(Units.inchesToMeters(1), 20.0, Rotation2d.fromDegrees(5.0)),
+                    oi::getTranslateY)),
+            Commands.runOnce(() -> drivetrain.setDriveToPoseCanceled(true)),
+            () -> Field2d.getInstance().isShortOfBarge()),
+        () -> Constants.DEMO_MODE);
   }
 
   public static Command getCollectAlgaeCommand(
@@ -337,24 +362,27 @@ public class CrossSubsystemsCommandsFactory {
     return Commands.sequence(
         Commands.runOnce(() -> elevator.goBelowNearestAlgae(), elevator),
         Commands.waitUntil(elevator::isBelowNearestAlgae),
-        Commands.parallel(
+        Commands.either(
+            Commands.parallel(
+                Commands.runOnce(manipulator::collectAlgae, manipulator),
+                Commands.sequence(
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
+                    new DriveToReef(
+                        drivetrain,
+                        () -> Field2d.getInstance().getNearestAlgae().pose,
+                        manipulator::setReadyToScore,
+                        elevator::setDistanceFromReef,
+                        new Transform2d(
+                            DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
+                            DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
+                            Rotation2d.fromDegrees(
+                                DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
+                        true,
+                        false,
+                        3.0),
+                    Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
             Commands.runOnce(manipulator::collectAlgae, manipulator),
-            Commands.sequence(
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 2))),
-                new DriveToReef(
-                    drivetrain,
-                    () -> Field2d.getInstance().getNearestAlgae().pose,
-                    manipulator::setReadyToScore,
-                    elevator::setDistanceFromReef,
-                    new Transform2d(
-                        DrivetrainConstants.DRIVE_TO_REEF_X_TOLERANCE,
-                        DrivetrainConstants.DRIVE_TO_REEF_Y_TOLERANCE,
-                        Rotation2d.fromDegrees(
-                            DrivetrainConstants.DRIVE_TO_REEF_THETA_TOLERANCE_DEG)),
-                    true,
-                    false,
-                    3.0),
-                Commands.runOnce(() -> vision.specifyCamerasToConsider(List.of(0, 1, 2, 3))))),
+            () -> Constants.DEMO_MODE),
         Commands.runOnce(() -> manipulator.setReadyToScore(false), manipulator),
         Commands.runOnce(() -> elevator.goToNearestAlgae(), elevator),
         Commands.waitUntil(manipulator::doneCollectingAlgae),

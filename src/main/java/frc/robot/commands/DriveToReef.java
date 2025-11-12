@@ -27,6 +27,7 @@ import frc.lib.team3061.drivetrain.Drivetrain;
 import frc.lib.team3061.drivetrain.DrivetrainConstants;
 import frc.lib.team3061.leds.LEDs;
 import frc.lib.team6328.util.LoggedTunableNumber;
+import frc.robot.Constants;
 import frc.robot.Field2d;
 import frc.robot.operator_interface.OISelector;
 import java.util.function.Consumer;
@@ -151,6 +152,13 @@ public class DriveToReef extends Command {
       yController.setP(driveKp.get() - 0.5);
     }
 
+    xController.reset();
+    xController.setI(0.0);
+    xController.setIntegratorRange(-2.0, 2.0);
+    yController.reset();
+    yController.setI(0.0);
+    yController.setIntegratorRange(-2.0, 2.0);
+
     oneCoralAway = false;
     firstRun = true;
 
@@ -266,6 +274,8 @@ public class DriveToReef extends Command {
 
     if (Math.abs(reefRelativeDifference.getX()) < 0.0762 && !oneCoralAway) {
       Logger.recordOutput("DriveToReef/boost velocity", true);
+      xController.setI(2.0);
+      yController.setI(2.0);
       double yVelocityBoost =
           (forAlgae || l2l3) ? algaeAndL2L3VelocityBoost.get() : coralYVelocityBoost.get();
       if (reefRelativeDifference.getY() > 0) {
@@ -338,7 +348,9 @@ public class DriveToReef extends Command {
             && Math.abs(reefRelativeDifference.getRotation().getRadians())
                 < targetTolerance.getRotation().getRadians();
 
-    if (atGoal) {
+    if (atGoal
+        || (Constants.DEMO_MODE
+            && !OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean())) {
       onTarget.accept(true);
       Logger.recordOutput("DriveToReef/withinTolerance", true);
     } else if (!drivetrain.isMoveToPoseEnabled() || this.timer.hasElapsed(timeout)) {
@@ -346,22 +358,27 @@ public class DriveToReef extends Command {
     }
 
     boolean cannotReachTargetPose = false;
-    Logger.recordOutput("DriveToReef/cannotReachTargetPose", cannotReachTargetPose);
     if (firstRun) {
       firstRun = false;
       cannotReachTargetPose = reefRelativeDifference.getX() > 0.05;
-      if (cannotReachTargetPose) {
+      if (cannotReachTargetPose
+          && (!Constants.DEMO_MODE
+              || OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean())) {
         drivetrain.setDriveToPoseCanceled(true);
       }
     }
+    Logger.recordOutput("DriveToReef/cannotReachTargetPose", cannotReachTargetPose);
 
     // check that each of the controllers is at their goal or if the timeout is elapsed
     // check if it is physically possible for us to drive to the selected position without going
     // through the reef (sign of our x difference)
+    // when in demo mode, don't drive to the reef unless we are demonstrating auto scoring
     return cannotReachTargetPose
         || !drivetrain.isMoveToPoseEnabled()
         || this.timer.hasElapsed(timeout)
-        || atGoal;
+        || atGoal
+        || (Constants.DEMO_MODE
+            && !OISelector.getOperatorInterface().getEnableAutoScoringTrigger().getAsBoolean());
   }
 
   /**

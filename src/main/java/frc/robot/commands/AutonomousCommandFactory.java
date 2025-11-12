@@ -273,7 +273,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         Commands.either(
@@ -297,7 +297,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
@@ -329,7 +329,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, false),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, false),
         Commands.either(
@@ -362,7 +362,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            () -> (elevator.closeToReef() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.RIGHT, true),
         getCollectAndScoreCommand(drivetrain, manipulator, elevator, vision, Side.LEFT, true),
         Commands.either(
@@ -392,7 +392,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         CrossSubsystemsCommandsFactory.getCollectAlgaeCommand(
             drivetrain, manipulator, elevator, vision),
         AutoBuilder.followPath(backUpH1C));
@@ -486,7 +486,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         Commands.parallel(
             AutoBuilder.followPath(collectCoralAfterG), elevator.getElevatorLowerAndResetCommand()),
         getCollectCoralCommand(manipulator),
@@ -497,7 +497,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         elevator.getElevatorLowerAndResetCommand());
   }
 
@@ -524,7 +524,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.RIGHT),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         Commands.parallel(
             AutoBuilder.followPath(collectCoralAfterH), elevator.getElevatorLowerAndResetCommand()),
         getCollectCoralCommand(manipulator),
@@ -535,7 +535,7 @@ public class AutonomousCommandFactory {
             manipulator,
             elevator,
             () -> Field2d.getInstance().getNearestBranch(Side.LEFT),
-            () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+            () -> (manipulator.isReadyToScore())),
         elevator.getElevatorLowerAndResetCommand());
   }
 
@@ -612,9 +612,7 @@ public class AutonomousCommandFactory {
                 Commands.waitUntil(manipulator::hasIndexedCoral),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L3), elevator),
-                Commands.waitUntil(
-                        () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore()))
-                    .withTimeout(1.6),
+                Commands.waitUntil(() -> (manipulator.isReadyToScore())).withTimeout(1.6),
                 Commands.runOnce(
                     () -> elevator.goToPosition(ElevatorConstants.ScoringHeight.L4), elevator))),
         Commands.waitUntil(() -> elevator.isAtPosition(ElevatorConstants.ScoringHeight.L4)),
@@ -651,7 +649,7 @@ public class AutonomousCommandFactory {
                 manipulator,
                 elevator,
                 () -> Field2d.getInstance().getNearestBranch(side),
-                () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())))
+                () -> (manipulator.isReadyToScore())))
         .withTimeout(6.0);
   }
 
@@ -702,7 +700,7 @@ public class AutonomousCommandFactory {
                     manipulator,
                     elevator,
                     () -> Field2d.getInstance().getFourthAutoCoralPose(side, closeAuto),
-                    () -> (elevator.canScoreFartherAway() || manipulator.isReadyToScore())),
+                    () -> (manipulator.isReadyToScore())),
                 elevator.getElevatorLowerAndResetCommand()),
             () -> (timer.hasElapsed(13.75))));
   }

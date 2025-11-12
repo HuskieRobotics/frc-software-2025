@@ -11,6 +11,7 @@ package frc.lib.team254;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.StatusSignalCollection;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.Alert;
@@ -194,38 +195,25 @@ public class Phoenix6Util {
   // the root directory of this project.
 
   /** Signals for synchronized refresh. */
-  private static BaseStatusSignal[] canivoreSignals = new BaseStatusSignal[0];
+  private static StatusSignalCollection canivoreSignals = new StatusSignalCollection();
 
-  private static BaseStatusSignal[] rioSignals = new BaseStatusSignal[0];
+  private static StatusSignalCollection rioSignals = new StatusSignalCollection();
 
   /** Registers a set of signals for synchronized refresh. */
   public static void registerSignals(boolean canivore, BaseStatusSignal... signals) {
     if (canivore) {
-      BaseStatusSignal[] newSignals = new BaseStatusSignal[canivoreSignals.length + signals.length];
-      System.arraycopy(canivoreSignals, 0, newSignals, 0, canivoreSignals.length);
-      System.arraycopy(signals, 0, newSignals, canivoreSignals.length, signals.length);
-      canivoreSignals = newSignals;
+      canivoreSignals.addSignals(signals);
     } else {
-      BaseStatusSignal[] newSignals = new BaseStatusSignal[rioSignals.length + signals.length];
-      System.arraycopy(rioSignals, 0, newSignals, 0, rioSignals.length);
-      System.arraycopy(signals, 0, newSignals, rioSignals.length, signals.length);
-      rioSignals = newSignals;
+      rioSignals.addSignals(signals);
     }
   }
 
   /** Refresh all registered signals. */
   public static void refreshAll() {
-    if (canivoreSignals.length > 0) {
-      checkError(
-          BaseStatusSignal.refreshAll(canivoreSignals),
-          "failed to refresh signals on CANivore:",
-          canivoreSignalsAlert);
-    }
-    if (rioSignals.length > 0) {
-      checkError(
-          BaseStatusSignal.refreshAll(rioSignals),
-          "failed to refresh signals on RIO:",
-          rioSignalsAlert);
-    }
+    checkError(
+        canivoreSignals.refreshAll(),
+        "failed to refresh signals on CANivore:",
+        canivoreSignalsAlert);
+    checkError(rioSignals.refreshAll(), "failed to refresh signals on RIO:", rioSignalsAlert);
   }
 }

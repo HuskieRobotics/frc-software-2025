@@ -2,6 +2,7 @@ package frc.robot.configs;
 
 import static edu.wpi.first.units.Units.*;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -78,6 +79,7 @@ public class NewPracticeRobotConfig extends RobotConfig {
   private static final double SLOW_MODE_MULTIPLIER = 0.75;
 
   private static final String CAN_BUS_NAME = "canbus1";
+  private static final CANBus CAN_BUS = new CANBus(CAN_BUS_NAME);
 
   private static final double AUTO_DRIVE_P_CONTROLLER = 5.0;
   private static final double AUTO_DRIVE_I_CONTROLLER = 0.0;
@@ -385,6 +387,11 @@ public class NewPracticeRobotConfig extends RobotConfig {
   @Override
   public String getCANBusName() {
     return CAN_BUS_NAME;
+  }
+
+  @Override
+  public CANBus getCANBus() {
+    return CAN_BUS;
   }
 
   @Override

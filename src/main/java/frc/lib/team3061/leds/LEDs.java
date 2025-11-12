@@ -141,11 +141,7 @@ public abstract class LEDs extends SubsystemBase {
   private static final double RAINBOW_DURATION = .25;
 
   private static final double WAVE_EXPONENT = 0.4;
-
-  @SuppressWarnings("unused")
   private static final double WAVE_FAST_CYCLE_LENGTH = 25.0;
-
-  @SuppressWarnings("unused")
   private static final double WAVE_FAST_DURATION = 0.5;
 
   @SuppressWarnings("unused")

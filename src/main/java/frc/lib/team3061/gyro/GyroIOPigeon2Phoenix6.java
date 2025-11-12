@@ -34,7 +34,7 @@ public class GyroIOPigeon2Phoenix6 implements GyroIO {
       new Alert("Failed to refresh signals in " + SUBSYSTEM_NAME, AlertType.kError);
 
   public GyroIOPigeon2Phoenix6(int id) {
-    gyro = new Pigeon2(id, RobotConfig.getInstance().getCANBusName());
+    gyro = new Pigeon2(id, RobotConfig.getInstance().getCANBus());
     this.yawStatusSignal = this.gyro.getYaw().clone();
     this.yawStatusSignal.setUpdateFrequency(100);
     this.pitchStatusSignal = this.gyro.getPitch().clone();
