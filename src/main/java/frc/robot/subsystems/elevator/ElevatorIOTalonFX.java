@@ -25,6 +25,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.lib.team254.Phoenix6Util;
 import frc.lib.team3015.subsystem.FaultReporter;
 import frc.lib.team3061.RobotConfig;
@@ -310,12 +311,17 @@ public class ElevatorIOTalonFX implements ElevatorIO {
               .withKV(kVExpo.get())
               .withKA(kAExpo.get()));
     } else {
+      double aExpo = kAExpo.get();
+      if (DriverStation.isAutonomous()) {
+        aExpo += 0.1;
+      }
+
       elevatorMotorLead.setControl(
           leadPositionRequest
               .withPosition(position.in(Inches) / PULLEY_CIRCUMFERENCE_INCHES)
               .withSlot(0)
               .withKV(kVExpo.get())
-              .withKA(kAExpo.get()));
+              .withKA(aExpo));
     }
   }
 }
